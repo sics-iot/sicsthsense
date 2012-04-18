@@ -1,0 +1,25 @@
+@(things: List[Thing])
+
+@layout("Things") {
+  <h1>Here's the IoT.</h1>
+  <h2>There is a total of @things.size() Things</h2>   
+  <ul>
+    @for(thing <- things) {
+      <li>
+        @thing.id with IP @thing.addr <a href="/things/@thing.id">more</a>
+      </li>
+    }
+  </ul>
+    
+  <h2>Build the IoT through a simple RESTful API</h2>
+  <dl>
+    <dt><code>POST /things/register?id={thingId}&addr={thingAddr}</code></dt>
+    <dd>Register a Thing with unique identifier <code>{thingId}</code> and IP Address <code>{thingAddr}</code></dd>
+    <dt><code>GET /things/{thingId}</code></dt>
+    <dd>Get information on Thing with identifier <code>{thingId}</code></dd>
+    <dt><code>GET /things/{thingId}/addr</code></dt>
+    <dd>Get IP address of Thing with identifier <code>{thingId}</code></dd>
+    <dt><code>DELETE /things/{thingId}</code></dt>
+    <dd>Delete Thing with identifier <code>{thingId}</code></dd>
+  </dl>    
+}

@@ -1,0 +1,15 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET        /                     controllers.SicsthSense.index()
+# Things management
+GET        /things               controllers.SicsthSense.things()
+POST       /things/register      controllers.SicsthSense.registerThing(id: String, addr: String)
+GET        /things/:id           controllers.SicsthSense.getThing(id: String)
+GET        /things/:id/addr      controllers.SicsthSense.getThingAddr(id: String)
+DELETE     /things/:id           controllers.SicsthSense.removeThing(id: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file         controllers.Assets.at(path="/public", file)
