@@ -14,7 +14,7 @@ import play.mvc.*;
 import views.html.*;
 
 public class SicsthSense extends Controller {
-
+  
   public static Result index() {
     return ok(views.html.index.render());
   }
@@ -23,29 +23,29 @@ public class SicsthSense extends Controller {
     return ok(views.html.things.render(Thing.all()));
   }
 
-  public static Result registerThing(String id, String addr) {
-    if(Thing.register(id, addr)) {
+  public static Result registerThing(String id, String url) {
+    if(Thing.register(id, url)) {
       return ok("Registered " + id);  
     } else {
       return badRequest(id + " already exists");
     }
   }
 
-  public static Result getThingAddr(String id) {
+  public static Result getThingUrl(String id) {
     Thing thing = Thing.get(id);
     if(thing != null) {
-      return ok(Thing.get(id).addr);
+      return ok(Thing.get(id).url);
     } else {
-      return notFound("Thing " + id + " not found");
+      return notFound(request().path() + ": Thing not found");
     }
   }
-
+  
   public static Result getThing(String id) {
     Thing thing = Thing.get(id);
     if(thing != null) {
       return ok(views.html.thing.render(thing));
     } else {
-      return notFound("Thing " + id + " not found");
+      return notFound(request().path() + ": Thing not found");
     }
   }
 
@@ -53,7 +53,7 @@ public class SicsthSense extends Controller {
     if(Thing.remove(id)) {
       return ok("Removed " + id);  
     } else {
-      return notFound("Thing " + id + " not found");
+      return notFound(request().path() + ": Thing not found");
     }  
   }
 }

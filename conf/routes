@@ -5,10 +5,10 @@
 # Home page
 GET        /                     controllers.SicsthSense.index()
 # Things management
-GET        /things               controllers.SicsthSense.things()
-POST       /things/register      controllers.SicsthSense.registerThing(id: String, addr: String)
+GET        /things              controllers.SicsthSense.things()
+POST       /things/register      controllers.SicsthSense.registerThing(id: String, url: String)
 GET        /things/:id           controllers.SicsthSense.getThing(id: String)
-GET        /things/:id/addr      controllers.SicsthSense.getThingAddr(id: String)
+GET        /things/:id/url       controllers.SicsthSense.getThingUrl(id: String)
 DELETE     /things/:id           controllers.SicsthSense.removeThing(id: String)
 
 # Map static resources from the /public folder to the /assets URL path

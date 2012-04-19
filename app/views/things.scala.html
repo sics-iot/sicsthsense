@@ -6,19 +6,19 @@
   <ul>
     @for(thing <- things) {
       <li>
-        @thing.id with IP @thing.addr <a href="/things/@thing.id">more</a>
+        @thing.id with URL @thing.url <a href="/things/@thing.id">more</a>
       </li>
     }
   </ul>
     
   <h2>Build the IoT through a simple RESTful API</h2>
   <dl>
-    <dt><code>POST /things/register?id={thingId}&addr={thingAddr}</code></dt>
-    <dd>Register a Thing with unique identifier <code>{thingId}</code> and IP Address <code>{thingAddr}</code></dd>
+    <dt><code>POST /things/register?id={thingId}&url={thingUrl}</code></dt>
+    <dd>Register a Thing with unique identifier <code>{thingId}</code> and URL <code>{thingUrl}</code></dd>
     <dt><code>GET /things/{thingId}</code></dt>
     <dd>Get information on Thing with identifier <code>{thingId}</code></dd>
-    <dt><code>GET /things/{thingId}/addr</code></dt>
-    <dd>Get IP address of Thing with identifier <code>{thingId}</code></dd>
+    <dt><code>GET /things/{thingId}/url</code></dt>
+    <dd>Get URL of Thing with identifier <code>{thingId}</code></dd>
     <dt><code>DELETE /things/{thingId}</code></dt>
     <dd>Delete Thing with identifier <code>{thingId}</code></dd>
   </dl>    

@@ -5,7 +5,7 @@
 
 create table thing (
   id                        varchar(255) not null,
-  addr                      varchar(255),
+  url                       varchar(255),
   constraint pk_thing primary key (id))
 ;
 

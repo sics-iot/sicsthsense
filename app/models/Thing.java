@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class Thing extends Model {
   @Id
   public String id;
-  public String addr;
+  public String url;
 
   public static Finder<String,Thing> find = new Finder(
       String.class, Thing.class
@@ -45,8 +45,8 @@ public class Thing extends Model {
     return find.byId(id);
   }
 
-  public Thing(String id, String addr) {
+  public Thing(String id, String url) {
     this.id = id;
-    this.addr = addr;
+    this.url = url;
   }
 }
