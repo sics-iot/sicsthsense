@@ -1,0 +1,20 @@
+@layout("Help") {
+  <h1>Build the IoT through a simple RESTful API</h1>
+  
+  <p>  
+  We provide a RESTful API for managing your things in a clean, clear, portable way.
+  <dl>
+    <dt><code>POST /rest/things/register?url={thingUrl}</code></dt>
+    <dd>Register a Thing with and URL <code>{thingUrl}</code>. Returns the unique Thing identifier.</dd>
+    <dt><code>DELETE /rest/things/{thingId}</code></dt>
+    <dd>Delete Thing with identifier <code>{thingId}</code></dd>
+  </dl>
+  </p>
+  
+  <p>
+  Resources discovery is simple.
+  Register your thing by providing the URL hosting its unique identifier, e.g., <code>http://{ip of your Thing}/id</code>.
+  Based on this identifier, Sics<sup>th</sup>Sense will figure out how to use your Thing.
+  If your Thing is running Contiki, for example, the full ist of its resources is available at <code>/resources</code>.
+  </p> 
+}

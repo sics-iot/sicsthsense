@@ -6,6 +6,7 @@
 create table thing (
   id                        varchar(255) not null,
   url                       varchar(255),
+  resources                 varchar(255),
   constraint pk_thing primary key (id))
 ;
 

@@ -15,45 +15,35 @@ import views.html.*;
 
 public class SicsthSense extends Controller {
   
-  public static Result index() {
-    return ok(views.html.index.render());
+  public static Result home() {
+    return ok(views.html.home.render());
   }
-
-  public static Result things() {
-    return ok(views.html.things.render(Thing.all()));
+  
+  public static Result search() {
+    return ok(views.html.search.render(Thing.all()));
   }
-
-  public static Result registerThing(String id, String url) {
-    if(Thing.register(id, url)) {
-      return ok("Registered " + id);  
-    } else {
-      return badRequest(id + " already exists");
-    }
+    
+  public static Result yourThings() {
+    return ok(views.html.yourThings.render(Thing.all()));
   }
-
-  public static Result getThingUrl(String id) {
+ 
+  public static Result thing(String id) {
     Thing thing = Thing.get(id);
     if(thing != null) {
-      return ok(Thing.get(id).url);
+      System.out.println("\n\n\n\nOK\n\n\n");
+      System.out.println(thing.resources);
+      return ok(views.html.thing.render(thing, thing.resources.split("\n")));
     } else {
-      return notFound(request().path() + ": Thing not found");
+      return notFound(views.html.notfound.render(request().path() + ": Thing not found"));
     }
   }
   
-  public static Result getThing(String id) {
-    Thing thing = Thing.get(id);
-    if(thing != null) {
-      return ok(views.html.thing.render(thing));
-    } else {
-      return notFound(request().path() + ": Thing not found");
-    }
+  public static Result account() {
+    return ok(views.html.account.render());
   }
-
-  public static Result removeThing(String id) {
-    if(Thing.remove(id)) {
-      return ok("Removed " + id);  
-    } else {
-      return notFound(request().path() + ": Thing not found");
-    }  
+ 
+  public static Result help() {
+    return ok(views.html.help.render());
   }
+  
 }

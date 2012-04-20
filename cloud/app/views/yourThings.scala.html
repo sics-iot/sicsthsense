@@ -1,0 +1,36 @@
+@(things: List[Thing])
+
+@layout("Your Things") {
+  <h1>Register, monitor, trigger, share.</h1>
+
+  <p>
+  @if(things.size() == 0) {
+    You haven't registered any Thing so far.
+  } else {
+    @if(things.size() == 1) {
+	    You've got 1 Thing
+	  } else {
+	    You've got @things.size() Things
+	  }
+  }
+   
+  <ul>
+    @for(thing <- things) {
+      <li>
+        <a href="/things/@thing.id">@thing.id</a>
+        <a class="delete" href="/rest/things/@thing.id">delete</a>
+        <br/>
+      </li>
+    }
+  </ul>
+  <p/>
+
+  <p>
+    Add your Things to Sics<sup>th</sup>Sense:
+  <form action="rest/things/register">
+  <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" size="100" />
+  <input type="submit" formmethod="get" value="Register" onSubmit="alert(toto);"/>
+  </form>
+  </p> 
+   
+}

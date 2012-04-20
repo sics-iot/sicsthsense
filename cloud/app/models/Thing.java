@@ -1,15 +1,24 @@
 package models;
 import java.util.*;
 
+import play.libs.F;
+import play.libs.F.Promise;
+import play.libs.WS.Response;
+import play.api.libs.ws.*;
 import play.db.ebean.*;
+import play.libs.WS;
+import scala.collection.mutable.LinkedList;
 
 import javax.persistence.*;
+
+import akka.dispatch.*;
 
 @Entity
 public class Thing extends Model {
   @Id
   public String id;
   public String url;
+  public String resources;
 
   public static Finder<String,Thing> find = new Finder(
       String.class, Thing.class
@@ -19,17 +28,29 @@ public class Thing extends Model {
     return find.all();
   }
 
-  public static boolean register(String id, String addr) {
-    /* Exemple TCP client */
-    //Promise<Response> promise = WS.url("http://127.0.0.1:9000/things/test48/addr").get();
-    //String body = promise.get().getBody();
+  public static void fetchId(final String url) {
+    Promise<Response> p = WS.url(url).get();
+    p.onRedeem(
+        new F.Callback<Response>() {
+          public void invoke(Response response) throws Throwable {
+            String id = response.getBody();
+            if(find.byId(id) != null) {
+              /* Thing with id already exists */
+            } else {
+              new Thing(id, getBaseUrl(url)).save();
+            }
+          }
+        }
+      );
+  }
+  
+  public static void register(String url) {
+    fetchId(url);
+  }
 
-    if(find.byId(id) != null) {
-      return false;
-    } else {
-      new Thing(id, addr).save();
-      return true;
-    }
+  private static String getBaseUrl(String url) {
+    String[] split = url.split("/");
+    return split[0] + "//" + split[2];
   }
 
   public static boolean remove(String id) {
@@ -44,9 +65,24 @@ public class Thing extends Model {
   public static Thing get(String id) {
     return find.byId(id);
   }
+  
+  public void fetchResources() {
+    System.out.println("fetching resources");
+    Promise<Response> p = WS.url(url + "/resources").get();
+    p.onRedeem(
+        new F.Callback<Response>() {
+          public void invoke(Response response) throws Throwable {
+            resources = response.getBody();
+            save();
+          }
+        }
+      );
+  }
 
   public Thing(String id, String url) {
     this.id = id;
     this.url = url;
+    this.resources = "";
+    this.fetchResources();
   }
 }

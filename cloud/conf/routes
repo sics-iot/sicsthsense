@@ -2,14 +2,18 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET        /                     controllers.SicsthSense.index()
-# Things management
-GET        /things              controllers.SicsthSense.things()
-POST       /things/register      controllers.SicsthSense.registerThing(id: String, url: String)
-GET        /things/:id           controllers.SicsthSense.getThing(id: String)
-GET        /things/:id/url       controllers.SicsthSense.getThingUrl(id: String)
-DELETE     /things/:id           controllers.SicsthSense.removeThing(id: String)
+# Pages
+GET        /                          controllers.SicsthSense.home()
+GET        /search                    controllers.SicsthSense.search()
+GET        /yourThings                controllers.SicsthSense.yourThings()
+GET        /things/:id                controllers.SicsthSense.thing(id: String)
+GET        /account                   controllers.SicsthSense.account()
+GET        /help                      controllers.SicsthSense.help()
+
+# RESTful interface
+POST       /rest/things/register      controllers.RestThing.register(url: String)
+GET        /rest/things/register      controllers.RestThing.register(url: String)
+DELETE     /rest/things/:id           controllers.RestThing.remove(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file         controllers.Assets.at(path="/public", file)
+GET        /assets/*file              controllers.Assets.at(path="/public", file)

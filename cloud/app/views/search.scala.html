@@ -1,0 +1,14 @@
+@(things: List[Thing])
+
+@layout("Search") {
+  <h1>Search for Things</h1>
+  There is a total of @things.size() Things in Sics<sup>th</sup>Sense   
+  <ul>
+    @for(thing <- things) {
+      <li>
+        <a href="/things/@thing.id">@thing.id</a>
+        <br/>
+      </li>
+    }
+  </ul>
+}
