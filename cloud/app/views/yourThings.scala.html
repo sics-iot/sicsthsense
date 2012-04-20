@@ -1,4 +1,4 @@
-@(things: List[Thing])
+@(things: List[Thing], status: String )
 
 @layout("Your Things") {
   <h1>Register, monitor, trigger, share.</h1>
@@ -8,9 +8,9 @@
     You haven't registered any Thing so far.
   } else {
     @if(things.size() == 1) {
-	    You've got 1 Thing
+	    You've got 1 Thing registered
 	  } else {
-	    You've got @things.size() Things
+	    You've got @things.size() Things  registered
 	  }
   }
    
@@ -18,7 +18,7 @@
     @for(thing <- things) {
       <li>
         <a href="/things/@thing.id">@thing.id</a>
-        <a class="delete" href="/rest/things/@thing.id">delete</a>
+        <a class="delete" href="/rest/things/@thing.id"><img style="margin-left:1em;" src="@routes.Assets.at("images/delete.gif")" width=12px; alt="delete" /></a>
         <br/>
       </li>
     }
@@ -27,10 +27,14 @@
 
   <p>
     Add your Things to Sics<sup>th</sup>Sense:
-  <form action="rest/things/register">
-  <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" size="100" />
-  <input type="submit" formmethod="get" value="Register" onSubmit="alert(toto);"/>
+  <form action="/things/register">
+  <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" size="100" class="input"/>
+  <input type="submit" formmethod="get" value="Register" class="button"/>
   </form>
+  @if(status != null) {
+  <span id="status">@status</span>
+  }
+
   </p> 
    
 }

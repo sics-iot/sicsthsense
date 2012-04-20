@@ -14,7 +14,7 @@ import play.mvc.*;
 import views.html.*;
 
 public class SicsthSense extends Controller {
-  
+    
   public static Result home() {
     return ok(views.html.home.render());
   }
@@ -23,15 +23,21 @@ public class SicsthSense extends Controller {
     return ok(views.html.search.render(Thing.all()));
   }
     
+  public static Result register(String url) {
+    if(Thing.register(url)) {
+    } else {
+      flash("status", "Failed to register: " + url);
+    }
+    return redirect("/yourThings");
+  }
+  
   public static Result yourThings() {
-    return ok(views.html.yourThings.render(Thing.all()));
+    return ok(views.html.yourThings.render(Thing.all(), flash("status")));
   }
  
   public static Result thing(String id) {
     Thing thing = Thing.get(id);
     if(thing != null) {
-      System.out.println("\n\n\n\nOK\n\n\n");
-      System.out.println(thing.resources);
       return ok(views.html.thing.render(thing, thing.resources.split("\n")));
     } else {
       return notFound(views.html.notfound.render(request().path() + ": Thing not found"));

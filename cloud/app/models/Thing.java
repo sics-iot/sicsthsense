@@ -19,7 +19,7 @@ public class Thing extends Model {
   public String id;
   public String url;
   public String resources;
-
+  
   public static Finder<String,Thing> find = new Finder(
       String.class, Thing.class
       );
@@ -28,24 +28,20 @@ public class Thing extends Model {
     return find.all();
   }
 
-  public static void fetchId(final String url) {
-    Promise<Response> p = WS.url(url).get();
-    p.onRedeem(
-        new F.Callback<Response>() {
-          public void invoke(Response response) throws Throwable {
-            String id = response.getBody();
-            if(find.byId(id) != null) {
-              /* Thing with id already exists */
-            } else {
-              new Thing(id, getBaseUrl(url)).save();
-            }
-          }
-        }
-      );
-  }
-  
-  public static void register(String url) {
-    fetchId(url);
+  public static boolean register(String url) {
+    String id;
+    try {
+      Promise<Response> p = WS.url(url).get();
+      id = p.get().getBody();
+    } catch (Exception e) {
+      return false;
+    }
+    if(find.byId(id) != null) {
+      return false;
+    } else {
+      new Thing(id, getBaseUrl(url)).save();
+      return true;
+    }
   }
 
   private static String getBaseUrl(String url) {
@@ -67,7 +63,6 @@ public class Thing extends Model {
   }
   
   public void fetchResources() {
-    System.out.println("fetching resources");
     Promise<Response> p = WS.url(url + "/resources").get();
     p.onRedeem(
         new F.Callback<Response>() {

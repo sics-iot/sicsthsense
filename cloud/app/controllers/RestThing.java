@@ -7,8 +7,11 @@ import play.mvc.Result;
 public class RestThing extends Controller {
   
   public static Result register(String url) {
-    Thing.register(url);
-    return ok("Registering: " + url);
+    if(Thing.register(url)) {
+      return ok("Registered: " + url);
+    } else {
+      return notFound("Registration failed");
+    }
   }
     
   public static Result remove(String id) {
