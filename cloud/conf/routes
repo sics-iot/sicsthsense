@@ -7,13 +7,16 @@ GET        /                          controllers.SicsthSense.home()
 GET        /search                    controllers.SicsthSense.search()
 GET        /yourThings                controllers.SicsthSense.yourThings()
 GET        /things/register           controllers.SicsthSense.register(url: String)
-GET        /things/:id                controllers.SicsthSense.thing(id: String)
+GET        /things/:id                controllers.SicsthSense.thing(id: Long)
 GET        /account                   controllers.SicsthSense.account()
 GET        /help                      controllers.SicsthSense.help()
 
 # RESTful interface
 POST       /rest/things/register      controllers.RestThing.register(url: String)
-DELETE     /rest/things/:id           controllers.RestThing.remove(id: String)
+DELETE     /rest/things/:id           controllers.RestThing.remove(id: Long)
+
+# Dummy thing
+GET        /dummy/discover            controllers.DummyThing.discover()
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file              controllers.Assets.at(path="/public", file)
