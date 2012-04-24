@@ -11,14 +11,14 @@ object RestThing extends Controller {
   def register(url: String) = Action {
     Async {
       Thing.register(url).map { success => 
-        if (success) Ok("Registered: " + url)
+        if (success) Ok("Registered")
         else NotFound
       } 
     }    
   }
     
   def remove(id: Long) = Action {
-    if (Thing.remove(id)) Ok("Removed" + id)
+    if (Thing.remove(id)) Ok("Removed")
     else NotFound
   }
 	

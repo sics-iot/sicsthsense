@@ -5,8 +5,11 @@ import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.libs.json._
+import java.util.Random
 
 object DummyThing extends Controller {
+  
+  val rand = new Random(System.currentTimeMillis())
   
   def discover() = Action {
     val jsonObject = Json.toJson(
@@ -21,6 +24,16 @@ object DummyThing extends Controller {
             )
       )
      Ok(jsonObject)
+  }
+  
+  def temperature() = Action {
+    val currTemp = 42 + rand.nextInt() % 20
+    Ok(currTemp.toString)
+  }
+  
+  def energy() = Action {
+    val currEnergy = 23  + rand.nextInt() % 20
+    Ok(currEnergy.toString)
   }
   
 }

@@ -1,21 +1,20 @@
-@(thing: Thing, resources: Array[String])
+@(thing: Thing)
 
 @layout(thing.label) {
   
+  Label: @thing.label<br/>
+  Description: @thing.description<br/>
   ID: @thing.id<br/>
   URL: <a href="@thing.url">@thing.url</a><br/>
   
   Resources:
-
-  @if(resources != null) {
   <ul>
-    @for(resource <- resources) {
+    @for(resource <- thing.resources) {
       <li>
-      <a href="@thing.url@resource">
-      @resource
+      <a href="@thing.url@resource.path">
+      @resource.path
       </a>
       </li>
     }    
   </ul>
-  }
 }

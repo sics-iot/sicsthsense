@@ -1,9 +1,10 @@
 @(things: List[Thing], status: String )
 
+@import helper._
+
 @layout("Your Things") {
   <h1>Register, monitor, trigger, share.</h1>
-
-  <p>
+  
   @if(things.size == 0) {
     You haven't registered any Thing so far.
   } else {
@@ -13,28 +14,39 @@
 	    You've got @things.size Things  registered
 	  }
   }
+  <p/>
    
   <ul>
     @for(thing <- things) {
       <li>
-        <a href="/things/@thing.id">@thing.id</a>
-        <a class="delete" href="/rest/things/@thing.id"><img style="margin-left:1em;" src="@routes.Assets.at("images/delete.gif")" width=12px; alt="delete" /></a>
-        <br/>
+        <a href="/things/@thing.id">@thing.label</a>
+        <a href="@routes.SicsthSense.remove(thing.id)">[delete]</a>
+        
+        <ul>
+        @for(resource <- thing.resources) {
+          <li>
+          <a href="@thing.url@resource.path">
+            @resource.path
+          </a>
+          </li>
+        }    
+        </ul>
       </li>
     }
   </ul>
   </p>
 
-  <p>
-    Add your Things to Sics<sup>th</sup>Sense:
-  <form action="/things/register">
-  <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" size="100" class="input"/>
-  <input type="submit" formmethod="get" value="Register" class="button"/>
-  </form>
+   Add your Things to Sics<sup>th</sup>Sense:
+   
+   @form(routes.SicsthSense.register("")) {
+     <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" class="inputL"/>
+     <input type="submit" value="Register" class="buttonG"/>
+   }
+    
   @if(status != null) {
   <span id="status">@status</span>
   }
 
-  </p> 
+  <p/> 
    
 }

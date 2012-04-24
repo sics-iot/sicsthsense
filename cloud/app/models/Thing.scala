@@ -8,57 +8,90 @@ import play.api.db._
 import play.api.Play.current
 import play.api.libs.json._
 
-class Thing(var id: Long, var url: String, var description: String, var label: String, var resources: String) {
+class Thing(var id: Long, var url: String, var description: String, var label: String) {
     
-  def save(): Boolean = {
+  /*** Basic SQL operation on Thing instances ***/
+  
+  /* Save object to database */
+  def save(): Long = {
     DB.withConnection { implicit c =>
-      SQL("insert into thing (url, description, label, resources) values ({url}, {description}, {label}, {resources})")
-        .on('url -> url, 'description -> description, 'label -> label, 'resources-> resources )
-        .executeUpdate() == 1
+      if (SQL("insert into thing (url, description, label) values ({url}, {description}, {label})")
+        .on('url -> url, 'description -> description, 'label -> label )
+        .executeUpdate() == 1)
+          SQL("select scope_identity()")().collect { case Row(id: Long) => id }.head
+      else 0
     }
   }
 
+  /* Delete object from database */
   def delete(): Boolean = {
     DB.withConnection { implicit c =>
     SQL("delete from thing where id = {id}")
       .on('id -> id )
       .executeUpdate() == 1
-    }
+    }  
   }
+  
+  /*** End of SQL operations ***/
+  
+  def resources = Resource.getByThingId(id)
   
 }
 
 object Thing {
   
-  val thingParser = { long("id") ~ str("url") ~ str("description") ~ str("label") ~ str("resources") map {
-      case id ~ url ~ description ~ label ~ resources => new Thing(id, url, description, label, resources)
+  /*** Basic SQL operation on the Thing class ***/
+  
+  /* Parser instanciating a Thing from a DB response row */
+  val thingParser = { long("id") ~ str("url") ~ str("description") ~ str("label") map {
+      case id ~ url ~ description ~ label => new Thing(id, url, description, label)
     }
   }
   
-  def get(id: Long): Thing = DB.withConnection { implicit c =>
-    SQL("select * from thing where id = {id}")
-      .on('id -> id)
-      .as(thingParser *)
-      .head
+  /* Get a Thing from its id */
+  def getById(id: Long): Thing = {
+    val list = DB.withConnection { implicit c =>
+      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *)
+    }
+    if (list.length == 1) list(0)
+    else null
   }
   
+  /* Get a Thing from its URL */
+  def getByUrl(id: Long): Thing = DB.withConnection { implicit c =>
+    SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
+  }
+  
+  /* Get all things */
   def all(): List[Thing] = DB.withConnection { implicit c =>
     SQL("select * from thing").
     as(thingParser *)
   }
+  
+  /*** End of SQL operations ***/
 
+  /* Register a new Thing from the URL of its service description */
   def register(url: String): Promise[Boolean] = {
+    /* Get /discover to get a description of the Thing being registered */
     WS.url(url + "/discover").get().map { response =>
-      val description = (response.json \ "description").asOpt[String].getOrElse("nodesc")
-      println(description)
-      val resources = (response.json \ "resources").asOpt[Seq[String]].getOrElse(Seq[String]()).reduce((acc, curr) => acc + "\n" + curr)
-      if (new Thing(-1, url, description, description, resources).save()) true
-      else false
+      /* Get string description */
+      val description = (response.json \ "description")
+        .asOpt[String].getOrElse("nodesc")
+      /* Get resources set */
+      val resources = (response.json \ "resources")
+        .asOpt[Seq[String]].getOrElse(Seq[String]())
+      /* Save Thing to database */
+      val id = new Thing(-1, url, description, description).save()
+      println(id)
+      if (id != 0)
+        Resource.register(id, resources)
+      id != 0
     }  
   }
   
+  /* Remove a Thing by id */
   def remove(id: Long): Boolean = {
-   if (Thing.get(id).delete()) true
+   if (getById(id).delete()) true
    else false
   }
     
