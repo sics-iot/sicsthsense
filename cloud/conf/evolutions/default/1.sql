@@ -22,7 +22,15 @@ create sequence monitor_id_seq;
 create table monitor (
   id                        integer not null default nextval('monitor_id_seq'),
   resourceId                integer,
-  period                    integer
+  period                    integer,
+  lastUpdate                integer,
+  constraint uc_monitor unique (resourceId),
+);
+
+create table sample (
+  resourceId                integer,
+  timestamp                 integer,
+  value                     integer,
 );
 
 # --- !Downs

@@ -26,5 +26,12 @@ body { background-color: #fafafa; }
 #header a:hover { color: #ffffff; }
 
 #content { max-width: 900px; margin: 16px auto; padding: 0; }
-.inputL { height: 2em; padding: 0; width: 70%; }
-.buttonG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 6em;}
+.inputL { height: 2em; padding: 0; }
+.inputS { height: 1.4em; padding: 0; font-size: 0.9em; }
+.buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 6em;}
+.buttonSG { height: 1.4em; border: 1px solid #888; background-color: #87f03c; width: 3em; font-size: 0.9em; }
+.texttt { font-family: inconsolata, monospace; }
+.delete { font-size: 0.9em; color: #ff7140; }
+form { display: inline; }
+table { margin:0; padding:0; }
+td { font-size: 0.9em; margin:0; padding:0; }

@@ -13,15 +13,14 @@ class Thing(var id: Long, var url: String, var description: String, var label: S
   /*** Basic SQL operation on Thing instances ***/
   
   /* Save object to database */
-  def save(): Long = {
+  def insert(): Long = try {
     DB.withConnection { implicit c =>
-      if (SQL("insert into thing (url, description, label) values ({url}, {description}, {label})")
+      SQL("insert into thing (url, description, label) values ({url}, {description}, {label})")
         .on('url -> url, 'description -> description, 'label -> label )
-        .executeUpdate() == 1)
-          SQL("select scope_identity()")().collect { case Row(id: Long) => id }.head
-      else 0
+        .executeUpdate()
+      SQL("select scope_identity()")().collect { case Row(id: Long) => id }.head
     }
-  }
+  } catch { case e => 0 }
 
   /* Delete object from database */
   def delete(): Boolean = {
@@ -49,18 +48,18 @@ object Thing {
   }
   
   /* Get a Thing from its id */
-  def getById(id: Long): Thing = {
-    val list = DB.withConnection { implicit c =>
-      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *)
-    }
-    if (list.length == 1) list(0)
-    else null
-  }
+  def getById(id: Long): Thing = try {
+    DB.withConnection { implicit c =>
+      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
+        }
+  } catch { case e => null }
   
   /* Get a Thing from its URL */
-  def getByUrl(id: Long): Thing = DB.withConnection { implicit c =>
-    SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
-  }
+  def getByUrl(id: Long): Thing = try { 
+      DB.withConnection { implicit c =>
+      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
+    }
+  } catch { case e => null }
   
   /* Get all things */
   def all(): List[Thing] = DB.withConnection { implicit c =>
@@ -78,13 +77,13 @@ object Thing {
       val description = (response.json \ "description")
         .asOpt[String].getOrElse("nodesc")
       /* Get resources set */
-      val resources = (response.json \ "resources")
+      val paths = (response.json \ "resources")
         .asOpt[Seq[String]].getOrElse(Seq[String]())
       /* Save Thing to database */
-      val id = new Thing(-1, url, description, description).save()
+      val id = new Thing(-1, url, description, description).insert()
       println(id)
       if (id != 0)
-        Resource.register(id, resources)
+        Resource.register(id, paths)
       id != 0
     }  
   }

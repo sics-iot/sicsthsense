@@ -14,6 +14,9 @@
       <a href="@thing.url@resource.path">
       @resource.path
       </a>
+      @if(resource.monitor != null) {
+        [@resource.monitor.period min]
+      }
       </li>
     }    
   </ul>

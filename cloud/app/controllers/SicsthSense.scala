@@ -16,26 +16,25 @@ object SicsthSense extends Controller {
   def account = Action { Ok(html.account.render()) }
   def help = Action { Ok(html.help.render()) }
 
-  val thingForm = Form(
-    "url" -> nonEmptyText
-  )
-  
   def yourThings = Action { implicit request =>
-    Ok(html.yourThings.render(Thing.all(), flash.get("status").getOrElse(null)))
+    Ok(html.yourThings.render(
+        Thing.all, flash.get("statusT").getOrElse(null),
+        Monitor.all, flash.get("statusM").getOrElse(null))
+     )
   }
   
   def register(url: String) = Action {
     Async {
       Thing.register(url).orTimeout(false, 10000).map { success =>
         Redirect("/yourThings").flashing(
-            if (success.merge)  "status" -> ("Registered " + url) 
-            else                "status" -> ("Failed to register " + url) 
+            if (success.merge)  "statusT" -> ("Registered " + url) 
+            else                "statusT" -> ("Failed to register " + url) 
         )
       } 
     }
   }
   
-  def thing(id: Long) = Action { request =>
+  def get(id: Long) = Action { request =>
     val thing = Thing.getById(id)
     if (thing != null)
       Ok(html.thing.render(thing));

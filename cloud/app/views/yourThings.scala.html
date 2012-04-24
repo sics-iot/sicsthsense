@@ -1,52 +1,77 @@
-@(things: List[Thing], status: String )
+@(things: List[Thing], statusT: String, monitors: List[Monitor], statusM: String)
 
 @import helper._
 
 @layout("Your Things") {
-  <h1>Register, monitor, trigger, share.</h1>
-  
-  @if(things.size == 0) {
-    You haven't registered any Thing so far.
-  } else {
-    @if(things.size == 1) {
-	    You've got 1 Thing registered
-	  } else {
-	    You've got @things.size Things  registered
-	  }
-  }
-  <p/>
-   
+  <h1>Your Things (@things.size)</h1>
+     
   <ul>
     @for(thing <- things) {
       <li>
         <a href="/things/@thing.id">@thing.label</a>
-        <a href="@routes.SicsthSense.remove(thing.id)">[delete]</a>
+        <a href="@routes.SicsthSense.remove(thing.id)" class="delete">[delete]</a>
         
-        <ul>
+        <table border="0">
         @for(resource <- thing.resources) {
-          <li>
-          <a href="@thing.url@resource.path">
-            @resource.path
-          </a>
-          </li>
+        <tr>
+          <td>
+            <a href="@thing.url@resource.path" class="texttt">@resource.path</a>
+            @if(resource.monitor != null) {
+              [@resource.monitor.period min]
+            }
+          </td>
+          <td style="padding-left:8em;">
+            @form(routes.CMonitor.create(resource.id,0)) {
+              <input input type="hidden" name="resourceId" value="@resource.id" />
+              <input input type="number" name="period" required placeholder="Period" class="inputS" size="4em"/>
+              <input type="submit" value="Ok" class="buttonSG"/>
+            }
+            @if(resource.monitor != null) {
+              <a href="@routes.CMonitor.remove(resource.monitor.id)" class="delete">[stop]</a>
+            }
+          </td>
+        </tr>
         }    
-        </ul>
+        </table>
+        
       </li>
     }
   </ul>
-  </p>
 
-   Add your Things to Sics<sup>th</sup>Sense:
-   
-   @form(routes.SicsthSense.register("")) {
-     <input input type="url" name="url" required placeholder="Enter a URL hosting the ID of a Thing" class="inputL"/>
-     <input type="submit" value="Register" class="buttonG"/>
-   }
+  <p/>
+  
+  @form(routes.SicsthSense.register("")) {
+    <input input type="url" name="url" required placeholder="Enter the URL of a Thing to be added" class="inputL" style="width:80%;"/>
+    <input type="submit" value="Register" class="buttonLG"/>
+  }
     
-  @if(status != null) {
-  <span id="status">@status</span>
+  @if(statusT != null) {
+    <p/>
+    <span id="status">@statusT</span>
   }
 
   <p/> 
-   
+  
+  @if(monitors != null) {
+  <h1>Your Monitors</h1> 
+  
+  <ul>
+    @for(monitor <- monitors) {
+      <li>
+        @monitor.resource.thing.label@monitor.resource.path <br/>
+        @if(Sample.getByResourceId(monitor.resourceId).length > 0) {
+				  <div id="placeholder@monitor.id" style="width:600px;height:300px;"></div>
+				  <script type="text/javascript">
+				      $(function () {   
+				          var points = [@Sample.getByResourceId(monitor.resourceId).map(sample => "[" + (sample.timestamp-Monitor.currentTime) + "," + sample.value + "]").reduce((acc, curr) => acc + ", " + curr)];
+				          $.plot($("#placeholder@monitor.id"), [ points ]);
+				      });
+				  </script>
+        }
+			  
+      </li>
+    }
+  </ul>
+  }
+
 }

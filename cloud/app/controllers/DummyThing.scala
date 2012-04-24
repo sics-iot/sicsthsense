@@ -11,12 +11,11 @@ object DummyThing extends Controller {
   
   val rand = new Random(System.currentTimeMillis())
   
-  def discover() = Action {
+  def discover(id: Long) = Action {
     val jsonObject = Json.toJson(
             Map(
-              "description" -> Json.toJson("SicsthSense_Dummy_1"),
+              "description" -> Json.toJson("SicsthSense_Dummy_" + id),
               "resources" -> Json.toJson(Seq(
-                    Json.toJson("/discover"),
                     Json.toJson("/sensors/temperature"),
                     Json.toJson("/sensors/energy")
                   )
@@ -26,12 +25,12 @@ object DummyThing extends Controller {
      Ok(jsonObject)
   }
   
-  def temperature() = Action {
+  def temperature(id: Long) = Action {
     val currTemp = 42 + rand.nextInt() % 20
     Ok(currTemp.toString)
   }
   
-  def energy() = Action {
+  def energy(id: Long) = Action {
     val currEnergy = 23  + rand.nextInt() % 20
     Ok(currEnergy.toString)
   }
