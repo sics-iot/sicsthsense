@@ -51,9 +51,9 @@ class Monitor(var id: Long, var resourceId: Long, var period: Long, var lastUpda
     if (current >= lastUpdate + period) {
       val resource = Resource.getById(resourceId)
       val thing = Thing.getById(resource.thingId)
-      Logger.info("Now sampling " + thing.label + resource.path)
+      Logger.info("Now sampling " + thing.name + resource.path)
       WS.url(thing.url + resource.path).get().map { response =>
-        Logger.info("New sample for " + thing.label + resource.path + ": " + response.body)
+        Logger.info("New sample for " + thing.name + resource.path + ": " + response.body)
         Sample.create(resourceId, current, response.body.toInt)
       }
       lastUpdate = current
@@ -88,6 +88,10 @@ object Monitor {
     }
   } catch { case e => null }
   
+  def deleteByResourceId(resourceId: Long) {
+    SQL("delete from monitor where resourceId = {resourceId}").on('resourceId -> resourceId)
+  }
+  
   /* Get all things */
   def all(): List[Monitor] = DB.withConnection { implicit c =>
     SQL("select * from monitor").
@@ -103,8 +107,8 @@ object Monitor {
     else                  new Monitor(-1, resourceId, period, Platform.currentTime / (1000 * 60)).insert() != 0 /* create */
   }
 
-  /* Remove a Monitor by id */
-  def remove(id: Long): Boolean = try {
+  /* Delete a Monitor by id */
+  def delete(id: Long): Boolean = try {
    getById(id).delete()
   } catch { case e => false }
   

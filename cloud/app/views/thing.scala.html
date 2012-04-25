@@ -1,13 +1,32 @@
-@(thing: Thing)
+@(thing: Thing, status: String)
 
-@layout(thing.label) {
+@import helper._
+
+@layout(thing.name) {
   
-  Label: @thing.label<br/>
-  Description: @thing.description<br/>
-  ID: @thing.id<br/>
+  Name: @thing.name<br/>
+  <span style="padding-left: 0em; ">
+  @form(routes.CThing.setName(thing.id,"")) {
+    <input input type="hidden" name="id" value="@thing.id" />
+    <input input type="text" name="name" required placeholder="Enter new name" class="inputL" size="16" />
+    <input type="submit" value="Ok" class="buttonLG"/>
+  }
+  </span>
+  <span style="float:right;">
+        <a href="@routes.CThing.delete(thing.id)" class="delete">[delete resource]</a>
+  </span>
+  <br/> 
+  UID: @thing.uid<br/>
   URL: <a href="@thing.url">@thing.url</a><br/>
   
   Resources:
+  @form(routes.CThing.discover(thing.id)) {
+    <a href="@routes.CThing.discover(thing.id)" class="update">[discover]</a>
+  }
+  @if(status != null) {
+    <span id="status">@status</span>
+  }
+  
   <ul>
     @for(resource <- thing.resources) {
       <li>
@@ -17,7 +36,16 @@
       @if(resource.monitor != null) {
         [@resource.monitor.period min]
       }
+      <span style="float:right;">
+        <a href="@routes.CThing.deleteResource(thing.id, resource.id)" class="delete">[delete]</a>
+      </span>
       </li>
     }    
   </ul>
+  
+  @form(routes.CThing.addResource(thing.id,"")) {
+    <input input type="hidden" name="id" value="@thing.id" />
+    <input input type="text" name="path" required placeholder="Enter new path" class="inputL" size="16" />
+    <input type="submit" value="Add" class="buttonLG"/>
+  }
 }

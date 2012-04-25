@@ -33,6 +33,7 @@ body { background-color: #fafafa; }
 .buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 6em;}
 .buttonSG { height: 1.4em; border: 1px solid #888; background-color: #87f03c; width: 3em; font-size: 0.8em; }
 .texttt { font-family: inconsolata, monospace; }
+.update { font-size: 0.9em; color: #00cc00; }
 .delete { font-size: 0.9em; color: #ff7140; }
 .rightControl { float: right; clear:both; }
 form { display: inline; }

@@ -3,19 +3,19 @@
   <h1>A simple cloud-centric registration process</h1>
   
   Resource discovery is simple. Register your thing by providing its URL e.g.: <code>http://{ip of your Thing}</code>.
-  Sics<sup>th</sup>Sense will discover the device by requesting <code>/discover</code>, where provides a Json self-description with the following format:<br/>
+  You can then configure your things, add resources to it, etc.<br/>
+  
+  Sics<sup>th</sup>Sense also supports a simple device discovery mechanism.
+  To enable it, your Thing simply needs to provide a Json self-description hosted at <code>/discover</code>, following the following format (or any subset of it):<br/>
   <pre>
   {
-    "description": "a description",
+    "uid": "uid",
     "resources": [
       "/sensors/temperature",
       "/sensors/energy"
     ]
   }</pre> 
-  If your device doesn't provide such self-description, that's no problem. You'll just have to specify manually the description and list of resources you want to interact with.
-  
-  Your Thing is ready to use.
-  
+
   <p/>
   
   <h1>Registration through a simple RESTful API</h1>

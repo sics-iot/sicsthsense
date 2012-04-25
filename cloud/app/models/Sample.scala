@@ -47,6 +47,10 @@ object Sample {
   def getByResourceId(resourceId: Long): List[Sample] = DB.withConnection { implicit c =>
     SQL("select * from sample where resourceId = {resourceId}").on('resourceId -> resourceId).as(sampleParser *)
   }
+  
+  def deleteByResourceId(resourceId: Long) {
+    SQL("delete from sample where resourceId = {resourceId}").on('resourceId -> resourceId)
+  }
     
   /*** End of SQL operations ***/
  

@@ -9,17 +9,12 @@ import play.libs.F.Promise
 object RestThing extends Controller {
     
   def register(url: String) = Action {
-    Async {
-      Thing.register(url).map { success => 
-        if (success) Ok("Registered")
-        else NotFound
-      } 
-    }    
+    Ok(Thing.register(url).toString) 
   }
     
   def remove(id: Long) = Action {
-    if (Thing.remove(id)) Ok("Removed")
-    else NotFound
+   Thing.delete(id)
+   Ok("Removed")
   }
 	
 }

@@ -14,7 +14,7 @@ object DummyThing extends Controller {
   def discover(id: Long) = Action {
     val jsonObject = Json.toJson(
             Map(
-              "description" -> Json.toJson("SicsthSense_Dummy_" + id),
+              "uid" -> Json.toJson("SicsthSense_Dummy_" + id),
               "resources" -> Json.toJson(Seq(
                     Json.toJson("/sensors/temperature"),
                     Json.toJson("/sensors/energy")

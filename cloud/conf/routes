@@ -6,14 +6,23 @@
 GET        /                            controllers.SicsthSense.home()
 GET        /search                      controllers.SicsthSense.search()
 GET        /yourThings                  controllers.SicsthSense.yourThings()
-GET        /things/register             controllers.SicsthSense.register(url: String)
-GET        /things/:id                  controllers.SicsthSense.get(id: Long)
-GET        /things/:id/delete           controllers.SicsthSense.remove(id: Long)
-GET        /monitor/create              controllers.CMonitor.create(resourceId: Long, period: Long)
-GET        /monitor/:id                 controllers.CMonitor.get(id: Long)
-GET        /monitor/:id/delete          controllers.CMonitor.remove(id: Long)
 GET        /account                     controllers.SicsthSense.account()
 GET        /help                        controllers.SicsthSense.help()
+
+# Things
+GET        /things/register             controllers.CThing.register(url: String)
+GET        /things/:id                  controllers.CThing.get(id: Long)
+GET        /things/:id/name/set         controllers.CThing.setName(id: Long, name: String)
+GET        /things/:id/resources/add    controllers.CThing.addResource(id: Long, path: String)
+GET        /things/:id/resources/delete controllers.CThing.deleteResource(id: Long, resourceId: Long)
+GET        /things/:id/discover         controllers.CThing.discover(id: Long)
+GET        /things/:id/delete           controllers.CThing.delete(id: Long)
+
+# Monitors
+GET        /monitor/create              controllers.CMonitor.create(resourceId: Long, period: Long)
+GET        /monitor/:id                 controllers.CMonitor.get(id: Long)
+GET        /monitor/:id/delete          controllers.CMonitor.delete(id: Long)
+GET        /monitor/:id/clear           controllers.CMonitor.clear(id: Long)
 
 # RESTful interface
 POST       /rest/things/register        controllers.RestThing.register(url: String)

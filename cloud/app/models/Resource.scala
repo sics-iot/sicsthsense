@@ -57,11 +57,22 @@ object Resource {
   def getByThingId(thingId: Long): List[Resource] = DB.withConnection { implicit c =>
     SQL("select * from resource where thingId = {thingId}").on('thingId -> thingId).as(resourceParser *)
   }
-    
+  
+  def deleteByThingId(thingId: Long) {
+    SQL("delete from resource where thingId = {thingId}").on('thingId -> thingId)
+  }
+  
   /*** End of SQL operations ***/
  
   def register(thingId: Long, paths: Seq[String]) {
    paths.map((path) => new Resource(-1, thingId, path).insert())
+  }
+  
+  /* Delete a Resource by id */
+  def delete(id: Long) {
+   getById(id).delete()
+   Monitor.deleteByResourceId(id)
+   Sample.deleteByResourceId(id)
   }
   
 }

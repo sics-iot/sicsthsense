@@ -26,8 +26,17 @@ object CMonitor extends Controller {
       NotFound(html.notfound.render("Monitor not found"));
   }
   
-  def remove(id: Long) = Action {
-    Monitor.remove(id)
+  def clear(id: Long) = Action { request =>
+    val monitor = Monitor.getById(id)
+    if (monitor == null) NotFound(html.notfound.render("Monitor not found"));
+    else {
+      Monitor.deleteByResourceId(monitor.resourceId)
+      Redirect("/yourThings")
+    }
+  }
+  
+  def delete(id: Long) = Action {
+    Monitor.delete(id)
     Redirect("/yourThings")
   }
 

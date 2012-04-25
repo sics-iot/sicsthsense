@@ -6,8 +6,8 @@ create sequence thing_id_seq;
 create table thing (
   id                        integer not null default nextval('thing_id_seq'),
   url                       varchar(255),
-  description               varchar(255),
-  label                     varchar(255),
+  uid                       varchar(255),
+  name                      varchar(255),
   constraint uc_thing unique (url),
 );
 
@@ -16,6 +16,7 @@ create table resource (
   id                        integer not null default nextval('resource_id_seq'),
   thingId                   integer,
   path                      varchar(255),
+  constraint uc_resource unique (thingId, path)
 );
 
 create sequence monitor_id_seq;
