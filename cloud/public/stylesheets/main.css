@@ -13,6 +13,8 @@ a { text-decoration: none; color: #4F75AF; }
 a:hover { color: #000; }
 code { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
 	border: 1px solid #ddd; border-radius: 3px; height: 4px; padding: 0; }
+pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
+  border: 1px solid #ddd; border-radius: 3px; padding: .2em; }
 
 body { background-color: #fafafa; }
 
@@ -27,11 +29,11 @@ body { background-color: #fafafa; }
 
 #content { max-width: 900px; margin: 16px auto; padding: 0; }
 .inputL { height: 2em; padding: 0; }
-.inputS { height: 1.4em; padding: 0; font-size: 0.9em; }
+.inputS { height: 1.4em; padding: 0; font-size: 0.8em; }
 .buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 6em;}
-.buttonSG { height: 1.4em; border: 1px solid #888; background-color: #87f03c; width: 3em; font-size: 0.9em; }
+.buttonSG { height: 1.4em; border: 1px solid #888; background-color: #87f03c; width: 3em; font-size: 0.8em; }
 .texttt { font-family: inconsolata, monospace; }
 .delete { font-size: 0.9em; color: #ff7140; }
+.rightControl { float: right; clear:both; }
 form { display: inline; }
-table { margin:0; padding:0; }
-td { font-size: 0.9em; margin:0; padding:0; }
+

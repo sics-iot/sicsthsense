@@ -1,8 +1,26 @@
 @layout("Help") {
-  <h1>Build the IoT through a simple RESTful API</h1>
+ 
+  <h1>A simple cloud-centric registration process</h1>
   
-  <p>  
-  We provide a RESTful API for managing your things in a clean, clear, portable way.
+  Resource discovery is simple. Register your thing by providing its URL e.g.: <code>http://{ip of your Thing}</code>.
+  Sics<sup>th</sup>Sense will discover the device by requesting <code>/discover</code>, where provides a Json self-description with the following format:<br/>
+  <pre>
+  {
+    "description": "a description",
+    "resources": [
+      "/sensors/temperature",
+      "/sensors/energy"
+    ]
+  }</pre> 
+  If your device doesn't provide such self-description, that's no problem. You'll just have to specify manually the description and list of resources you want to interact with.
+  
+  Your Thing is ready to use.
+  
+  <p/>
+  
+  <h1>Registration through a simple RESTful API</h1>
+    
+  We also provide a RESTful API for those who want to script registration operations:
   <dl>
     <dt><code>POST /rest/things/register?url={thingUrl}</code></dt>
     <dd>Register a Thing with and URL <code>{thingUrl}</code>. Returns the unique Thing identifier.</dd>
@@ -10,11 +28,4 @@
     <dd>Delete Thing with identifier <code>{thingId}</code></dd>
   </dl>
   </p>
-  
-  <p>
-  Resources discovery is simple.
-  Register your thing by providing the URL hosting its unique identifier, e.g., <code>http://{ip of your Thing}/id</code>.
-  Based on this identifier, Sics<sup>th</sup>Sense will figure out how to use your Thing.
-  If your Thing is running Contiki, for example, the full ist of its resources is available at <code>/resources</code>.
-  </p> 
 }

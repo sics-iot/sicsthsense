@@ -5,39 +5,45 @@
 @layout("Your Things") {
   <h1>Your Things (@things.size)</h1>
      
-  <ul>
+  <table border="0" width="100%">
     @for(thing <- things) {
-      <li>
+      <tr>
+        <td>
         <a href="/things/@thing.id">@thing.label</a>
+        </td>
+        <td>
+        </td>
+        <td style="text-align:right;">
         <a href="@routes.SicsthSense.remove(thing.id)" class="delete">[delete]</a>
+        </td>
+      </tr>
         
-        <table border="0">
         @for(resource <- thing.resources) {
         <tr>
           <td>
+            <span style="font-size: 1em; margin: 0 0.5em 0 2em;">&bull;</span>
             <a href="@thing.url@resource.path" class="texttt">@resource.path</a>
             @if(resource.monitor != null) {
               [@resource.monitor.period min]
             }
           </td>
-          <td style="padding-left:8em;">
+          <td>
             @form(routes.CMonitor.create(resource.id,0)) {
               <input input type="hidden" name="resourceId" value="@resource.id" />
-              <input input type="number" name="period" required placeholder="Period" class="inputS" size="4em"/>
+              <input input type="number" name="period" required placeholder="Period" class="inputS" size="4" style="text-align:right;"/>
               <input type="submit" value="Ok" class="buttonSG"/>
             }
             @if(resource.monitor != null) {
               <a href="@routes.CMonitor.remove(resource.monitor.id)" class="delete">[stop]</a>
             }
           </td>
+          <td></td>
+          
         </tr>
-        }    
-        </table>
-        
-      </li>
+        }
     }
-  </ul>
-
+  </table>
+  
   <p/>
   
   @form(routes.SicsthSense.register("")) {
@@ -52,7 +58,7 @@
 
   <p/> 
   
-  @if(monitors != null) {
+  @if(monitors.length > 0) {
   <h1>Your Monitors</h1> 
   
   <ul>
@@ -60,12 +66,23 @@
       <li>
         @monitor.resource.thing.label@monitor.resource.path <br/>
         @if(Sample.getByResourceId(monitor.resourceId).length > 0) {
-				  <div id="placeholder@monitor.id" style="width:600px;height:300px;"></div>
+				  <div id="placeholder@monitor.id" style="width:100%;height:200px;"></div>
+
 				  <script type="text/javascript">
 				      $(function () {   
 				          var points = [@Sample.getByResourceId(monitor.resourceId).map(sample => "[" + (sample.timestamp-Monitor.currentTime) + "," + sample.value + "]").reduce((acc, curr) => acc + ", " + curr)];
-				          $.plot($("#placeholder@monitor.id"), [ points ]);
+				          
+				          var options = {
+				        		 series: {
+				        			  lines: { show: true },
+				        			  points: { show: true },
+				             },
+				             colors: [ "#88b" ],
+				          };
+				          
+				          var plot = $.plot($("#placeholder@monitor.id"), [ points ], options);
 				      });
+				      
 				  </script>
         }
 			  
