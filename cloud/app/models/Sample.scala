@@ -8,7 +8,7 @@ import play.api.db._
 import play.api.Play.current
 import play.api.libs.json._
 
-class Sample(var resourceId: Long, var timestamp: Long, var value: Long) {
+class Sample(var resourceId: Long, var timestamp: Long, var value: Double) {
     
   /*** Basic SQL operation on Sample instances ***/
   
@@ -39,23 +39,27 @@ object Sample {
   /*** Basic SQL operation on the Sample class ***/
   
   /* Parser instanciating a Resource from a DB response row */
-  val sampleParser = { long("resourceId") ~ long("timestamp") ~ long("value") map {
+  val sampleParser = { long("resourceId") ~ long("timestamp") ~ get[Double]("value") map {
       case resourceId ~ timestamp ~ value => new Sample(resourceId, timestamp, value)
     }
   }
   
   def getByResourceId(resourceId: Long): List[Sample] = DB.withConnection { implicit c =>
-    SQL("select * from sample where resourceId = {resourceId}").on('resourceId -> resourceId).as(sampleParser *)
+    {
+     SQL("select * from sample where resourceId = {resourceId}").on('resourceId -> resourceId).as(sampleParser *) 
+    }
   }
   
   def deleteByResourceId(resourceId: Long) {
+    getByResourceId(resourceId).map( sample => sample.delete())
     SQL("delete from sample where resourceId = {resourceId}").on('resourceId -> resourceId)
   }
     
   /*** End of SQL operations ***/
  
-  def create(resourceId: Long, timestamp: Long, value: Long) {
-   new Sample(resourceId, timestamp, value).insert()
+  def create(resourceId: Long, timestamp: Long, value: Double) {
+   val s = new Sample(resourceId, timestamp, value).insert()
+   println("create sample " + s + " " + resourceId + " " + timestamp + " " + value)
   }
   
 }

@@ -59,7 +59,7 @@ object Resource {
   }
   
   def deleteByThingId(thingId: Long) {
-    SQL("delete from resource where thingId = {thingId}").on('thingId -> thingId)
+    getByThingId(thingId).map( resource => resource.delete() )
   }
   
   /*** End of SQL operations ***/

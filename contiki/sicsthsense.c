@@ -45,32 +45,27 @@
 #include "dev/battery-sensor.h"
 #include "dev/sht11-sensor.h"
 
+/* Device unique identifier */
+static char uid[64];
+/* Shared response buffer */
 static char buff[UIP_BUFSIZE];
 
 PROCESS(sicsthsense_process, "SicsthSense");
 AUTOSTART_PROCESSES(&sicsthsense_process);
 
-/* Device unique identifier */
-static char *get_id() {
-  snprintf(buff, sizeof(buff), "Contiki_%s_%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x",
-        PLATFORM_NAME_STR,
-        rimeaddr_node_addr.u8[0], rimeaddr_node_addr.u8[1],
-        rimeaddr_node_addr.u8[2], rimeaddr_node_addr.u8[3],
-        rimeaddr_node_addr.u8[4], rimeaddr_node_addr.u8[5],
-        rimeaddr_node_addr.u8[6], rimeaddr_node_addr.u8[7]
-    );
-  return buff;
-}
-
 /* List of resources */
-static char *get_resources() {
+static char *get_discover() {
   snprintf(buff, sizeof(buff),
-      "/id\n"
-      "/name\n"
-      "/sensors/temp\n"
-      "/sensors/humidity\n"
-      "/sensors/light\n"
+      "{"
+      "\"uid\": \"%s\","
+      "\"resources\": ["
+      "\"/sensors/temp\","
+      "\"/sensors/humidity\","
+      "\"/sensors/light\""
+       "]"
+       "}", uid
     );
+
   return buff;
 }
 
@@ -96,10 +91,8 @@ PT_THREAD(handle_get(struct httpd_state *s))
   PSOCK_BEGIN(&s->sout);
 
   /* really ugly static declaration of resources. to be replaced by erbium resources soon */
-         if(strcmp(s->filename, "/id") == 0) {
-    SEND_STRING(&s->sout, get_id());
-  } else if(strcmp(s->filename, "/resources") == 0) {
-    SEND_STRING(&s->sout, get_resources());
+         if(strcmp(s->filename, "/discover") == 0) {
+    SEND_STRING(&s->sout, get_discover());
   } else if(strcmp(s->filename, "/sensors/temp") == 0) {
     SEND_STRING(&s->sout, get_temp());
   } else if(strcmp(s->filename, "/sensors/humidity") == 0) {
@@ -129,6 +122,13 @@ PROCESS_THREAD(sicsthsense_process, ev, data)
   SENSORS_ACTIVATE(light_sensor);
   SENSORS_ACTIVATE(sht11_sensor);
 
+  snprintf(uid, sizeof(uid), "Contiki_%s_%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x",
+        PLATFORM_NAME_STR,
+        rimeaddr_node_addr.u8[0], rimeaddr_node_addr.u8[1],
+        rimeaddr_node_addr.u8[2], rimeaddr_node_addr.u8[3],
+        rimeaddr_node_addr.u8[4], rimeaddr_node_addr.u8[5],
+        rimeaddr_node_addr.u8[6], rimeaddr_node_addr.u8[7]
+  );
 
   /* Main loop */
   while(1) {

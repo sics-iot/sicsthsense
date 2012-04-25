@@ -47,7 +47,7 @@ class Monitor(var id: Long, var resourceId: Long, var period: Long, var lastUpda
   
   def periodic() = {
     val current = Monitor.currentTime
-    Logger.info("Periodic " + id + " " + period + " " + (current - lastUpdate))
+    Logger.info("Periodic " + id + " " + resourceId + " " + period + " " + (current - lastUpdate))
     if (current >= lastUpdate + period) {
       val resource = Resource.getById(resourceId)
       val thing = Thing.getById(resource.thingId)
@@ -89,7 +89,8 @@ object Monitor {
   } catch { case e => null }
   
   def deleteByResourceId(resourceId: Long) {
-    SQL("delete from monitor where resourceId = {resourceId}").on('resourceId -> resourceId)
+    val monitor = getByResourceId(resourceId)
+    if (monitor != null) monitor.delete()
   }
   
   /* Get all things */

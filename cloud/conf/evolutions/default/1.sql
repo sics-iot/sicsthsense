@@ -31,7 +31,7 @@ create table monitor (
 create table sample (
   resourceId                integer,
   timestamp                 integer,
-  value                     integer,
+  value                     double,
 );
 
 # --- !Downs
