@@ -1,0 +1,28 @@
+@(thing: Thing, resource: Resource, withControls: Boolean)
+
+@import helper._
+
+ <a href="@thing.url@resource.path">@resource.path</a>
+ @if(resource.monitor != null) {
+   [polled every @resource.monitor.period min]
+ }
+ @if(withControls) {
+  <span class="rightControl">
+	  @if(resource.monitor != null) {
+	    <a href="@routes.CMonitor.delete(resource.monitor.id)" class="delete">[stop]</a>
+	    <a href="@routes.CMonitor.clear(resource.monitor.id)" class="delete">[clear]</a>
+	  }
+	  <a href="@routes.CThing.deleteResource(thing.id, resource.id)" class="delete">[delete]</a>
+	</span>
+	  
+    @form(routes.CMonitor.create(resource.id,0)) {
+      <br/>
+      Enter polling period:  
+      <input input type="hidden" name="resourceId" value="@resource.id" />
+      <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+      <input type="submit" value="Ok" class="buttonG"/>
+    }
+  }
+
+
+ 

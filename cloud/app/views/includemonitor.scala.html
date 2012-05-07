@@ -1,0 +1,25 @@
+@(monitor: Monitor)
+
+@if(monitor != null) {
+@monitor.resource.thing.name@monitor.resource.path <br/>
+ @if(Sample.getByResourceId(monitor.resourceId).length > 0) {
+   <div id="placeholder@monitor.id" style="width:100%;height:200px;"></div>
+
+   <script type="text/javascript">
+       $(function () {   
+           var points = [@Sample.getByResourceId(monitor.resourceId).map(sample => "[" + (sample.timestamp-Monitor.currentTime) + "," + sample.value + "]").reduce((acc, curr) => acc + ", " + curr)];
+           
+           var options = {
+              series: {
+                 lines: { show: true },
+                 points: { show: true },
+              },
+              colors: [ "#88b" ],
+           };
+           
+           var plot = $.plot($("#placeholder@monitor.id"), [ points ], options);
+       });
+       
+   </script>
+ }
+}
