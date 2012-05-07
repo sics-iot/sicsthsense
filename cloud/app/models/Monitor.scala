@@ -13,38 +13,28 @@ import scala.compat.Platform
 
 class Monitor(var id: Long, var resourceId: Long, var period: Long, var lastUpdate: Long) {
             
-  /*** Basic SQL operation on Monitor instances ***/
+  /*** SQL helpers ***/
+  
+  def SQLon(query: String) = SQL(query).on('id -> id, 'resourceId -> resourceId, 'period -> period, 'lastUpdate -> lastUpdate )
+  
+  /*** End of SQL helpers ***/
   
   /* Save object to database */
-  def insert(): Long = try {
-    DB.withConnection { implicit c => 
-      SQL("insert into monitor (resourceId, period, lastUpdate) values ({resourceId}, {period}, {lastUpdate})")
-        .on('resourceId -> resourceId, 'period -> period, 'lastUpdate -> lastUpdate)
-        .executeUpdate()
-      SQL("select scope_identity()")().collect { case Row(id: Long) => id }.head
-    }
-  } catch { case e => 0 }
+  def insert(): Long = DB.withConnection { implicit c => 
+      SQLon("insert into monitor (resourceId, period, lastUpdate) values ({resourceId}, {period}, {lastUpdate})").execute()
+      SQLon("select scope_identity()")().collect { case Row(id: Long) => id }.headOption.getOrElse(0)
+  }
 
   /* Update object fields in database */
-  def update(): Boolean = {
-    DB.withConnection { implicit c =>
-      SQL("update monitor set resourceId = {resourceId}, period = {period}, lastUpdate = {lastUpdate} where id = {id}")
-        .on('id -> id, 'resourceId -> resourceId, 'period -> period, 'lastUpdate -> lastUpdate)
-        .executeUpdate() == 1
-    }
+  def update(): Boolean = DB.withConnection { implicit c =>
+      SQLon("update monitor set resourceId = {resourceId}, period = {period}, lastUpdate = {lastUpdate} where id = {id}").execute()
   }
 
   /* Delete object from database */
-  def delete(): Boolean = {
-    DB.withConnection { implicit c =>
-    SQL("delete from monitor where id = {id}")
-      .on('id -> id )
-      .executeUpdate() == 1
-    }  
+  def delete(): Boolean = DB.withConnection { implicit c =>
+    SQLon("delete from monitor where id = {id}").execute()
   }
-  
-  /*** End of SQL operations ***/
-  
+    
   def periodic() = {
     val current = Monitor.currentTime
     Logger.info("Periodic " + id + " " + resourceId + " " + period + " " + (current - lastUpdate))
@@ -67,26 +57,26 @@ class Monitor(var id: Long, var resourceId: Long, var period: Long, var lastUpda
 
 object Monitor {
   
-  /*** Basic SQL operation on the Monitor class ***/
-  
+  /*** SQL helpers ***/
+
+  def SQLas(query: String) = DB.withConnection { implicit c => 
+    SQL(query).as(monitorParser *)
+  }
+
   val monitorParser = { long("id") ~ long("resourceId") ~ long("period") ~ long("lastUpdate") map {
       case id ~ resourceId ~ period ~ lastUpdate => new Monitor(id, resourceId, period, lastUpdate)
     }
-  }
+  } 
+  
+  /*** End of SQL helpers ***/
   
   /* Get a Monitor from its id */
-  def getById(id: Long): Monitor = try {
-      DB.withConnection { implicit c =>
-      SQL("select * from monitor where id = {id}").on('id -> id).as(monitorParser *).head
-    }
-  } catch { case e => null }
+  def getById(id: Long): Monitor = SQLas("select * from monitor where id = " + id)
+    .headOption.getOrElse(null)
   
   /* Get a Monitor by resource */
-  def getByResourceId(resourceId: Long): Monitor = try {
-    DB.withConnection { implicit c =>
-    SQL("select * from monitor where resourceId = {resourceId}").on('resourceId -> resourceId).as(monitorParser *).head
-    }
-  } catch { case e => null }
+  def getByResourceId(resourceId: Long): Monitor = SQLas("select * from monitor where resourceId = " + resourceId)
+    .headOption.getOrElse(null)
   
   def deleteByResourceId(resourceId: Long) {
     val monitor = getByResourceId(resourceId)
@@ -94,14 +84,9 @@ object Monitor {
   }
   
   /* Get all things */
-  def all(): List[Monitor] = DB.withConnection { implicit c =>
-    SQL("select * from monitor").
-    as(monitorParser *)
-  }
-  
-  /*** End of SQL operations ***/
-  
-    /* Create a new Monitor */
+  def all(): List[Monitor] = SQLas("select * from monitor")
+   
+  /* Create a new Monitor */
   def create(resourceId: Long, period: Long): Boolean = {
     val curr = getByResourceId(resourceId)
     if (curr != null)     { curr.period = period; curr.update(); } /* update */

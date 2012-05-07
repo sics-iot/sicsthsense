@@ -3,11 +3,14 @@
 # ~~~~
 
 # Pages
-GET        /                            controllers.SicsthSense.home()
-GET        /search                      controllers.SicsthSense.search()
-GET        /yourThings                  controllers.SicsthSense.yourThings()
-GET        /account                     controllers.SicsthSense.account()
-GET        /help                        controllers.SicsthSense.help()
+GET        /authenticate                controllers.Application.authenticate(openid_identifier: String)
+GET        /logout                      controllers.Application.logout()
+GET        /                            controllers.Application.home()
+GET        /search                      controllers.Application.search()
+GET        /yourThings                  controllers.Application.yourThings()
+GET        /account                     controllers.Application.account()
+GET        /help                        controllers.Application.help()
+GET        /openIDCallback              controllers.Application.openIDCallback()
 
 # Things
 GET        /things/register             controllers.CThing.register(url: String)
@@ -20,7 +23,6 @@ GET        /things/:id/delete           controllers.CThing.delete(id: Long)
 
 # Monitors
 GET        /monitor/create              controllers.CMonitor.create(resourceId: Long, period: Long)
-GET        /monitor/:id                 controllers.CMonitor.get(id: Long)
 GET        /monitor/:id/delete          controllers.CMonitor.delete(id: Long)
 GET        /monitor/:id/clear           controllers.CMonitor.clear(id: Long)
 

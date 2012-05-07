@@ -1,57 +1,30 @@
-@(things: List[Thing], monitors: List[Monitor])
+@(things: List[Thing], monitors: List[Monitor])(implicit session: Session)
 
 @import helper._
 
 @layout("Your Things") {
   <h1>Your Things (@things.size)</h1>
      
-  <table border="0" width="100%">
+  <ul>
     @for(thing <- things) {
-      <tr>
-        <td>
+      <li>
         <a href="/things/@thing.id">@thing.name</a>
-        @form(routes.CThing.discover(thing.id)) {
-              <a href="@routes.CThing.discover(thing.id)" class="update">[discover]</a>
-        }
-        </td>
-        <td>
-        </td>
-        <td style="text-align:right;">
-        <a href="@routes.CThing.delete(thing.id)" class="delete">[delete]</a>
-        </td>
-      </tr>
-        
+     
+        <ul>     
         @for(resource <- thing.resources) {
-        <tr>
-          <td>
-            <span style="font-size: 1em; margin: 0 0.5em 0 2em;">&bull;</span>
-            <a href="@thing.url@resource.path" class="texttt">@resource.path</a>
-            @if(resource.monitor != null) {
-              [@resource.monitor.period min]
-            }
-          </td>
-          <td>
-            @form(routes.CMonitor.create(resource.id,0)) {
-              <input input type="hidden" name="resourceId" value="@resource.id" />
-              <input input type="number" name="period" required placeholder="Period" class="inputS" size="4" style="text-align:right;"/>
-              <input type="submit" value="Ok" class="buttonSG"/>
-            }
-            @if(resource.monitor != null) {
-              <a href="@routes.CMonitor.delete(resource.monitor.id)" class="delete">[stop]</a>
-              <a href="@routes.CMonitor.clear(resource.monitor.id)" class="delete">[clear]</a>
-            }
-          </td>
-          <td></td>
-          
-        </tr>
+          <li>
+          @includeresource(thing, resource, false)
+          </li>
         }
+        </ul>
+      </li>
     }
-  </table>
+  </ul>
   
   <p/>
   
   @form(routes.CThing.register("")) {
-    <input input type="url" name="url" required placeholder="Enter the URL of a Thing to be added" class="inputL" style="width:80%;"/>
+    <input input type="url" name="url" required placeholder="Enter the URL of a Thing to be added" class="inputL" />
     <input type="submit" value="Register" class="buttonLG"/>
   }
 
@@ -63,28 +36,7 @@
   <ul>
     @for(monitor <- monitors) {
       <li>
-        @monitor.resource.thing.name@monitor.resource.path <br/>
-        @if(Sample.getByResourceId(monitor.resourceId).length > 0) {
-				  <div id="placeholder@monitor.id" style="width:100%;height:200px;"></div>
-
-				  <script type="text/javascript">
-				      $(function () {   
-				          var points = [@Sample.getByResourceId(monitor.resourceId).map(sample => "[" + (sample.timestamp-Monitor.currentTime) + "," + sample.value + "]").reduce((acc, curr) => acc + ", " + curr)];
-				          
-				          var options = {
-				        		 series: {
-				        			  lines: { show: true },
-				        			  points: { show: true },
-				             },
-				             colors: [ "#88b" ],
-				          };
-				          
-				          var plot = $.plot($("#placeholder@monitor.id"), [ points ], options);
-				      });
-				      
-				  </script>
-        }
-			  
+      @includemonitor(monitor)
       </li>
     }
   </ul>

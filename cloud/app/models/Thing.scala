@@ -10,45 +10,46 @@ import play.api.libs.json._
 
 class Thing(var id: Long, var url: String, var uid: String, var name: String) {
   
-  /*** Basic SQL operation on Thing instances ***/
+  /*** SQL helpers ***/
+  
+  def SQLon(query: String) = SQL(query).on('id -> id, 'url -> url, 'uid -> uid, 'name -> name )
+  
+  /*** End of SQL helpers ***/
   
   /* Save object to database */
-  def insert(): Long = try {
-    DB.withConnection { implicit c =>
-      SQL("insert into thing (url, uid, name) values ({url}, {uid}, {name})")
-        .on('url -> url, 'uid -> uid, 'name -> name )
-        .executeUpdate()
-      SQL("select scope_identity()")().collect { case Row(id: Long) => id }.head
-    }
-  } catch { case e => 0 }
+  def insert(): Long = DB.withConnection { implicit c =>
+    /* Insert */
+    SQLon("insert into thing (url, uid, name) values ({url}, {uid}, {name})").execute()
+    /* Return id */
+    SQLon("select scope_identity()")().collect { case Row(id: Long) => id }
+      .headOption.getOrElse(0)
+  }
   
   /* Update object fields in database */
-  def update(): Boolean = {
-    DB.withConnection { implicit c =>
-      SQL("update thing set url = {url}, uid = {uid}, name = {name} where id = {id}")
-        .on('id -> id, 'url -> url, 'uid -> uid, 'name -> name)
-        .executeUpdate() == 1
-    }
+  def update(): Boolean = DB.withConnection { implicit c =>
+    SQLon("update thing set url = {url}, uid = {uid}, name = {name} where id = {id}").execute()
   }
 
   /* Delete object from database */
-  def delete(): Boolean = {
-    DB.withConnection { implicit c =>
-    SQL("delete from thing where id = {id}")
-      .on('id -> id )
-      .executeUpdate() == 1
-    }  
+  def delete(): Boolean = DB.withConnection { implicit c =>
+    SQLon("delete from thing where id = {id}").execute()
   }
   
-  /*** End of SQL operations ***/
-  
   def resources = Resource.getByThingId(id)
-  
+  def monitors: List[Monitor] = Resource.getByThingId(id).map( r =>
+        Monitor.getByResourceId(r.id)
+      ).filter( m =>
+        m != null
+      )
 }
 
 object Thing {
   
-  /*** Basic SQL operation on the Thing class ***/
+  /*** SQL helpers ***/
+  
+  def SQLas(query: String) = DB.withConnection { implicit c => 
+    SQL(query).as(thingParser *)
+  }
   
   /* Parser instanciating a Thing from a DB response row */
   val thingParser = { long("id") ~ str("url") ~ str("uid") ~ str("name") map {
@@ -56,28 +57,19 @@ object Thing {
     }
   }
   
+  /*** End of SQL helpers ***/
+  
   /* Get a Thing from its id */
-  def getById(id: Long): Thing = try {
-    DB.withConnection { implicit c =>
-      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
-        }
-  } catch { case e => null }
+  def getById(id: Long): Thing = SQLas("select * from thing where id = " + id)
+    .headOption.getOrElse(null)
   
   /* Get a Thing from its URL */
-  def getByUrl(id: Long): Thing = try { 
-      DB.withConnection { implicit c =>
-      SQL("select * from thing where id = {id}").on('id -> id).as(thingParser *).head
-    }
-  } catch { case e => null }
+  def getByUrl(url: String): Thing = SQLas("select * from thing where url = " + url)
+    .headOption.getOrElse(null)
     
   /* Get all things */
-  def all(): List[Thing] = DB.withConnection { implicit c =>
-    SQL("select * from thing").
-    as(thingParser *)
-  }
+  def all(): List[Thing] = SQLas("select * from thing")
   
-  /*** End of SQL operations ***/
-
   /* Register a new Thing from its URL */
   def register(url: String): Long = {
     new Thing(-1, url, "no uid", url).insert()
@@ -119,7 +111,6 @@ object Thing {
   /* Delete a Thing by id */
   def delete(id: Long) {
    getById(id).delete()
-   Resource.deleteByThingId(id)
   }
     
 }

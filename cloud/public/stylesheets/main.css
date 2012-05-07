@@ -1,5 +1,5 @@
 body { color: #222; font-family: arial, sans-serif; font-size: 12pt; }
-h1, h2, h3, h4 { color: #444; padding: 0; margin: 0 0 0.2em 0; }
+h1, h2, h3, h4 { color: #444; padding: 0; margin: 0.6em 0 0.2em 0; }
 h1 { font-size: 1.7em; }
 h2 { font-size: 1.3em; }
 h3 { font-size: 1.2em; }
@@ -22,19 +22,18 @@ body { background-color: #fafafa; }
 #header h1 { color: #eee; padding: 0; margin: 0; text-align: center; 
   font-size: 40pt; text-shadow: 4px 4px 4px #000;
   font-family: georgia, palatino, pala, serif; font-weight:bold; font-style: italic; }
-#header ul { max-width: 900px; margin: 0 auto; padding: 0 0 4px 0; font-size: 1.2em; }
+#header ul { max-width: 800px; margin: 0 auto; padding: 0 0 4px 0; font-size: 1.2em; }
 #header ul li { display: inline; padding-right: 30px; text-shadow: 2px 2px 2px #000; }
 #header a { color: #dddddd; }
 #header a:hover { color: #ffffff; }
 
-#content { max-width: 900px; margin: 16px auto; padding: 0; }
-.inputL { height: 2em; padding: 0; }
-.inputS { height: 1.4em; padding: 0; font-size: 0.8em; }
-.buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 6em;}
-.buttonSG { height: 1.4em; border: 1px solid #888; background-color: #87f03c; width: 3em; font-size: 0.8em; }
+#content { max-width: 800px; margin: 16px auto; padding: 0; }
+.inputL { height: 2em; padding: 0; width: 89%; }
+.buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 10%;}
+.buttonG { border: 1px solid #888; background-color: #eee; border-radius: 6px; }
 .texttt { font-family: inconsolata, monospace; }
-.update { font-size: 0.9em; color: #00cc00; }
-.delete { font-size: 0.9em; color: #ff7140; }
-.rightControl { float: right; clear:both; }
+.update { color: #4F75AF; }
+.delete { color: #ff7140; }
+.rightControl { float: right; }
+.logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
 form { display: inline; }
-

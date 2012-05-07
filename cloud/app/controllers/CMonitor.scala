@@ -12,32 +12,24 @@ import views._
 object CMonitor extends Controller {
     
   def create(resourceId: Long, period: Long) = Action {
-    Redirect("/yourThings").flashing(
-        if (Monitor.create(resourceId, period))  "status" -> ("Created") 
-        else                                       "status" -> ("Failed to create") 
-    ) 
+    Monitor.create(resourceId, period)
+    val thingId = Resource.getById(resourceId).thingId
+    Redirect(routes.CThing.get(thingId))
   }
   
-  def get(id: Long) = Action { request =>
+  def clear(id: Long) = Action { implicit request =>
     val monitor = Monitor.getById(id)
-    if (monitor != null)
-      Ok(html.monitor.render(monitor));
-    else
-      NotFound(html.notfound.render("Monitor not found"));
-  }
-  
-  def clear(id: Long) = Action { request =>
-    val monitor = Monitor.getById(id)
-    if (monitor == null) NotFound(html.notfound.render("Monitor not found"));
+    if (monitor == null) NotFound(html.notfound("Monitor not found"));
     else {
       Monitor.deleteByResourceId(monitor.resourceId)
-      Redirect("/yourThings")
+      Redirect(routes.CThing.get(monitor.resource.thingId))
     }
   }
   
   def delete(id: Long) = Action {
+    val thingId = Monitor.getById(id).resource.thingId
     Monitor.delete(id)
-    Redirect("/yourThings")
+    Redirect(routes.CThing.get(thingId))
   }
 
 }
