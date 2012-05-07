@@ -10,10 +10,9 @@ var providers_large = {
 		name : 'Google',
 		url : 'https://www.google.com/accounts/o8/id'
 	},
-	aol : {
-		name : 'AOL',
-		label : 'Enter your AOL screenname:',
-		url : 'http://openid.aol.com/{username}'
+	yahoo : {
+		name : 'Yahoo',
+		url : 'https://me.yahoo.com/'
 	},
 	myopenid : {
 		name : 'MyOpenID',
