@@ -13,7 +13,9 @@ import play.api.libs.concurrent._
 trait Secured {
   
   /* Retrieve the connected username */
-  private def username(request: RequestHeader) = request.session.get("id")
+  private def username(request: RequestHeader) = { 
+   request.session.get("id")
+  }
 
   /* Redirect to login if the user in not authorized */
   private def onUnauthorized(request: RequestHeader) = { Ok(html.login()(Session())) }

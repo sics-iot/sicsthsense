@@ -29,6 +29,7 @@
         <li><a href="/account">Account</a></li>
       } else {
         <li><a href="/">Log in</a></li>
+        <li><a href="/search">Search</a></li>
       }
       <li><a href="/help">Help</a></li>
     </ul>
@@ -37,7 +38,7 @@
     <div id="content">@content
     @session.get("id").map { id =>
       <p>
-       <span class="logged">Logged as: @id <a href="/logout">[Log out]</a></span>
+       <span class="logged">Logged in as: @User.getByIdStr(id).email <a href="/logout">[Log out]</a></span>
       </p>
     }
     </div>

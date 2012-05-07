@@ -1,5 +1,5 @@
 @()(implicit session: Session)
 
 @layout("Account") {
-  Accounts are not supported yet
+  @includeuser(User.getByIdStr(session.get("id").getOrElse("-1")))
 }

@@ -102,7 +102,6 @@ object Thing {
    if(thing == null) false
    else {
      thing.name = name
-     println(name)
      thing.update()
      true
    }

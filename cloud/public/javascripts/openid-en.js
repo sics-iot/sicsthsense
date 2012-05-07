@@ -16,7 +16,7 @@ var providers_large = {
 	},
 	myopenid : {
 		name : 'MyOpenID',
-		url : 'http://myopenid.com/'
+		url : 'http://www.myopenid.com/server'
 	},
 	openid : {
 		name : 'OpenID',

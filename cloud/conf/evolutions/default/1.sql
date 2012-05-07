@@ -2,10 +2,13 @@
  
 # --- !Ups
 
+create sequence user_seq start with 1024;
 create table user (
-  email                     varchar(255) not null primary key,
+  id                        integer not null default nextval('user_seq'),
+  email                     varchar(255) not null,
   firstName                 varchar(255) not null,
   lastName                  varchar(255) not null,
+  location                  varchar(255) not null,
 );
 
 create sequence thing_seq start with 1024;

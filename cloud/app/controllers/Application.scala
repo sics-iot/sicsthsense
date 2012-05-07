@@ -16,7 +16,7 @@ object Application extends Controller with Secured {
     Ok(html.home(null))
   }
   
-  def search = IsAuthenticated { _ => implicit request => 
+  def search = Action { implicit request => 
     Ok(html.search(Thing.all())) 
   }
   
@@ -61,7 +61,11 @@ object Application extends Controller with Secured {
     Async {
       OpenID.verifiedId.
         extend( _.value match {
-          case Redeemed(userInfo) => Redirect(routes.Application.home).withSession("id" -> userInfo.attributes("email"))
+          case Redeemed(userInfo) => { 
+            val id = User.register(userInfo.attributes)
+            println(id)
+            Redirect(routes.Application.home).withSession("id" -> id.toString())
+          }
           case Thrown(t) => Redirect(routes.Application.home).withSession("status" -> ("Failed to log in " + t.toString()))
         })
     }

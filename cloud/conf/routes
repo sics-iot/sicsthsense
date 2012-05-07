@@ -12,6 +12,11 @@ GET        /account                     controllers.Application.account()
 GET        /help                        controllers.Application.help()
 GET        /openIDCallback              controllers.Application.openIDCallback()
 
+# Users
+GET        /user/firstName/set          controllers.CUser.setFirstName(firstName: String)
+GET        /user/lastName/set           controllers.CUser.setLastName(lastName: String)
+GET        /user/location/set           controllers.CUser.setLocation(location: String)
+
 # Things
 GET        /things/register             controllers.CThing.register(url: String)
 GET        /things/:id                  controllers.CThing.get(id: Long)
