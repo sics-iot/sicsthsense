@@ -1,10 +1,8 @@
-@()(implicit session: Session)
-
 @import helper._
 
-@layout("Home") {
+@layout("Home", null) {
     <!-- Simple OpenID Selector -->
-    <form action="@routes.Application.authenticate("")" method="get" id="openid_form">
+    <form action="@routes.Login.authenticate("")" method="get" id="openid_form">
       <input type="hidden" name="action" value="verify" />
       <fieldset>
         <legend>Sign-in with OpenID</legend>

@@ -1,4 +1,6 @@
-@(title: String)(content: Html)(implicit session: Session)
+@(title: String, session: Http.Session)(content: Html)
+
+@import helper._
 
 <!DOCTYPE html>
 
@@ -22,23 +24,23 @@
     <div id="header">
     <h1>Sics<sup>th</sup>Sense</h1>
     <ul>
-      @if(session.get("id").isDefined) {
+      @if(session != null) {
         <li><a href="/">Home</a></li>
         <li><a href="/search">Search</a></li>
-        <li><a href="/yourThings">Your Things</a></li>
+        <li><a href="/manage">Manage</a></li>
         <li><a href="/account">Account</a></li>
       } else {
         <li><a href="/">Log in</a></li>
         <li><a href="/search">Search</a></li>
       }
-      <li><a href="/help">Help</a></li>
+      <li><a href="/about">About</a></li>
     </ul>
     
     </div>
     <div id="content">@content
-    @session.get("id").map { id =>
+    @if(session != null) {
       <p>
-       <span class="logged">Logged in as: @User.getByIdStr(id).email <a href="/logout">[Log out]</a></span>
+       <span class="logged">Logged in as: @User.get(session.get("id").toLong).email <a href="/logout">[Log out]</a></span>
       </p>
     }
     </div>

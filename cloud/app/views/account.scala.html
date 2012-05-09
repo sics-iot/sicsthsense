@@ -1,5 +1,0 @@
-@()(implicit session: Session)
-
-@layout("Account") {
-  @includeuser(User.getByIdStr(session.get("id").getOrElse("-1")))
-}

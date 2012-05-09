@@ -1,58 +1,83 @@
-# Tasks schema
- 
+# --- Created by Ebean DDL
+# To stop Ebean DDL generation, remove this comment and start using Evolutions
+
 # --- !Ups
 
-create sequence user_seq start with 1024;
-create table user (
-  id                        integer not null default nextval('user_seq'),
-  email                     varchar(255) not null,
-  firstName                 varchar(255) not null,
-  lastName                  varchar(255) not null,
-  location                  varchar(255) not null,
-);
+create table data_point (
+  id                        bigint not null,
+  resource_id               bigint,
+  data                      bigint,
+  timestamp                 bigint,
+  constraint pk_data_point primary key (id))
+;
 
-create sequence thing_seq start with 1024;
-create table thing (
-  id                        integer not null default nextval('thing_seq'),
-  url                       varchar(255) not null,
-  uid                       varchar(255) not null,
-  name                      varchar(255) not null,
-  constraint uc_thing unique (url),
-);
+create table end_point (
+  id                        bigint not null,
+  label                     varchar(255),
+  url                       varchar(255),
+  uid                       varchar(255),
+  user_id                   bigint,
+  constraint pk_end_point primary key (id))
+;
 
-create sequence resource_seq start with 1024;
 create table resource (
-  id                        integer not null default nextval('resource_seq'),
-  thingId                   integer not null,
-  path                      varchar(255) not null,
-  foreign key(thingId)      references thing(id) on delete cascade,
-  constraint uc_resource unique (thingId, path)
-);
+  id                        bigint not null,
+  path                      varchar(255),
+  end_point_id              bigint,
+  user_id                   bigint,
+  polling_period            bigint,
+  last_update               bigint,
+  constraint pk_resource primary key (id))
+;
 
-create sequence monitor_seq start with 1024;
-create table monitor (
-  id                        integer not null default nextval('monitor_seq'),
-  resourceId                integer not null,
-  period                    integer,
-  lastUpdate                integer,
-  foreign key(resourceId)   references resource(id) on delete cascade,
-);
+create table user (
+  id                        bigint not null,
+  email                     varchar(255),
+  first_name                varchar(255),
+  last_name                 varchar(255),
+  location                  varchar(255),
+  constraint uq_user_1 unique (email),
+  constraint pk_user primary key (id))
+;
 
-create table sample (
-  resourceId                integer not null,
-  timestamp                 integer,
-  value                     double,
-  foreign key(resourceId)   references resource(id) on delete cascade,
-);
+create sequence data_point_seq;
+
+create sequence end_point_seq;
+
+create sequence resource_seq;
+
+create sequence user_seq;
+
+alter table data_point add constraint fk_data_point_resource_1 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
+create index ix_data_point_resource_1 on data_point (resource_id);
+alter table end_point add constraint fk_end_point_user_2 foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_end_point_user_2 on end_point (user_id);
+alter table resource add constraint fk_resource_endPoint_3 foreign key (end_point_id) references end_point (id) on delete restrict on update restrict;
+create index ix_resource_endPoint_3 on resource (end_point_id);
+alter table resource add constraint fk_resource_user_4 foreign key (user_id) references user (id) on delete restrict on update restrict;
+create index ix_resource_user_4 on resource (user_id);
+
+
 
 # --- !Downs
- 
-drop table if exists user;
-drop table if exists thing;
-drop table if exists resource;
-drop table if exists monitor;
-drop table if exists sample;
 
-drop sequence if exists thing_seq;
+SET REFERENTIAL_INTEGRITY FALSE;
+
+drop table if exists data_point;
+
+drop table if exists end_point;
+
+drop table if exists resource;
+
+drop table if exists user;
+
+SET REFERENTIAL_INTEGRITY TRUE;
+
+drop sequence if exists data_point_seq;
+
+drop sequence if exists end_point_seq;
+
 drop sequence if exists resource_seq;
-drop sequence if exists monitor_seq;
+
+drop sequence if exists user_seq;
+

@@ -1,14 +1,42 @@
-@(things: List[Thing])(implicit session: Session)
+@(endPoints: List[EndPoint])
 
-@layout("Search") {
-  <h1>Search for Things</h1>
-  There is a total of @things.size Things in Sics<sup>th</sup>Sense   
-  <ul>
-    @for(thing <- things) {
+@import helper._
+
+@displayStreams(streams: List[Resource]) = {
+
+  @if(streams.length > 0) {
+    <h1>Public streams</h1> 
+    
+    <ul>
+      @for(stream <- streams) {
+        <li>
+        @includeStream(stream, DataPoint.getByStream(stream))
+        </li>
+      }
+    </ul>
+  }
+
+}
+
+@layout("Search", session) {
+ 
+   <h1>Public resources</h1>
+
+    <ul>
+    @for(endPoint <- endPoints) {
       <li>
-        <a href="/things/@thing.id">@thing.name</a>
-        <br/>
+        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a>
+          <ul>
+            @Resource.getByEndPoint(endPoint).map { resource =>
+                <li>
+                @includeResource(resource, false)
+                </li>
+             }  
+        </ul>
       </li>
     }
   </ul>
+ 
+ @displayStreams(Resource.getWithPolling())
+ 
 }

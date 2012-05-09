@@ -1,0 +1,23 @@
+@(stream: Resource, dataPoints: List[DataPoint])
+
+@if(stream != null && dataPoints.size > 0) {
+@stream.getEndPoint().label@stream.path <br/>
+    <div id="placeholder@stream.id" style="width:100%;height:200px;"></div>
+
+   <script type="text/javascript">
+       $(function () {   
+           var points = [@dataPoints.map(dataPoint => "[" + (dataPoint.timestamp-Resource.currentTime()) + "," + dataPoint.data + "]").reduce((acc, curr) => acc + ", " + curr)];
+           
+           var options = {
+              series: {
+                 lines: { show: true },
+                 points: { show: true },
+              },
+              colors: [ "#88b" ],
+           };
+           
+           var plot = $.plot($("#placeholder@stream.id"), [ points ], options);
+       });
+       
+   </script>
+}

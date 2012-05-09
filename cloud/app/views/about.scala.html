@@ -1,6 +1,6 @@
-@()(implicit session: Session)
+@import helper._
 
-@layout("Help") {
+@layout("About", session) {
  
   <h1>A simple cloud-centric registration process</h1>
   
@@ -19,15 +19,5 @@
   }</pre> 
 
   <p/>
-  
-  <h1>Registration through a simple RESTful API</h1>
-    
-  We also provide a RESTful API for those who want to script registration operations:
-  <dl>
-    <dt><code>POST /rest/things/register?url={thingUrl}</code></dt>
-    <dd>Register a Thing with and URL <code>{thingUrl}</code>. Returns the unique Thing identifier.</dd>
-    <dt><code>DELETE /rest/things/{thingId}</code></dt>
-    <dd>Delete Thing with identifier <code>{thingId}</code></dd>
-  </dl>
-  </p>
+ 
 }

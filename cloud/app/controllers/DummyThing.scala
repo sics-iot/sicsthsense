@@ -1,6 +1,5 @@
 package controllers
 
-import models.Thing
 import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._

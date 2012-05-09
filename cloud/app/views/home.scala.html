@@ -1,9 +1,7 @@
-@(userInfo: play.api.libs.openid.UserInfo)(implicit session: Session)
-
 @import helper._
 
-@layout("Home") {
+@layout("Home", session) {
   
-  Welcome!
-    
+  On this page, you're going to see the streams and resources you follow.
+
 }

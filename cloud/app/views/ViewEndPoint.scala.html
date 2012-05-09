@@ -1,0 +1,43 @@
+@(endPoint: EndPoint, epForm: Form[EndPoint])
+
+@import helper._
+
+@layout(endPoint.label, session) {
+  
+  @if(epForm != null) {
+    <span class="logged"><a href="@routes.CtrlEndPoint.get(endPoint.id)">[Cancel]</a></span>
+  } else {
+    <span class="logged"><a href="@routes.CtrlEndPoint.edit(endPoint.id)">[Edit]</a></span>
+  }
+
+  @myForm.form(routes.CtrlEndPoint.submit(endPoint.id)) {
+      <dt>User</dt>
+      <dd>@endPoint.getUser().firstName @endPoint.getUser().lastName</dd>
+      @myForm.input(epForm!=null, "text", "label", "Label", endPoint.label)
+      @myForm.input(epForm!=null, "url", "url", "URL", endPoint.url)
+      @myForm.submit(epForm!=null, "Update")
+  }
+  
+  Perform automatic resource discovery
+  <a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a>
+
+  <br/>
+  Delete:
+  <a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a>
+    
+  <h1>Resources</h1>
+
+  <ul>
+      @Resource.getByEndPoint(endPoint).map { resource =>
+          <li>
+          @includeResource(resource, true)
+          </li>
+        }  
+  </ul>
+  
+  @myForm.form(routes.CtrlEndPoint.addResource(endPoint.id)) {
+    @myForm.input(true, "text", "path", "Add new resource", "")
+    @myForm.submit(true, "Add")
+  }
+
+}

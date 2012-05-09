@@ -1,0 +1,48 @@
+@(endPoints: List[EndPoint])
+
+@import helper._
+
+@displayStreams(streams: List[Resource]) = {
+
+  @if(streams.length > 0) {
+	  <h1>Your streams</h1> 
+	  
+	  <ul>
+	    @for(stream <- streams) {
+	      <li>
+	      @includeStream(stream, DataPoint.getByStream(stream))
+	      </li>
+	    }
+	  </ul>
+  }
+
+}
+
+@layout("Manage", session) {
+  
+  <h1>Your resources</h1>
+     
+  <ul>
+    @for(endPoint <- endPoints) {
+      <li>
+        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a>
+          <ul>
+			      @Resource.getByEndPoint(endPoint).map { resource =>
+			          <li>
+			          @includeResource(resource, false)
+			          </li>
+			       }  
+        </ul>
+      </li>
+    }
+  </ul>
+ 
+  @helper.form(action = routes.CtrlEndPoint.add()) {
+    <dl>
+      <input input type="url" name="url" required placeholder="Enter the URL of a Thing to be added" class="inputL" />
+      <input type="submit" value="Register" class="buttonLG"/>
+    </dl>
+  }
+  
+  @displayStreams(Resource.getByUserWithPolling(CtrlUser.getUser()))
+}

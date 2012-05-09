@@ -1,0 +1,25 @@
+@(resource: Resource)
+
+@import helper._
+
+@displayResource(endPoint: EndPoint, user: User) = {
+  <dl>
+  <dt>User</dt>
+  <dd>@user.firstName @user.lastName</dd>
+	<dl>
+	<dt>End point</dt>
+	<dd><a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a></dd>
+	<dt>Path</dt>
+	<dd>@resource.path</dd>
+	<dt>Polling interval</dt>
+  <dd>@resource.pollingPeriod minutes</dd>
+  <dt>Last updated</dt>
+  <dd>@{Resource.currentTime()-resource.lastUpdate} minutes ago</dd>
+	</dl>
+}
+
+@layout("Resource Details: @resource.path", session) {
+
+@displayResource(resource.getEndPoint(),resource.getUser())
+
+}

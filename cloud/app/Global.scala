@@ -2,17 +2,14 @@ import play.api._
 import play.libs.Akka
 import akka.util.duration._
 import akka.actor._
-import models.Monitor
+import models._
 import scala.compat.Platform
-//import akka.actor.ActorRefFactory
 
 class PeriodicMonitor extends Actor {
 
   def receive = {
     case _ => {
-      Monitor.all.map( monitor =>
-          monitor.periodic()
-        )
+      Resource.periodicAll()
     }
   }
   

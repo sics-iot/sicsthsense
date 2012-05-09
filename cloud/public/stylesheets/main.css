@@ -1,5 +1,5 @@
 body { color: #222; font-family: arial, sans-serif; font-size: 12pt; }
-h1, h2, h3, h4 { color: #444; padding: 0; margin: 0.6em 0 0.2em 0; }
+h1, h2, h3, h4 { color: #444; padding: 0; margin: 0.6em 0 0.2em 0; clear:both; }
 h1 { font-size: 1.7em; }
 h2 { font-size: 1.3em; }
 h3 { font-size: 1.2em; }
@@ -7,8 +7,7 @@ h3 { font-size: 1.2em; }
 a img { border-width: 0px; }
 p { margin: 0 0 0.5em 0; }
 ul { margin: 0 0 0 2em; padding: 0; }
-dl { margin: 0; }
-dl dt { font-weight: bold; margin: 0 1em 0 0; }
+
 a { text-decoration: none; color: #4F75AF; }
 a:hover { color: #000; }
 code { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
@@ -37,3 +36,8 @@ body { background-color: #fafafa; }
 .rightControl { float: right; }
 .logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
 form { display: inline; }
+
+fieldset { clear: both; }
+dl { clear: both; }
+dl dt, dl dd { margin: 0; padding: 0 1em 0.3em 0; float: left; height: 1.1em;}
+dl dt { clear: left; width: 10em; font-weight: bold; text-align: right; }
