@@ -1,0 +1,40 @@
+TODO-list for the CSL IoT workshop
+----------------------------------
+Mobile:
+* Android app for submitting sensor data to COSM / SicsthSense
+* Android app for looking at data - plenty out there already...
+  (for COSM at least).
+* 
+
+Sensor Network - IoT sensors
+* finalize IoT applications - JSON Websense, etc. Both submission to COSM
+  and SicsthSense
+* Pre-programmed motes for temp, humidity, light, etc.
+* A few pre-programmed power meters (3?)
+* H&D Wireless devices - pre-configured for local WiFi network
+  (power meter + switch)
+
+
+Cloud:
+* make SicsthSense ready for the lab... whatever is missing needs
+  to be implemented soon!
+
+
+Scripting:
+* make a few scripting examples
+  python
+  curl (?)
+  Java (?)
+  - what more -?
+
+
+Application
+What type of application would we like to create during the "lab".
+- energy related since we have both switches for that and sensors for
+  that
+
+
+Texts...
+- write a small tutorial for people to start-up the lab
+- write a few "challenges" for people to complete
+...
