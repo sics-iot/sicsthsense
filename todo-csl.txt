@@ -1,40 +1,50 @@
 TODO-list for the CSL IoT workshop
 ----------------------------------
-Mobile:
-* Android app for submitting sensor data to COSM / SicsthSense
-* Android app for looking at data - plenty out there already...
-  (for COSM at least).
-* 
 
-Sensor Network - IoT sensors
-* finalize IoT applications - JSON Websense, etc. Both submission to COSM
-  and SicsthSense
-* Pre-programmed motes for temp, humidity, light, etc.
-* A few pre-programmed power meters (3?)
-* H&D Wireless devices - pre-configured for local WiFi network
-  (power meter + switch)
+Architecture:
+* Have a publically available SicsthSense with a *static* IPv6 [Niclas]
+* Have a gogo6 RPL network [Joakim & Simon]
 
+SicsthSense:
+* CoAP polling and POST [Matthias]
+* accept POST [Simon]
+* expose streams through a RESTful interface [Simon]
+* decent graphs display (choice of the x scale) [Simon]
+* simple aggregation? (average, sum, etc?) [Simon]
+* interactive RESTful intercafe (click on "POST /leds/red") [Simon]
+* acting a proxy, having labels for devices [Simon]
+* enbygg-style control [Joakim]
+* spontaneous registration (prefix based) [Simon]
+* beautiful front-end!
+* triggers: POST, cosm, twitter, mail
 
-Cloud:
-* make SicsthSense ready for the lab... whatever is missing needs
-  to be implemented soon!
-
+Contiki:
+* posting to Cosm and SicsthSense [Joakim]
+* examples for each platform we use (ipso-profile svn style) [all]
+  full list here (devices and sensors):
+	- sky
+	- z1
+	- ...
+* pre-programming motes for the lab [all]
+  full list here:
+	- power meters?
+	- H&D Wireless devices
+	- ...
 
 Scripting:
-* make a few scripting examples
-  python
-  curl (?)
-  Java (?)
-  - what more -?
+* make a few scripting examples for getting samples triggering actuation
+  - simple RESTful program [Joakim]
+  - python & java examples [Joakim]
+  - ...
+* example for posting something from a computer
+  (local data, like CPU temp, light from webcam, or data from the web) [Joakim]
 
+Android:
+* Android app for submitting sensor data to SicsthSense [Matthias]
+* Android app for looking at data - plenty out there already... (for COSM at least)
 
-Application
-What type of application would we like to create during the "lab".
-- energy related since we have both switches for that and sensors for
-  that
-
-
-Texts...
-- write a small tutorial for people to start-up the lab
-- write a few "challenges" for people to complete
-...
+Texts for the lab:
+  - write a small tutorial for people to start-up the lab
+  - write a few "challenges" for people to complete
+  - what type of application would we like to create during the "lab"?
+  - presentation(s) [Simon & Joakim]
