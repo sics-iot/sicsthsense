@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+<ScrollView
+    android:id="@+id/scroll"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="200dip"
+    android:scrollbars="vertical" >
+
+<TextView
+    android:id="@+id/text"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/hello" />
+</ScrollView>
+<RelativeLayout
+    android:layout_marginTop="-200dip"
+    android:gravity="bottom"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent">
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+<Button
+	android:id="@+id/btnService"
+	android:text="Service"
+	android:textStyle="bold"
+	android:layout_width="fill_parent"
+	android:layout_height="50dip"
+	android:onClick="onClick"
+	/>
+<Button
+	android:id="@+id/btnMinimize"
+	android:text="Minimize"
+	android:textStyle="bold"
+	android:layout_width="fill_parent"
+	android:layout_height="50dip"
+	android:onClick="onMinimize"
+	/>
+<Button
+	android:id="@+id/btnDisplay"
+	android:text="Show display"
+	android:textStyle="bold"
+	android:layout_width="fill_parent"
+	android:layout_height="50dip"
+	android:onClick="onDisplay"
+	/>
+<Button
+	android:id="@+id/btnSettings"
+	android:text="Settings"
+	android:textStyle="bold"
+	android:layout_width="fill_parent"
+	android:layout_height="50dip"
+	android:onClick="onSettings"
+	/></LinearLayout>
+
+</RelativeLayout>
+</LinearLayout>

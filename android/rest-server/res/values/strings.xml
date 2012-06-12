@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, main!</string>
+    <string name="app_name">RESTserver</string>
+<string name="StartServiceButton">Start</string>
+<string name="local_service_started">Server has been started</string>
+<string name="local_service_stopped">Server has been stopped</string>
+<string name="local_service_label">REST Server</string>
+<string name="RunningButtonText">Stop</string>
+<string name="StoppedButtonText">Start</string> 
+</resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Sensing Settings" >
+        <EditTextPreference
+            android:key="post_base_uri"
+            android:defaultValue="http://sense.sics.se/users/"
+            android:title="Base URI"
+            android:summary="The base URI for your thing to POST to"
+            android:dialogTitle="Server base URI for POST" />
+        <EditTextPreference
+            android:key="post_interval"
+            android:defaultValue="5000"
+            android:title="POST interval"
+            android:summary="The time to wait between POSTs"
+            android:dialogTitle="POST interval"
+            android:numeric="integer" />
+        
+        <CheckBoxPreference
+            android:key="post_compass"
+            android:defaultValue="false"
+            android:title="POST compass readings" />
+        <EditTextPreference
+            android:dependency="post_compass"
+            android:key="post_compass_path"
+            android:defaultValue="sensors/compass"
+            android:title="Compass POST-path on server"
+            android:summary="The path after the base URI to POST to"
+            android:dialogTitle="Compass POST path"
+            android:layout="?android:attr/preferenceLayoutChild" />
+        
+        <CheckBoxPreference
+            android:key="post_orientation"
+            android:defaultValue="false"
+            android:title="POST orientation readings" />
+        <EditTextPreference
+            android:dependency="post_orientation"
+            android:key="post_orientation_path"
+            android:defaultValue="sensors/orientation"
+            android:title="Orientation POST-path on server"
+            android:summary="The path after the base URI to POST to"
+            android:dialogTitle="Orientation POST path"
+            android:layout="?android:attr/preferenceLayoutChild" />
+        
+        <CheckBoxPreference
+            android:key="post_proximity"
+            android:defaultValue="false"
+            android:title="POST proximity readings" />
+        <EditTextPreference
+            android:dependency="post_proximity"
+            android:key="post_proximity_path"
+            android:defaultValue="sensors/proximity"
+            android:title="Proximity POST-path on server"
+            android:summary="The path after the base URI to POST to"
+            android:dialogTitle="Proximity POST path"
+            android:layout="?android:attr/preferenceLayoutChild" />
+        <CheckBoxPreference
+            android:key="post_light"
+            android:defaultValue="false"
+            android:title="POST light readings" />
+        <EditTextPreference
+            android:dependency="post_light"
+            android:key="post_light_path"
+            android:defaultValue="sensors/light"
+            android:title="Light POST-path on server"
+            android:summary="The path after the base URI to POST to"
+            android:dialogTitle="Light POST path"
+            android:layout="?android:attr/preferenceLayoutChild" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
