@@ -5,23 +5,27 @@
 @displayResource(endPoint: EndPoint) = {
  <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
  @if(resource.pollingPeriod != 0) {
-   [polled every @resource.pollingPeriod min]
+   [polled every @{resource.pollingPeriod/60} min]
  }
  @if(withControls) {
   <span class="rightControl">
     @if(resource.pollingPeriod != 0) {
       <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a>
+    }
+    @if(resource.hasData()) {
       <a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a>
     }
     <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
   </span>
     
-    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
-      <br/>
-      Enter polling period:  
-      <input input type="hidden" name="id" value="@resource.id" />
-      <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
-      <input type="submit" value="Ok" class="buttonG"/>
+	  @if(endPoint.url!="") {
+	    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
+	      <br/>
+	      Enter polling period:  
+	      <input input type="hidden" name="id" value="@resource.id" />
+	      <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+	      <input type="submit" value="Ok" class="buttonG"/>
+	    }
     }
   }
 }

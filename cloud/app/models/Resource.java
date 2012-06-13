@@ -98,6 +98,7 @@ public class Resource extends Model {
     }
     
     public static void delete(Long id) {
+      clearStream(id);
       find.byId(id).delete();
     }
     

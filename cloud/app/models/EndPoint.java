@@ -78,8 +78,20 @@ public class EndPoint extends Model {
       return endPoint;
     }
 
-    public Resource getResource(String path) {
-      return Resource.getByPath(this, path);
+    public Resource getOrCreateResource(String path) {
+      Resource resource = Resource.getByPath(this, path);
+      if(resource == null) {
+        resource = Resource.add(path, this);
+      }
+      return resource;
+    }
+
+    public static EndPoint getOrCreateByLabel(User user, String label) {
+      EndPoint endPoint = getByLabel(user, label);
+      if(endPoint == null) {
+        endPoint = EndPoint.register(user, label, null);
+      }
+      return endPoint;
     }
     
 }

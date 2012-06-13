@@ -15,6 +15,7 @@ object DummyThing extends Controller {
             Map(
               "uid" -> Json.toJson("SicsthSense_Dummy_" + id),
               "resources" -> Json.toJson(Seq(
+                    Json.toJson("/sensors"),
                     Json.toJson("/sensors/temperature"),
                     Json.toJson("/sensors/energy")
                   )
@@ -38,15 +39,8 @@ object DummyThing extends Controller {
   def sensors(id: Long) = Action {
     Ok(currEnergy.toString)
     val jsonObject = Json.toJson(
-            Map(
-              "datapoints" -> Json.toJson(Seq(
-                    Json.toJson(Map("path" ->  Json.toJson("/temperature"),
-                                    "data" ->  Json.toJson(currTemperature))),
-                    Json.toJson(Map("path" ->  Json.toJson("/energy"),
-                                    "data" ->  Json.toJson(currEnergy)))
-                  )
-               )
-            )
+            Map("temperature" ->  Json.toJson(currTemperature),
+                "energy" ->  Json.toJson(currEnergy))
       )
      Ok(jsonObject)
   }

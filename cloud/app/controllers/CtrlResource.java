@@ -39,7 +39,7 @@ public class CtrlResource extends Controller {
   }
   
   public static Result setPeriod(Long id, Long period) {
-    Resource.setPeriod(id, 60*1000*period);
+    Resource.setPeriod(id, 60*period);
     return redirect(request().getHeader("referer"));
   }
   

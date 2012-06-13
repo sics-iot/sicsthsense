@@ -15,7 +15,7 @@ import play.libs.F.*;
 import play.libs.WS;
 
 @Entity 
-public class DataPoint extends Model {
+public class DataPoint extends Model implements Comparable {
   
     @Id
     public Long id;
@@ -43,6 +43,7 @@ public class DataPoint extends Model {
     public static List<DataPoint> getByStream(Resource stream) {
       return find.where()
           .eq("resource", stream)
+          .orderBy("timestamp asc")
           .findList();
     }
     
@@ -51,6 +52,11 @@ public class DataPoint extends Model {
         dataPoint.delete();
       }
     }
-        
+
+    public int compareTo(Object arg0) {
+      DataPoint d = (DataPoint)arg0;
+      return Long.compare(this.timestamp, d.timestamp);
+    }
+    
 }
 

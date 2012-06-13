@@ -11,12 +11,18 @@
 	<dd><a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a></dd>
 	<dt>Path</dt>
 	<dd>@resource.path</dd>
+	@if(resource.pollingPeriod > 0) {
 	<dt>Polling interval</dt>
-  <dd>@{resource.pollingPeriod/60000} minutes</dd>
+  <dd>@{resource.pollingPeriod/60} minutes</dd>
+  }
+  @if(resource.lastPolled > 0) {
   <dt>Last polled</dt>
-  <dd>@{(controllers.Utils.currentTime()-resource.lastPolled)/60000} minutes ago</dd>
+  <dd>@{(controllers.Utils.currentTime()-resource.lastPolled)/60} minutes ago</dd>
+  }
+  @if(resource.lastUpdated > 0) {
   <dt>Last updated</dt>
-  <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60000} minutes ago</dd>
+  <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60} minutes ago</dd>
+  }
 	</dl>
 }
 

@@ -7,11 +7,11 @@ Architecture:
 
 SicsthSense:
 * CoAP polling and POST [Matthias]
-* accept POST [Simon]
+* accept POST [Simon] => done
 * expose streams through a RESTful interface [Simon]
 * decent graphs display (choice of the x scale) [Simon]
 * simple aggregation? (average, sum, etc?) [Simon]
-* interactive RESTful intercafe (click on "POST /leds/red") [Simon]
+* interactive RESTful interface (click on "POST /leds/red") [Simon]
 * acting a proxy, having labels for devices (e.g. sense.sics.se/users/simonduq/phone) [Simon]
 * enbygg-style control [Joakim]
 * spontaneous registration (prefix based) [Simon]
