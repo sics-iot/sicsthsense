@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:robobunny="http://robobunny.com">
 
     <PreferenceCategory android:title="Sensing Settings" >
         <EditTextPreference
@@ -8,13 +8,16 @@
             android:title="Base URI"
             android:summary="The base URI for your thing to POST to"
             android:dialogTitle="Server base URI for POST" />
-        <EditTextPreference
+        
+        <com.robobunny.SeekBarPreference
             android:key="post_interval"
-            android:defaultValue="5000"
             android:title="POST interval"
-            android:summary="The time to wait between POSTs"
-            android:dialogTitle="POST interval"
-            android:numeric="integer" />
+            android:summary="The time between POSTs"
+            android:defaultValue="5000"
+            android:max="60000"
+            robobunny:min="1000"
+        	robobunny:unitsLeft=""
+            robobunny:unitsRight="ms" />
         
         <CheckBoxPreference
             android:key="post_compass"

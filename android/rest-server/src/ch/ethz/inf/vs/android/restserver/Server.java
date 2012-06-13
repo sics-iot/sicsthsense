@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -347,7 +349,7 @@ public class Server extends Service {
         					configColor = Color.parseColor(payload);
         				} catch (Exception e) {
         					out.println("Failed to convert '"+payload+"'");
-        					e.printStackTrace();
+        					Log.w("Server", e.getMessage(), e);
         				} finally {
             				Intent myIntent = new Intent(Server.this, Display.class);
             				myIntent.putExtra("color", configColor);
@@ -369,7 +371,7 @@ public class Server extends Service {
         					configBrightness = Integer.parseInt(payload);
         				} catch (Exception e) {
         					out.println("Failed to convert '"+payload+"'");
-        					e.printStackTrace();
+        					Log.w("Server", e.getMessage(), e);
         				} finally {
             				Intent myIntent = new Intent(Server.this, Display.class);
             				myIntent.putExtra("color", configColor);
@@ -475,6 +477,23 @@ public class Server extends Service {
 			this.payload = payload;
 		}
 
+		// The HttpClient has no timeout by itself, so we abort manually
+		private class RequestTimeoutTask extends TimerTask {
+			
+			HttpPost request = null;
+			
+			public RequestTimeoutTask(HttpPost request) {
+				this.request = request;
+			}
+
+			@Override
+			public void run() {
+		        if(request != null) {
+		        	request.abort();
+		        }
+			}
+		}
+		
 		@Override
 		public void run() {
 			HttpClient httpclient = new DefaultHttpClient();
@@ -487,6 +506,11 @@ public class Server extends Service {
 				e1.printStackTrace();
 			}
 			ResponseHandler<String> handler = new BasicResponseHandler();
+			
+			// Time out before the POST interval
+			Timer timer = new Timer();
+			timer.schedule(new RequestTimeoutTask(request), sharedPrefs.getInt("post_interval", 5000)-100);
+
 			try {
 				Toast.makeText(Server.this, "Response: " + httpclient.execute(request, handler), Toast.LENGTH_SHORT).show();
 			} catch (ClientProtocolException e) {
@@ -496,6 +520,10 @@ public class Server extends Service {
 			}
 			httpclient.getConnectionManager().shutdown();
 		}
+	}
+	
+	private boolean checkInterval(long last) {
+		return last+sharedPrefs.getInt("post_interval", 5000)<System.currentTimeMillis();
 	}
 	
 	public SensorEventListener sensorListener = new SensorEventListener() {
@@ -520,11 +548,11 @@ public class Server extends Service {
 				sensorCompass = "" + event.values[0];
 				sensorOrientationX = "" + event.values[1];
 				sensorOrientationY = "" + event.values[2];
-				if (sharedPrefs.getBoolean("post_compass", false) && lastPostCompass+Long.parseLong(sharedPrefs.getString("post_interval", "5000"))<System.currentTimeMillis()) {
+				if (sharedPrefs.getBoolean("post_compass", false) && checkInterval(lastPostCompass)) {
 					lastPostCompass = System.currentTimeMillis();
 					postHandler.post(new PostTask(sharedPrefs.getString("post_compass_path", "sensors"+RES_COMPASS), sensorCompass));
 				}
-				if (sharedPrefs.getBoolean("post_orientation", false) && lastPostOrientation+Long.parseLong(sharedPrefs.getString("post_interval", "5000"))<System.currentTimeMillis()) {
+				if (sharedPrefs.getBoolean("post_orientation", false) && checkInterval(lastPostOrientation)) {
 					lastPostOrientation = System.currentTimeMillis();
 					postHandler.post(new PostTask(sharedPrefs.getString("post_orientation_path", "sensors"+RES_ORIENTATION), "{\"x\":"+sensorOrientationX+",\"y\":"+sensorOrientationY+"}"));
 				}
@@ -538,7 +566,7 @@ public class Server extends Service {
 				break;
 			case Sensor.TYPE_LIGHT:
 				sensorLight = "" + event.values[0];
-				if (sharedPrefs.getBoolean("post_light", false) && lastPostLight+Long.parseLong(sharedPrefs.getString("post_interval", "5000"))<System.currentTimeMillis()) {
+				if (sharedPrefs.getBoolean("post_light", false) && checkInterval(lastPostLight)) {
 					lastPostLight = System.currentTimeMillis();
 					postHandler.post(new PostTask(sharedPrefs.getString("post_light_path", "sensors"+RES_LIGHT), sensorLight));
 				}
@@ -561,6 +589,29 @@ public class Server extends Service {
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences( getApplicationContext() );
+        
+        // sanity checks
+        String test = null;
+        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        if (!test.endsWith("/")) {
+        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        }
+        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        if (!test.endsWith("/")) {
+        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        }
+        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        if (!test.endsWith("/")) {
+        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        }
+        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        if (!test.endsWith("/")) {
+        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        }
+        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        if (!test.endsWith("/")) {
+        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        }
 		
 		this.postHandler = new Handler();
 
