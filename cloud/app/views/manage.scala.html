@@ -36,7 +36,7 @@
   <ul>
     @for(endPoint <- endPoints) {
       <li>
-        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a> (@endPoint.description, @endPoint.location)
+        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a> (@endPoint.getTextDescription())
           <ul>
 			      @Resource.getByEndPoint(endPoint).map { resource =>
 			          <li>

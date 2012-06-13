@@ -44,7 +44,7 @@ public class Proxy extends Controller {
                 Promise<Response> promise = null;
                 switch(method) {
                   case "GET":     promise = WS.url(url).get(); break;
-                  case "POST":    promise = WS.url(url).post(body); ;break;
+                  case "POST":    promise = WS.url(url).post(body); break;
                   case "PUT":     promise = WS.url(url).put(body); break;
                   case "DELETE":  promise = WS.url(url).delete(); break;
                 }

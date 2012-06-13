@@ -47,6 +47,22 @@ public class DataPoint extends Model implements Comparable {
           .findList();
     }
     
+    public static List<DataPoint> getSubsetByStreamN(Resource stream, long n) {
+      List<DataPoint> set = find.where()
+          .eq("resource", stream)
+          .orderBy("timestamp asc")
+          .findList();
+      return set.subList(set.size()-(int)n, set.size());
+    }
+    
+    public static List<DataPoint> getSubsetByStreamSince(Resource stream, long since) {
+      return find.where()
+          .eq("resource", stream)
+          .ge("timestamp", since)
+          .orderBy("timestamp asc")
+          .findList();
+    }
+    
     public static void deleteByStream(Resource stream) {
       for(DataPoint dataPoint: getByStream(stream)) {
         dataPoint.delete();

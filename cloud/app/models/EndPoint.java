@@ -63,6 +63,12 @@ public class EndPoint extends Model {
           .eq("label", label)
           .findUnique();
     }
+    
+    public String getTextDescription() {
+      String desc = description == null ? "no description" : description;
+      String loc = location == null ? "no location" : location;
+      return desc + ", " + loc;
+    }
         
     public static EndPoint get(Long id) {
       return find.byId(id);

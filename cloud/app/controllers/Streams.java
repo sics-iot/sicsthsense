@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 import com.ning.http.client.Request;
 
@@ -99,6 +101,35 @@ public class Streams extends Controller {
     }
     
     return ok("ok");
+  }
+  
+  public static Result get(String userName, String label, String path, Long n, Long t) {
+    final User user = User.getByUserName(userName);
+    if(user == null) return notFound();
+    final EndPoint endPoint = EndPoint.getByLabel(user, label);
+    if(endPoint == null) return notFound();
+    final Resource resource = Resource.getByPath(endPoint, path);
+    if(resource == null) return notFound();
+        
+    long current = Utils.currentTime();
+    long since = current - t;
+    ObjectNode result = Json.newObject();
+    ArrayNode array = result.putArray(path);
+    List<DataPoint> dataSet = null;
+    if(n > 0) {
+      dataSet = DataPoint.getSubsetByStreamN(resource, n);
+    } else if(t > 0) {
+      dataSet = DataPoint.getSubsetByStreamSince(resource, since);
+    } else {
+      dataSet = DataPoint.getByStream(resource);
+    }
+    for(DataPoint dataPoint: dataSet) {
+      ObjectNode e = Json.newObject();
+      e.put(new Long(dataPoint.timestamp-current).toString(), dataPoint.data);
+      array.add(e);
+    }
+    
+    return ok(result);
   }
   
 }
