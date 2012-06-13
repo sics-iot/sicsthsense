@@ -241,7 +241,6 @@ ws_leds_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
         jsonparse_next(parser);
         jsonparse_next(parser);
         new_leds = jsonparse_get_value_as_int(parser);
-	printf("Setting LEDS: %d\n", new_leds);
         leds_on(new_leds);
         leds_off(~new_leds);
       }
@@ -284,12 +283,6 @@ PT_THREAD(send_values(struct httpd_ws_state *s))
 
   s->json.putchar = json_putchar;
   s->outbuf_pos = 0;
-
-  printf("SV: Inputbuf: ");
-  for(i = 0; i < 50; i++) {
-    printf("%c", s->inputbuf[i]);
-  }
-  printf("\n");
 
   if(s->json.values[0] == NULL) {
     /* Nothing to do */
@@ -486,7 +479,7 @@ else {
     }
 #endif /* WITH_UDP */
   } else {
-    printf("PERIODIC CALLBACK - nothing todo\n");
+    PRINTF("PERIODIC CALLBACK - nothing todo\n");
   }
 }
 /*---------------------------------------------------------------------------*/

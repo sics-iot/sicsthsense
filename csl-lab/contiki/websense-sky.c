@@ -41,12 +41,13 @@
 #include "contiki.h"
 #include "dev/leds.h"
 #include "dev/sht11-sensor.h"
+#include "dev/light-sensor.h"
 #include "jsontree.h"
 #include "json-ws.h"
+#include <stdio.h>
 
 #define DEBUG 0
 #if DEBUG
-#include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
@@ -56,22 +57,52 @@ PROCESS(websense_process, "Websense (sky)");
 AUTOSTART_PROCESSES(&websense_process);
 
 /*---------------------------------------------------------------------------*/
-static CC_INLINE int
-get_temp(void)
-{
-  return ((sht11_sensor.value(SHT11_SENSOR_TEMP) / 10) - 396) / 10;
+static void
+output_float(struct jsontree_context *path, int x100) {
+  char buf[10];
+  int tmp;
+  int tmp2;
+  tmp2 = x100;
+  tmp = tmp2 / 100;
+
+  snprintf(buf, sizeof(buf), "%2d.%02d", tmp, tmp2 - (100 * tmp));
+  jsontree_write_atom(path, buf);
 }
 /*---------------------------------------------------------------------------*/
 static int
 output_temp(struct jsontree_context *path)
 {
-  jsontree_write_int(path, get_temp());
+  output_float(path, sht11_sensor.value(SHT11_SENSOR_TEMP) - 3960);
   return 0;
 }
 static struct jsontree_callback temp_sensor_callback =
   JSONTREE_CALLBACK(output_temp, NULL);
 /*---------------------------------------------------------------------------*/
-
+static int
+output_hum(struct jsontree_context *path)
+{
+  int ms, hum;
+  ms = sht11_sensor.value(SHT11_SENSOR_HUMIDITY);
+  /* this is in * 10000 */
+  /* -2.0468  + 0.0367 * ms +  -1.5955e-6 * ms * ms ...too small value...  */
+  hum = (-20468L + 367L * ms) / 100L;
+  output_float(path, hum);
+  return 0;
+}
+static struct jsontree_callback hum_sensor_callback =
+  JSONTREE_CALLBACK(output_hum, NULL);
+/*---------------------------------------------------------------------------*/
+static int
+output_light(struct jsontree_context *path)
+{
+  int v;
+  v = light_sensor.value(LIGHT_SENSOR_TOTAL_SOLAR);
+  jsontree_write_int(path, v);
+  return 0;
+}
+static struct jsontree_callback light_sensor_callback =
+  JSONTREE_CALLBACK(output_light, NULL);
+/*---------------------------------------------------------------------------*/
 static struct jsontree_string desc = JSONTREE_STRING("Tmote Sky");
 static struct jsontree_string temp_unit = JSONTREE_STRING("Celcius");
 
@@ -79,18 +110,20 @@ JSONTREE_OBJECT(node_tree,
                 JSONTREE_PAIR("node-type", &desc),
                 JSONTREE_PAIR("time", &json_time_callback));
 
-JSONTREE_OBJECT(temp_sensor_tree,
-                JSONTREE_PAIR("unit", &temp_unit),
-                JSONTREE_PAIR("value", &temp_sensor_callback));
 
-JSONTREE_OBJECT(rsc_tree,
-                JSONTREE_PAIR("temperature", &temp_sensor_tree),
+JSONTREE_OBJECT(sensor_tree,
+                JSONTREE_PAIR("temperature", &temp_sensor_callback),
+                JSONTREE_PAIR("humidity", &hum_sensor_callback),
+                JSONTREE_PAIR("light", &light_sensor_callback));
+
+JSONTREE_OBJECT(act_tree,
                 JSONTREE_PAIR("leds", &json_leds_callback));
 
 /* complete node tree */
 JSONTREE_OBJECT(tree,
                 JSONTREE_PAIR("node", &node_tree),
-                JSONTREE_PAIR("rsc", &rsc_tree),
+                JSONTREE_PAIR("sen", &sensor_tree),
+                JSONTREE_PAIR("act", &act_tree),
                 JSONTREE_PAIR("cfg", &json_subscribe_callback));
 
 /*---------------------------------------------------------------------------*/
@@ -109,6 +142,7 @@ PROCESS_THREAD(websense_process, ev, data)
   json_ws_init(&tree);
 
   SENSORS_ACTIVATE(sht11_sensor);
+  SENSORS_ACTIVATE(light_sensor);
 
   json_ws_set_callback("rsc");
 
