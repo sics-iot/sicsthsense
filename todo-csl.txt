@@ -12,7 +12,7 @@ SicsthSense:
 * decent graphs display (choice of the x scale) [Simon]
 * simple aggregation? (average, sum, etc?) [Simon]
 * interactive RESTful intercafe (click on "POST /leds/red") [Simon]
-* acting a proxy, having labels for devices [Simon]
+* acting a proxy, having labels for devices (e.g. sense.sics.se/users/simonduq/phone) [Simon]
 * enbygg-style control [Joakim]
 * spontaneous registration (prefix based) [Simon]
 * beautiful front-end!

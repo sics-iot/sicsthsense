@@ -18,6 +18,8 @@ import models.*;
 import views.html.*;
 import java.util.concurrent.Callable;
 
+import org.codehaus.jackson.JsonNode;
+
 @Security.Authenticated(Secured.class)
 public class CtrlEndPoint extends Controller {
   
@@ -30,7 +32,7 @@ public class CtrlEndPoint extends Controller {
       return badRequest("Bad request");
     } else {
       EndPoint submitted = theForm.get();
-      EndPoint.register(CtrlUser.getUser(), submitted.url);
+      EndPoint.register(CtrlUser.getUser(), submitted.label, submitted.url);
       return redirect(routes.Application.manage());
     }
   }
@@ -44,13 +46,20 @@ public class CtrlEndPoint extends Controller {
       EndPoint submitted = theForm.get();
       submitted.id = id;
       submitted.uid = current.uid;
-      submitted.update();
+      try { submitted.update(); }
+      catch (Exception e) { return badRequest("Bad request"); }
       return redirect(routes.CtrlEndPoint.get(id));
     }
   }
    
   public static Result get(Long id) {
     EndPoint endPoint = EndPoint.get(id);
+    if(endPoint != null)     return ok(ViewEndPoint.render(endPoint, null));
+    else                     return notFound();
+  }
+  
+  public static Result getByLabel(String userName, String label) {
+    EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
     if(endPoint != null)     return ok(ViewEndPoint.render(endPoint, null));
     else                     return notFound();
   }
@@ -69,13 +78,23 @@ public class CtrlEndPoint extends Controller {
   public static Result discover(Long id) {
     final EndPoint endPoint = EndPoint.get(id);
     if(endPoint == null) return notFound();
-    
     return async(
       Akka.future(
         new Callable<Result>() {
           public Result call() {
-            Boolean ret = endPoint.discover();
-            return redirect(routes.CtrlEndPoint.get(endPoint.id)); 
+            try {
+              String url = Utils.concatPath(endPoint.url,"/discover");
+              System.out.println("toto " + url);
+              JsonNode json = WS.url(url).get().get().asJson();
+              endPoint.uid = json.findPath("uid").getTextValue();
+              for(JsonNode node: json.findPath("resources")) {
+                try {
+                  Resource.add(node.getTextValue(), endPoint);
+                } catch (Exception e) {}
+              }
+              endPoint.update();
+            } catch (Exception e) { }
+            return redirect(routes.CtrlEndPoint.get(endPoint.id));
           }
         }
       )

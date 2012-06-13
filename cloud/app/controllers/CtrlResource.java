@@ -4,6 +4,11 @@ package controllers;
 //import models.Task;
 //import models.User;
 import java.util.HashMap;
+import java.util.List;
+
+import org.codehaus.jackson.JsonNode;
+
+import com.ning.http.client.Request;
 
 import play.*;
 
@@ -11,6 +16,7 @@ import play.core.Router.Routes;
 import play.libs.F.*;
 import play.libs.*;
 import play.mvc.*;
+import play.mvc.Http.RequestBody;
 import play.data.*;
 
 import models.*;
@@ -33,7 +39,7 @@ public class CtrlResource extends Controller {
   }
   
   public static Result setPeriod(Long id, Long period) {
-    Resource.setPeriod(id, period);
+    Resource.setPeriod(id, 60*1000*period);
     return redirect(request().getHeader("referer"));
   }
   
@@ -41,5 +47,5 @@ public class CtrlResource extends Controller {
     Resource.clearStream(id);
     return redirect(request().getHeader("referer"));
   }
-
+  
 }

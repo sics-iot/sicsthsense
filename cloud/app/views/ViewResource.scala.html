@@ -12,9 +12,11 @@
 	<dt>Path</dt>
 	<dd>@resource.path</dd>
 	<dt>Polling interval</dt>
-  <dd>@resource.pollingPeriod minutes</dd>
+  <dd>@{resource.pollingPeriod/60000} minutes</dd>
+  <dt>Last polled</dt>
+  <dd>@{(controllers.Utils.currentTime()-resource.lastPolled)/60000} minutes ago</dd>
   <dt>Last updated</dt>
-  <dd>@{Resource.currentTime()-resource.lastUpdate} minutes ago</dd>
+  <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60000} minutes ago</dd>
 	</dl>
 }
 

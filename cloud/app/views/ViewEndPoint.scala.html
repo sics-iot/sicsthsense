@@ -12,7 +12,7 @@
 
   @myForm.form(routes.CtrlEndPoint.submit(endPoint.id)) {
       <dt>User</dt>
-      <dd>@endPoint.getUser().firstName @endPoint.getUser().lastName</dd>
+      <dd>@endPoint.getUser().userName</dd>
       @myForm.input(epForm!=null, "text", "label", "Label", endPoint.label)
       @myForm.input(epForm!=null, "url", "url", "URL", endPoint.url)
       @myForm.submit(epForm!=null, "Update")

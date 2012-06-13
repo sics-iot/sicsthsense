@@ -19,7 +19,18 @@
 }
 
 @layout("Manage", session) {
+ 
+  <h1>Register new device</h1>
+ 
+   @helper.form(action = routes.CtrlEndPoint.add()) {
+    <dl>
+      <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
+      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
+      <input type="submit" value="Register" class="buttonLG"/>
+    </dl>
+  }
   
+  @if(endPoints.length > 0) {
   <h1>Your resources</h1>
      
   <ul>
@@ -36,13 +47,7 @@
       </li>
     }
   </ul>
- 
-  @helper.form(action = routes.CtrlEndPoint.add()) {
-    <dl>
-      <input input type="url" name="url" required placeholder="Enter the URL of a Thing to be added" class="inputL" />
-      <input type="submit" value="Register" class="buttonLG"/>
-    </dl>
   }
-  
-  @displayStreams(Resource.getByUserWithPolling(CtrlUser.getUser()))
+   
+  @displayStreams(Resource.getByUserWithData(CtrlUser.getUser()))
 }

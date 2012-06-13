@@ -42,6 +42,7 @@ public class Login extends Controller {
     User user = User.getByEmail(userInfo.attributes.get("email"));
     if(user == null) {
       user = User.create(new User(userInfo.attributes.get("email"),
+          userInfo.attributes.get("email"),
           userInfo.attributes.get("firstName"),
           userInfo.attributes.get("lastName"),
           userInfo.attributes.get("location")

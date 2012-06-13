@@ -6,7 +6,7 @@
 
    <script type="text/javascript">
        $(function () {   
-           var points = [@dataPoints.map(dataPoint => "[" + (dataPoint.timestamp-Resource.currentTime()) + "," + dataPoint.data + "]").reduce((acc, curr) => acc + ", " + curr)];
+           var points = [@dataPoints.map(dataPoint => "[" + (dataPoint.timestamp-controllers.Utils.currentTime()) + "," + dataPoint.data + "]").reduce((acc, curr) => acc + ", " + curr)];
            
            var options = {
               series: {

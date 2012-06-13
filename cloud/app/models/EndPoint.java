@@ -1,6 +1,7 @@
 package models;
 
 import java.util.*;
+import play.mvc.*;
 
 import javax.persistence.*;
 
@@ -14,14 +15,19 @@ import com.avaje.ebean.*;
 import play.libs.F.*;
 import play.libs.WS;
 
-@Entity 
+@Entity
+@Table(name="end_point",
+uniqueConstraints = {
+    @UniqueConstraint(columnNames={"user_id", "label"})
+    }
+)
 public class EndPoint extends Model {
   
     @Id
     public Long id;
     
-    public String label;
     @Constraints.Required
+    public String label;
     public String url;
     public String uid;
         
@@ -46,6 +52,13 @@ public class EndPoint extends Model {
           .eq("user", user)
           .findList();
     }
+    
+    public static EndPoint getByLabel(User user, String label) {
+      return find.where()
+          .eq("user", user)
+          .eq("label", label)
+          .findUnique();
+    }
         
     public static EndPoint get(Long id) {
       return find.byId(id);
@@ -59,24 +72,14 @@ public class EndPoint extends Model {
       return find.all();
     }
     
-    public static EndPoint register(User user, String url) {
-      EndPoint endPoint = new EndPoint(user, url, null, url);
+    public static EndPoint register(User user, String label, String url) {
+      EndPoint endPoint = new EndPoint(user, url, null, label);
       endPoint.save();
       return endPoint;
     }
 
-    public Boolean discover() {
-      try {
-        JsonNode json = WS.url(url + "/discover").get().get().asJson();
-        uid = json.findPath("uid").getTextValue();
-        for(JsonNode node: json.findPath("resources")) {
-          Resource.add(node.getTextValue(), this);
-        }
-        update();
-        return true;
-      } catch (Exception e) {
-        return false;
-      }
+    public Resource getResource(String path) {
+      return Resource.getByPath(this, path);
     }
     
 }

@@ -6,7 +6,7 @@
 create table data_point (
   id                        bigint not null,
   resource_id               bigint,
-  data                      bigint,
+  data                      float,
   timestamp                 bigint,
   constraint pk_data_point primary key (id))
 ;
@@ -17,6 +17,7 @@ create table end_point (
   url                       varchar(255),
   uid                       varchar(255),
   user_id                   bigint,
+  constraint uq_end_point_1 unique (user_id,label),
   constraint pk_end_point primary key (id))
 ;
 
@@ -26,17 +27,21 @@ create table resource (
   end_point_id              bigint,
   user_id                   bigint,
   polling_period            bigint,
-  last_update               bigint,
+  last_polled               bigint,
+  last_updated              bigint,
+  constraint uq_resource_1 unique (end_point_id,path),
   constraint pk_resource primary key (id))
 ;
 
 create table user (
   id                        bigint not null,
   email                     varchar(255),
+  user_name                 varchar(255),
   first_name                varchar(255),
   last_name                 varchar(255),
   location                  varchar(255),
-  constraint uq_user_1 unique (email),
+  constraint uq_user_1 unique (user_name),
+  constraint uq_user_2 unique (email),
   constraint pk_user primary key (id))
 ;
 

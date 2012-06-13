@@ -23,18 +23,18 @@ public class DataPoint extends Model {
     @ManyToOne
     public Resource resource;
     
-    public long data;
+    public float data;
     public long timestamp;
           
     public static Model.Finder<Long,DataPoint> find = new Model.Finder(Long.class, DataPoint.class);
     
-    public DataPoint(Resource resource, long data, long timestamp) {
+    public DataPoint(Resource resource, float data, long timestamp) {
       this.resource = resource;
       this.data = data;
       this.timestamp = timestamp;
     }
     
-    public static DataPoint add(Resource resource, long data, long timestamp) {
+    public static DataPoint add(Resource resource, float data, long timestamp) {
       DataPoint dataPoint = new DataPoint(resource, data, timestamp);
       dataPoint.save();
       return dataPoint;

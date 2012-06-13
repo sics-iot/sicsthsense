@@ -26,11 +26,17 @@ public class CtrlUser extends Controller {
   }
   
   public static Result get() {
-    return ok(ViewUser.render(null));
+    return ok(ViewUser.render(getUser(), null));
+  }
+  
+  public static Result getByName(String userName) {
+    User user = User.getByUserName(userName);
+    if(user == null) return notFound("User not found");
+    return ok(ViewUser.render(user, null));
   }
   
   public static Result edit() {
-    return ok(ViewUser.render(userForm));
+    return ok(ViewUser.render(getUser(), userForm));
   }
   
   public static Result submit() {
@@ -42,7 +48,8 @@ public class CtrlUser extends Controller {
       User submitted = theForm.get();
       submitted.id = current.id;
       submitted.email = current.email;
-      submitted.update();
+      try { submitted.update(); }
+      catch (Exception e) { return badRequest("Bad request"); }
       return redirect(routes.CtrlUser.get());
     }
   }

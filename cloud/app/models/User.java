@@ -12,7 +12,11 @@ import com.avaje.ebean.*;
 
 @Entity 
 @Table(name="user",
-uniqueConstraints = {@UniqueConstraint(columnNames={"email"})})
+uniqueConstraints = {
+    @UniqueConstraint(columnNames={"user_name"}),
+    @UniqueConstraint(columnNames={"email"})
+    }
+)
 public class User extends Model {
 
     @Id
@@ -20,19 +24,21 @@ public class User extends Model {
     
     @Formats.NonEmpty
     public String email;
+    @Formats.NonEmpty
+    public String userName;
     @Constraints.Required
     public String firstName;
     @Constraints.Required
     public String lastName;
-    @Constraints.Required
     public String location;
     
     // -- Queries
     
     public static Model.Finder<Long,User> find = new Model.Finder(Long.class, User.class);
         
-    public User(String email, String firstName, String lastName, String location) {
+    public User(String email, String userName, String firstName, String lastName, String location) {
       this.email = email;
+      this.userName = userName;
       this.firstName = firstName;
       this.lastName = lastName;
       this.location = location;
@@ -53,6 +59,10 @@ public class User extends Model {
         
     public static User getByEmail(String email) {
       return find.where().eq("email", email).findUnique();
+    }
+    
+    public static User getByUserName(String userName) {
+      return find.where().eq("user_name", userName).findUnique();
     }
         
     public static void delete(Long id) {

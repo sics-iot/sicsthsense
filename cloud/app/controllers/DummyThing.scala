@@ -24,14 +24,31 @@ object DummyThing extends Controller {
      Ok(jsonObject)
   }
   
+  def currTemperature = 42 + rand.nextInt() % 20
+  def currEnergy = 42 + rand.nextInt() % 20
+  
   def temperature(id: Long) = Action {
-    val currTemp = 42 + rand.nextInt() % 20
-    Ok(currTemp.toString)
+    Ok(currTemperature.toString)
   }
   
   def energy(id: Long) = Action {
-    val currEnergy = 23  + rand.nextInt() % 20
     Ok(currEnergy.toString)
+  }
+  
+  def sensors(id: Long) = Action {
+    Ok(currEnergy.toString)
+    val jsonObject = Json.toJson(
+            Map(
+              "datapoints" -> Json.toJson(Seq(
+                    Json.toJson(Map("path" ->  Json.toJson("/temperature"),
+                                    "data" ->  Json.toJson(currTemperature))),
+                    Json.toJson(Map("path" ->  Json.toJson("/energy"),
+                                    "data" ->  Json.toJson(currEnergy)))
+                  )
+               )
+            )
+      )
+     Ok(jsonObject)
   }
   
 }

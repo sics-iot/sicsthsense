@@ -25,7 +25,7 @@
     <ul>
     @for(endPoint <- endPoints) {
       <li>
-        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a>
+        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a>
           <ul>
             @Resource.getByEndPoint(endPoint).map { resource =>
                 <li>
@@ -37,6 +37,6 @@
     }
   </ul>
  
- @displayStreams(Resource.getWithPolling())
+ @displayStreams(Resource.getWithData())
  
 }
