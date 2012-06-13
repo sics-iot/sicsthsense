@@ -3,14 +3,14 @@ import play.libs.Akka
 import akka.util.duration._
 import akka.actor._
 import models._
-import controllers.CtrlDataPoint
+import controllers.Streams
 import scala.compat.Platform
 
 class PeriodicMonitor extends Actor {
 
   def receive = {
     case _ => {
-      CtrlDataPoint.pollAll()
+      Streams.pollAll()
     }
   }
   

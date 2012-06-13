@@ -84,7 +84,6 @@ public class CtrlEndPoint extends Controller {
           public Result call() {
             try {
               String url = Utils.concatPath(endPoint.url,"/discover");
-              System.out.println("toto " + url);
               JsonNode json = WS.url(url).get().get().asJson();
               endPoint.uid = json.findPath("uid").getTextValue();
               for(JsonNode node: json.findPath("resources")) {

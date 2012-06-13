@@ -16,6 +16,8 @@ create table end_point (
   label                     varchar(255),
   url                       varchar(255),
   uid                       varchar(255),
+  description               varchar(255),
+  location                  varchar(255),
   user_id                   bigint,
   constraint uq_end_point_1 unique (user_id,label),
   constraint pk_end_point primary key (id))

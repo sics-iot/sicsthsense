@@ -17,7 +17,8 @@ object DummyThing extends Controller {
               "resources" -> Json.toJson(Seq(
                     Json.toJson("/sensors"),
                     Json.toJson("/sensors/temperature"),
-                    Json.toJson("/sensors/energy")
+                    Json.toJson("/sensors/energy"),
+                    Json.toJson("/actuators/print")
                   )
                )
             )
@@ -43,6 +44,11 @@ object DummyThing extends Controller {
                 "energy" ->  Json.toJson(currEnergy))
       )
      Ok(jsonObject)
+  }
+  
+  def print(id: Long) = Action { request =>
+    println("DummyThing" + id + " prints: " + request.body.asText.getOrElse("[no body]"))
+    Ok("ok")
   }
   
 }

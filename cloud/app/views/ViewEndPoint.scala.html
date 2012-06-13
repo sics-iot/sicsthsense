@@ -15,13 +15,16 @@
       <dd>@endPoint.getUser().userName</dd>
       @myForm.input(epForm!=null, "text", "label", "Label", endPoint.label)
       @myForm.input(epForm!=null, "url", "url", "URL", endPoint.url)
+      @myForm.input(epForm!=null, "text", "description", "Description", endPoint.description)
+      @myForm.input(epForm!=null, "text", "location", "Location", endPoint.location)
       @myForm.submit(epForm!=null, "Update")
   }
-  
+   
+  @if(endPoint.url != "") {
   Perform automatic resource discovery
   <a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a>
-
   <br/>
+  }
   Delete:
   <a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a>
     

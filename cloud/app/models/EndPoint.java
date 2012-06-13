@@ -30,17 +30,21 @@ public class EndPoint extends Model {
     public String label;
     public String url;
     public String uid;
+    public String description;
+    public String location;
         
     @ManyToOne
     public User user;
             
     public static Model.Finder<Long,EndPoint> find = new Model.Finder(Long.class, EndPoint.class);
     
-    public EndPoint(User user, String url, String uid, String label) {
+    public EndPoint(User user, String url, String uid, String label, String description, String location) {
       this.user = user;
       this.url = url;
       this.uid = uid;
       this.label = label;
+      this.description = description;
+      this.location = location;
     }
     
     public User getUser() {
@@ -73,7 +77,7 @@ public class EndPoint extends Model {
     }
     
     public static EndPoint register(User user, String label, String url) {
-      EndPoint endPoint = new EndPoint(user, url, null, label);
+      EndPoint endPoint = new EndPoint(user, url, null, label, null, null);
       endPoint.save();
       return endPoint;
     }
