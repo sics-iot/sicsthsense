@@ -4,7 +4,7 @@
     <PreferenceCategory android:title="Sensing Settings" >
         <EditTextPreference
             android:key="post_base_uri"
-            android:defaultValue="http://sense.sics.se/users/"
+            android:defaultValue="http://sense.sics.se/streams/"
             android:title="Base URI"
             android:summary="The base URI for your thing to POST to"
             android:dialogTitle="Server base URI for POST" />

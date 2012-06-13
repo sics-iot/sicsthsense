@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,7 +15,6 @@ import java.util.TimerTask;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -35,7 +35,10 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -44,6 +47,8 @@ import android.widget.Toast;
 
 
 public class Server extends Service {
+	
+	private static final String DEFAULT_BASE_URI = "http://sense.sics.se/streams/";
 	
 	private static final String RES_LED = "/led";
 	private static final String RES_VIBRATE = "/vibrate";
@@ -231,6 +236,15 @@ public class Server extends Service {
 	
     private NotificationManager mNM;
     
+	// Workaround to display a toast from a non-GUI thread
+	final Handler printToast = new Handler( new Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+			Toast.makeText(Server.this, (String)msg.obj, Toast.LENGTH_SHORT).show();
+			return true;
+        }
+    });
+    
 	private SensorManager sensorMgr = null;
 	
 	private int configColor = Color.BLACK;
@@ -413,9 +427,9 @@ public class Server extends Service {
             		out.print("\r\n");
         			out.print(sensorOrientationY);
         		} else if (request.contains(RES_ORIENTATION)) {
-            		out.print("Content-Type: text/plain\r\n");
+            		out.print("Content-Type: application/json\r\n");
             		out.print("\r\n");
-        			out.print(sensorOrientationX+";"+sensorOrientationY);
+        			out.print("{\"x\":"+sensorOrientationX+",\"y\":"+sensorOrientationY+"}");
         		} else if (request.contains(RES_LIGHT)) {
             		out.print("Content-Type: text/plain\r\n");
             		out.print("\r\n");
@@ -432,12 +446,6 @@ public class Server extends Service {
             		out.print(INDEX_HTML);
         		}
         		
-        		/* Debug
-        		out.println(request);
-        		out.println(input);
-        		out.println(payload);
-        		*/
-	        	
         		client.close();
 		  } catch (IOException e) {
 			  Log.e("ClientHandler", e.getMessage(), e);
@@ -457,13 +465,10 @@ public class Server extends Service {
 		        	
 		        	Thread t = new Thread(conn_c);
 		        	t.start();
-		        	// No Toasts in threads -- Handler() does not work with threads
-		        	//Toast.makeText(Server.this, "Request handled", Toast.LENGTH_LONG).show();
 		        }
 	        	
 	        } catch (Exception e) {
 	        	Log.i("ServerSocket", e.getMessage());
-				//Toast.makeText(Server.this, e.getMessage(), Toast.LENGTH_LONG).show();
 	        }
 		}
 	};
@@ -496,32 +501,56 @@ public class Server extends Service {
 		
 		@Override
 		public void run() {
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost request = new HttpPost(sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/") + stream );
-			request.addHeader("Accept", "application/json");
-			try {
-				request.setEntity(new StringEntity(payload));
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			ResponseHandler<String> handler = new BasicResponseHandler();
-			
-			// Time out before the POST interval
-			Timer timer = new Timer();
-			timer.schedule(new RequestTimeoutTask(request), sharedPrefs.getInt("post_interval", 5000)-100);
+			// new Thread required to not run blocking request in the UI thread
+			Thread task = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					
+					while (stream.startsWith("/")) {
+						stream = stream.substring(1);
+					}
+			        
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpPost request = new HttpPost(sharedPrefs.getString("post_base_uri", DEFAULT_BASE_URI) + stream );
+					if (payload.startsWith("{")) {
+						request.addHeader("Content-Type", "application/json");
+					} else {
+						request.addHeader("Content-Type", "text/plain");
+					}
+					try {
+						request.setEntity(new StringEntity(payload));
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+					ResponseHandler<String> handler = new BasicResponseHandler();
+					
+					// Time out before the POST interval
+					Timer timer = new Timer();
+					timer.schedule(new RequestTimeoutTask(request), sharedPrefs.getInt("post_interval", 5000)-500);
 
-			try {
-				Toast.makeText(Server.this, "Response: " + httpclient.execute(request, handler), Toast.LENGTH_SHORT).show();
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			httpclient.getConnectionManager().shutdown();
+					Looper.prepare();
+					try {
+						String response = httpclient.execute(request, handler); // blocking
+						printToast.sendMessage(printToast.obtainMessage(0, "Response: "+response));
+					} catch (SocketException e) {
+						printToast.sendMessage(printToast.obtainMessage(0, "Error: " + e.getMessage()));
+						
+					} catch (ClientProtocolException e) {
+						printToast.sendMessage(printToast.obtainMessage(0, "Server error: " + e.getMessage()));
+						
+					} catch (IOException e) {
+						printToast.sendMessage(printToast.obtainMessage(0, "IO error: " + e.getMessage()));
+						e.printStackTrace();
+					}
+					timer.cancel();
+					httpclient.getConnectionManager().shutdown();
+				}
+			});
+
+	        task.start();
 		}
 	}
-	
+
 	private boolean checkInterval(long last) {
 		return last+sharedPrefs.getInt("post_interval", 5000)<System.currentTimeMillis();
 	}
@@ -591,26 +620,9 @@ public class Server extends Service {
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences( getApplicationContext() );
         
         // sanity checks
-        String test = null;
-        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
+        String test = sharedPrefs.getString("post_base_uri", DEFAULT_BASE_URI);
         if (!test.endsWith("/")) {
-        	sharedPrefs.edit().putString("post_base_uri", test+"/");
-        }
-        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
-        if (!test.endsWith("/")) {
-        	sharedPrefs.edit().putString("post_base_uri", test+"/");
-        }
-        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
-        if (!test.endsWith("/")) {
-        	sharedPrefs.edit().putString("post_base_uri", test+"/");
-        }
-        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
-        if (!test.endsWith("/")) {
-        	sharedPrefs.edit().putString("post_base_uri", test+"/");
-        }
-        test = sharedPrefs.getString("post_base_uri", "http://sense.sics.se/users/");
-        if (!test.endsWith("/")) {
-        	sharedPrefs.edit().putString("post_base_uri", test+"/");
+        	sharedPrefs.edit().putString("post_base_uri", test+"/").apply();
         }
 		
 		this.postHandler = new Handler();
@@ -618,13 +630,6 @@ public class Server extends Service {
         // Change static variable
         isRunning = true;
 
-        /* Sensors */
-        /*
-        sensors = sensorMgr.getSensorList(Sensor.TYPE_ALL);
-        for (Sensor s : sensors) {
-        	Toast.makeText(Server.this, s.getName(), Toast.LENGTH_LONG).show();
-        }
-        */
         // Get SensorManager
         sensorMgr  = (SensorManager) getSystemService(SENSOR_SERVICE);
         // Initialize (custom) SensorListener for all sensors
@@ -641,8 +646,6 @@ public class Server extends Service {
     	
         // Display a notification about us starting.  We put an icon in the status bar.
         showNotification();
-        
-        Toast.makeText(Server.this, "End of Server.onCreate()", Toast.LENGTH_LONG).show();
     }
    
 
@@ -665,7 +668,6 @@ public class Server extends Service {
     	try {
 			listener.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -716,8 +718,7 @@ public class Server extends Service {
                 new Intent(this, main.class), 0);
 
         // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, getText(R.string.local_service_label),
-        		text, contentIntent);
+        notification.setLatestEventInfo(this, getText(R.string.local_service_label), text, contentIntent);
 
         // Send the notification.
         // We use a layout id because it is a unique number.  We use it later to cancel.
@@ -767,7 +768,6 @@ public class Server extends Service {
     		try {
 				mp.prepareAsync();
 			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}

@@ -78,12 +78,12 @@ public class main extends Activity {
     public void onClick(View view) {
         
 	    if (!Server.isRunning) {
-	    	Toast.makeText(main.this, "Starting server", Toast.LENGTH_LONG).show();
+	    	Toast.makeText(main.this, "Starting server", Toast.LENGTH_SHORT).show();
 			startService(svc);
 			((Button)view).setText(R.string.RunningButtonText);
 			finish();
 		} else {
-			Toast.makeText(main.this, "Stopping server", Toast.LENGTH_LONG).show();
+			Toast.makeText(main.this, "Stopping server", Toast.LENGTH_SHORT).show();
 			stopService(svc);
 			((Button)view).setText(R.string.StoppedButtonText);
 		}
