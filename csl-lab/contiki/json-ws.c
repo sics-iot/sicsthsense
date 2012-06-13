@@ -276,7 +276,6 @@ json_putchar_count(int c)
 static
 PT_THREAD(send_values(struct httpd_ws_state *s))
 {
-  int i;
   json_putchar_context = s;
 
   PSOCK_BEGIN(&s->sout);

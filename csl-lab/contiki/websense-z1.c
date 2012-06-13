@@ -80,24 +80,22 @@ static struct jsontree_callback sensor_callback =
 /*---------------------------------------------------------------------------*/
 
 static struct jsontree_string desc = JSONTREE_STRING("Zolertia Z1");
-static struct jsontree_string unit = JSONTREE_STRING("Celcius");
 
 JSONTREE_OBJECT(node_tree,
                 JSONTREE_PAIR("node-type", &desc),
                 JSONTREE_PAIR("time", &json_time_callback));
 
 JSONTREE_OBJECT(sensor_tree,
-                JSONTREE_PAIR("unit", &unit),
-                JSONTREE_PAIR("value", &sensor_callback));
+                JSONTREE_PAIR("temperature", &sensor_callback));
 
-JSONTREE_OBJECT(rsc_tree,
-                JSONTREE_PAIR("temperature", &sensor_tree),
+JSONTREE_OBJECT(act_tree,
                 JSONTREE_PAIR("leds", &json_leds_callback));
 
 /* complete node tree */
 JSONTREE_OBJECT(tree,
                 JSONTREE_PAIR("node", &node_tree),
-                JSONTREE_PAIR("rsc", &rsc_tree),
+                JSONTREE_PAIR("sen", &sensor_tree),
+                JSONTREE_PAIR("act", &act_tree),
                 JSONTREE_PAIR("cfg", &json_subscribe_callback));
 
 /*---------------------------------------------------------------------------*/
