@@ -20,7 +20,9 @@
 
 @layout("Search", session) {
  
+ @if(endPoints.length > 0) {
    <h1>Public resources</h1>
+ }
 
     <ul>
     @for(endPoint <- endPoints) {

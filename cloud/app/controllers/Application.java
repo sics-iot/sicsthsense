@@ -27,10 +27,6 @@ public class Application extends Controller {
   public static Result login() {
     return redirect(routes.Application.home());
   }
-
-  public static Result search() {
-    return ok(search.render(EndPoint.all()));
-  }
   
   public static Result manage() {
     return ok(manage.render(EndPoint.getByUser(CtrlUser.getUser())));
