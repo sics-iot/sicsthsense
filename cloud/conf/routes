@@ -32,8 +32,8 @@ GET        /resources/:id/setPeriod              controllers.CtrlResource.setPer
 GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
 
 # Streams
-GET        /streams/:userName/:label/*path       controllers.Streams.get(userName: String, label: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
-POST       /streams/:userName/:label/*path       controllers.Streams.post(userName: String, label: String, path: String)
+GET        /streams/:userName/:label/$path<.*>   controllers.Streams.get(userName: String, label: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+POST       /streams/:userName/:label/$path<.*>   controllers.Streams.post(userName: String, label: String, path: String)
 
 # Proxy
 GET        /proxy/:userName/:label/*path         controllers.Proxy.get(userName: String, label: String, path: String)
