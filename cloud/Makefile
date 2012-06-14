@@ -1,6 +1,8 @@
 PLAY_USER=play
 PLAY_HOME=/home2/play
 PLAY_HOST=sense.sics.se
+PLAY_KEY=-i $(HOME)/.ssh/play-key
+SSH=ssh $(PLAY_KEY)
 
 ifdef test
 CCHECK=-n
@@ -11,7 +13,7 @@ key=$(USER)
 endif
 
 RSYNC=rsync $(CCHECK) -avz --delete -progress \
-	-e ssh \
+	-e "$(SSH)" \
 	--exclude '.svn' \
 	--exclude '.git' \
 	--exclude 'Makefile*' \
@@ -40,16 +42,16 @@ upload:
 	$(RSYNC) ./ $(PLAY_USER)@$(PLAY_HOST):$(PLAY_HOME)/cloud-$(key)
 
 update:	upload
-	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) -d $(key)"
+	$(SSH) $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) -d $(key)"
 
 upgrade:	upload
-	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) $(key)"
+	$(SSH) $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) $(key)"
 
 start:
-	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/start-play.sh $(CCHECK)"
+	$(SSH) $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/start-play.sh $(CCHECK)"
 
 devel:
-	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/start-play.sh $(CCHECK) -d"
+	$(SSH) $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/start-play.sh $(CCHECK) -d"
 
 stop:
-	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/stop-play.sh $(CCHECK)"
+	$(SSH) $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/stop-play.sh $(CCHECK)"
