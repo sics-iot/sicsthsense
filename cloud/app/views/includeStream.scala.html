@@ -1,7 +1,7 @@
 @(stream: Resource, dataPoints: List[DataPoint])
 
 @if(stream != null && dataPoints.size > 0) {
-@stream.getEndPoint().label@stream.path <br/>
+@stream.getEndPoint().getUser().userName/@stream.getEndPoint().label@stream.path <br/>
     <div id="placeholder@stream.id" style="width:100%;height:200px;"></div>
 
    <script type="text/javascript">

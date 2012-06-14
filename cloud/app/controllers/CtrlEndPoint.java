@@ -32,7 +32,6 @@ public class CtrlEndPoint extends Controller {
       return badRequest("Bad request");
     } else {
       EndPoint submitted = theForm.get();
-      if(CtrlUser.getUser().id != submitted.user.id) return forbidden();
       EndPoint.register(CtrlUser.getUser(), submitted.label, submitted.url);
       return redirect(routes.Application.manage());
     }
