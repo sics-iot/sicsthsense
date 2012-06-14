@@ -16,7 +16,9 @@ import play.core.Router.Routes;
 import play.libs.F.*;
 import play.libs.*;
 import play.mvc.*;
+import play.mvc.Http.Context;
 import play.mvc.Http.RequestBody;
+import play.mvc.Http.Session;
 import play.data.*;
 
 import models.*;
@@ -34,16 +36,19 @@ public class CtrlResource extends Controller {
   }
   
   public static Result delete(Long id) {
+    if(!Secured.ownsResource(session("id"), id)) return forbidden();
     Resource.delete(id);
     return redirect(request().getHeader("referer"));
   }
   
   public static Result setPeriod(Long id, Long period) {
+    if(!Secured.ownsResource(session("id"), id)) return forbidden();
     Resource.setPeriod(id, 60*period);
     return redirect(request().getHeader("referer"));
   }
   
   public static Result clearStream(Long id) {
+    if(!Secured.ownsResource(session("id"), id)) return forbidden(); 
     Resource.clearStream(id);
     return redirect(request().getHeader("referer"));
   }

@@ -104,7 +104,6 @@ public class Streams extends Controller {
   }
   
   public static Result get(String userName, String label, String path, Long tail, Long last, Long since) {
-    System.out.println(path);
     final User user = User.getByUserName(userName);
     if(user == null) return notFound();
     final EndPoint endPoint = EndPoint.getByLabel(user, label);

@@ -1,14 +1,16 @@
-@(endPoint: EndPoint, epForm: Form[EndPoint])
+@(endPoint: EndPoint, epForm: Form[EndPoint], owned: Boolean)
 
 @import helper._
 
 @layout(endPoint.label, session) {
   
-  @if(epForm != null) {
-    <span class="logged"><a href="@routes.CtrlEndPoint.get(endPoint.id)">[Cancel]</a></span>
-  } else {
-    <span class="logged"><a href="@routes.CtrlEndPoint.edit(endPoint.id)">[Edit]</a></span>
-  }
+  @if(owned) {
+	  @if(epForm != null) {
+	    <span class="logged"><a href="@routes.CtrlEndPoint.get(endPoint.id)">[Cancel]</a></span>
+	  } else {
+	    <span class="logged"><a href="@routes.CtrlEndPoint.edit(endPoint.id)">[Edit]</a></span>
+	  }
+	}
 
   @myForm.form(routes.CtrlEndPoint.submit(endPoint.id)) {
       <dt>User</dt>
@@ -19,28 +21,32 @@
       @myForm.input(epForm!=null, "text", "location", "Location", endPoint.location)
       @myForm.submit(epForm!=null, "Update")
   }
-   
-  @if(endPoint.url != "") {
-  Perform automatic resource discovery
-  <a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a>
-  <br/>
-  }
-  Delete:
-  <a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a>
+  
+  @if(owned) { 
+	  @if(endPoint.url != "") {
+	  Perform automatic resource discovery
+	  <a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a>
+	  <br/>
+	  }
+	  Delete:
+	  <a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a>
+	}
     
   <h1>Resources</h1>
 
   <ul>
       @Resource.getByEndPoint(endPoint).map { resource =>
           <li>
-          @includeResource(resource, true)
+          @includeResource(resource, owned)
           </li>
         }  
   </ul>
   
-  @myForm.form(routes.CtrlEndPoint.addResource(endPoint.id)) {
-    @myForm.input(true, "text", "path", "Add new resource", "")
-    @myForm.submit(true, "Add")
+  @if(owned) { 
+    @myForm.form(routes.CtrlEndPoint.addResource(endPoint.id)) {
+      @myForm.input(true, "text", "path", "Add new resource", "")
+      @myForm.submit(true, "Add")
+    }
   }
 
 }

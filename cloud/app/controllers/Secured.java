@@ -21,4 +21,12 @@ public class Secured extends Security.Authenticator {
       return ok(login.render());
     }
     
+    public static boolean ownsResource(String idStr, Long resourceId) {
+      return Long.parseLong(idStr) == Resource.get(resourceId).getUser().id;
+    }
+    
+    public static boolean ownsEndPoint(String idStr, Long endPointId) {
+      return Long.parseLong(idStr) == EndPoint.get(endPointId).getUser().id;
+    }
+    
 }

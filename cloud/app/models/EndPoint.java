@@ -65,8 +65,8 @@ public class EndPoint extends Model {
     }
     
     public String getTextDescription() {
-      String desc = description == null ? "no description" : description;
-      String loc = location == null ? "no location" : location;
+      String desc = (description == null || description.length()==0) ? "no description" : description;
+      String loc = (location == null  || location.length()==0) ? "no location" : location;
       return desc + ", " + loc;
     }
         
