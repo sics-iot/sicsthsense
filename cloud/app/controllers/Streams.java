@@ -103,23 +103,23 @@ public class Streams extends Controller {
     return ok("ok");
   }
   
-  public static Result get(String userName, String label, String path, Long n, Long t) {
+  public static Result get(String userName, String label, String path, Long tail, Long last, Long since) {
     final User user = User.getByUserName(userName);
     if(user == null) return notFound();
     final EndPoint endPoint = EndPoint.getByLabel(user, label);
     if(endPoint == null) return notFound();
     final Resource resource = Resource.getByPath(endPoint, path);
     if(resource == null) return notFound();
-        
-    long current = Utils.currentTime();
-    long since = current - t;
+         
     ObjectNode result = Json.newObject();
     ArrayNode array = result.putArray(path);
     List<DataPoint> dataSet = null;
-    if(n > 0) {
-      dataSet = DataPoint.getSubsetByStreamN(resource, n);
-    } else if(t > 0) {
-      dataSet = DataPoint.getSubsetByStreamSince(resource, since);
+    if(tail > 0) {
+      dataSet = DataPoint.getByStreamTail(resource, tail);
+    } else if(last > 0) {
+      dataSet = DataPoint.getByStreamLast(resource, last);
+    } else if(since > 0) {
+      dataSet = DataPoint.getByStreamSince(resource, since);
     } else {
       dataSet = DataPoint.getByStream(resource);
     }

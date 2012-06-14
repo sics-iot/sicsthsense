@@ -13,6 +13,8 @@ import play.data.validation.*;
 import ch.qos.logback.classic.db.SQLBuilder;
 
 import com.avaje.ebean.*;
+
+import controllers.Utils;
 import play.libs.F.*;
 import play.libs.WS;
 
@@ -49,15 +51,19 @@ public class DataPoint extends Model implements Comparable {
           .findList();
     }
     
-    public static List<DataPoint> getSubsetByStreamN(Resource stream, long n) {
+    public static List<DataPoint> getByStreamTail(Resource stream, long tail) {
       List<DataPoint> set = find.where()
           .eq("resource", stream)
           .orderBy("timestamp asc")
           .findList();
-      return set.subList(set.size()-(int)n, set.size());
+      return set.subList(set.size()-(int)tail, set.size());
     }
     
-    public static List<DataPoint> getSubsetByStreamSince(Resource stream, long since) {
+    public static List<DataPoint> getByStreamLast(Resource stream, long last) {
+      return getByStreamSince(stream, Utils.currentTime() - last);
+    }
+    
+    public static List<DataPoint> getByStreamSince(Resource stream, long since) {
       return find.where()
           .eq("resource", stream)
           .ge("timestamp", since)
