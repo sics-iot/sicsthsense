@@ -8,7 +8,7 @@ Architecture:
 SicsthSense:
 * CoAP polling and POST [Matthias]
 * accept POST [Simon] => done
-* expose streams through a RESTful interface [Simon]
+* expose streams through a RESTful interface [Simon] => done
 * decent graphs display (choice of the x scale) [Simon]
 * simple aggregation? (average, sum, etc?) [Simon]
 * interactive RESTful interface (click on "POST /leds/red") [Simon]

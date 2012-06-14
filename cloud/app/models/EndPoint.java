@@ -33,7 +33,7 @@ public class EndPoint extends Model {
     public String description;
     public String location;
         
-    @ManyToOne
+    @ManyToOne 
     public User user;
             
     public static Model.Finder<Long,EndPoint> find = new Model.Finder(Long.class, EndPoint.class);
@@ -75,6 +75,9 @@ public class EndPoint extends Model {
     }
     
     public static void delete(Long id) {
+      //TODO should enable cascading instead
+      EndPoint endPoint = find.byId(id);
+      Resource.deleteByEndPoint(endPoint);
       find.byId(id).delete();
     }
     

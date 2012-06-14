@@ -10,6 +10,8 @@ import play.db.ebean.*;
 import play.data.format.*;
 import play.data.validation.*;
 
+import ch.qos.logback.classic.db.SQLBuilder;
+
 import com.avaje.ebean.*;
 import play.libs.F.*;
 import play.libs.WS;
@@ -19,8 +21,8 @@ public class DataPoint extends Model implements Comparable {
   
     @Id
     public Long id;
-    
-    @ManyToOne
+  
+    @ManyToOne 
     public Resource resource;
     
     public float data;
@@ -64,8 +66,18 @@ public class DataPoint extends Model implements Comparable {
     }
     
     public static void deleteByStream(Resource stream) {
-      for(DataPoint dataPoint: getByStream(stream)) {
-        dataPoint.delete();
+    //TODO this is an ugly workaround, we need to find out how to SQL delete directly
+      List<DataPoint> list = find.where()
+          .eq("resource", stream)
+          .orderBy("timestamp asc")
+          .findList();
+//    Ebean.delete(list);
+      List<Long> ids = new LinkedList<Long>();
+      for(DataPoint element: list) {
+        ids.add(element.id);
+      }
+      for(Long id: ids) {
+        find.ref(id).delete(); 
       }
     }
 

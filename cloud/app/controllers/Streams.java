@@ -125,7 +125,7 @@ public class Streams extends Controller {
     }
     for(DataPoint dataPoint: dataSet) {
       ObjectNode e = Json.newObject();
-      e.put(new Long(dataPoint.timestamp-current).toString(), dataPoint.data);
+      e.put(new Long(dataPoint.timestamp).toString(), dataPoint.data);
       array.add(e);
     }
     

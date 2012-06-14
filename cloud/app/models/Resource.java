@@ -32,7 +32,7 @@ public class Resource extends Model {
     public String path;
     @ManyToOne
     public EndPoint endPoint;
-    @ManyToOne
+    @ManyToOne 
     public User user;
     
     public long pollingPeriod;
@@ -98,8 +98,9 @@ public class Resource extends Model {
     }
     
     public static void delete(Long id) {
+      //TODO should enable cascading instead
       clearStream(id);
-      find.byId(id).delete();
+      find.ref(id).delete();
     }
     
     public static void setPeriod(Long id, Long period) {
@@ -130,6 +131,20 @@ public class Resource extends Model {
       Resource resource = new Resource(path, endPoint);
       resource.save();
       return resource;
+    }
+    
+    public static void deleteByEndPoint(EndPoint endPoint) {
+      //TODO this is an ugly workaround, we need to find out how to SQL delete directly
+      List<Resource> list = find.where()
+          .eq("endPoint", endPoint)
+          .findList();
+      List<Long> ids = new LinkedList<Long>();
+      for(Resource element: list) {
+        ids.add(element.id);
+      }
+      for(Long id: ids) {
+        delete(id); 
+      }
     }
         
 }
