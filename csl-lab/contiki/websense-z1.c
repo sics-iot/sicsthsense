@@ -115,7 +115,7 @@ PROCESS_THREAD(websense_process, ev, data)
 
   tmp102_init();
 
-  json_ws_set_callback("rsc");
+  json_ws_set_callback("sen");
 
   while(1) {
     /* Alive indication with the LED */
