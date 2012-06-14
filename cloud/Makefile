@@ -28,16 +28,21 @@ RSYNC=rsync $(CCHECK) -avz --delete -progress \
 .PHONY: upload update all
 
 all:
-	@echo "Run 'make upload' to upload Play to $(PLAY_HOST)"
-	@echo "Run 'make update' to upload and update Play at $(PLAY_HOST)"
-	@echo "Run 'make start' to start Play at $(PLAY_HOST)"
-	@echo "Run 'make devel' to start Play in developer mode at $(PLAY_HOST)"
-	@echo "Run 'make stop' to stop Play at $(PLAY_HOST)"
+	@echo "Connected to Play at $(PLAY_HOST)"
+	@echo "Run 'make upload' to upload (temporary directory)"
+	@echo "Run 'make update' to upload and update (development mode)"
+	@echo "Run 'make upgrade' to upload and update (production mode)"
+	@echo "Run 'make start' to start Play"
+	@echo "Run 'make devel' to start Play in developer mode"
+	@echo "Run 'make stop' to stop Play"
 
 upload:
 	$(RSYNC) ./ $(PLAY_USER)@$(PLAY_HOST):$(PLAY_HOME)/cloud-$(key)
 
 update:	upload
+	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) -d $(key)"
+
+upgrade:	upload
 	ssh $(PLAY_USER)@$(PLAY_HOST) "$(PLAY_HOME)/update-play.sh $(CCHECK) $(key)"
 
 start:
