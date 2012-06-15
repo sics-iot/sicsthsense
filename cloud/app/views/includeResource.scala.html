@@ -20,12 +20,29 @@
     
 	  @if(endPoint.url!="") {
 	    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
-	      <br/>
-	      Enter polling period:  
-	      <input input type="hidden" name="id" value="@resource.id" />
-	      <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
-	      <input type="submit" value="Ok" class="buttonG"/>
-	    }
+	      <dl>
+	      <dt style="font-weight:normal;">Enter polling period</dt>
+	      <dd>  
+  	      <input input type="hidden" name="id" value="@resource.id" />
+	        <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+	        <input type="submit" value="Ok" class="buttonG"/>
+	      </dd>
+	      </dl>
+      }
+	           
+	      <dl>
+	      <dt style="font-weight:normal;">Send REST request</dt>
+	      <dd>
+		      <select>
+	          <option value="GET">GET</option>
+	          <option value="POST">POST</option>
+	          <option value="PUT">PUT</option>
+	          <option value="DELETE">PUT</option>
+	        </select>
+	        <input input type="text" name="payload" size="8"/>
+	        <input type="submit" value="Send" class="buttonG"/>
+	      </dd>
+        </dl>
     }
   }
 }

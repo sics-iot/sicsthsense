@@ -38,9 +38,22 @@ body { background-color: #fafafa; }
 form { display: inline; }
 
 fieldset { clear: both; }
-dl { clear: both; }
-dl dt, dl dd { margin: 0; padding: 0 1em 0.3em 0; float: left; height: 1.1em;}
-dl dt { clear: left; width: 10em; font-weight: bold; text-align: right; }
+ 
+dl dt {
+    float:left;
+    font-weight:bold;
+    margin-right:10px;
+    padding:5px; 
+    width:160px;
+    height: 0.8em;
+    text-align: right;
+}
+ 
+dl dd {
+    margin:2px 0;
+    padding:5px 0;
+    height: 0.8em;
+}
 
 div.streamplot {
 	width:100%;

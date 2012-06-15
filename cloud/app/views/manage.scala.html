@@ -2,22 +2,6 @@
 
 @import helper._
 
-@displayStreams(streams: List[Resource]) = {
-
-  @if(streams.length > 0) {
-	  <h1>Your streams</h1> 
-	  
-	  <ul>
-	    @for(stream <- streams) {
-	      <li>
-	      @includeStream(stream)
-	      </li>
-	    }
-	  </ul>
-  }
-
-}
-
 @layout("Manage", session) {
  
   <h1>Register new device</h1>
@@ -32,22 +16,8 @@
   
   @if(endPoints.length > 0) {
   <h1>Your resources</h1>
-     
-  <ul>
-    @for(endPoint <- endPoints) {
-      <li>
-        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a> (@endPoint.getTextDescription())
-          <ul>
-			      @Resource.getByEndPoint(endPoint).map { resource =>
-			          <li>
-			          @includeResource(resource, false)
-			          </li>
-			       }  
-        </ul>
-      </li>
-    }
-  </ul>
+    @includeResources(endPoints)
   }
-   
-  @displayStreams(Resource.getByUserWithData(CtrlUser.getUser()))
+     
+  @includeStreams(Resource.getByUserWithData(CtrlUser.getUser()))
 }

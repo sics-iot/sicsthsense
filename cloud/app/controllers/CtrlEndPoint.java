@@ -44,7 +44,7 @@ public class CtrlEndPoint extends Controller {
     } else {
       EndPoint current = EndPoint.get(id);
       EndPoint submitted = theForm.get();
-      if(CtrlUser.getUser().id != submitted.user.id) return forbidden();
+      if(CtrlUser.getUser().id != current.getUser().id) return forbidden();
       submitted.id = id;
       submitted.uid = current.uid;
       try { submitted.update(); }

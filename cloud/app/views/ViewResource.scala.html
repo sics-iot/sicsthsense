@@ -28,6 +28,8 @@
 
 @layout("Resource Details: @resource.path", session) {
 
-@displayResource(resource.getEndPoint(),resource.getUser())
+  @displayResource(resource.getEndPoint(),resource.getUser())
+  
+  @includeStream(resource) 
 
 }

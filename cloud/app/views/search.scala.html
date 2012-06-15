@@ -2,43 +2,13 @@
 
 @import helper._
 
-@displayStreams(streams: List[Resource]) = {
-
-  @if(streams.length > 0) {
-    <h1>Public streams</h1> 
-    
-    <ul>
-      @for(stream <- streams) {
-        <li>
-        @includeStream(stream)
-        </li>
-      }
-    </ul>
-  }
-
-}
-
 @layout("Search", session) {
  
  @if(endPoints.length > 0) {
    <h1>Public resources</h1>
+   @includeResources(endPoints) 
  }
 
-    <ul>
-    @for(endPoint <- endPoints) {
-      <li>
-        <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> (@endPoint.getTextDescription())
-          <ul>
-            @Resource.getByEndPoint(endPoint).map { resource =>
-                <li>
-                @includeResource(resource, false)
-                </li>
-             }  
-        </ul>
-      </li>
-    }
-  </ul>
- 
- @displayStreams(Resource.getWithData())
+ @includeStreams(Resource.getWithData())
  
 }

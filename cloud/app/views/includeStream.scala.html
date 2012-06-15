@@ -1,7 +1,6 @@
 @(stream: Resource)
 
 @if(stream != null) {
-@stream.getEndPoint().getUser().userName/@stream.getEndPoint().label@stream.path <br/>
 	<div id="streamplot@stream.id" class="streamplot"></div>
 	<div id="streamconfig@stream.id">
 		<a href="#" onclick="setWindow(streamplot@{stream.id}, 5*60*1000); return false;">5min</a>
@@ -16,7 +15,7 @@
 	<script type="text/javascript">
 		var now = new Date();
 		var streamplot@{stream.id} = new Object();
-		streamplot@{stream.id}.window = 5*60*1000; // in ms
+		streamplot@{stream.id}.window = 24*60*60*1000; // in ms
 		streamplot@{stream.id}.since = parseInt((now.getTime() - streamplot@{stream.id}.window) / 1000); // in s for database
 		streamplot@{stream.id}.points = [];
 
