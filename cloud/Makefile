@@ -24,8 +24,8 @@ RSYNC=rsync $(CCHECK) -avz --delete -progress \
 	--exclude 'tmp' \
 	--exclude 'conf/application.conf' \
 	--exclude 'project/project' \
+	--exclude 'conf/evolutions' \
 	--exclude 'project/target'
-#--exclude 'conf/evolutions' \
 
 .PHONY: upload update all
 

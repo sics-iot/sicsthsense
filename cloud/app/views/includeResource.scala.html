@@ -1,27 +1,16 @@
-@(resource: Resource, withControls: Boolean)
+@(resource: Resource, withControls: Boolean, owned: Boolean)
 
 @import helper._
 
 @displayResource(endPoint: EndPoint) = {
- <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
- @if(resource.pollingPeriod != 0) {
-   [polled every @{resource.pollingPeriod/60} min]
- }
+
  @if(withControls) {
-  <span class="rightControl">
-    @if(resource.pollingPeriod != 0) {
-      <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a>
-    }
-    @if(resource.hasData()) {
-      <a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a>
-    }
-    <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
-  </span>
-    
+ 
+  @if(owned) {    
 	  @if(endPoint.url!="") {
 	    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
 	      <dl>
-	      <dt style="font-weight:normal;">Enter polling period</dt>
+	      <dt style="font-weight:normal;">Enter polling interval</dt>
 	      <dd>  
   	      <input input type="hidden" name="id" value="@resource.id" />
 	        <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
@@ -29,22 +18,53 @@
 	      </dd>
 	      </dl>
       }
-	           
-	      <dl>
-	      <dt style="font-weight:normal;">Send REST request</dt>
-	      <dd>
-		      <select>
-	          <option value="GET">GET</option>
-	          <option value="POST">POST</option>
-	          <option value="PUT">PUT</option>
-	          <option value="DELETE">PUT</option>
-	        </select>
-	        <input input type="text" name="payload" size="8"/>
-	        <input type="submit" value="Send" class="buttonG"/>
-	      </dd>
-        </dl>
     }
-  }
+	}
+	    
+      <dl>
+      <dt style="font-weight:normal;">Send REST request</dt>
+      <dd>
+        <form id="proxy@resource.id" action="@routes.Proxy.forwardById(resource.id)">
+	       <select id="method@resource.id" name="method">
+           <option value="GET">GET</option>
+           <option value="POST">POST</option>
+           <option value="PUT">PUT</option>
+           <option value="DELETE">DELETE</option>
+         </select>
+         <input input type="text" id="body@resource.id" name="body" size="8"/>
+         <input type="submit" value="Send" class="buttonG"/>
+        </form>
+        <img id="ajax_wait@resource.id" src="@routes.Assets.at("images/ajax_wait.gif")" height="20" align="top" style="visibility:hidden;"></img>
+        <span id="response@resource.id"></span>
+      </dd>
+       </dl>
+     
+     <script type="text/javascript">
+	  $('#proxy@resource.id').submit(function() {
+	    var method = $("select#method@resource.id").val();
+	    var body = $("input#body@resource.id").val();
+	    $("#ajax_wait@resource.id").css("visibility","visible");
+	    $.ajax({
+	    	  url: "@routes.Proxy.forwardById(resource.id)",
+	    	  context: document.body,
+	    	  timeout: 1000,
+	    	  type: method,
+	    	  data: body,
+	    	  contentType: "text/plain",
+    	    error: function(x, t, m) {
+    	    	$("#response@resource.id").html("Error: <code>" + m + "</code>");
+    	    	$("#ajax_wait@resource.id").css("visibility","hidden");
+    	    },
+    	    success: function(response) {
+            $("#response@resource.id").html("Response: <code>" + response + "</code>");
+            $("#ajax_wait@resource.id").css("visibility","hidden");
+           }
+	    	});
+	    			    
+	    return false;
+	  });
+	  </script>
+    }
 }
 
 @displayResource(resource.getEndPoint())

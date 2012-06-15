@@ -7,7 +7,11 @@
         <ul>
           @Resource.getByEndPoint(endPoint).map { resource =>
               <li>
-              @includeResource(resource, false)
+              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
+							 @if(resource.pollingPeriod != 0) {
+							   [polled every @{resource.pollingPeriod/60} min]
+							 }
+              @includeResource(resource, false, false)
               </li>
            }  
       </ul>

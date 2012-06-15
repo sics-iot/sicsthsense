@@ -19,17 +19,18 @@
       @myForm.input(epForm!=null, "url", "url", "URL", endPoint.url)
       @myForm.input(epForm!=null, "text", "description", "Description", endPoint.description)
       @myForm.input(epForm!=null, "text", "location", "Location", endPoint.location)
-      @myForm.submit(epForm!=null, "Update")
+      @if(epForm!=null) { @myForm.submit(epForm!=null, "Update") }
   }
   
-  @if(owned) { 
-	  @if(endPoint.url != "") {
-	  Perform automatic resource discovery
-	  <a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a>
-	  <br/>
-	  }
-	  Delete:
-	  <a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a>
+  @if(owned) {
+      <dl>
+      @if(endPoint.url != "") {
+        <dt>Discover resources</dt>
+        <dd><a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a></dd>
+      }
+      <dt>Delete end point</dt>
+      <dd><a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a></dd>
+      </dl>
 	}
     
   <h1>Resources</h1>
@@ -37,7 +38,22 @@
   <ul>
       @Resource.getByEndPoint(endPoint).map { resource =>
           <li>
-          @includeResource(resource, owned)
+          <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
+               @if(resource.pollingPeriod != 0) {
+                 [polled every @{resource.pollingPeriod/60} min]
+               }
+          @if(owned) {
+                <span class="rightControl">
+                  @if(resource.pollingPeriod != 0) {
+                    <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a>
+                  }
+                  @if(resource.hasData()) {
+                    <a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a>
+                  }
+                  <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
+                </span>
+            }
+          @includeResource(resource, true, owned)
           </li>
         }  
   </ul>

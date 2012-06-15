@@ -16,7 +16,7 @@
 	    @myForm.input(userForm!=null, "text", "firstName", "First name", user.firstName)
 	    @myForm.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
 	    @myForm.input(userForm!=null, "text", "location", "Location", user.location)
-	    @myForm.submit(userForm!=null, "Update")
+	    @if(userForm!=null) { @myForm.submit(userForm!=null, "Update") }
   }
 
   @utils.map(user.location)  

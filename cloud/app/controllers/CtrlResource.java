@@ -31,7 +31,7 @@ public class CtrlResource extends Controller {
   
   public static Result get(Long id) {
     Resource resource = Resource.get(id);
-    if(resource != null)     return ok(ViewResource.render(resource));
+    if(resource != null)     return ok(ViewResource.render(resource, Secured.ownsResource(session("id"), id)));
     else                     return notFound();
   }
   

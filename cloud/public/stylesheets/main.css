@@ -39,6 +39,8 @@ form { display: inline; }
 
 fieldset { clear: both; }
  
+dl { margin: 0; padding: 0; }
+ 
 dl dt {
     float:left;
     font-weight:bold;

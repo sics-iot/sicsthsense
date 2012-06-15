@@ -25,27 +25,26 @@ import models.*;
 import views.html.*;
 
 public class Proxy extends Controller {
-    
-  public static Result forward(String userName, String label, final String path, final String method) {
-    final User user = User.getByUserName(userName);
-    if(user == null) return notFound();
-    final EndPoint endPoint = EndPoint.getByLabel(user, label);
-    if(endPoint == null) return notFound();
+  
+  public static Result forward(final EndPoint endPoint, final String path) {
     final Resource resource = Resource.getByPath(endPoint, path);
     if(resource == null) return notFound();
+    final String method = request().method();
     final String body = request().body().asText();
+    final String contentType = request().getHeader("Content-Type");
     return async(
         Akka.future(
           new Callable<Result>() {
             public Result call() {
               String url = Utils.concatPath(endPoint.url, path);
-              Logger.info("Proxy: forwarding " + method + " to: " + url);
+              Logger.info("Proxy: forwarding " + method + " to: " + url + " with body: " + body);
               try {
                 Promise<Response> promise = null;
-                if (method.equals("GET")) { promise = WS.url(url).get(); }
-                else if (method.equals("POST")) { promise = WS.url(url).post(body); }
-                else if (method.equals("PUT")) { promise = WS.url(url).put(body); }
-                else if (method.equals("DELETE")) { promise = WS.url(url).delete(); }
+                WSRequestHolder request = WS.url(url).setHeader("Content-Type", contentType);
+                if (method.equals("GET")) { promise = request.get(); }
+                else if (method.equals("POST")) { promise = request.post(body); }
+                else if (method.equals("PUT")) { promise = request.put(body); }
+                else if (method.equals("DELETE")) { promise = request.delete(); }
                 Response response = promise.get();
                 return status(response.getStatus(), response.getBody());
               } catch (Exception e) {
@@ -57,20 +56,17 @@ public class Proxy extends Controller {
       );
   }
   
-  public static Result get(String userName, String label, String path) {
-    return forward(userName, label, path, "GET");
-  }
-  
-  public static Result post(String userName, String label, String path) {
-    return forward(userName, label, path, "POST");
-  }
-  
-  public static Result put(String userName, String label, String path) {
-    return forward(userName, label, path, "PUT");
-  }
-  
-  public static Result delete(String userName, String label, String path) {
-    return forward(userName, label, path, "DELETE");
+  public static Result forwardByPath(String userName, String label, final String path) {
+    final User user = User.getByUserName(userName);
+    if(user == null) return notFound();
+    final EndPoint endPoint = EndPoint.getByLabel(user, label);
+    if(endPoint == null) return notFound();
+    return forward(endPoint, path);  
   }
     
+  public static Result forwardById(Long id) {
+    Resource resource = Resource.get(id);
+    return forward(resource.getEndPoint(), resource.path);
+  }
+  
 }

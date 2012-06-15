@@ -93,7 +93,6 @@ public class Streams extends Controller {
     } catch (Exception e) {
       return badRequest("Bad request");
     }
-    
     return ok("ok");
   }
   

@@ -36,10 +36,15 @@ GET        /streams/:userName/:label/$path<.*>   controllers.Streams.get(userNam
 POST       /streams/:userName/:label/$path<.*>   controllers.Streams.post(userName: String, label: String, path: String)
 
 # Proxy
-GET        /proxy/:userName/:label/*path         controllers.Proxy.get(userName: String, label: String, path: String)
-POST       /proxy/:userName/:label/*path         controllers.Proxy.post(userName: String, label: String, path: String)
-PUT        /proxy/:userName/:label/*path         controllers.Proxy.put(userName: String, label: String, path: String)
-DELETE     /proxy/:userName/:label/*path         controllers.Proxy.delete(userName: String, label: String, path: String)
+GET        /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
+POST       /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
+PUT        /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
+DELETE     /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
+
+GET        /proxy/:id                            controllers.Proxy.forwardById(id: Long)
+POST       /proxy/:id                            controllers.Proxy.forwardById(id: Long)
+PUT        /proxy/:id                            controllers.Proxy.forwardById(id: Long)
+DELETE     /proxy/:id                            controllers.Proxy.forwardById(id: Long)
 
 # Dummy thing
 GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
