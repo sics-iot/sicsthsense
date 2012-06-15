@@ -1,0 +1,17 @@
+#Start the posting/polling engine. If <config file> is not specified the file "config_example" will be used
+./engine.sh <config file>
+
+
+
+#In the config file, lines have two different formats for pollers and posters, respectively:
+poll <service> <file>
+post <service> <file>
+
+#examples:
+post sense.sics.se/streams/niwi/test/t1 test.out
+poll sense.sics.se/streams/niwi/test/t1 test.in
+
+
+
+
+

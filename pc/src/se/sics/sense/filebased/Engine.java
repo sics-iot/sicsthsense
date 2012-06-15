@@ -34,6 +34,6 @@ public class Engine {
 		if(args.length!=0)
 			parse(args[0]);
 		else
-			parse("config");
+			parse("config_example");
 	}
 }
