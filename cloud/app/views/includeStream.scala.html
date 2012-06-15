@@ -54,13 +54,16 @@
 							console.debug('pushed: '+parseInt(t));
 						}
 					}
-					streamplot@{stream.id}.since = (streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0]-timezone)/1000 + 1;
-					console.debug('since: '+streamplot@{stream.id}.since);
+					
+					if(streamplot@{stream.id}.points.length > 0) {
+					 streamplot@{stream.id}.since = (streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0]-timezone)/1000 + 1;
+					 console.debug('since: '+streamplot@{stream.id}.since);
 
-					while (streamplot@{stream.id}.points[0][0] < streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0] - streamplot@{stream.id}.window) {
-						// remove old plot points
-						console.debug('shift: '+streamplot@{stream.id}.points.shift());
-					}
+					 while (streamplot@{stream.id}.points[0][0] < streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0] - streamplot@{stream.id}.window) {
+						  // remove old plot points
+						  console.debug('shift: '+streamplot@{stream.id}.points.shift());
+					 }
+			    }
 					//console.debug(points);
 					streamplot@{stream.id}.plot.setData([streamplot@{stream.id}.points]);
 					streamplot@{stream.id}.plot.setupGrid();

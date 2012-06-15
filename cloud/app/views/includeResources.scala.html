@@ -1,0 +1,16 @@
+@(endPoints: List[EndPoint])
+    
+<ul>
+  @for(endPoint <- endPoints) {
+    <li>
+      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> (@endPoint.getTextDescription())
+        <ul>
+          @Resource.getByEndPoint(endPoint).map { resource =>
+              <li>
+              @includeResource(resource, false)
+              </li>
+           }  
+      </ul>
+    </li>
+  }
+</ul>
