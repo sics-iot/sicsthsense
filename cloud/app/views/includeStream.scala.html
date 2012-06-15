@@ -1,23 +1,79 @@
-@(stream: Resource, dataPoints: List[DataPoint])
+@(stream: Resource)
 
-@if(stream != null && dataPoints.size > 0) {
+@if(stream != null) {
 @stream.getEndPoint().getUser().userName/@stream.getEndPoint().label@stream.path <br/>
-    <div id="placeholder@stream.id" style="width:100%;height:200px;"></div>
+	<div id="streamplot@stream.id" class="streamplot"></div>
+	<div id="streamconfig@stream.id">
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 5*60*1000); return false;">5min</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 30*60*1000); return false;">30min</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 60*60*1000); return false;">1h</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 24*60*60*1000); return false;">1d</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 7*24*60*60*1000); return false;">1w</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 30*24*60*60*1000); return false;">1m</a>
+		<a href="#" onclick="setWindow(streamplot@{stream.id}, 365*24*60*60*1000); return false;">1y</a>
+	</div>
 
-   <script type="text/javascript">
-       $(function () {   
-           var points = [@dataPoints.map(dataPoint => "[" + (dataPoint.timestamp-controllers.Utils.currentTime()) + "," + dataPoint.data + "]").reduce((acc, curr) => acc + ", " + curr)];
-           
-           var options = {
-              series: {
-                 lines: { show: true },
-                 points: { show: true },
-              },
-              colors: [ "#88b" ],
-           };
-           
-           var plot = $.plot($("#placeholder@stream.id"), [ points ], options);
-       });
-       
-   </script>
+	<script type="text/javascript">
+		var now = new Date();
+		var streamplot@{stream.id} = new Object();
+		streamplot@{stream.id}.window = 5*60*1000; // in ms
+		streamplot@{stream.id}.since = parseInt((now.getTime() - streamplot@{stream.id}.window) / 1000); // in s for database
+		streamplot@{stream.id}.points = [];
+
+	function setWindow(stream, window) {
+		stream.points = [];
+		stream.since = parseInt((now.getTime() - window) / 1000);
+		stream.window = window;
+	}
+
+	$(function () {
+		var timezone = -now.getTimezoneOffset()*60*1000; // distance to UTC (so negative)
+		
+		var options = {
+			series: {
+				lines: { show: true },
+				points: { show: false },
+			},
+			colors: [ "#88b" ],
+			xaxis: {
+				mode: "time",
+				timeformat: "%y-%m-%d %H:%M:%S",
+				minTickSize: [1, "second"]
+			},
+		};
+		streamplot@{stream.id}.plot = $.plot($("#streamplot@stream.id"), [ streamplot@{stream.id}.points ], options);
+		
+		function poll() {
+			$.get("@routes.Streams.get(stream.getEndPoint().getUser().userName, stream.getEndPoint().label, stream.path.substring(1))?since="+streamplot@{stream.id}.since,
+				function(data) {
+					//console.debug(data);
+					var update = data['@stream.path.substring(1)'];
+					for (var point in update) {
+						for (var t in update[point]) {
+							// add reading to plot points
+							streamplot@{stream.id}.points.push(new Array(parseInt(t)*1000 + timezone, update[point][t]));
+							console.debug('pushed: '+parseInt(t));
+						}
+					}
+					streamplot@{stream.id}.since = (streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0]-timezone)/1000 + 1;
+					console.debug('since: '+streamplot@{stream.id}.since);
+
+					while (streamplot@{stream.id}.points[0][0] < streamplot@{stream.id}.points[streamplot@{stream.id}.points.length-1][0] - streamplot@{stream.id}.window) {
+						// remove old plot points
+						console.debug('shift: '+streamplot@{stream.id}.points.shift());
+					}
+					//console.debug(points);
+					streamplot@{stream.id}.plot.setData([streamplot@{stream.id}.points]);
+					streamplot@{stream.id}.plot.setupGrid();
+        			streamplot@{stream.id}.plot.draw();
+				});
+				
+				setTimeout(poll, 1000);
+		}
+		
+		
+	   poll();
+	});
+   
+	</script>
 }

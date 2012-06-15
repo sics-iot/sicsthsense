@@ -1,19 +1,11 @@
 package models;
 
 import java.util.*;
-import play.mvc.*;
 
 import javax.persistence.*;
 
-import org.codehaus.jackson.JsonNode;
-
 import play.db.ebean.*;
-import play.data.format.*;
 import play.data.validation.*;
-
-import com.avaje.ebean.*;
-import play.libs.F.*;
-import play.libs.WS;
 
 @Entity
 @Table(name="end_point",
@@ -36,7 +28,7 @@ public class EndPoint extends Model {
     @ManyToOne 
     public User user;
             
-    public static Model.Finder<Long,EndPoint> find = new Model.Finder(Long.class, EndPoint.class);
+    public static Model.Finder<Long,EndPoint> find = new Model.Finder<Long, EndPoint>(Long.class, EndPoint.class);
     
     public EndPoint(User user, String url, String uid, String label, String description, String location) {
       this.user = user;

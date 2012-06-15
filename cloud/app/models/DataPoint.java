@@ -19,7 +19,7 @@ import play.libs.F.*;
 import play.libs.WS;
 
 @Entity 
-public class DataPoint extends Model implements Comparable {
+public class DataPoint extends Model implements Comparable<DataPoint> {
   
     @Id
     public Long id;
@@ -30,7 +30,7 @@ public class DataPoint extends Model implements Comparable {
     public float data;
     public long timestamp;
           
-    public static Model.Finder<Long,DataPoint> find = new Model.Finder(Long.class, DataPoint.class);
+    public static Model.Finder<Long,DataPoint> find = new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
     
     public DataPoint(Resource resource, float data, long timestamp) {
       this.resource = resource;
@@ -87,9 +87,8 @@ public class DataPoint extends Model implements Comparable {
       }
     }
 
-    public int compareTo(Object arg0) {
-      DataPoint d = (DataPoint)arg0;
-      return Long.compare(this.timestamp, d.timestamp);
+    public int compareTo(DataPoint point) {
+      return Long.valueOf(this.timestamp).compareTo(point.timestamp);
     }
     
 }
