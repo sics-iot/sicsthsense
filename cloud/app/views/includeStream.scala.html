@@ -1,15 +1,24 @@
 @(stream: Resource)
 
+@WIN_5M() = {5*60*1000}
+@WIN_30M() = {30*60*1000}
+@WIN_1H() = {60*60*1000}
+@WIN_1D() = {24*60*60*1000}
+@WIN_1W() = {7*24*60*60*1000}
+@WIN_1M() = {30*24*60*60*1000}
+@WIN_1Y() = {365*24*60*60*1000}
+
 @if(stream != null) {
-	<div id="streamplot@stream.id" class="streamplot"></div>
-	<div id="streamconfig@stream.id" class="streamconfig">
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 5*60*1000); return false;">5min</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 30*60*1000); return false;">30min</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 60*60*1000); return false;">1h</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 24*60*60*1000); return false;">1d</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 7*24*60*60*1000); return false;">1w</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 30*24*60*60*1000); return false;">1m</a>
-		<a href="#" onclick="StreamPlots.setWindow(streamplot@{stream.id}, 365*24*60*60*1000); return false;">1y</a>
+
+	<div id="streamplot@{stream.id}" class="streamplot"></div>
+	<div id="streamconfig@{stream.id}" class="streamconfig">
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_30M" id="streamwindow@{stream.id}-2"><label for="streamwindow@{stream.id}-2">30min</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1D" id="streamwindow@{stream.id}-4"><label for="streamwindow@{stream.id}-4">1d</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1W" id="streamwindow@{stream.id}-5"><label for="streamwindow@{stream.id}-5">1w</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1Y" id="streamwindow@{stream.id}-7"><label for="streamwindow@{stream.id}-7">1y</label>
 	</div>
 
 	<script type="text/javascript">
@@ -18,14 +27,18 @@
 		streamplot@{stream.id}.id = 'streamplot@{stream.id}';
 		streamplot@{stream.id}.uri = '@{routes.Streams.get(stream.getEndPoint().getUser().userName, stream.getEndPoint().label, stream.path.substring(1))}';
 		streamplot@{stream.id}.path = '@{stream.path.substring(1)}'; // for parsing the returned JSON
-		streamplot@{stream.id}.window = 24*60*60*1000; // in ms
+		streamplot@{stream.id}.window = @WIN_5M; // in ms
 		streamplot@{stream.id}.since = parseInt(((new Date()).getTime() - streamplot@{stream.id}.window) / 1000); // in s for database
 		streamplot@{stream.id}.points = [];
 		streamplot@{stream.id}.timeout = null;
 
 		$(function () {
 			// init Flot plot
-			streamplot@{stream.id}.plot = $.plot($("#streamplot@stream.id"), [ streamplot@{stream.id}.points ], StreamPlots.options);
+			streamplot@{stream.id}.plot = $.plot($("#streamplot@{stream.id}"), [ streamplot@{stream.id}.points ], StreamPlots.options);
+			// setup config form
+			$("input:radio[name='streamwindow@{stream.id}']").filter('[value="@WIN_1D"]').attr('checked', true);
+			$("input:radio[name='streamwindow@{stream.id}']").change( function(){
+				StreamPlots.setWindow(streamplot@{stream.id}, eval($("input:radio[name='streamwindow@{stream.id}']:checked").val()) ); });
 			// start polling
 			StreamPlots.poll(streamplot@{stream.id});
 		});

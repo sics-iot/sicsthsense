@@ -1,13 +1,13 @@
 var StreamPlots = {
 	poll : function(stream) {
-		$('#'+stream.id).css('background-color', 'red');
 		this.getStream(stream);
 		stream.timeout = setTimeout(function() { StreamPlots.poll(stream); }, 1000);
-		$('#'+stream.id).css('background-color', '');
 	},
 	
 	setWindow : function(stream, window) {
 		if (stream.timeout) clearTimeout(stream.timeout);
+		$('#'+stream.id).css('background-color', 'silver');
+		
 		stream.points = [];
 		stream.since = parseInt(((new Date()).getTime() - window) / 1000);
 		stream.window = window;
@@ -15,7 +15,9 @@ var StreamPlots = {
 	},
 	
 	getStream : function(stream) {
-		$.get(stream.uri+"?since="+stream.since, function(data) {
+		$.ajaxSetup({async:true});
+
+		$.ajax({url: stream.uri+"?since="+stream.since, async: true, success: function(data) {
 				//console.debug(data);
 				var update = data[stream.path];
 				for (var point in update) {
@@ -40,7 +42,8 @@ var StreamPlots = {
 					stream.plot.setupGrid();
 	    			stream.plot.draw();
 				}
-			});
+				$('#'+stream.id).css('background-color', '');
+			}});
 	},
 
 	timezone: -(new Date()).getTimezoneOffset()*60*1000, // in ms, distance to UTC (so negative)

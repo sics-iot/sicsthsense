@@ -59,10 +59,16 @@ div.streamplot {
 	width:100%;
 	height:200px;
 	margin: 10px 0px 10px 0px;
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
 }
 
 div.streamconfig {
 	text-align: right;
 	position: relative;
 	top: -240px;
+}
+
+.streamconfig input[type="radio"]:checked+label{
+	font-weight: bold;
 }
