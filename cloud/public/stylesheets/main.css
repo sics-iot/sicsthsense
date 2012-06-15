@@ -60,3 +60,9 @@ div.streamplot {
 	height:200px;
 	margin: 10px 0px 10px 0px;
 }
+
+div.streamconfig {
+	text-align: right;
+	position: relative;
+	top: -240px;
+}
