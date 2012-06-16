@@ -7,12 +7,12 @@
 	<ul>
 	  @for(endPoint <- endPoints) {
 	    <li>
-	      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> @vendpoint.followIcon(endPoint)
+	      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> @vendpoint.followIcon(endPoint, "eplist")
 	        <ul>
 	          @Resource.getByEndPoint(endPoint).map { resource =>
 	              <li>
 	              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
-	              @vresource.followIcon(resource)
+	              @vresource.followIcon(resource, "eplist")
 								 @if(resource.pollingPeriod != 0) {
 								   [polled every @{resource.pollingPeriod/60} min]
 								 }

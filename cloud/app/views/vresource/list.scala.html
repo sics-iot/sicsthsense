@@ -7,7 +7,7 @@
   <ul>
     @for(resource <- resources) {
         <li>
-          <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> @vresource.followIcon(resource)
+          <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> @vresource.followIcon(resource, "rlist")
                @if(resource.pollingPeriod != 0) {
                  [polled every @{resource.pollingPeriod/60} min]
                }

@@ -10,6 +10,7 @@
 
 @if(stream != null && stream.hasData()) {
 
+  <div id="streamtitle@{stream.id}" class="streamtitle">Data stream</div>
 	<div id="streamplot@{stream.id}" class="streamplot"></div>
 	<span id="streamconfig@{stream.id}" class="streamconfig">
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>

@@ -27,8 +27,9 @@ import views.html.*;
 public class Proxy extends Controller {
   
   public static Result forward(final EndPoint endPoint, final String path) {
-    final Resource resource = Resource.getByPath(endPoint, path);
-    if(resource == null) return notFound();
+    /* The two next lines are commented out, enabling proxying to arbitrary path */
+//    final Resource resource = Resource.getByPath(endPoint, path);
+//    if(resource == null) return notFound();
     final String method = request().method();
     final String body = request().body().asText();
     final String contentType = request().getHeader("Content-Type");
@@ -64,9 +65,9 @@ public class Proxy extends Controller {
     return forward(endPoint, path);  
   }
     
-  public static Result forwardById(Long id) {
+  public static Result forwardById(Long id, String arguments) {
     Resource resource = Resource.get(id);
-    return forward(resource.getEndPoint(), resource.path);
+    return forward(resource.getEndPoint(), Utils.concatPath(resource.path,arguments));
   }
   
 }

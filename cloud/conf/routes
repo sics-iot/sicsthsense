@@ -36,10 +36,10 @@ GET        /resources/:id/follow                 controllers.CtrlResource.follow
 GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
 
 # Streams
-GET        /streams/:user/:endpoint              controllers.Streams.get(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
 GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.get(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
-POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
+GET        /streams/:user/:endpoint              controllers.Streams.get(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
 POST       /streams/:user/:endpoint/$path<.*>    controllers.Streams.post(user: String, endpoint: String, path: String)
+POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
 
 # Proxy
 GET        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
@@ -47,10 +47,10 @@ POST       /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath
 PUT        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
 DELETE     /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
 
-GET        /proxy/:id                            controllers.Proxy.forwardById(id: Long)
-POST       /proxy/:id                            controllers.Proxy.forwardById(id: Long)
-PUT        /proxy/:id                            controllers.Proxy.forwardById(id: Long)
-DELETE     /proxy/:id                            controllers.Proxy.forwardById(id: Long)
+GET        /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+POST       /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+PUT        /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+DELETE     /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
 
 # Dummy thing
 GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
