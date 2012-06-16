@@ -23,7 +23,7 @@ uniqueConstraints = {
     @UniqueConstraint(columnNames={"end_point_id", "path"})
     }
 )
-public class Resource extends Model implements Comparable<Resource>{
+public class Resource extends Model implements Comparable<Resource> {
   
     @Id
     public Long id;
@@ -101,6 +101,21 @@ public class Resource extends Model implements Comparable<Resource>{
         .findList();
    }
     
+    public static List<Resource> getByEndPoint(EndPoint endPoint) {
+      return find.where()
+          .eq("endPoint", endPoint)
+          .orderBy("path asc")
+          .findList();
+    }
+    
+    public static List<Resource> getByEndPointWithData(EndPoint endPoint) {
+    return find.where()
+        .gt("lastUpdated", 0)
+        .eq("endPoint", endPoint)
+        .orderBy("path asc")
+        .findList();
+   }
+    
     public void post(float data, long time) {
       Logger.info("New data " + endPoint.label + path + ": " + data);
       DataPoint.add(this, data, time);
@@ -134,12 +149,6 @@ public class Resource extends Model implements Comparable<Resource>{
       if(resource != null) {
         DataPoint.deleteByStream(resource);
       }
-    }
-    
-    public static List<Resource> getByEndPoint(EndPoint endPoint) {
-      return find.where()
-          .eq("endPoint", endPoint)
-          .findList();
     }
     
     public static Resource add(String path, EndPoint endPoint) {

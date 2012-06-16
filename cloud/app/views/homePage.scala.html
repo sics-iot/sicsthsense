@@ -2,16 +2,8 @@
 
 @layout("Home", session) {
   
-  <h1>Resources you follow</h1>
+  @vendpoint.list{<h1>End points you follow</h1>}(CtrlUser.getUser().followedEndPoints())
   
-  <ul>
-  @for(resource <- CtrlUser.getUser().followedResources()) {
-    <li>
-    <a href="@routes.CtrlResource.get(resource.id)">@resource.getUser().userName/@resource.getEndPoint().label@resource.path</a>
-    @vresource.followIcon(resource)
-    @vstream.include(resource)
-    </li>
-  }
-  </ul>
+  @vresource.listStreams{<h1>Resources you follow</h1>}(CtrlUser.getUser().followedResources())
 
 }

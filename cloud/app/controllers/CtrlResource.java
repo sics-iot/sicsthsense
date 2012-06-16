@@ -54,12 +54,12 @@ public class CtrlResource extends Controller {
   }
 
   public static Result follow(Long id) {
-    CtrlUser.getUser().follow(Resource.get(id));
+    CtrlUser.getUser().followResource(Resource.get(id));
     return ok();
   }
   
   public static Result unfollow(Long id) {
-    CtrlUser.getUser().unfollow(Resource.get(id));
+    CtrlUser.getUser().unfollowResource(Resource.get(id));
     return ok();
   }
   

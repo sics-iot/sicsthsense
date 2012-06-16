@@ -19,6 +19,7 @@
     }
 	}
 	    
+	 @if(endPoint.url!="") {
       <dl>
       <dt class="action">Send REST request</dt>
       <dd>
@@ -62,6 +63,7 @@
 	    return false;
 	  });
 	  </script>
+	}
 }
 
 @displayResource(resource.getEndPoint())

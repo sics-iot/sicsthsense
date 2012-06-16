@@ -33,6 +33,8 @@ public class User extends Model {
     public String location;
     @ManyToMany
     public List<Resource> followedResources = new ArrayList<Resource>();
+    @ManyToMany
+    public List<EndPoint> followedEndPoints = new ArrayList<EndPoint>();
     
     // -- Queries
     
@@ -82,24 +84,45 @@ public class User extends Model {
       return followedResources;
     }
     
-    public void follow(Resource resource) {
+    public void followResource(Resource resource) {
       if(resource != null) {
         followedResources.add(resource);
       }
       this.saveManyToManyAssociations("followedResources");
     }
     
-    public void unfollow(Resource resource) {
+    public void unfollowResource(Resource resource) {
       if(resource != null) {
         followedResources.remove(resource);
       }
       this.saveManyToManyAssociations("followedResources");
     }
     
-    public boolean follows(Resource resource) {
+    public boolean followsResource(Resource resource) {
       return followedResources.contains(resource);
     }
     
+    public List<EndPoint> followedEndPoints() {
+      Collections.sort(followedEndPoints);
+      return followedEndPoints;
+    }
     
+    public void followEndPoint(EndPoint endPoint) {
+      if(endPoint != null) {
+        followedEndPoints.add(endPoint);
+      }
+      this.saveManyToManyAssociations("followedEndPoints");
+    }
+    
+    public void unfollowEndPoint(EndPoint endPoint) {
+      if(endPoint != null) {
+        followedEndPoints.remove(endPoint);
+      }
+      this.saveManyToManyAssociations("followedEndPoints");
+    }
+    
+    public boolean followsEndPoint(EndPoint endPoint) {
+      return followedEndPoints.contains(endPoint);
+    }
 
 }

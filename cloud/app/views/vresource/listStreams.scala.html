@@ -1,0 +1,16 @@
+@(header: Html)(resources: List[Resource])
+
+@if(resources.length > 0) {
+  
+  @header
+  
+  <ul>
+    @for(resource <- resources) {
+      <li> 
+      <a href="@routes.CtrlResource.get(resource.id)">@resource.getUser().userName/@resource.getEndPoint().label@resource.path</a>
+      @vresource.followIcon(resource)
+      @vresource.includeStream(resource)
+      </li>
+    }
+  </ul>
+}

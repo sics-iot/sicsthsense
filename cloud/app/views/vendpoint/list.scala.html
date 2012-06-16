@@ -1,20 +1,26 @@
-@(endPoints: List[EndPoint])
+@(header: Html)(endPoints: List[EndPoint])
     
-<ul>
-  @for(endPoint <- endPoints) {
-    <li>
-      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> (@endPoint.getTextDescription())
-        <ul>
-          @Resource.getByEndPoint(endPoint).map { resource =>
-              <li>
-              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
-              @vresource.followIcon(resource)
-							 @if(resource.pollingPeriod != 0) {
-							   [polled every @{resource.pollingPeriod/60} min]
-							 }
-              </li>
-           }  
-      </ul>
-    </li>
-  }
-</ul>
+@if(endPoints.length > 0) {
+
+  @header
+    
+	<ul>
+	  @for(endPoint <- endPoints) {
+	    <li>
+	      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> @vendpoint.followIcon(endPoint)
+	        <ul>
+	          @Resource.getByEndPoint(endPoint).map { resource =>
+	              <li>
+	              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
+	              @vresource.followIcon(resource)
+								 @if(resource.pollingPeriod != 0) {
+								   [polled every @{resource.pollingPeriod/60} min]
+								 }
+	              </li>
+	           }  
+	      </ul>
+	    </li>
+	  }
+	</ul>
+	
+}

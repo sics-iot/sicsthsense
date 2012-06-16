@@ -1,14 +1,14 @@
 @(resource: Resource)
  
-@if(!CtrlUser.getUser().follows(resource)) {
-  <a id="follow@resource.id" href="@routes.CtrlResource.follow(resource.id)"><img id="starred@resource.id" src="@routes.Assets.at("images/unstarred.png")" height="20" align="top"></img></a>
+@if(!CtrlUser.getUser().followsResource(resource)) {
+  <a id="followr@resource.id" href="@routes.CtrlResource.follow(resource.id)"><img id="starredr@resource.id" src="@routes.Assets.at("images/unstarred.png")" height="18" align="top"></img></a>
 } else {
-  <a id="follow@resource.id" href="@routes.CtrlResource.unfollow(resource.id)"><img id="starred@resource.id" src="@routes.Assets.at("images/starred.png")" height="20" align="top"></img></a>
+  <a id="followr@resource.id" href="@routes.CtrlResource.unfollow(resource.id)"><img id="starredr@resource.id" src="@routes.Assets.at("images/starred.png")" height="18" align="top"></img></a>
 }
 
 <script type="text/javascript">
-   var status@resource.id = @CtrlUser.getUser().follows(resource); 
-   $('#follow@resource.id').click(function() {
+   var status@resource.id = @CtrlUser.getUser().followsResource(resource); 
+   $('#followr@resource.id').click(function() {
 	   if(!status@resource.id) {
 		   var url = "@routes.CtrlResource.follow(resource.id)";
 		   var newsrc = "@routes.Assets.at("images/starred.png")";
@@ -17,7 +17,7 @@
 		   var newsrc = "@routes.Assets.at("images/unstarred.png")";
 	   }
 	   $.get(url, function(data) {
-		    $('#starred@resource.id').attr("src", newsrc);
+		    $('#starredr@resource.id').attr("src", newsrc);
 		    status@resource.id = !status@resource.id;
 		 });
 	   return false;

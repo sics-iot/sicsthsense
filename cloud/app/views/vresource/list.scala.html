@@ -1,20 +1,29 @@
-@(endPoints: List[EndPoint])
-    
-<ul>
-  @for(endPoint <- endPoints) {
-    <li>
-      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> (@endPoint.getTextDescription())
-        <ul>
-          @Resource.getByEndPoint(endPoint).map { resource =>
-              <li>
-              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
-							 @if(resource.pollingPeriod != 0) {
-							   [polled every @{resource.pollingPeriod/60} min]
-							 }
-              @vresource.include(resource, false)
-              </li>
-           }  
-      </ul>
-    </li>
-  }
-</ul>
+@(header: Html)(resources: List[Resource], owned: Boolean)
+
+@if(resources.length > 0) {
+  
+  @header
+  
+  <ul>
+    @for(resource <- resources) {
+        <li>
+          <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> @vresource.followIcon(resource)
+               @if(resource.pollingPeriod != 0) {
+                 [polled every @{resource.pollingPeriod/60} min]
+               }
+        @if(owned) {
+                <span class="rightControl">
+                  @if(resource.pollingPeriod != 0) {
+                    <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a>
+                  }
+                  @if(resource.hasData()) {
+                    <a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a>
+                  }
+                  <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
+                </span>
+            }
+        @vresource.include(resource, owned)
+        </li>
+    }
+  </ul>
+}

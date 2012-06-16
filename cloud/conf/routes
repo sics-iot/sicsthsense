@@ -7,7 +7,7 @@ GET        /authenticate                         controllers.Login.authenticate(
 GET        /openIDCallback                       controllers.Login.openIDCallback()
 GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
-GET        /search                               controllers.Public.search()
+GET        /search                               controllers.Application.search()
 GET        /manage                               controllers.Application.manage()
 GET        /about                                controllers.Public.about()
 
@@ -24,6 +24,8 @@ GET        /endpoints/:id/delete                 controllers.CtrlEndPoint.delete
 GET        /endpoints/:id/submit                 controllers.CtrlEndPoint.submit(id: Long)
 GET        /endpoints/:id/discover               controllers.CtrlEndPoint.discover(id: Long)
 GET        /endpoints/:id/addResource            controllers.CtrlEndPoint.addResource(id: Long)
+GET        /endpoints/:id/follow                 controllers.CtrlEndPoint.follow(id: Long)
+GET        /endpoints/:id/unfollow               controllers.CtrlEndPoint.unfollow(id: Long)
 
 # Resources
 GET        /resources/:id                        controllers.CtrlResource.get(id: Long)
@@ -34,14 +36,16 @@ GET        /resources/:id/follow                 controllers.CtrlResource.follow
 GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
 
 # Streams
-GET        /streams/:userName/:label/$path<.*>   controllers.Streams.get(userName: String, label: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
-POST       /streams/:userName/:label/$path<.*>   controllers.Streams.post(userName: String, label: String, path: String)
+GET        /streams/:user/:endpoint              controllers.Streams.get(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.get(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
+POST       /streams/:user/:endpoint/$path<.*>    controllers.Streams.post(user: String, endpoint: String, path: String)
 
 # Proxy
-GET        /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
-POST       /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
-PUT        /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
-DELETE     /proxy/:userName/:label/*path         controllers.Proxy.forwardByPath(userName: String, label: String, path: String)
+GET        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+POST       /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+PUT        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+DELETE     /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
 
 GET        /proxy/:id                            controllers.Proxy.forwardById(id: Long)
 POST       /proxy/:id                            controllers.Proxy.forwardById(id: Long)

@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import controllers.Utils;
+
 import play.db.ebean.*;
 import play.data.validation.*;
 
@@ -13,7 +15,7 @@ uniqueConstraints = {
     @UniqueConstraint(columnNames={"user_id", "label"})
     }
 )
-public class EndPoint extends Model {
+public class EndPoint extends Model implements Comparable<EndPoint> {
   
     @Id
     public Long id;
@@ -41,6 +43,10 @@ public class EndPoint extends Model {
     
     public User getUser() {
       return User.get(user.id);
+    }
+    
+    public String fullPath() {
+      return Utils.concatPath(user.userName, label);
     }
     
     public static List<EndPoint> getByUser(User user) {
@@ -100,6 +106,10 @@ public class EndPoint extends Model {
         endPoint = EndPoint.register(user, label, null);
       }
       return endPoint;
+    }
+    
+    public int compareTo(EndPoint endPoint) {
+      return this.fullPath().compareTo(endPoint.fullPath());
     }
     
 }

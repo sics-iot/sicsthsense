@@ -117,4 +117,14 @@ public class CtrlEndPoint extends Controller {
     } 
   }
   
+  public static Result follow(Long id) {
+    CtrlUser.getUser().followEndPoint(EndPoint.get(id));
+    return ok();
+  }
+  
+  public static Result unfollow(Long id) {
+    CtrlUser.getUser().unfollowEndPoint(EndPoint.get(id));
+    return ok();
+  }
+  
 }
