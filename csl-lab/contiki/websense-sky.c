@@ -39,6 +39,7 @@
  */
 
 #include "contiki.h"
+#include "net/uip-ds6.h"
 #include "dev/leds.h"
 #include "dev/sht11-sensor.h"
 #include "dev/light-sensor.h"
@@ -103,11 +104,27 @@ output_light(struct jsontree_context *path)
 static struct jsontree_callback light_sensor_callback =
   JSONTREE_CALLBACK(output_light, NULL);
 /*---------------------------------------------------------------------------*/
+/* static int */
+/* output_url(struct jsontree_context *path) */
+/* { */
+/*   char buf[40]; */
+/*   uip_ds6_addr_t *addr = uip_ds6_get_global(-1); */
+/*   snprintf(buf, 40, "http://[%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x]/", */
+/* 	   UIP_HTONS(addr->ipaddr.u16[0]), UIP_HTONS(addr->ipaddr.u16[1]), */
+/* 	   UIP_HTONS(addr->ipaddr.u16[2]), UIP_HTONS(addr->ipaddr.u16[3]), */
+/* 	   UIP_HTONS(addr->ipaddr.u16[4]), UIP_HTONS(addr->ipaddr.u16[5]), */
+/* 	   UIP_HTONS(addr->ipaddr.u16[6]), UIP_HTONS(addr->ipaddr.u16[7])); */
+/*   jsontree_write_string(path, buf); */
+/*   return 0; */
+/* } */
+/* static struct jsontree_callback url_callback = */
+/*   JSONTREE_CALLBACK(output_url, NULL); */
+/*---------------------------------------------------------------------------*/
 static struct jsontree_string desc = JSONTREE_STRING("Tmote Sky");
-static struct jsontree_string temp_unit = JSONTREE_STRING("Celcius");
 
 JSONTREE_OBJECT(node_tree,
-                JSONTREE_PAIR("node-type", &desc),
+/*                 JSONTREE_PAIR("url", &url_callback), */
+                JSONTREE_PAIR("description", &desc),
                 JSONTREE_PAIR("time", &json_time_callback));
 
 
@@ -122,8 +139,8 @@ JSONTREE_OBJECT(act_tree,
 /* complete node tree */
 JSONTREE_OBJECT(tree,
                 JSONTREE_PAIR("node", &node_tree),
-                JSONTREE_PAIR("sen", &sensor_tree),
-                JSONTREE_PAIR("act", &act_tree),
+                JSONTREE_PAIR("sensors", &sensor_tree),
+                JSONTREE_PAIR("actuators", &act_tree),
                 JSONTREE_PAIR("cfg", &json_subscribe_callback));
 
 /*---------------------------------------------------------------------------*/
@@ -139,12 +156,13 @@ PROCESS_THREAD(websense_process, ev, data)
   static struct etimer timer;
   PROCESS_BEGIN();
 
-  json_ws_init(&tree);
+  json_ws_init(&tree, "TmoteSky");
 
   SENSORS_ACTIVATE(sht11_sensor);
   SENSORS_ACTIVATE(light_sensor);
 
-  json_ws_set_callback("sen");
+  json_ws_set_callback("sensor");
+  
 
   while(1) {
     /* Alive indication with the LED */

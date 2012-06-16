@@ -39,6 +39,8 @@
  */
 
 #include "contiki.h"
+#include "node-id.h"
+
 #if PLATFORM_HAS_LEDS
 #include "dev/leds.h"
 #endif
@@ -75,13 +77,25 @@
 #define SEND_INTERVAL 120
 #endif
 
+#ifdef JSON_WS_CONF_CALLBACK_HOST
+#define CALLBACK_HOST JSON_WS_CONF_CALLBACK_HOST
+#else
+#define CALLBACK_HOST "[aaaa::1]"
+#endif
+
+#ifdef JSON_WS_CONF_CALLBACK_PATH
+#define CALLBACK_PATH JSON_WS_CONF_CALLBACK_PATH
+#else
+#define CALLBACK_PATH "/debug/"
+#endif
+
 static const char http_content_type_json[] = "application/json";
 
 /* Maximum 40 chars in host name?: 5 x 8 */
-static char callback_host[40] = "[aaaa::1]";
+static char callback_host[40] = CALLBACK_HOST;
 static uint16_t callback_port = CALLBACK_PORT;
 static uint16_t callback_interval = SEND_INTERVAL;
-static char callback_path[80] = "/debug/";
+static char callback_path[80] = CALLBACK_PATH;
 static char callback_appdata[80] = "";
 static char callback_proto[8] = CALLBACK_PROTO;
 static const char *callback_json_path = NULL;
@@ -483,13 +497,18 @@ else {
 }
 /*---------------------------------------------------------------------------*/
 void
-json_ws_init(struct jsontree_object *json)
+json_ws_init(struct jsontree_object *json, char *name)
 {
   PRINTF("JSON INIT (callback %s every %u seconds)\n",
          CALLBACK_PROTO, SEND_INTERVAL);
   tree = json;
   ctimer_set(&periodic_timer, CLOCK_SECOND * SEND_INTERVAL, periodic, NULL);
   process_start(&httpd_ws_process, NULL);
+  if(name != NULL) {
+    snprintf(callback_path, sizeof(callback_path),
+	     "/streams/csl-lab/%s-%d/", name, node_id);
+    printf("Set the SicsthSense callback post path to %s\n", callback_path);
+  }
 #if WITH_UDP
   if(strncmp(callback_proto, "udp", 3) == 0) {
     json_ws_udp_setup(callback_host, callback_port);

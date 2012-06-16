@@ -43,7 +43,7 @@
 
 #include "jsontree.h"
 
-void json_ws_init(struct jsontree_object *json);
+void json_ws_init(struct jsontree_object *json, char *stream_name);
 void json_ws_set_callback(const char *json_path);
 int  json_ws_udp_setup(const char *host, uint16_t port);
 
