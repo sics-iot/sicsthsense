@@ -6,9 +6,6 @@ import http, sys, re
 
 host = sys.argv[1]
 [res, data] = http.get(host, "")
-if data:
-    state = re.search('Socket 1</td><td>(.+?)</td>', data)
-    power = re.search('(\d+\.\d+) W</td>', data)
-    print "Power:", power.group(1), " State:", state.group(1)
-else:
-    print "No power plug found"
+state = re.search('Socket 1</td><td>(.+?)</td>', data)
+power = re.search('(\d+\.\d+) W</td>', data)
+print "Power:", power.group(1), " State:", state.group(1)

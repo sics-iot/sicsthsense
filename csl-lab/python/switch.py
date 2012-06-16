@@ -13,9 +13,6 @@ else:
     state = "Off"
 
 [res, data] = http.get(host, "/index.html?p0=%s"%(state))
-if data:
-    newstate = re.search('Socket 1</td><td>(.+?)</td>', data)
-    power = re.search('(\d+\.\d+) W</td>', data)
-    print "Power:", power.group(1), " State:", newstate.group(1)
-else:
-    print "No power plug found"
+newstate = re.search('Socket 1</td><td>(.+?)</td>', data)
+power = re.search('(\d+\.\d+) W</td>', data)
+print "Power:", power.group(1), " State:", newstate.group(1)
