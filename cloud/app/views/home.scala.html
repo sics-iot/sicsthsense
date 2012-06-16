@@ -2,6 +2,16 @@
 
 @layout("Home", session) {
   
-  On this page, you're going to see the streams and resources you follow.
+  <h1>Resources you follow</h1>
+  
+  <ul>
+  @for(resource <- CtrlUser.getUser().followedResources()) {
+    <li>
+    <a href="@routes.CtrlResource.get(resource.id)">@resource.getUser().userName/@resource.getEndPoint().label@resource.path</a>
+    @followResource(resource)
+    @includeStream(resource)
+    </li>
+  }
+  </ul>
 
 }

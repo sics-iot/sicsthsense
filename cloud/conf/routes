@@ -30,6 +30,8 @@ GET        /resources/:id                        controllers.CtrlResource.get(id
 GET        /resources/:id/delete                 controllers.CtrlResource.delete(id: Long)
 GET        /resources/:id/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
 GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
+GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)
+GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
 
 # Streams
 GET        /streams/:userName/:label/$path<.*>   controllers.Streams.get(userName: String, label: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)

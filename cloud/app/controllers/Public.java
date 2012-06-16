@@ -19,7 +19,7 @@ import views.html.*;
 public class Public extends Controller {
   
   public static Result search() {
-    return ok(search.render(EndPoint.all()));
+    return ok(search.render());
   }
   
   public static Result about() {

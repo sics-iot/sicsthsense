@@ -31,6 +31,8 @@ public class User extends Model {
     @Constraints.Required
     public String lastName;
     public String location;
+    @ManyToMany
+    public List<Resource> followedResources = new ArrayList<Resource>();
     
     // -- Queries
     
@@ -47,6 +49,12 @@ public class User extends Model {
     public static User create(User user) {
         user.save();
         return user;
+    }
+    
+    public static List<User> all() {
+      return find.where()
+          .orderBy("userName asc")
+          .findList();
     }
     
     public static boolean exists(Long id) {
@@ -68,5 +76,30 @@ public class User extends Model {
     public static void delete(Long id) {
       find.ref(id).delete();
     }
+
+    public List<Resource> followedResources() {
+      Collections.sort(followedResources);
+      return followedResources;
+    }
+    
+    public void follow(Resource resource) {
+      if(resource != null) {
+        followedResources.add(resource);
+      }
+      this.saveManyToManyAssociations("followedResources");
+    }
+    
+    public void unfollow(Resource resource) {
+      if(resource != null) {
+        followedResources.remove(resource);
+      }
+      this.saveManyToManyAssociations("followedResources");
+    }
+    
+    public boolean follows(Resource resource) {
+      return followedResources.contains(resource);
+    }
+    
+    
 
 }

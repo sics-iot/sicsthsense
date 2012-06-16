@@ -25,10 +25,10 @@
   @if(owned) {
       <dl>
       @if(endPoint.url != "") {
-        <dt>Discover resources</dt>
+        <dt class="action">Discover resources</dt>
         <dd><a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a></dd>
       }
-      <dt>Delete end point</dt>
+      <dt class="action">Delete end point</dt>
       <dd><a href="@routes.CtrlEndPoint.delete(endPoint.id)" class="delete">[delete]</a></dd>
       </dl>
 	}
@@ -53,7 +53,7 @@
                   <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
                 </span>
             }
-          @includeResource(resource, true, owned)
+          @includeResource(resource, owned)
           </li>
         }  
   </ul>

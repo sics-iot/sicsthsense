@@ -24,7 +24,7 @@ public class CtrlUser extends Controller {
   static public User getUser() {
     return User.get(Long.parseLong(session().get("id")));
   }
-  
+    
   public static Result get() {
     return ok(ViewUser.render(getUser(), null));
   }

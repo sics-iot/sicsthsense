@@ -41,6 +41,10 @@ fieldset { clear: both; }
  
 dl { margin: 0; padding: 0; }
  
+dt.action {
+  font-weight:normal;	
+}
+ 
 dl dt {
     float:left;
     font-weight:bold;
@@ -65,7 +69,8 @@ div.streamplot {
 	background-repeat: no-repeat;
 }
 
-div.streamconfig {
+span.streamconfig {
+	float: right;
 	text-align: right;
 	position: relative;
 	top: -240px;

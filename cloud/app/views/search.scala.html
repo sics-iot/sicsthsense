@@ -1,14 +1,11 @@
-@(endPoints: List[EndPoint])
+@()
 
 @import helper._
 
 @layout("Search", session) {
  
- @if(endPoints.length > 0) {
-   <h1>Public resources</h1>
-   @includeResources(endPoints) 
- }
-
- @includeStreams(Resource.getWithData())
+ <h1>Public resources</h1>
+ 
+ @includeEndPoints(EndPoint.all())
  
 }

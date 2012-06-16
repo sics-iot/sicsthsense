@@ -23,7 +23,7 @@ uniqueConstraints = {
     @UniqueConstraint(columnNames={"end_point_id", "path"})
     }
 )
-public class Resource extends Model {
+public class Resource extends Model implements Comparable<Resource>{
   
     @Id
     public Long id;
@@ -62,8 +62,14 @@ public class Resource extends Model {
       return User.get(user.id);
     }
     
+    public String fullPath() {
+      return Utils.concatPath(user.userName, endPoint.label, path);
+    }
+    
     public static List<Resource> all() {
-      return find.all();
+      return find.where()
+          .orderBy("path")
+          .findList();
     }
 
     public static Resource getByPath(EndPoint endPoint, String path) {
@@ -76,13 +82,22 @@ public class Resource extends Model {
     public static List<Resource> getWithData() {
       return find.where()
           .gt("lastUpdated", 0)
+          .orderBy("path asc")
           .findList();
     }
+    
+    public static List<Resource> getByUser(User user) {
+    return find.where()
+        .eq("user", user)
+        .orderBy("path asc")
+        .findList();
+   }
     
     public static List<Resource> getByUserWithData(User user) {
     return find.where()
         .gt("lastUpdated", 0)
         .eq("user", user)
+        .orderBy("path asc")
         .findList();
    }
     
@@ -146,6 +161,10 @@ public class Resource extends Model {
         delete(id); 
       }
     }
-        
+
+    public int compareTo(Resource resource) {
+      return this.fullPath().compareTo(resource.fullPath());
+    }
+            
 }
 

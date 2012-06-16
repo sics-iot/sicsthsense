@@ -47,6 +47,12 @@ create table user (
   constraint pk_user primary key (id))
 ;
 
+
+create table user_resource (
+  user_id                        bigint not null,
+  resource_id                    bigint not null,
+  constraint pk_user_resource primary key (user_id, resource_id))
+;
 create sequence data_point_seq;
 
 create sequence end_point_seq;
@@ -66,6 +72,10 @@ create index ix_resource_user_4 on resource (user_id);
 
 
 
+alter table user_resource add constraint fk_user_resource_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
+
+alter table user_resource add constraint fk_user_resource_resource_02 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
+
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
@@ -77,6 +87,8 @@ drop table if exists end_point;
 drop table if exists resource;
 
 drop table if exists user;
+
+drop table if exists user_resource;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 

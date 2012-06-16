@@ -16,8 +16,9 @@
   
   @if(endPoints.length > 0) {
   <h1>Your resources</h1>
-    @includeResources(endPoints)
+    @includeEndPoints(endPoints)
   }
-     
+  
+  <h1>Your data streams</h1>   
   @includeStreams(Resource.getByUserWithData(CtrlUser.getUser()))
 }

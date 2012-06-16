@@ -1,16 +1,14 @@
-@(resource: Resource, withControls: Boolean, owned: Boolean)
+@(resource: Resource, owned: Boolean)
 
 @import helper._
 
 @displayResource(endPoint: EndPoint) = {
-
- @if(withControls) {
  
   @if(owned) {    
 	  @if(endPoint.url!="") {
 	    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
 	      <dl>
-	      <dt style="font-weight:normal;">Enter polling interval</dt>
+	      <dt class="action">Enter polling interval</dt>
 	      <dd>  
   	      <input input type="hidden" name="id" value="@resource.id" />
 	        <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
@@ -22,7 +20,7 @@
 	}
 	    
       <dl>
-      <dt style="font-weight:normal;">Send REST request</dt>
+      <dt class="action">Send REST request</dt>
       <dd>
         <form id="proxy@resource.id" action="@routes.Proxy.forwardById(resource.id)">
 	       <select id="method@resource.id" name="method">
@@ -64,7 +62,6 @@
 	    return false;
 	  });
 	  </script>
-    }
 }
 
 @displayResource(resource.getEndPoint())

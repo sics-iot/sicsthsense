@@ -11,7 +11,7 @@
 @if(stream != null && stream.hasData()) {
 
 	<div id="streamplot@{stream.id}" class="streamplot"></div>
-	<div id="streamconfig@{stream.id}" class="streamconfig">
+	<span id="streamconfig@{stream.id}" class="streamconfig">
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_30M" id="streamwindow@{stream.id}-2"><label for="streamwindow@{stream.id}-2">30min</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
@@ -19,7 +19,7 @@
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1W" id="streamwindow@{stream.id}-5"><label for="streamwindow@{stream.id}-5">1w</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1Y" id="streamwindow@{stream.id}-7"><label for="streamwindow@{stream.id}-7">1y</label>
-	</div>
+	</span>
 
 	<script type="text/javascript">
 		// one global JavaScript object per stream

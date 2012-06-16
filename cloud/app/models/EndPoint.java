@@ -46,6 +46,7 @@ public class EndPoint extends Model {
     public static List<EndPoint> getByUser(User user) {
       return find.where()
           .eq("user", user)
+          .orderBy("label")
           .findList();
     }
     
@@ -74,7 +75,9 @@ public class EndPoint extends Model {
     }
     
     public static List<EndPoint> all() {
-      return find.all();
+      return find.where()
+          .orderBy("user.userName")
+          .findList();
     }
     
     public static EndPoint register(User user, String label, String url) {

@@ -9,9 +9,9 @@ SicsthSense:
 * CoAP polling and POST [Matthias]
 * accept POST [Simon] => done
 * expose streams through a RESTful interface [Simon] => done
-* decent graphs display (choice of the x scale) [Simon]
+* nice graphs display (choice of the x scale) [Matthis] => done
 * simple aggregation? (average, sum, etc?) [Simon]
-* interactive RESTful interface (click on "POST /leds/red") [Simon]
+* interactive RESTful interface (click on "POST /leds/red") [Simon] => done
 * acting a proxy, having labels for devices (e.g. sense.sics.se/users/simonduq/phone) [Simon] => done
 * enbygg-style control [Joakim]
 * spontaneous registration (prefix based) [Simon]

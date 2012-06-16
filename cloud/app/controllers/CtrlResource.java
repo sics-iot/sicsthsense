@@ -52,5 +52,15 @@ public class CtrlResource extends Controller {
     Resource.clearStream(id);
     return redirect(request().getHeader("referer"));
   }
+
+  public static Result follow(Long id) {
+    CtrlUser.getUser().follow(Resource.get(id));
+    return ok();
+  }
+  
+  public static Result unfollow(Long id) {
+    CtrlUser.getUser().unfollow(Resource.get(id));
+    return ok();
+  }
   
 }
