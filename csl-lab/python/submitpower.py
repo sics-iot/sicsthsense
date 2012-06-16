@@ -21,14 +21,14 @@ while 1:
                 state = 1
             else:
                 state = 0
-                index = index + 1
-                postData = '{"power":%f, "on":%d}'%(float(power),state)
-                [res, data] = http.post(sense,
-                                        "/streams/%s/powerplug-%d/"%(user, index),
-                                        postData,
-                                        {"Content-type":"application/json"})
-                print "Updated %d, power = %f Status:"%(index, float(power)),
-                res.status, res.reason
-                time.sleep(10)
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
+            index = index + 1
+            postData = '{"power":%f, "on":%d}'%(float(power),state)
+            [res, data] = http.post(sense,
+                                    "/streams/%s/powerplug-%d/"%(user, index),
+                                    postData,
+                                    {"Content-type":"application/json"})
+            print "Updated %d, power = %f Status:"%(index, float(power)),
+            res.status, res.reason
+            time.sleep(10)
+        except IOError as e:
+            print "I/O error({0}): {1}".format(e.errno, e.strerror)
