@@ -4,6 +4,13 @@
 
 @layout(endPoint.label, session) {
   
+  <h1>End Point</h1>
+  
+  <dl>
+  <dt>Full path</dt>
+  <dd>@endPoint.getUser().userName/@endPoint.label  @vendpoint.followIcon(endPoint, "ep")</dd>
+  </dl>
+  
   @if(owned) {
 	  @if(epForm != null) {
 	    <span class="logged"><a href="@routes.CtrlEndPoint.get(endPoint.id)">[Cancel]</a></span>

@@ -39,26 +39,33 @@ form { display: inline; }
 
 fieldset { clear: both; }
  
-dl { margin: 0; padding: 0; }
- 
-dt.action {
-  font-weight:normal;	
+dl {
+	  margin: 0;
+	  padding: 0;
+    width: 100%;
+    overflow: hidden;
 }
- 
-dl dt {
-    float:left;
+
+dt.action {
+    font-weight:normal; 
+}
+
+dt, dd {
+	  margin: 2px 0;
+	  min-height: 1.2em;
+}
+
+dt {
+    clear: both;
+    float: left;
+    min-width: 20%;
     font-weight:bold;
-    margin-right:10px;
-    padding:5px; 
-    width:160px;
-    height: 0.8em;
     text-align: right;
 }
- 
-dl dd {
-    margin:2px 0;
-    padding:5px 0;
-    height: 0.8em;
+dd {
+    float: left;
+    margin-left: 0.5em;
+    max-width: 75%;
 }
 
 div.streamtitle {

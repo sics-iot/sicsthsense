@@ -3,7 +3,12 @@
 @import helper._
 
 @displayResource(endPoint: EndPoint, user: User) = {
+
+  <h1>Resource</h1>
+
   <dl>
+  <dt>Full path</dt>
+  <dd>@user.userName/@endPoint.label@resource.path  @vresource.followIcon(resource, "r")</dd>
   <dt>User</dt>
   <dd>@user.userName</dd>
 	<dl>
