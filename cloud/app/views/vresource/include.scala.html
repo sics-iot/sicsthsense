@@ -52,10 +52,11 @@
 	  $('#proxy@resource.id').submit(function() {
 	    var method = $("select#method@resource.id").val();
 	    var arguments = $("input#arguments@resource.id").val();
+	    var url = "@routes.Proxy.forwardById(resource.id, "")" + arguments;
 	    var body = $("input#body@resource.id").val();
 	    $("#ajax_wait@resource.id").css("visibility","visible");
 	    $.ajax({
-	    	  url: "@routes.Proxy.forwardById(resource.id, "")" + "?arguments=" + arguments,
+	    	  url: url,
 	    	  context: document.body,
 	    	  timeout: 5000,
 	    	  type: method,

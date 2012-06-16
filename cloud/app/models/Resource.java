@@ -89,7 +89,7 @@ public class Resource extends Model implements Comparable<Resource> {
     public static List<Resource> getByUser(User user) {
     return find.where()
         .eq("user", user)
-        .orderBy("path asc")
+        .orderBy("endPoint.label, path")
         .findList();
    }
     

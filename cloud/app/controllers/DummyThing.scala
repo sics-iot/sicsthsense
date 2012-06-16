@@ -47,8 +47,8 @@ object DummyThing extends Controller {
   }
   
   def print(id: Long) = Action { request =>
-    println("DummyThing" + id + " prints: " + request.body.asText.getOrElse("[no body]"))
-    Ok("ok")
+    val str = "DummyThing" + id + " prints: " + request.body.asText.getOrElse("[no body]");
+    Ok(str)
   }
   
 }
