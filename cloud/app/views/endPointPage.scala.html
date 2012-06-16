@@ -47,8 +47,8 @@
       </dl>
 	}
 
-  @vresource.list{<h1>Resources</h1>}(Resource.getByEndPoint(endPoint), true)
+  @vresource.list{<h1>Resource manager</h1>}(Resource.getByEndPoint(endPoint), owned)
   
-  @vresource.listStreams{<h1>Data streams</h1>}(Resource.getByEndPointWithData(endPoint))
+  @vresource.listStreams{<h1>Resources</h1>}(Resource.getByEndPoint(endPoint))
 
 }

@@ -1,23 +1,8 @@
-@(resource: Resource, owned: Boolean)
+@(resource: Resource)
 
 @import helper._
 
 @displayResource(endPoint: EndPoint) = {
- 
-  @if(owned) {    
-	  @if(endPoint.url!="") {
-	    @form(routes.CtrlResource.setPeriod(resource.id,0)) {
-	      <dl>
-	      <dt class="action">Enter polling interval</dt>
-	      <dd>  
-  	      <input input type="hidden" name="id" value="@resource.id" />
-	        <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
-	        <input type="submit" value="Ok" class="buttonG"/>
-	      </dd>
-	      </dl>
-      }
-    }
-	}
 	    
 	 @if(endPoint.url!="") {
       <dl>

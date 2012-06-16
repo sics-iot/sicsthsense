@@ -12,7 +12,7 @@
       @if(resource.pollingPeriod != 0) {
         [polled every @{resource.pollingPeriod/60} min]
       }
-      @vresource.include(resource, false)
+      @vresource.include(resource)
       @vresource.includeStream(resource)
       </li>
     }
