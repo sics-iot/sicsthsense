@@ -88,7 +88,8 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     
     public static EndPoint register(User user, String label, String url) {
       EndPoint endPoint = new EndPoint(user, url, null, label, null, null);
-      endPoint.save();
+      try { endPoint.save(); }
+      catch (Exception e) {}
       return endPoint;
     }
 
@@ -110,6 +111,21 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     
     public int compareTo(EndPoint endPoint) {
       return this.fullPath().compareTo(endPoint.fullPath());
+    }
+    
+    public void verify() {
+      label = label.replaceAll( "[^\\w.-]", "" );
+      super.save();
+    }
+    
+    public void save() {
+      verify();
+      super.save();
+    }
+    
+    public void update() {
+      verify();
+      super.update();
     }
     
 }

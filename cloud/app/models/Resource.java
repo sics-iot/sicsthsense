@@ -44,7 +44,7 @@ public class Resource extends Model implements Comparable<Resource> {
     public Resource(String path, EndPoint endPoint) {
       this.endPoint = endPoint;
       this.user = endPoint.getUser();
-      this.path = Utils.concatPath(path);
+      this.path = path;
       this.pollingPeriod = 0;
       this.lastPolled = 0;
       this.lastUpdated = 0;
@@ -153,7 +153,8 @@ public class Resource extends Model implements Comparable<Resource> {
     
     public static Resource add(String path, EndPoint endPoint) {
       Resource resource = new Resource(path, endPoint);
-      resource.save();
+      try { resource.save(); }
+      catch (Exception e) {}
       return resource;
     }
     
@@ -173,6 +174,21 @@ public class Resource extends Model implements Comparable<Resource> {
 
     public int compareTo(Resource resource) {
       return this.fullPath().compareTo(resource.fullPath());
+    }
+    
+    public void verify() {
+      path = Utils.concatPath(path);
+      super.save();
+    }
+    
+    public void save() {
+      verify();
+      super.save();
+    }
+    
+    public void update() {
+      verify();
+      super.update();
     }
             
 }

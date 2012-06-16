@@ -3,6 +3,7 @@ package controllers;
 //import models.Project;
 //import models.Task;
 //import models.User;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class CtrlEndPoint extends Controller {
       submitted.id = id;
       submitted.uid = current.uid;
       try { submitted.update(); }
-      catch (Exception e) { return badRequest("Bad request"); }
+      catch (Exception e) { }
       return redirect(routes.CtrlEndPoint.get(id));
     }
   }

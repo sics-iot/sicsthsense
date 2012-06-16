@@ -26,9 +26,7 @@ public class User extends Model {
     public String email;
     @Formats.NonEmpty
     public String userName;
-    @Constraints.Required
     public String firstName;
-    @Constraints.Required
     public String lastName;
     public String location;
     @ManyToMany
@@ -123,6 +121,21 @@ public class User extends Model {
     
     public boolean followsEndPoint(EndPoint endPoint) {
       return followedEndPoints.contains(endPoint);
+    }
+    
+    public void verify() {
+      userName = userName.replaceAll( "[^\\w.-]", "" );
+      super.save();
+    }
+    
+    public void save() {
+      verify();
+      super.save();
+    }
+    
+    public void update() {
+      verify();
+      super.update();
     }
 
 }
