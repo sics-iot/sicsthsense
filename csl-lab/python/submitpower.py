@@ -11,21 +11,24 @@ user = "csl-lab"
 while 1:
     index = 0
     for host in hosts:
-        [res, data] = http.get(host, "")
-        newstate = re.search('Socket 1</td><td>(.+?)</td>', data)
-        m = re.search('(\d+\.\d+) W</td>', data)
-        power = m.group(1)
-        state = newstate.group(1)
-        if state == "Enabled":
-            state = 1
-        else:
-            state = 0
-        index = index + 1
-        # Python code for sending a temperature values to sense.sics.se
-        postData = '{"power":%f, "on":%d}'%(float(power),state)
-        [res, data] = http.post(sense,
-                                "/streams/%s/powerplug-%d/"%(user, index),
-                                postData,{"Content-type":"application/json"})
-        print "Updated %d with power = %f Status:"%(index, float(power)),
-        res.status, res.reason
-        time.sleep(10)
+        try:
+            [res, data] = http.get(host, "")
+            newstate = re.search('Socket 1</td><td>(.+?)</td>', data)
+            m = re.search('(\d+\.\d+) W</td>', data)
+            power = m.group(1)
+            state = newstate.group(1)
+            if state == "Enabled":
+                state = 1
+            else:
+                state = 0
+                index = index + 1
+                postData = '{"power":%f, "on":%d}'%(float(power),state)
+                [res, data] = http.post(sense,
+                                        "/streams/%s/powerplug-%d/"%(user, index),
+                                        postData,
+                                        {"Content-type":"application/json"})
+                print "Updated %d, power = %f Status:"%(index, float(power)),
+                res.status, res.reason
+                time.sleep(10)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
