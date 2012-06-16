@@ -115,7 +115,6 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     
     public void verify() {
       label = label.replaceAll( "[^\\w.-]", "" );
-      super.save();
     }
     
     public void save() {

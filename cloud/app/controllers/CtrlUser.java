@@ -5,6 +5,8 @@ package controllers;
 //import models.User;
 import java.util.HashMap;
 
+import org.codehaus.jackson.node.ObjectNode;
+
 import play.*;
 
 import play.core.Router.Routes;
@@ -23,6 +25,17 @@ public class CtrlUser extends Controller {
   
   static public User getUser() {
     return User.get(Long.parseLong(session().get("id")));
+  }
+  
+  public static Result getJson(String userName) {
+    User user = User.getByUserName(userName);
+    if(user != null) {
+      ObjectNode result = Json.newObject();
+      result.put("userName", user.userName);
+      result.put("location", user.location);
+      return ok(result);
+    }
+    else return notFound();
   }
     
   public static Result get() {

@@ -125,7 +125,6 @@ public class User extends Model {
     
     public void verify() {
       userName = userName.replaceAll( "[^\\w.-]", "" );
-      super.save();
     }
     
     public void save() {

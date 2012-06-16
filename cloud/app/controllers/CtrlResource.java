@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 import com.ning.http.client.Request;
 
@@ -33,6 +34,26 @@ public class CtrlResource extends Controller {
     Resource resource = Resource.get(id);
     if(resource != null)     return ok(resourcePage.render(resource, Secured.ownsResource(session("id"), id)));
     else                     return notFound();
+  }
+  
+  public static Result getJson(String userName, String endPointName, String path) {
+    final User user = User.getByUserName(userName);
+    if(user == null) return notFound();
+    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
+    if(endPoint == null) return notFound();
+    final Resource resource = Resource.getByPath(endPoint, path);
+    if(resource == null) return notFound();
+    if(resource != null) {
+      ObjectNode result = Json.newObject();
+      result.put("user", userName);
+      result.put("endpoint", endPointName);
+      result.put("path", path);
+      result.put("pollingPeriod", resource.pollingPeriod);
+      result.put("lastPolled", resource.lastPolled);
+      result.put("lastUpdated", resource.lastUpdated);
+      return ok(result);
+    }
+    else return notFound();
   }
   
   public static Result delete(Long id) {

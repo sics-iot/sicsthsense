@@ -18,8 +18,7 @@
 	    @forms.input(userForm!=null, "text", "location", "Location", user.location)
 	    @if(userForm!=null) { @forms.submit(userForm!=null, "Update") }
   }
-
-  @utils.map(user.location)  
+  
 }
 
 @layout("Account", session) {

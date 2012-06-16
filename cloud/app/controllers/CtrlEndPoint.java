@@ -20,6 +20,7 @@ import views.html.*;
 import java.util.concurrent.Callable;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 @Security.Authenticated(Secured.class)
 public class CtrlEndPoint extends Controller {
@@ -64,6 +65,20 @@ public class CtrlEndPoint extends Controller {
     EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
     if(endPoint != null)     return ok(endPointPage.render(endPoint, null, Secured.ownsEndPoint(session("id"), endPoint.id)));
     else                     return notFound();
+  }
+  
+  public static Result getJson(String userName, String label) {
+    EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
+    if(endPoint != null) {
+      ObjectNode result = Json.newObject();
+      result.put("user", userName);
+      result.put("label", endPoint.label);
+      result.put("uid", endPoint.uid);
+      result.put("description", endPoint.description);
+      result.put("location", endPoint.location);
+      return ok(result);
+    }
+    else return notFound();
   }
   
   public static Result edit(Long id) {
