@@ -82,10 +82,10 @@ public class Streams extends Controller {
     return true;
   }
   
-  public static Result post(String userName, String label, String path) {
+  public static Result post(String userName, String endPointName, String path) {
     User user = User.getByUserName(userName);
     if(user == null) return notFound();
-    EndPoint endPoint = EndPoint.getOrCreateByLabel(user, label);
+    EndPoint endPoint = EndPoint.getOrCreateByLabel(user, endPointName);
     try {
       JsonNode jsonBody = request().body().asJson();
       String textBody = request().body().asText();
@@ -96,10 +96,10 @@ public class Streams extends Controller {
     return ok("ok");
   }
   
-  public static Result get(String userName, String label, String path, Long tail, Long last, Long since) {
+  public static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
     final User user = User.getByUserName(userName);
     if(user == null) return notFound();
-    final EndPoint endPoint = EndPoint.getByLabel(user, label);
+    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
     if(endPoint == null) return notFound();
     final Resource resource = Resource.getByPath(endPoint, path);
     if(resource == null) return notFound();

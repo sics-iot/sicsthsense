@@ -8,7 +8,7 @@
           @Resource.getByEndPoint(endPoint).map { resource =>
               <li>
               <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
-              @followResource(resource)
+              @vresource.followIcon(resource)
 							 @if(resource.pollingPeriod != 0) {
 							   [polled every @{resource.pollingPeriod/60} min]
 							 }

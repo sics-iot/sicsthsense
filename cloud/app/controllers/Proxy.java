@@ -56,10 +56,10 @@ public class Proxy extends Controller {
       );
   }
   
-  public static Result forwardByPath(String userName, String label, final String path) {
+  public static Result forwardByPath(String userName, String endPointName, final String path) {
     final User user = User.getByUserName(userName);
     if(user == null) return notFound();
-    final EndPoint endPoint = EndPoint.getByLabel(user, label);
+    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
     if(endPoint == null) return notFound();
     return forward(endPoint, path);  
   }

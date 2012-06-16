@@ -26,17 +26,17 @@ public class CtrlUser extends Controller {
   }
     
   public static Result get() {
-    return ok(ViewUser.render(getUser(), null));
+    return ok(accountPage.render(getUser(), null));
   }
   
   public static Result getByName(String userName) {
     User user = User.getByUserName(userName);
     if(user == null) return notFound("User not found");
-    return ok(ViewUser.render(user, null));
+    return ok(accountPage.render(user, null));
   }
   
   public static Result edit() {
-    return ok(ViewUser.render(getUser(), userForm));
+    return ok(accountPage.render(getUser(), userForm));
   }
   
   public static Result submit() {

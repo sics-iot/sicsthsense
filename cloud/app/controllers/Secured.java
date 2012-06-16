@@ -18,7 +18,7 @@ public class Secured extends Security.Authenticator {
     
     @Override
     public Result onUnauthorized(Context ctx) {
-      return ok(login.render());
+      return ok(loginPage.render());
     }
     
     public static boolean ownsResource(String idStr, Long resourceId) {

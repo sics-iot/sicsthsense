@@ -55,20 +55,20 @@ public class CtrlEndPoint extends Controller {
    
   public static Result get(Long id) {
     EndPoint endPoint = EndPoint.get(id);
-    if(endPoint != null)     return ok(ViewEndPoint.render(endPoint, null, Secured.ownsEndPoint(session("id"), id)));
+    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, Secured.ownsEndPoint(session("id"), id)));
     else                     return notFound();
   }
   
   public static Result getByLabel(String userName, String label) {
     EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
-    if(endPoint != null)     return ok(ViewEndPoint.render(endPoint, null, Secured.ownsEndPoint(session("id"), endPoint.id)));
+    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, Secured.ownsEndPoint(session("id"), endPoint.id)));
     else                     return notFound();
   }
   
   public static Result edit(Long id) {
     if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
     EndPoint endPoint = EndPoint.get(id);
-    if(endPoint != null)     return ok(ViewEndPoint.render(endPoint, epForm, true));
+    if(endPoint != null)     return ok(endPointPage.render(endPoint, epForm, true));
     else                     return notFound();
   }
   

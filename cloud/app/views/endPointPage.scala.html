@@ -12,14 +12,14 @@
 	  }
 	}
 
-  @myForm.form(routes.CtrlEndPoint.submit(endPoint.id)) {
+  @forms.form(routes.CtrlEndPoint.submit(endPoint.id)) {
       <dt>User</dt>
       <dd>@endPoint.getUser().userName</dd>
-      @myForm.input(epForm!=null, "text", "label", "Label", endPoint.label)
-      @myForm.input(epForm!=null, "url", "url", "URL", endPoint.url)
-      @myForm.input(epForm!=null, "text", "description", "Description", endPoint.description)
-      @myForm.input(epForm!=null, "text", "location", "Location", endPoint.location)
-      @if(epForm!=null) { @myForm.submit(epForm!=null, "Update") }
+      @forms.input(epForm!=null, "text", "label", "Label", endPoint.label)
+      @forms.input(epForm!=null, "url", "url", "URL", endPoint.url)
+      @forms.input(epForm!=null, "text", "description", "Description", endPoint.description)
+      @forms.input(epForm!=null, "text", "location", "Location", endPoint.location)
+      @if(epForm!=null) { @forms.submit(epForm!=null, "Update") }
   }
   
   @if(owned) {
@@ -53,15 +53,15 @@
                   <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
                 </span>
             }
-          @includeResource(resource, owned)
+          @vresource.include(resource, owned)
           </li>
         }  
   </ul>
   
   @if(owned) { 
-    @myForm.form(routes.CtrlEndPoint.addResource(endPoint.id)) {
-      @myForm.input(true, "text", "path", "Add new resource", "")
-      @myForm.submit(true, "Add")
+    @forms.form(routes.CtrlEndPoint.addResource(endPoint.id)) {
+      @forms.input(true, "text", "path", "Add new resource", "")
+      @forms.submit(true, "Add")
     }
   }
 

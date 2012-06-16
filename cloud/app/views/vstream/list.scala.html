@@ -6,7 +6,7 @@
     @for(stream <- streams) {
       <li>
       @stream.getEndPoint().getUser().userName/@stream.getEndPoint().label@stream.path <br/>
-      @includeStream(stream)
+      @vstream.include(stream)
       </li>
     }
   </ul>

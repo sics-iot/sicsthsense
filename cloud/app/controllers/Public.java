@@ -18,12 +18,8 @@ import views.html.*;
 
 public class Public extends Controller {
   
-  public static Result search() {
-    return ok(search.render());
-  }
-  
   public static Result about() {
-    return ok(about.render());
+    return ok(aboutPage.render());
   }
     
 }

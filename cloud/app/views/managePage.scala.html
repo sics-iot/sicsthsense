@@ -16,9 +16,9 @@
   
   @if(endPoints.length > 0) {
   <h1>Your resources</h1>
-    @includeEndPoints(endPoints)
+    @vendpoint.list(endPoints)
   }
   
   <h1>Your data streams</h1>   
-  @includeStreams(Resource.getByUserWithData(CtrlUser.getUser()))
+  @vstream.list(Resource.getByUserWithData(CtrlUser.getUser()))
 }
