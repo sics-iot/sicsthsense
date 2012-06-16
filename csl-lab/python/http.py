@@ -13,7 +13,7 @@ def post(host, path, postData, headers={}):
 
 def get(host, path, headers={}):
     conn = httplib.HTTPConnection(host)
-    conn.request("GET", path, [], headers)
+    conn.request("GET", path, "", headers)
     res = conn.getresponse()
     data = res.read()
     res.close()
