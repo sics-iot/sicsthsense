@@ -1,8 +1,10 @@
 #!/usr/bin/python
+# Python code for switching the H&D Wireless WiFi power plugs.
+# Usage: switch.py IP-Host [0|1]
+
 import http, sys, re
 
-# Python code for switching LEDs
-id = int(sys.argv[1])
+host = sys.argv[1]
 state = int(sys.argv[2])
 
 if state > 0:
@@ -10,7 +12,7 @@ if state > 0:
 else:
     state = "Off"
 
-[res, data] = http.get("hus2.so-ip.se:8%d"%(id), "/index.html?p0=%s"%(state))
+[res, data] = http.get(host, "/index.html?p0=%s"%(state))
 if data:
     newstate = re.search('Socket 1</td><td>(.+?)</td>', data)
     power = re.search('(\d+\.\d+) W</td>', data)

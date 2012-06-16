@@ -1,9 +1,11 @@
 #!/usr/bin/python
+# Python code for reading the H&D Wireless WiFi power plugs.
+# Usage: getpower.py IP-Host
+
 import http, sys, re
 
-# Python code for switching LEDs
-id = int(sys.argv[1])
-[res, data] = http.get("hus2.so-ip.se:8%d"%(id), "")
+host = sys.argv[1]
+[res, data] = http.get(host, "")
 if data:
     state = re.search('Socket 1</td><td>(.+?)</td>', data)
     power = re.search('(\d+\.\d+) W</td>', data)
