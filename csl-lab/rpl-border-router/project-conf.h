@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Swedish Institute of Computer Science.
+ * Copyright (c) 2010, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,59 +27,29 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __PROJECT_CONF_H__
-#define __PROJECT_CONF_H__
+#ifndef __PROJECT_ROUTER_CONF_H__
+#define __PROJECT_ROUTER_CONF_H__
 
 #include "../common-config/common-config.h"
 
-#include "jsontree.h"
-#define HTTPD_WS_CONF_USER_STATE struct jsontree_context json
+#ifndef UIP_FALLBACK_INTERFACE
+#define UIP_FALLBACK_INTERFACE rpl_interface
+#endif
 
-
-/* #define JSON_WS_CONF_CALLBACK_PROTO "http" | "udp" | "cosm" */
-#define JSON_WS_CONF_CALLBACK_PROTO "http"
-#define JSON_WS_CONF_CALLBACK_PORT  80
-#define JSON_WS_CONF_CALLBACK_INTERVAL 120
-
-/* One IPv6 address of sense.sics.se */
-#define JSON_WS_CONF_CALLBACK_HOST "[2001:6b0:3a:1:211d:384b:8968:3cc4]";
-#define JSON_WS_CONF_CALLBACK_PATH "/streams/simon/phone/sensors"
-
-#undef NETSTACK_CONF_RDC
-#define NETSTACK_CONF_RDC     nullrdc_driver
-/* #define NETSTACK_CONF_RDC     contikimac_driver */
-
-#define CONTIKIMAC_CONF_MAX_PHASE_NEIGHBORS 7
-
-#undef NULLRDC_CONF_802154_AUTOACK
-#define NULLRDC_CONF_802154_AUTOACK 1
-
-/* Reduce code size */
-#undef ENERGEST_CONF_ON
-#define ENERGEST_CONF_ON 0
-
-/* needs to be ~4 for fragmentation to work */
-#undef QUEUEBUF_CONF_NUM
+#ifndef QUEUEBUF_CONF_NUM
 #define QUEUEBUF_CONF_NUM          4
+#endif
 
-#undef UIP_CONF_DS6_NBR_NBU
-#define UIP_CONF_DS6_NBR_NBU 7
-#undef UIP_CONF_DS6_ROUTE_NBU
-#define UIP_CONF_DS6_ROUTE_NBU 7
-
-#undef UIP_CONF_BUFFER_SIZE
+#ifndef UIP_CONF_BUFFER_SIZE
 #define UIP_CONF_BUFFER_SIZE    140
+#endif
 
-/* #undef UIP_CONF_RECEIVE_WINDOW */
-/* #define UIP_CONF_RECEIVE_WINDOW  35 */
+#ifndef UIP_CONF_RECEIVE_WINDOW
+#define UIP_CONF_RECEIVE_WINDOW  60
+#endif
 
-#undef WEBSERVER_CONF_INBUF_SIZE
-#define WEBSERVER_CONF_INBUF_SIZE 200
+#ifndef WEBSERVER_CONF_CFS_CONNS
+#define WEBSERVER_CONF_CFS_CONNS 2
+#endif
 
-#undef WEBSERVER_CONF_OUTBUF_SIZE
-#define WEBSERVER_CONF_OUTBUF_SIZE (UIP_TCP_MSS + 20 + 80)
-
-#undef WEBSERVER_CONF_CFS_CONNS
-#define WEBSERVER_CONF_CFS_CONNS 3
-
-#endif /* __PROJECT_CONF_H__ */
+#endif /* __PROJECT_ROUTER_CONF_H__ */
