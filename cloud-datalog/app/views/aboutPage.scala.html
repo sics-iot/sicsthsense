@@ -1,0 +1,66 @@
+@import helper._
+
+@layout("About", session) {
+
+  <h1>Getting started</h1>
+  
+  The first step is to create an account. Then, you can add your devices and start collecting their data.
+      
+  Devices can provide a description of the resources they offer. This description must be hosted on the device at <code>/discover</code>, and have the following format:
+  
+  <pre>
+  {
+    "uid": "uid",
+    "resources": [
+      "/sensors/light",
+      "/sensors/energy"
+    ]
+  }</pre>
+  
+  Based on this resource list, you can start polling the device at a given interval (through the Web interface), or post data from the device.  
+
+  <h1>Posting data</h1>
+  
+  You can post data to Sics<sup>th</sup>Sense's database at the following URL:
+  <pre>
+  http://sense.sics.se/streams/[user]/[device]/[path]</pre>
+  
+  The data can be either sent as a plain text integer or float, or as a Json structure representing a resource tree.
+  For instance, to post samples for <code>/sensors/light</code> and <code>/sensors/energy</code>, one may post the following <code>application/json</code> data: 
+  <pre>
+  {
+    "sensors": {
+      "light": 19,
+      "energy": 42
+    }
+  }</pre>
+  
+  Non existing devices and resources you post to will be created on-the-fly.
+  
+  <h1>Getting data</h1>
+  
+  You can fetch data from Sics<sup>th</sup>Sense's database through a <code>GET</code> at the following URI:
+  <pre>
+  http://sense.sics.se/streams/[user]/[device]/[path]</pre>
+  
+  URI arguments allow toi specify which subset of the dataset you want to get. Use <code>?tail=n</code> to get the <code>n</code> most recent samples. Use <code>?last=t</code>
+  to get samples posted during the last <code>t</code> seconds. Use <code>?since=t</code> to get the samples posted since (including) absolute UNIX time <code>t</code> (in seconds).
+  
+  <h1>Interacting with devices</h1>
+  
+  Sics<sup>th</sup>Sense can act as a RESTful proxy towards any public device. This allows yu to share your devices without making their actual URI public.
+  Just <code>GET</code>, <code>POST</code>, <code>PUT</code> or <code>DELETE</code> to: 
+  
+  <pre>
+  http://sense.sics.se/proxy/[user]/[device]/[path]</pre>
+  
+  <h1>Inspecting Users, End points and Resources</h1>
+  
+  You can access a subset of the data on users, devices and resources, in Json format.
+  Simply get the following URIs:
+  <pre>
+  GET        http://sense.sics.se/users/[user]
+  GET        http://sense.sics.se/endpoints/[user]/[device]
+  GET        http://sense.sics.se/resources/[user]/[device]/[path]</pre>
+   
+}

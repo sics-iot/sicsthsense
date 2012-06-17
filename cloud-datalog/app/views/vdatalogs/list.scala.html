@@ -1,0 +1,23 @@
+@(header: Html)(dataLogs: List[DataLog])
+
+@if(dataLogs.length > 0) {
+
+  @header
+
+  <ul>
+    @for(dataLog <- dataLogs) {
+       <li>
+         @if(dataLog.result == DataLog.Result.OK) {
+           @dataLog.timestamp @dataLog.requestType OK: @dataLog.host @dataLog.data
+         } else {
+           @dataLog.timestamp @dataLog.requestType ERROR: @dataLog.host @dataLog.data
+         }
+       </li>
+    }
+  </ul>
+
+} else {
+
+  <h1>No logs available</h1>
+
+}

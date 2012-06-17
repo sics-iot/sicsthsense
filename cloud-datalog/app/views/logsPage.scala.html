@@ -1,0 +1,9 @@
+@(endPoint: EndPoint, logs: List[DataLog])
+
+@import helper._
+
+@layout("Logs", session) {
+
+  @vdatalogs.list{<h1>Logs for end point @endPoint.label</h1>}(logs)
+
+}

@@ -1,0 +1,25 @@
+@(endPoint: EndPoint, prefix: String)
+ 
+@if(!CtrlUser.getUser().followsEndPoint(endPoint)) {
+  <a id="followep@prefix@endPoint.id" href="@routes.CtrlEndPoint.follow(endPoint.id)"><img id="starredep@prefix@endPoint.id" src="@routes.Assets.at("images/unstarred.png")" height="18" align="top"></img></a>
+} else {
+  <a id="followep@prefix@endPoint.id" href="@routes.CtrlEndPoint.unfollow(endPoint.id)"><img id="starredep@prefix@endPoint.id" src="@routes.Assets.at("images/starred.png")" height="18" align="top"></img></a>
+}
+
+<script type="text/javascript">
+   var status@endPoint.id = @CtrlUser.getUser().followsEndPoint(endPoint); 
+   $('#followep@prefix@endPoint.id').click(function() {
+	   if(!status@endPoint.id) {
+		   var url = "@routes.CtrlEndPoint.follow(endPoint.id)";
+		   var newsrc = "@routes.Assets.at("images/starred.png")";
+	   } else {
+		   var url = "@routes.CtrlEndPoint.unfollow(endPoint.id)";
+		   var newsrc = "@routes.Assets.at("images/unstarred.png")";
+	   }
+	   $.get(url, function(data) {
+		    $('#starredep@prefix@endPoint.id').attr("src", newsrc);
+		    status@endPoint.id = !status@endPoint.id;
+		 });
+	   return false;
+   });
+</script>

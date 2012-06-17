@@ -1,0 +1,9 @@
+@import helper._
+
+@layout("Home", session) {
+  
+  @vendpoint.list{<h1>End points you follow</h1>}(CtrlUser.getUser().followedEndPoints())
+    
+  @vresource.listStreams{<h1>Resources you follow</h1>}(CtrlUser.getUser().followedResources())
+
+}
