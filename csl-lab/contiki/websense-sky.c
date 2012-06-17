@@ -161,7 +161,7 @@ PROCESS_THREAD(websense_process, ev, data)
   SENSORS_ACTIVATE(sht11_sensor);
   SENSORS_ACTIVATE(light_sensor);
 
-  json_ws_set_callback("sensor");
+  json_ws_set_callback("sensors");
   
 
   while(1) {

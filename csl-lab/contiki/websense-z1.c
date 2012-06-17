@@ -94,8 +94,8 @@ JSONTREE_OBJECT(act_tree,
 /* complete node tree */
 JSONTREE_OBJECT(tree,
                 JSONTREE_PAIR("node", &node_tree),
-                JSONTREE_PAIR("sen", &sensor_tree),
-                JSONTREE_PAIR("act", &act_tree),
+                JSONTREE_PAIR("sensors", &sensor_tree),
+                JSONTREE_PAIR("actuators", &act_tree),
                 JSONTREE_PAIR("cfg", &json_subscribe_callback));
 
 /*---------------------------------------------------------------------------*/
@@ -111,11 +111,11 @@ PROCESS_THREAD(websense_process, ev, data)
   static struct etimer timer;
   PROCESS_BEGIN();
 
-  json_ws_init(&tree);
+  json_ws_init(&tree, "ZolertiaZ1");
 
   tmp102_init();
 
-  json_ws_set_callback("sen");
+  json_ws_set_callback("sensors");
 
   while(1) {
     /* Alive indication with the LED */

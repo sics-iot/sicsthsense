@@ -505,9 +505,13 @@ json_ws_init(struct jsontree_object *json, char *name)
   ctimer_set(&periodic_timer, CLOCK_SECOND * SEND_INTERVAL, periodic, NULL);
   process_start(&httpd_ws_process, NULL);
   if(name != NULL) {
+    uip_ds6_addr_t *lladdr;
+    lladdr = uip_ds6_get_link_local(-1);
+
     snprintf(callback_path, sizeof(callback_path),
-	     "/streams/csl-lab/%s-%d/", name, node_id);
-    printf("Set the SicsthSense callback post path to %s\n", callback_path);
+	     "/streams/csl-lab/%s-%2x%02x/", name,
+	     lladdr->ipaddr.u8[14], lladdr->ipaddr.u8[15]);
+/*     printf("Set the SicsthSense callback post path to %s\n", callback_path); */
   }
 #if WITH_UDP
   if(strncmp(callback_proto, "udp", 3) == 0) {
