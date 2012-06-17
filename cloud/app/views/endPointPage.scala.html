@@ -38,7 +38,7 @@
           <input type="submit" value="Ok" class="buttonG"/>
         </dd>
       }
-      @if(endPoint.url != "") {
+      @if(endPoint.hasUrl()) {
         <dt class="action">Discover resources</dt>
         <dd><a href="@routes.CtrlEndPoint.discover(endPoint.id)" class="update">[discover]</a></dd>
       }

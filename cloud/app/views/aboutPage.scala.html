@@ -16,12 +16,18 @@
       "/sensors/energy"
     ]
   }</pre>
+   
+  <h1>Polling data</h1>
   
-  Based on this resource list, you can start polling the device at a given interval (through the Web interface), or post data from the device.  
+  The easiest way to get your sensor data to the Sics<sup>th</sup>Sense is to let is poll your device periodically.
+  This is solution is very flexible because it entierly configured in the Cloud, through the Web interface.
+  After creating your device, just discover or add new resources manually, and set a polling interval.
+  The data will soon appear in graphs, and be available through our RESTful API.
 
   <h1>Posting data</h1>
   
-  You can post data to Sics<sup>th</sup>Sense's database at the following URL:
+  Posting to Sics<sup>th</sup>Sense is also useful, for delay-sensitive notification, or for data collection from devices with no public URL (e.g. a smartphone).
+  To do so, just post at the following URL:
   <pre>
   http://sense.sics.se/streams/[user]/[device]/[path]</pre>
   

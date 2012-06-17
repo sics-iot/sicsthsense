@@ -9,7 +9,7 @@ GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
 GET        /manage                               controllers.Application.manage()
-GET        /about                                controllers.Public.about()
+GET        /API                                  controllers.Public.about()
 
 # Accounts
 GET        /account                              controllers.CtrlUser.get()

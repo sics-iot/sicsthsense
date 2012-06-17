@@ -27,14 +27,14 @@
     <h1>Sics<sup>th</sup>Sense</h1>
     <ul>
       @if(session != null && session.get("id") != null) {
-        <li><a href="/">Home</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/manage">Manage</a></li>
-        <li><a href="/account">Account</a></li>
+        <li><a href="@routes.Application.home()">Home</a></li>
+        <li><a href="@routes.Application.search()">Search</a></li>
+        <li><a href="@routes.Application.manage()">Manage</a></li>
+        <li><a href="@routes.CtrlUser.get()">Account</a></li>
       } else {
-        <li><a href="/">Log in</a></li>
+        <li><a href="@routes.Application.home()">Log in</a></li>
       }
-      <li><a href="/about">API</a></li>
+      <li><a href="@routes.Public.about()">API</a></li>
     </ul>
     
     </div>

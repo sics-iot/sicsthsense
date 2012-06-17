@@ -4,7 +4,7 @@
 
 @displayResource(endPoint: EndPoint) = {
 	    
-	 @if(endPoint.url!="") {
+	 @if(endPoint.hasUrl()) {
       <dl>
       <dt class="action">Send REST request</dt>
       <dd>
@@ -27,7 +27,7 @@
 	        <span id="response1@resource.id"></span>
 	      </dt>
 	      <dd>
-	        <code><span id="response2@resource.id"></span></code>
+	        <code><span id="response2@resource.id"></span></code> <a id="hide@resource.id" href="." class="delete">[hide]</a></dd>
 	      </dd>
 	      
       </div>
@@ -50,7 +50,7 @@
     	    error: function(x, t, m) {
     	    	$("#response1@resource.id").html("Error");
     	    	$("#response2@resource.id").text(m);
-            $("#response@resource.id").show(200);
+            $("#response@resource.id").show();
     	    	$("#ajax_wait@resource.id").css("visibility","hidden");
     	    },
     	    success: function(response) {
@@ -63,6 +63,12 @@
 	    			    
 	    return false;
 	  });
+	  
+	  $('#hide@resource.id').click(function() {
+		  $("#response@resource.id").hide();              
+	      return false;
+	    });
+	  
 	  </script>
 	}
 }

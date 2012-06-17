@@ -3,7 +3,10 @@ package controllers;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.codehaus.jackson.JsonNode;
 
@@ -26,28 +29,36 @@ import views.html.*;
 
 public class Proxy extends Controller {
   
-  public static Result forward(final EndPoint endPoint, final String path) {
+  public static Result forward(final Resource resource, final Map<String, String> queryParameters) {
     /* The two next lines are commented out, enabling proxying to arbitrary path */
 //    final Resource resource = Resource.getByPath(endPoint, path);
 //    if(resource == null) return notFound();
     final String method = request().method();
     final String body = request().body().asText();
-    final String contentType = request().getHeader("Content-Type");
+    final Map<String, String[]> headers = request().headers();;
+    final String url = resource.getUrl();
     return async(
         Akka.future(
           new Callable<Result>() {
             public Result call() {
-              String url = Utils.concatPath(endPoint.url, path);
-              Logger.info("[Proxy] forwarding method: " + method + ", to: " + url + ", content type: " + contentType + ", body: " + body);
+              Logger.info("[Proxy] forwarding method: " + method + ", to: " + url + ", body: " + body);
               try {
                 Promise<Response> promise = null;
-                WSRequestHolder request = WS.url(url).setHeader("Content-Type", contentType);
+                WSRequestHolder request = WS.url(url);
+                if(queryParameters != null) {
+                  for(String name: queryParameters.keySet()) {
+                    request.setQueryParameter(name, queryParameters.get(name));
+                  }
+                }
+                for(String name: headers.keySet()) {
+                  if(!name.equals("HOST")) request = request.setHeader(name, headers.get(name)[0]);
+                }
                 if (method.equals("GET")) { promise = request.get(); }
                 else if (method.equals("POST")) { promise = request.post(body); }
                 else if (method.equals("PUT")) { promise = request.put(body); }
                 else if (method.equals("DELETE")) { promise = request.delete(); }
                 Response response = promise.get();
-                Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", content type: " + response.getHeader("Content-Type") + ", body: " + response.getBody());
+                Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", body: " + response.getBody().length() + " bytes");
                 return status(response.getStatus(), response.getBody());
               } catch (Exception e) {
                 Logger.info("[Proxy] forwarding failed: " + e.getMessage());
@@ -64,12 +75,21 @@ public class Proxy extends Controller {
     if(user == null) return notFound();
     final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
     if(endPoint == null) return notFound();
-    return forward(endPoint, path);  
+    final Resource resource = Resource.getByPath(endPoint, path);
+    if(resource == null) return notFound();
+    return forward(resource, null);  
   }
     
   public static Result forwardById(Long id, String arguments) {
     Resource resource = Resource.get(id);
-    return forward(resource.getEndPoint(), Utils.concatPath(resource.path,arguments));
+    if(resource == null) return notFound();
+    Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
+    Matcher matcher = pattern.matcher(arguments);
+    Map<String, String> queryParameters = new HashMap<String, String>();
+    while (matcher.find()) {
+      queryParameters.put(matcher.group(1), matcher.group(2));
+    } 
+    return forward(resource, queryParameters);
   }
   
 }

@@ -38,6 +38,9 @@ public class Resource extends Model implements Comparable<Resource> {
     public long pollingPeriod;
     public long lastPolled;
     public long lastUpdated;
+    
+    @ManyToMany
+    public List<User> followingUsers = new ArrayList<User>();
             
     public static Model.Finder<Long,Resource> find = new Model.Finder(Long.class, Resource.class);
     
@@ -64,6 +67,10 @@ public class Resource extends Model implements Comparable<Resource> {
     
     public String fullPath() {
       return Utils.concatPath(user.userName, endPoint.label, path);
+    }
+    
+    public String getUrl() {
+      return Utils.concatPath(endPoint.url, path);
     }
     
     public static List<Resource> all() {

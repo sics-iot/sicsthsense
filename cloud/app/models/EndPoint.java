@@ -73,6 +73,10 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
       return find.byId(id);
     }
     
+    public boolean hasUrl() {
+      return this.url != null && this.url != "";
+    }
+    
     public static void delete(Long id) {
       //TODO should enable cascading instead
       EndPoint endPoint = find.byId(id);

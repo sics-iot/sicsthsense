@@ -48,6 +48,12 @@ create table user (
 ;
 
 
+create table resource_user (
+  resource_id                    bigint not null,
+  user_id                        bigint not null,
+  constraint pk_resource_user primary key (resource_id, user_id))
+;
+
 create table user_resource (
   user_id                        bigint not null,
   resource_id                    bigint not null,
@@ -78,6 +84,10 @@ create index ix_resource_user_4 on resource (user_id);
 
 
 
+alter table resource_user add constraint fk_resource_user_resource_01 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
+
+alter table resource_user add constraint fk_resource_user_user_02 foreign key (user_id) references user (id) on delete restrict on update restrict;
+
 alter table user_resource add constraint fk_user_resource_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
 
 alter table user_resource add constraint fk_user_resource_resource_02 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
@@ -95,6 +105,8 @@ drop table if exists data_point;
 drop table if exists end_point;
 
 drop table if exists resource;
+
+drop table if exists resource_user;
 
 drop table if exists user;
 
