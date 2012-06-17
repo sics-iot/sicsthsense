@@ -423,6 +423,7 @@ httpd_ws_get_script(struct httpd_ws_state *s)
   return NULL;
 }
 /*---------------------------------------------------------------------------*/
+#if JSON_POST_EXTRA_HEADER || WITH_COSM
 static int
 output_headers(struct httpd_ws_state *s, char *buffer, int buffer_size,
                int index)
@@ -442,6 +443,7 @@ output_headers(struct httpd_ws_state *s, char *buffer, int buffer_size,
   }
   return 0;
 }
+#endif /* JSON_POST_EXTRA_HEADER || WITH_COSM */
 /*---------------------------------------------------------------------------*/
 static void
 periodic(void *ptr)
@@ -459,6 +461,9 @@ periodic(void *ptr)
 			send_values);
       if(s != NULL) {
 	PRINTF("PERIODIC POST %s\n", callback_json_path);
+#if JSON_POST_EXTRA_HEADER
+        /* s->output_extra_headers = output_headers; */
+#endif
 	s->json.values[0] = (struct jsontree_value *)tree;
 	jsontree_reset(&s->json);
 	find_json_path(&s->json, callback_json_path);
@@ -485,7 +490,7 @@ periodic(void *ptr)
 #endif /* WITH_COSM */
     }
 #if WITH_UDP
-else {
+    else {
       callback_size = calculate_json_size(callback_json_path, NULL);
       PRINTF("PERIODIC UDP size: %d\n", callback_size);
       json_ws_udp_send(tree, callback_json_path);
