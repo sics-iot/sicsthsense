@@ -3,7 +3,7 @@ import http, sys, json
 
 # Python code for getting the sensor data of a sensor
 host = sys.argv[1]
-[res, data] = http.get(host, "/sen")
+[res, data] = http.get(host, "/sensors")
 print "Sensors:", data
 
 # parse json and do some stuff with data!
