@@ -15,6 +15,10 @@ ifdef WITH_UDP
  PROJECT_SOURCEFILES += json-ws-udp.c
 endif
 
+ifdef NO_DEFAULT
+ CFLAGS += -DNO_DEFAULT=1
+endif
+
 APPS += httpd-ws json
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
