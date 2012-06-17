@@ -509,7 +509,7 @@ json_ws_init(struct jsontree_object *json, char *name)
     lladdr = uip_ds6_get_link_local(-1);
 
     snprintf(callback_path, sizeof(callback_path),
-	     "/streams/csl-lab/%s-%2x%02x/", name,
+	     "/streams/csl-lab/%s-%02x%02x/", name,
 	     lladdr->ipaddr.u8[14], lladdr->ipaddr.u8[15]);
      printf("Set the SicsthSense callback post path to %s\n", callback_path);
   }
