@@ -33,16 +33,17 @@ public class Streams extends Controller {
   public static void poll(final Resource resource) {
     final EndPoint endPoint = resource.getEndPoint();
     final long current = Utils.currentTime();
-    Logger.info("Periodic " + endPoint.label + "/" + resource.path + " " + resource.pollingPeriod + " " + (current-resource.lastPolled));
+    //Logger.info("[Streams] periodic timer: " + resource.fullPath() + ", period: " + resource.pollingPeriod + ", last polled: " + (current-resource.lastPolled));
     if (current >= resource.lastPolled + resource.pollingPeriod) {
-      String url = Utils.concatPath(endPoint.url,resource.path);
-      Logger.info("Now sampling " + url);
+      final String url = Utils.concatPath(endPoint.url,resource.path);
+      Logger.info("[Streams] polling: " + resource.fullPath() + ", URL: " + url);
       WS.url(url).get().map(
         new Function<WS.Response, Boolean>() {
           public Boolean apply(WS.Response response) {
             JsonNode jsonBody = response.asJson();
             String textBody = response.getBody();
-            insertData(endPoint, jsonBody, textBody, resource.path);
+            Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + textBody);
+            parseResponse(endPoint, jsonBody, textBody, resource.path);
             return true;
           }
         }
@@ -52,14 +53,19 @@ public class Streams extends Controller {
     }
   }
   
-  public static boolean insertData(EndPoint endPoint, JsonNode jsonBody, String textBody, String path) {
+  public static void insertSample(EndPoint endPoint, String path, float data) {
+    String fullPath = Utils.concatPath(endPoint.fullPath(), path);
+    Logger.info("[Streams] new sample for: " + fullPath + ", data: " + data);
+    Resource resource = endPoint.getOrCreateResource(path);
+    resource.post(data, Utils.currentTime());
+  }
+  
+  public static boolean parseResponse(EndPoint endPoint, JsonNode jsonBody, String textBody, String path) {
     if(jsonBody != null) {
-      if(!insertDataFromJson(endPoint, jsonBody, path)) return false;
+      if(!parseJsonResponse(endPoint, jsonBody, path)) return false;
     } else {
       if(textBody != null) {
-        float data = Float.parseFloat(textBody);
-        Resource resource = endPoint.getOrCreateResource(path);
-        resource.post(data, Utils.currentTime());
+        insertSample(endPoint, path, Float.parseFloat(textBody));
       } else {
         return false;
       }
@@ -67,16 +73,14 @@ public class Streams extends Controller {
     return true;
   }
   
-  public static boolean insertDataFromJson(EndPoint endPoint, JsonNode jsonNode, String path) {
+  public static boolean parseJsonResponse(EndPoint endPoint, JsonNode jsonNode, String path) {
     if(jsonNode.isValueNode()) {
-      float data = (float)jsonNode.getDoubleValue();
-      Resource resource = endPoint.getOrCreateResource(path);
-      resource.post(data, Utils.currentTime());
+      insertSample(endPoint, path, (float)jsonNode.getDoubleValue());
     } else {
       Iterator<String> it = jsonNode.getFieldNames();
       while(it.hasNext()) {
         String field = it.next();
-        if(!insertDataFromJson(endPoint, jsonNode.get(field), Utils.concatPath(path, field))) return false;
+        if(!parseJsonResponse(endPoint, jsonNode.get(field), Utils.concatPath(path, field))) return false;
       }
     }
     return true;
@@ -89,7 +93,8 @@ public class Streams extends Controller {
     try {
       JsonNode jsonBody = request().body().asJson();
       String textBody = request().body().asText();
-      if(!insertData(endPoint, jsonBody, textBody, path)) return badRequest("Bad request");
+      Logger.info("[Streams] post received from: " + Utils.concatPath(userName, endPointName, path) + ", content type: " + request().getHeader("Content-Type") + ", payload: " + textBody);
+      if(!parseResponse(endPoint, jsonBody, textBody, path)) return badRequest("Bad request");
     } catch (Exception e) {
       return badRequest("Bad request");
     }

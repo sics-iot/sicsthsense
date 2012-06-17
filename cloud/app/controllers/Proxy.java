@@ -38,7 +38,7 @@ public class Proxy extends Controller {
           new Callable<Result>() {
             public Result call() {
               String url = Utils.concatPath(endPoint.url, path);
-              Logger.info("Proxy: forwarding " + method + " to: " + url + " with body: " + body);
+              Logger.info("[Proxy] forwarding method: " + method + ", to: " + url + ", content type: " + contentType + ", body: " + body);
               try {
                 Promise<Response> promise = null;
                 WSRequestHolder request = WS.url(url).setHeader("Content-Type", contentType);
@@ -47,9 +47,11 @@ public class Proxy extends Controller {
                 else if (method.equals("PUT")) { promise = request.put(body); }
                 else if (method.equals("DELETE")) { promise = request.delete(); }
                 Response response = promise.get();
+                Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", content type: " + response.getHeader("Content-Type") + ", body: " + response.getBody());
                 return status(response.getStatus(), response.getBody());
               } catch (Exception e) {
-                return badRequest();
+                Logger.info("[Proxy] forwarding failed: " + e.getMessage());
+                return badRequest(e.getMessage());
               }
             }
           }

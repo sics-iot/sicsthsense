@@ -117,7 +117,6 @@ public class Resource extends Model implements Comparable<Resource> {
    }
     
     public void post(float data, long time) {
-      Logger.info("New data " + endPoint.label + path + ": " + data);
       DataPoint.add(this, data, time);
       lastUpdated = time;
       update();
