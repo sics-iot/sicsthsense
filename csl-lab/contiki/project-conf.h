@@ -42,7 +42,7 @@
 #define JSON_WS_CONF_CALLBACK_INTERVAL 120
 
 /* One IPv6 address of sense.sics.se */
-#ifdef NO_DEFAULTS
+#ifdef NO_DEFAULT
 #define JSON_WS_CONF_CALLBACK_HOST "[2001:6b0:3a:1:211d:384b:8968:3cc4]";
 #define JSON_WS_CONF_CALLBACK_PATH "/streams/simon/phone/sensors"
 #else
