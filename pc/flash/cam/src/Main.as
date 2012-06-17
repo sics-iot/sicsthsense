@@ -5,6 +5,7 @@ package
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.KeyboardEvent;
+	import flash.events.SampleDataEvent;
 	import flash.media.Camera;
 	import flash.media.Video;
 	import flash.net.URLLoader;
@@ -12,7 +13,7 @@ package
 	import flash.utils.setInterval;
 	import flash.net.*;
 	import flash.net.URLLoaderDataFormat;
-	
+	import flash.media.Microphone;
 	/**
 	 * ...
 	 * @author dfg
@@ -29,6 +30,9 @@ package
 			instance = this;
 			var cam:Camera = Camera.getCamera(); 
 			cam.setMode(10, 10, 24);
+			var mic:Microphone = Microphone.getMicrophone();
+			
+			mic.addEventListener(SampleDataEvent.SAMPLE_DATA, micSampleDataHandler);
 			
 			vid.attachCamera(cam); 
 			addChild(vid);
@@ -43,11 +47,26 @@ package
 			inputField.x = 50;
 			inputField.y = 250;
 			inputField.type = "input";	
-			inputField.text="http://sense.sics.se/streams/niwi/test/t3"
+			inputField.text="http://sense.sics.se/streams/niwi/test/"
 			inputField.stage.focus = inputField;
 			inputField.addEventListener(KeyboardEvent.KEY_DOWN, listener);
 			
 		}
+		
+		public var volume:Number = 0;
+		function micSampleDataHandler(event:SampleDataEvent):void
+	{
+		var mem:Number = 0;
+		var n:int = 0;
+	    while (event.data.bytesAvailable)
+	    {
+	        var sample:Number = event.data.readFloat();
+	        mem += sample * sample;
+			n++;
+	    }
+		volume=Math.sqrt(mem/n);
+	}
+		
 		function listener(event:KeyboardEvent):void {
 			if (event.keyCode == 13) {
 				service = inputField.text;
@@ -74,7 +93,7 @@ package
 			sum= sum / (vid.width * vid.height);
 			trace(sum);
 			if (instance.service != null && instance.service.length>0) {
-				var req:URLRequest  = new URLRequest(instance.service);
+				var req:URLRequest  = new URLRequest(instance.service+"/cam");
 				//var req:URLRequest  = new URLRequest("http://sense.sics.se/streams/niwi/test/t3");
 				req.method = URLRequestMethod.POST;
 				//req.contentType= 
@@ -85,6 +104,18 @@ package
 				loader.addEventListener(Event.COMPLETE, handleComplete);
 				loader.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
 				loader.load(req);
+
+				var req2:URLRequest  = new URLRequest(instance.service+"/mic");
+				//var req:URLRequest  = new URLRequest("http://sense.sics.se/streams/niwi/test/t3");
+				req2.method = URLRequestMethod.POST;
+				//req.contentType= 
+				req2.data = instance.volume.toString();
+				var loader2:URLLoader = new URLLoader();
+				loader2.dataFormat = URLLoaderDataFormat.TEXT;
+				req2.contentType = "application/json; charset=UTF-8";
+				loader2.addEventListener(Event.COMPLETE, handleComplete);
+				loader2.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+				loader2.load(req2);
 
 			}
 			
@@ -98,6 +129,7 @@ package
 	}
 	private static function onIOError(event:IOErrorEvent):void {
 	trace("Error loading URL. " + event.toString());
+	instance.inputField.text = "Error loading URL. " + event.toString();	
 	}
 		
 	}
