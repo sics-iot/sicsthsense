@@ -19,7 +19,7 @@ var StreamPlots = {
 
 		$.ajax({url: stream.uri+"?since="+stream.since, async: true, success: function(data) {
 				//console.debug(data);
-				var update = data[stream.path];
+				var update = data[stream.path].reverse();
 				for (var point in update) {
 					for (var t in update[point]) {
 						// add reading to plot points
@@ -57,7 +57,8 @@ var StreamPlots = {
 		xaxis: {
 			mode: "time",
 			timeformat: "%y-%m-%d %H:%M:%S",
-			minTickSize: [1, "second"]
+			minTickSize: [1, "second"],
+			ticks: 8
 		},
 	}
 };

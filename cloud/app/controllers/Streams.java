@@ -34,7 +34,7 @@ public class Streams extends Controller {
     final EndPoint endPoint = resource.getEndPoint();
     final long current = Utils.currentTime();
     //Logger.info("[Streams] periodic timer: " + resource.fullPath() + ", period: " + resource.pollingPeriod + ", last polled: " + (current-resource.lastPolled));
-    if (current >= resource.lastPolled + resource.pollingPeriod) {
+    if (true || current >= resource.lastPolled + resource.pollingPeriod) {
       final String url = Utils.concatPath(endPoint.url,resource.path);
       Logger.info("[Streams] polling: " + resource.fullPath() + ", URL: " + url);
       WS.url(url).get().map(
@@ -112,6 +112,12 @@ public class Streams extends Controller {
     ObjectNode result = Json.newObject();
     ArrayNode array = result.putArray(path);
     List<DataPoint> dataSet = null;
+    
+    if(tail < 0) tail = 0L;
+    if(last < 0) last = 0L;
+    if(since < 0) since = 0L;
+    if(tail == 0 && last == 0 && since ==0) tail = 1L; /* Default behavior: return the last item only */
+    
     if(tail > 0) {
       dataSet = DataPoint.getByStreamTail(resource, tail);
     } else if(last > 0) {

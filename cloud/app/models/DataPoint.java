@@ -47,16 +47,18 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
     public static List<DataPoint> getByStream(Resource stream) {
       return find.where()
           .eq("resource", stream)
-          .orderBy("timestamp asc")
+          .orderBy("timestamp desc")
           .findList();
     }
     
     public static List<DataPoint> getByStreamTail(Resource stream, long tail) {
       List<DataPoint> set = find.where()
           .eq("resource", stream)
-          .orderBy("timestamp asc")
+          .setMaxRows((int)tail)
+          .orderBy("timestamp desc")
           .findList();
-      return set.subList(set.size()-(int)tail, set.size());
+//      return set.subList(set.size()-(int)tail, set.size());
+      return set;
     }
     
     public static List<DataPoint> getByStreamLast(Resource stream, long last) {
@@ -67,7 +69,7 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
       return find.where()
           .eq("resource", stream)
           .ge("timestamp", since)
-          .orderBy("timestamp asc")
+          .orderBy("timestamp desc")
           .findList();
     }
     
@@ -75,7 +77,7 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
     //TODO this is an ugly workaround, we need to find out how to SQL delete directly
       List<DataPoint> list = find.where()
           .eq("resource", stream)
-          .orderBy("timestamp asc")
+          .orderBy("timestamp desc")
           .findList();
 //    Ebean.delete(list);
       List<Long> ids = new LinkedList<Long>();
