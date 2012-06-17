@@ -23,25 +23,27 @@ var StreamPlots = {
 				for (var point in update) {
 					for (var t in update[point]) {
 						// add reading to plot points
-						stream.points.push(new Array(parseInt(t)*1000 + StreamPlots.timezone, update[point][t]));
-						console.debug('pushed: '+parseInt(t));
+						if(parseInt(t) >= stream.since) {
+							stream.points.push(new Array(parseInt(t)*1000 + StreamPlots.timezone, update[point][t]));
+							console.debug('pushed: '+parseInt(t));
+						}
 					}
 				}
 				
 				if (stream.points.length>0) {
 				
 					stream.since = (stream.points[stream.points.length-1][0]-StreamPlots.timezone)/1000 + 1;
-					console.debug('since: '+stream.since);
+					console.debug('since: '+stream.since);				
 	
 					while (stream.points[0][0] < stream.points[stream.points.length-1][0] - stream.window) {
 						// remove old plot points
 						console.debug('shifted: '+stream.points.shift());
 					}
-					//console.debug(points);
-					stream.plot.setData([stream.points]);
-					stream.plot.setupGrid();
-	    			stream.plot.draw();
 				}
+
+				stream.plot.setData([stream.points]);
+				stream.plot.setupGrid();
+    			stream.plot.draw();
 				$('#'+stream.id).css('background-color', '');
 			}});
 	},
@@ -58,7 +60,8 @@ var StreamPlots = {
 			mode: "time",
 			timeformat: "%y-%m-%d %H:%M:%S",
 			minTickSize: [1, "second"],
-			ticks: 8
+			ticks: 6,
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000
 		},
 	}
 };

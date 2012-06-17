@@ -37,6 +37,13 @@ body { background-color: #fafafa; }
 .logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
 form { display: inline; }
 
+.sideinfo {
+	padding-left: 0.3em;
+	font-style: italic;
+	font-size: 0.8em;
+	color: #666;
+}
+
 fieldset { clear: both; }
  
 dl {

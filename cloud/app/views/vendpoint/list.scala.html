@@ -11,11 +11,14 @@
 	        <ul>
 	          @Resource.getByEndPoint(endPoint).map { resource =>
 	              <li>
-	              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
+	              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
 	              @vresource.followIcon(resource, "eplist")
-								 @if(resource.pollingPeriod != 0) {
-								   [polled every @{resource.pollingPeriod/60} min]
-								 }
+                @if(resource.lastUpdated != 0) {
+                 <span class="sideinfo">[updated @Utils.timeStr((Utils.currentTime()-resource.lastUpdated)) ago]</span>
+                 }
+                 @if(resource.pollingPeriod != 0) {
+                 <span class="sideinfo">[polled every @Utils.timeStr(resource.pollingPeriod)]</span>
+                 }
 	              </li>
 	           }  
 	      </ul>
