@@ -168,10 +168,10 @@ PROCESS_THREAD(websense_process, ev, data)
     /* Alive indication with the LED */
     etimer_set(&timer, CLOCK_SECOND * 5);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-    leds_on(LEDS_RED);
+    leds_invert(LEDS_RED);
     etimer_set(&timer, CLOCK_SECOND / 8);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-    leds_off(LEDS_RED);
+    leds_invert(LEDS_RED);
   }
 
   PROCESS_END();
