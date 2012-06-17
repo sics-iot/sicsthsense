@@ -28,8 +28,8 @@ class Device:
     elif (since > -1):
       option = "?since=" + str(since)
     else:
-      option = ""        
+      option = ""
     [res, data] = http.get(self._host, self.path_string(path)+option)
     print "HTTP Response:", res.status, res.reason
-    return data
+    return json.loads(data)
 
