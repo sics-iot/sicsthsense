@@ -13,7 +13,7 @@ public class Engine {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
 		while((line=br.readLine())!=null){
-			System.out.println(line);
+			//System.out.println(line);
 			String[] w = line.split("\\s+");
 			if(w.length!=3)
 				continue;

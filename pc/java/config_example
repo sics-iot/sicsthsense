@@ -1,3 +1,2 @@
 post sense.sics.se/streams/niwi/test/t1 test.out
-poll sense.sics.se/streams/niwi/test/t1 test.in
-post sense.sics.se/streams/niwi/test/t2 test.out
+poll sense.sics.se/streams/niwi/test/t11 test.in

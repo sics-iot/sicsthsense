@@ -21,7 +21,7 @@ class Poller extends Thread{
 
 	
 	public Poller(LineConsumer consumer,Resource resource){
-		this(consumer, 0, 1000, resource);
+		this(consumer, 0, 500, resource);
 			
 	}
 	
@@ -29,6 +29,7 @@ class Poller extends Thread{
 		this.consumer = consumer;		
 		this.lastTime=lastTime;
 		this.resource=resource;
+		this.interval = interval;
 	}
 	
 	@Override
@@ -37,7 +38,7 @@ class Poller extends Thread{
 			
 			while(true){
 				URL url = new URL(resource.fullUrl+"?since="+(lastTime+1));
-				
+			//	System.out.println(url);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
 				InputStream is = conn.getInputStream();
@@ -47,11 +48,14 @@ class Poller extends Thread{
 				while((line=br.readLine())!=null){					
 					JsonObject jo = new JsonParser().parse(line).getAsJsonObject();
 					JsonArray ja = jo.get(resource.devices).getAsJsonArray();
+					int i=0;
 					for(JsonElement e : ja)
 						for(Map.Entry<String, JsonElement> entry :e.getAsJsonObject().entrySet()){
 							long time = Long.parseLong(entry.getKey());
+							if(time<=lastTime)
+								continue;
 							String value= entry.getValue().getAsString();
-							System.out.println(entry.getKey()+" "+value);
+							//System.out.println((i++)+": " +entry.getKey()+" "+value);
 							if(lastTime<time)
 								lastTime=time;
 							consumer.consume(time+" "+value);				
