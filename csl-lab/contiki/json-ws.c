@@ -511,7 +511,7 @@ json_ws_init(struct jsontree_object *json, char *name)
     snprintf(callback_path, sizeof(callback_path),
 	     "/streams/csl-lab/%s-%2x%02x/", name,
 	     lladdr->ipaddr.u8[14], lladdr->ipaddr.u8[15]);
-/*     printf("Set the SicsthSense callback post path to %s\n", callback_path); */
+     printf("Set the SicsthSense callback post path to %s\n", callback_path);
   }
 #if WITH_UDP
   if(strncmp(callback_proto, "udp", 3) == 0) {
