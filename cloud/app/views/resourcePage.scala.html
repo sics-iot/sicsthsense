@@ -28,7 +28,16 @@
   <dt>Last updated</dt>
   <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60} minutes ago</dd>
   }
- 
+ @if(endPoint.hasUrl()) {
+      @form(routes.CtrlResource.setPeriod(resource.id,0)) {
+        <dt class="action">Enter polling interval</dt>
+        <dd>  
+          <input input type="hidden" name="id" value="@resource.id" />
+          <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+          <input type="submit" value="Ok" class="buttonG"/>
+        </dd>
+      }
+    }
 	</dl>
 }
 

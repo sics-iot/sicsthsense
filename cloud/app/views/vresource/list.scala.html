@@ -28,7 +28,7 @@
                 </span>
             
             
-            @if(resource.getEndPoint().url!="") {
+    @if(resource.getEndPoint().hasUrl()) {
       @form(routes.CtrlResource.setPeriod(resource.id,0)) {
         <dl>
         <dt class="action">Enter polling interval</dt>

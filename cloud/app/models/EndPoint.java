@@ -74,7 +74,7 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     }
     
     public boolean hasUrl() {
-      return this.url != null && this.url != "";
+      return this.url != null && this.url.length() > 0;
     }
     
     public static void delete(Long id) {

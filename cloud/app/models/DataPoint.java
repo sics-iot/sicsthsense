@@ -44,6 +44,10 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
       return dataPoint;
     }
     
+    public static long getCount() {
+      return find.findRowCount();
+    }
+    
     public static List<DataPoint> getByStream(Resource stream) {
       return find.where()
           .eq("resource", stream)
