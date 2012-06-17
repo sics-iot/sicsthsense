@@ -43,11 +43,11 @@
 
 /* One IPv6 address of sense.sics.se */
 #ifdef NO_DEFAULT
-#define JSON_WS_CONF_CALLBACK_HOST "[2001:6b0:3a:1:211d:384b:8968:3cc4]";
-#define JSON_WS_CONF_CALLBACK_PATH "/streams/simon/phone/sensors"
-#else
 #define JSON_WS_CONF_CALLBACK_HOST "";
 #define JSON_WS_CONF_CALLBACK_PATH ""
+#else
+#define JSON_WS_CONF_CALLBACK_HOST "[2001:6b0:3a:1:211d:384b:8968:3cc4]";
+#define JSON_WS_CONF_CALLBACK_PATH "/streams/simon/phone/sensors"
 #endif
 
 #undef NETSTACK_CONF_RDC
