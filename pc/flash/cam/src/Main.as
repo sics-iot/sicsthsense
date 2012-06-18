@@ -54,17 +54,18 @@ package
 		}
 		
 		public var volume:Number = 0;
+		public var mem:Number = 0;
+		public var n:int = 0;
 		function micSampleDataHandler(event:SampleDataEvent):void
 	{
-		var mem:Number = 0;
-		var n:int = 0;
+		
 	    while (event.data.bytesAvailable)
 	    {
 	        var sample:Number = event.data.readFloat();
 	        mem += sample * sample;
 			n++;
 	    }
-		volume=Math.sqrt(mem/n);
+		
 	}
 		
 		function listener(event:KeyboardEvent):void {
@@ -109,6 +110,10 @@ package
 				//var req:URLRequest  = new URLRequest("http://sense.sics.se/streams/niwi/test/t3");
 				req2.method = URLRequestMethod.POST;
 				//req.contentType= 
+				
+				instance.volume = Math.sqrt(instance.mem / instance.n);
+				instance.mem = 0;
+				instance.n = 0;
 				req2.data = instance.volume.toString();
 				var loader2:URLLoader = new URLLoader();
 				loader2.dataFormat = URLLoaderDataFormat.TEXT;
@@ -120,7 +125,7 @@ package
 			}
 			
 		}	
-		setInterval(w, 1000);
+		setInterval(w, 10000);
 	
 		private static function handleComplete(event:Event):void {
 			var loader:URLLoader = URLLoader(event.target);
