@@ -53,9 +53,10 @@ PUT        /proxy/:id                            controllers.Proxy.forwardById(i
 DELETE     /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
 
 # Json inspection
-GET        /users/:user                          controllers.CtrlUser.getJson(user: String)
-GET        /endpoints/:user/:endpoint            controllers.CtrlEndPoint.getJson(user: String, endpoint: String)
-GET        /resources/:user/:endpoint/$path<.*>  controllers.CtrlResource.getJson(user: String, endpoint: String, path: String)
+GET        /users                                controllers.JsonInspect.getUserList()
+GET        /users/:user                          controllers.JsonInspect.getUser(user: String)
+GET        /endpoints/:user/:endpoint            controllers.JsonInspect.getEndPoint(user: String, endpoint: String)
+GET        /resources/:user/:endpoint/$path<.*>  controllers.JsonInspect.getResource(user: String, endpoint: String, path: String)
 GET        /db/                                  controllers.CtrlDataBase.getJson()
 
 # Dummy thing

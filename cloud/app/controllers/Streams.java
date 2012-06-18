@@ -42,7 +42,8 @@ public class Streams extends Controller {
           public Boolean apply(WS.Response response) {
             JsonNode jsonBody = response.asJson();
             String textBody = response.getBody();
-            Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + textBody);
+            String strBody = jsonBody != null ? jsonBody.asText() : textBody;
+            Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
             parseResponse(endPoint, jsonBody, textBody, resource.path);
             return true;
           }
@@ -93,7 +94,8 @@ public class Streams extends Controller {
     try {
       JsonNode jsonBody = request().body().asJson();
       String textBody = request().body().asText();
-      Logger.info("[Streams] post received from: " + Utils.concatPath(userName, endPointName, path) + ", content type: " + request().getHeader("Content-Type") + ", payload: " + textBody);
+      String strBody = jsonBody != null ? jsonBody.toString() : textBody;
+      Logger.info("[Streams] post received from: " + Utils.concatPath(userName, endPointName, path) + ", URI " + request().uri() + ", content type: " + request().getHeader("Content-Type") + ", payload: " + strBody);
       if(!parseResponse(endPoint, jsonBody, textBody, path)) return badRequest("Bad request");
     } catch (Exception e) {
       return badRequest("Bad request");

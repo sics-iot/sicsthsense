@@ -89,7 +89,7 @@ public class Resource extends Model implements Comparable<Resource> {
     public static List<Resource> getWithData() {
       return find.where()
           .gt("lastUpdated", 0)
-          .orderBy("path asc")
+          .orderBy("path")
           .findList();
     }
     
@@ -104,22 +104,28 @@ public class Resource extends Model implements Comparable<Resource> {
     return find.where()
         .gt("lastUpdated", 0)
         .eq("user", user)
-        .orderBy("path asc")
+        .orderBy("path")
         .findList();
    }
     
     public static List<Resource> getByEndPoint(EndPoint endPoint) {
-      return find.where()
-          .eq("endPoint", endPoint)
-          .orderBy("path asc")
-          .findList();
+      List<Resource> set = find.where()
+        .eq("endPoint", endPoint)
+        .orderBy("path")
+        .findList();
+      Collections.sort(set);
+      return set; // hack for the lab, as sorting doesn't seem to work
+//      return find.where()
+//          .eq("endPoint", endPoint)
+//          .orderBy("path")
+//          .findList();
     }
     
     public static List<Resource> getByEndPointWithData(EndPoint endPoint) {
     return find.where()
         .gt("lastUpdated", 0)
         .eq("endPoint", endPoint)
-        .orderBy("path asc")
+        .orderBy("path")
         .findList();
    }
     

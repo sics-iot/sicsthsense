@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +58,7 @@ public class Proxy extends Controller {
                 else if (method.equals("POST")) { promise = request.post(body); }
                 else if (method.equals("PUT")) { promise = request.put(body); }
                 else if (method.equals("DELETE")) { promise = request.delete(); }
-                Response response = promise.get();
+                Response response = promise.getWrappedPromise().await(10000, TimeUnit.MILLISECONDS).get();
                 Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", body: " + response.getBody().length() + " bytes");
                 return status(response.getStatus(), response.getBody());
               } catch (Exception e) {

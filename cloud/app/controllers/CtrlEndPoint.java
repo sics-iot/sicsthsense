@@ -67,20 +67,6 @@ public class CtrlEndPoint extends Controller {
     else                     return notFound();
   }
   
-  public static Result getJson(String userName, String label) {
-    EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
-    if(endPoint != null) {
-      ObjectNode result = Json.newObject();
-      result.put("user", userName);
-      result.put("label", endPoint.label);
-      result.put("uid", endPoint.uid);
-      result.put("description", endPoint.description);
-      result.put("location", endPoint.location);
-      return ok(result);
-    }
-    else return notFound();
-  }
-  
   public static Result edit(Long id) {
     if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
     EndPoint endPoint = EndPoint.get(id);

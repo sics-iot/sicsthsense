@@ -1,7 +1,7 @@
 var StreamPlots = {
 	poll : function(stream) {
 		this.getStream(stream);
-		stream.timeout = setTimeout(function() { StreamPlots.poll(stream); }, 1000);
+		stream.timeout = setTimeout(function() { StreamPlots.poll(stream); }, 10000);
 	},
 	
 	setWindow : function(stream, window) {
