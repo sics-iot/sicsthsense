@@ -39,7 +39,9 @@ public class CtrlResource extends Controller {
   public static Result delete(Long id) {
     if(!Secured.ownsResource(session("id"), id)) return forbidden();
     Resource.delete(id);
-    return redirect(request().getHeader("referer"));
+    //TODO: Improve? Redirecting to manage page since the referrer was deleted!
+    //return redirect(request().getHeader("referer"));
+    return redirect(routes.Application.manage());
   }
   
   public static Result setPeriod(Long id, Long period) {

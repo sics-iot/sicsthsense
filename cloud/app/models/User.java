@@ -24,13 +24,16 @@ public class User extends Model {
     
     @Formats.NonEmpty
     public String email;
+    
     @Formats.NonEmpty
     public String userName;
     public String firstName;
     public String lastName;
     public String location;
+    
     @ManyToMany
     public List<Resource> followedResources = new ArrayList<Resource>();
+    
     @ManyToMany
     public List<EndPoint> followedEndPoints = new ArrayList<EndPoint>();
     
@@ -48,6 +51,9 @@ public class User extends Model {
     
     public static User create(User user) {
         user.save();
+        //is this necessary?
+        user.saveManyToManyAssociations("followedResources");
+        user.saveManyToManyAssociations("followedEndPoints");
         return user;
     }
     

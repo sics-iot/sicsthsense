@@ -24,7 +24,7 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
     @Id
     public Long id;
   
-    @ManyToOne 
+    @ManyToOne //(cascade = CascadeType.REMOVE) 
     public Resource resource;
     
     public float data;
@@ -83,14 +83,14 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
           .eq("resource", stream)
           .orderBy("timestamp desc")
           .findList();
-//    Ebean.delete(list);
-      List<Long> ids = new LinkedList<Long>();
-      for(DataPoint element: list) {
-        ids.add(element.id);
-      }
-      for(Long id: ids) {
-        find.ref(id).delete(); 
-      }
+      Ebean.delete(list);
+//      List<Long> ids = new LinkedList<Long>();
+//      for(DataPoint element: list) {
+//        ids.add(element.id);
+//      }
+//      for(Long id: ids) {
+//        find.ref(id).delete(); 
+//      }
     }
 
     public int compareTo(DataPoint point) {
