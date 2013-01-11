@@ -28,12 +28,17 @@ GET        /endpoints/:id/follow                 controllers.CtrlEndPoint.follow
 GET        /endpoints/:id/unfollow               controllers.CtrlEndPoint.unfollow(id: Long)
 
 # Resources
-GET        /resources/:id                        controllers.CtrlResource.get(id: Long)
-GET        /resources/:id/delete                 controllers.CtrlResource.delete(id: Long)
-GET        /resources/:id/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
-GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
-GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)
-GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
+# This way the id is exposed as a queryString in the url, i.e. /resources/id=?
+#  therefore, I can get it from the Http.Context easily.
+# Probably I'm going to make others like this
+# I might have to keep the parameters names defined as constants in some other file
+#  to make it easier to modify later...
+GET        /resources/                       controllers.CtrlResource.get(id: Long)
+GET        /resources/delete                 controllers.CtrlResource.delete(id: Long)
+GET        /resources/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+GET        /resources/clearStream            controllers.CtrlResource.clearStream(id: Long)
+GET        /resources/follow                 controllers.CtrlResource.follow(id: Long)
+GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
 
 # Streams
 GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.get(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)

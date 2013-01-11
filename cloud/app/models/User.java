@@ -67,6 +67,10 @@ public class User extends Model {
       return find.byId(id) != null;
     }
     
+    public boolean exists() {
+        return exists(id);
+    }
+        
     public static User get(Long id) {
       return find.byId(id);
     }

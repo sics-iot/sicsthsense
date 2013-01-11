@@ -16,6 +16,7 @@ public class Secured extends Security.Authenticator {
         else                                                 return null;
     }
     
+    
     @Override
     public Result onUnauthorized(Context ctx) {
       return ok(loginPage.render());

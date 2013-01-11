@@ -9,6 +9,8 @@ import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import actions.CheckPermissions;
+
 import com.ning.http.client.Request;
 
 import play.*;
@@ -30,6 +32,7 @@ public class CtrlResource extends Controller {
   
   static private Form<Resource> resourceForm = form(Resource.class);
   
+  @CheckPermissions(type = Resource.class)
   public static Result get(Long id) {
     Resource resource = Resource.get(id);
     if(resource != null)     return ok(resourcePage.render(resource, Secured.ownsResource(session("id"), id)));

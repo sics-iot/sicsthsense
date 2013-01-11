@@ -27,11 +27,10 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	@Constraints.Required
 	public String path;
-	@ManyToOne
-	// (cascade = CascadeType.REMOVE)
+	//XXX: try cascade to see effect in practice
+	@ManyToOne(cascade = CascadeType.REMOVE)
 	public EndPoint endPoint;
-	@ManyToOne
-	// (cascade = CascadeType.REMOVE)
+	@ManyToOne(cascade = CascadeType.REMOVE)
 	public User user;
 
 	public long pollingPeriod;
@@ -46,8 +45,9 @@ public class Resource extends Model implements Comparable<Resource> {
 //	public List<User> followingUsers = new ArrayList<User>();
 	
 	/* List of users that can read this resource */
-	@ManyToMany
-	public Set<User> sharedWithUsers = new ArrayList<User>();
+	//XXX: try cascade to see effect in practice
+	@ManyToMany(cascade = CascadeType.REMOVE)
+	public Set<User> sharedWithUsers = new HashSet<User>();
 
 
 	public static Model.Finder<Long, Resource> find = new Model.Finder(
@@ -62,12 +62,39 @@ public class Resource extends Model implements Comparable<Resource> {
 		this.lastUpdated = 0;
 	}
 
+	public void setPublicAccess( Boolean pub ) {
+		this.publicAccess = pub;
+	}
+	
+	public Boolean isPublicAccess() {
+		return this.publicAccess;
+	}
+	
 	public Boolean addShare(User user) {
-		return sharedWithUsers.add(user);
+		if( user != null && user.exists() ) {
+			if( sharedWithUsers.add(user) ) {
+				this.saveManyToManyAssociations( "sharedWithUsers" );
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Boolean isShare(User user) {
+		return user != null && sharedWithUsers.contains(user);
+	}
+	
+	//XXX: Could the returned reference be used for modifying the Set?
+	public Set<User> getShare() {
+		return sharedWithUsers;
 	}
 	
 	public Boolean removeShare(User user) {
-		return sharedWithUsers.remove(user);
+		if( user != null && sharedWithUsers.remove(user) ) {
+			this.saveManyToManyAssociations( "sharedWithUsers" );
+			return true;
+		}
+		return false;
 	}
 	
 	public Boolean hasData() {
@@ -173,7 +200,7 @@ public class Resource extends Model implements Comparable<Resource> {
 			resource.save();
 			// TODO should I saveManyToManyAssociations("followingUsers") in
 			// other places?
-			//resource.saveManyToManyAssociations("followingUsers");
+			resource.saveManyToManyAssociations("sharedWithUsers");
 		} catch (Exception e) {
 		}
 		return resource;
