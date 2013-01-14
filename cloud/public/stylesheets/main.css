@@ -35,6 +35,17 @@ body { background-color: #fafafa; }
 .delete { color: #ff7140; }
 .rightControl { float: right; }
 .logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
+.error {
+	margin: 10px 0px 10px 0px;
+	font-size: 20pt; text-shadow: 2px 2px 2px #000;
+	clear: both;
+	text-align: center;
+	float: center;
+	color: #ff5540;
+	height: 2em;
+	border: 2px solid #888;
+	background-color: #eee;
+}
 form { display: inline; }
 
 .sideinfo {

@@ -10,6 +10,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import actions.CheckPermissions;
+import actions.CheckPermissionsAction;
 
 import com.ning.http.client.Request;
 
@@ -32,15 +33,27 @@ public class CtrlResource extends Controller {
   
   static private Form<Resource> resourceForm = form(Resource.class);
   
-  @CheckPermissions(type = Resource.class)
+ // @CheckPermissions(type = Resource.class)
   public static Result get(Long id) {
     Resource resource = Resource.get(id);
-    if(resource != null)     return ok(resourcePage.render(resource, Secured.ownsResource(session("id"), id)));
-    else                     return notFound();
+    Result result = null;
+    if(resource != null) {
+    	if(CheckPermissionsAction.canAccessResource(session("id"), id)) {
+    		result = ok(
+    				resourcePage.render(resource, 
+    						CheckPermissionsAction.ownsResource(session("id"), id)
+    						));
+    	} else {
+    		result = CheckPermissionsAction.onUnauthorized();
+    	}
+    } else {
+    	result = notFound();
+    }
+    return result;
   }
   
   public static Result delete(Long id) {
-    if(!Secured.ownsResource(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden();
     Resource.delete(id);
     //TODO: Improve? Redirecting to manage page since the referrer was deleted!
     //return redirect(request().getHeader("referer"));
@@ -48,13 +61,13 @@ public class CtrlResource extends Controller {
   }
   
   public static Result setPeriod(Long id, Long period) {
-    if(!Secured.ownsResource(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden();
     Resource.setPeriod(id, 60*period);
     return redirect(request().getHeader("referer"));
   }
   
   public static Result clearStream(Long id) {
-    if(!Secured.ownsResource(session("id"), id)) return forbidden(); 
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden(); 
     Resource.clearStream(id);
     return redirect(request().getHeader("referer"));
   }

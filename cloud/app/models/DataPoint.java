@@ -24,7 +24,8 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
     @Id
     public Long id;
   
-    @ManyToOne //(cascade = CascadeType.REMOVE) 
+    //XXX: Cascade from this side is wrong!
+    @ManyToOne//(cascade = CascadeType.REMOVE) 
     public Resource resource;
     
     public float data;

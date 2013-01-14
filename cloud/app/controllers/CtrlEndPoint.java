@@ -22,6 +22,8 @@ import java.util.concurrent.Callable;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import actions.CheckPermissionsAction;
+
 @Security.Authenticated(Secured.class)
 public class CtrlEndPoint extends Controller {
   
@@ -57,31 +59,31 @@ public class CtrlEndPoint extends Controller {
    
   public static Result get(Long id) {
     EndPoint endPoint = EndPoint.get(id);
-    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, Secured.ownsEndPoint(session("id"), id)));
+    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, CheckPermissionsAction.ownsEndPoint(session("id"), id)));
     else                     return notFound();
   }
   
   public static Result getByLabel(String userName, String label) {
     EndPoint endPoint = EndPoint.getByLabel(User.getByUserName(userName), label);
-    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, Secured.ownsEndPoint(session("id"), endPoint.id)));
+    if(endPoint != null)     return ok(endPointPage.render(endPoint, null, CheckPermissionsAction.ownsEndPoint(session("id"), endPoint.id)));
     else                     return notFound();
   }
   
   public static Result edit(Long id) {
-    if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsEndPoint(session("id"), id)) return forbidden();
     EndPoint endPoint = EndPoint.get(id);
     if(endPoint != null)     return ok(endPointPage.render(endPoint, epForm, true));
     else                     return notFound();
   }
   
   public static Result delete(Long id) {
-    if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsEndPoint(session("id"), id)) return forbidden();
     EndPoint.delete(id);
     return redirect(routes.Application.manage());
   }
   
   public static Result discover(Long id) {
-    if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsEndPoint(session("id"), id)) return forbidden();
     final EndPoint endPoint = EndPoint.get(id);
     if(endPoint == null) return notFound();
     return async(
@@ -107,7 +109,7 @@ public class CtrlEndPoint extends Controller {
   }
   
   public static Result addResource(Long id) {
-    if(!Secured.ownsEndPoint(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsEndPoint(session("id"), id)) return forbidden();
 
     Form<Resource> theForm = resourceForm.bindFromRequest();
     if(theForm.hasErrors()) {

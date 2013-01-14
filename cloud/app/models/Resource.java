@@ -27,10 +27,10 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	@Constraints.Required
 	public String path;
-	//XXX: try cascade to see effect in practice
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	//XXX: Cascade from this side is wrong!
+	@ManyToOne //(cascade = CascadeType.REMOVE)
 	public EndPoint endPoint;
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne //(cascade = CascadeType.REMOVE)
 	public User user;
 
 	public long pollingPeriod;
@@ -172,7 +172,7 @@ public class Resource extends Model implements Comparable<Resource> {
 		// have a OneToMany relationship from a resource to dataPoints;
 		// thus, dataPoints should be stored as a list in a resource instead
 		// and this should be the same to all other ManyToOne relationships
-		clearStream(id);
+		//clearStream(id);
 		find.ref(id).delete();
 	}
 
@@ -259,9 +259,8 @@ public class Resource extends Model implements Comparable<Resource> {
 	}
 
 	public void delete() {
-		//verify();
+		///XXX: Can't delete if a device is sending updates to this resource!
 		clearStream(this.id);
-
 		super.delete();
 	}
 

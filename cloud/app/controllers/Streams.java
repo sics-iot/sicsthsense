@@ -11,6 +11,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import actions.CheckPermissionsAction;
+
 import play.*;
 
 import play.libs.F.*;
@@ -103,7 +105,29 @@ public class Streams extends Controller {
     return ok("ok");
   }
   
-  public static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
+	@Security.Authenticated(Secured.class)
+	public static Result getSecured(String userName, String endPointName,
+			String path, Long tail, Long last, Long since) {
+
+		final User user = User.getByUserName(userName);
+		if (user == null)
+			return notFound();
+		final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
+		if (endPoint == null)
+			return notFound();
+		final Resource resource = Resource.getByPath(endPoint, path);
+		if (resource == null)
+			return notFound();
+
+		if (CheckPermissionsAction.canAccessResource(session("id"), resource.id)) {
+			return get(userName, endPointName, path, tail, last, since);
+		} else {
+			return CheckPermissionsAction.onUnauthorized();
+		}
+	}
+  
+	@Security.Authenticated(Secured.class)
+  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
     final User user = User.getByUserName(userName);
     if(user == null) return notFound();
     final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);

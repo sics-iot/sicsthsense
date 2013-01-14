@@ -28,7 +28,7 @@ GET        /endpoints/:id/follow                 controllers.CtrlEndPoint.follow
 GET        /endpoints/:id/unfollow               controllers.CtrlEndPoint.unfollow(id: Long)
 
 # Resources
-# This way the id is exposed as a queryString in the url, i.e. /resources/id=?
+# This way the id is exposed as a queryString in the url, i.e. /resources/?id=1
 #  therefore, I can get it from the Http.Context easily.
 # Probably I'm going to make others like this
 # I might have to keep the parameters names defined as constants in some other file
@@ -41,8 +41,8 @@ GET        /resources/follow                 controllers.CtrlResource.follow(id:
 GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
 
 # Streams
-GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.get(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
-GET        /streams/:user/:endpoint              controllers.Streams.get(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+GET        /streams/:user/:endpoint              controllers.Streams.getSecured(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
 POST       /streams/:user/:endpoint/$path<.*>    controllers.Streams.post(user: String, endpoint: String, path: String)
 POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
 

@@ -39,7 +39,7 @@
     
     </div>
     <div id="content">@content
-    @if(session != null && session.get("id") != null) {
+    @if(session != null && session.get("id") != null && User.get(session.get("id").toLong) != null) {
       <p>
        <span class="logged">Logged in as: @User.get(session.get("id").toLong).userName <a href="/logout">[Log out]</a></span>
       </p>
