@@ -52,8 +52,10 @@ public class CtrlResource extends Controller {
     return result;
   }
   
+  //@play.db.ebean.Transactional
   public static Result delete(Long id) {
     if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden();
+    
     Resource.delete(id);
     //TODO: Improve? Redirecting to manage page since the referrer was deleted!
     //return redirect(request().getHeader("referer"));

@@ -46,11 +46,11 @@ public class Resource extends Model implements Comparable<Resource> {
 	
 	/* List of users that can read this resource */
 	//XXX: try cascade to see effect in practice
-	@ManyToMany(cascade = CascadeType.REMOVE)
+	@ManyToMany(cascade = CascadeType.ALL)
 	public Set<User> sharedWithUsers = new HashSet<User>();
 
 
-	public static Model.Finder<Long, Resource> find = new Model.Finder(
+	public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(
 			Long.class, Resource.class);
 
 	public Resource(String path, EndPoint endPoint) {
@@ -260,6 +260,7 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	public void delete() {
 		///XXX: Can't delete if a device is sending updates to this resource!
+		//now I'm using ebean.trasaction on the action function...
 		clearStream(this.id);
 		super.delete();
 	}
