@@ -39,7 +39,7 @@ public class User extends Model {
     
     // -- Queries
     
-    public static Model.Finder<Long,User> find = new Model.Finder(Long.class, User.class);
+    public static Model.Finder<Long,User> find = new Model.Finder<Long,User>(Long.class, User.class);
         
     public User(String email, String userName, String firstName, String lastName, String location) {
       this.email = email;
