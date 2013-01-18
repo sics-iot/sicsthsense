@@ -1,0 +1,47 @@
+@(header: Html)(resources: List[Resource], owned: Boolean)
+
+@import helper._
+
+@if(resources.length > 0) {
+  
+  @header
+  
+  <ul>
+    @for(resource <- resources) {
+        <li>
+          <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> @vresource.followIcon(resource, "rlist")
+                @if(resource.lastUpdated != 0) {
+                 <span class="sideinfo">[updated @Utils.timeStr((Utils.currentTime()-resource.lastUpdated)) ago]</span>
+                 }
+                 @if(resource.pollingPeriod != 0) {
+                 <span class="sideinfo">[polled every @Utils.timeStr(resource.pollingPeriod)]</span>
+                 }
+        @if(owned) {
+                <span class="rightControl">
+                  @if(resource.pollingPeriod != 0) {
+                    <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a>
+                  }
+                  @if(resource.hasData()) {
+                    <a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a>
+                  }
+                  <a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a>
+                </span>
+            
+            
+    @if(resource.getEndPoint().hasUrl()) {
+      @form(routes.CtrlResource.setPeriod(resource.id,0)) {
+        <dl>
+        <dt class="action">Enter polling interval</dt>
+        <dd>  
+          <input input type="hidden" name="id" value="@resource.id" />
+          <input input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+          <input type="submit" value="Ok" class="buttonG"/>
+        </dd>
+        </dl>
+      }
+    }
+    }
+        </li>
+    }
+  </ul>
+}
