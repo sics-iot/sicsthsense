@@ -13,9 +13,11 @@
 }
 
 @layout("Error!", session) {
-	<h1>Error!</h1>
-	<p class="error">@msg</p>
-	 
+	<div class="alert alert-block alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Error!</strong>@msg
+  </div>
+     
   @showFollowed(CtrlUser.getUser().followedEndPoints(), CtrlUser.getUser().followedResources()) 
 
 }

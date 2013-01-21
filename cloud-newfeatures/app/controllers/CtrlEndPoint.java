@@ -131,4 +131,22 @@ public class CtrlEndPoint extends Controller {
     return ok();
   }
   
+  public static Result toggleFollow(Long id) {
+  	EndPoint endPoint = EndPoint.get(id);
+  	if( CtrlUser.getUser().followsEndPoint(endPoint) ){
+  		CtrlUser.getUser().unfollowEndPoint(endPoint);
+  	} else {
+  		CtrlUser.getUser().followEndPoint(endPoint);
+  	}
+    return ok();
+  }
+  
+  public static Result isFollowing(Long id) {
+  	EndPoint endPoint = EndPoint.get(id);
+  	if( CtrlUser.getUser().followsEndPoint(endPoint) ){
+  		return ok("1");
+  	} else {
+  		return ok("0");
+  	}    
+  }
 }

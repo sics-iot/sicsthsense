@@ -84,4 +84,23 @@ public class CtrlResource extends Controller {
     return ok();
   }
   
+  public static Result toggleFollow(Long id) {
+  	Resource resource = Resource.get(id);
+  	if( CtrlUser.getUser().followsResource(resource) ){
+  		CtrlUser.getUser().unfollowResource(resource);
+  	} else {
+  		CtrlUser.getUser().followResource(resource);
+  	}
+    return ok();
+  }
+  
+  public static Result isFollowing(Long id) {
+  	Resource resource = Resource.get(id);
+  	if( CtrlUser.getUser().followsResource(resource) ){
+  		return ok("1");
+  	} else {
+  		return ok("0");
+  	}
+  }
+  
 }

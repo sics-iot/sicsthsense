@@ -4,26 +4,28 @@
 
   @header
     
-	<ul>
-	  @for(endPoint <- endPoints) {
-	    <li>
-	      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.getUser().userName/@endPoint.label</a> @vendpoint.followIcon(endPoint, "eplist")
-	        <ul>
-	          @Resource.getByEndPoint(endPoint).map { resource =>
-	              <li>
-	              <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
-	              @vresource.followIcon(resource, "eplist")
-                @if(resource.lastUpdated != 0) {
-                 <span class="sideinfo">[updated @Utils.timeStr((Utils.currentTime()-resource.lastUpdated)) ago]</span>
-                 }
-                 @if(resource.pollingPeriod != 0) {
-                 <span class="sideinfo">[polled every @Utils.timeStr(resource.pollingPeriod)]</span>
-                 }
-	              </li>
-	           }  
-	      </ul>
-	    </li>
-	  }
-	</ul>
-	
+<ul class="unstyled endpoint_list">
+  @for(endPoint <- endPoints) {
+    <li class="endpoint" id="@endPoint.id">
+      <a href="#" class="hide_resources icon-chevron-down"></a>
+      <a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a>
+      @vendpoint.followIcon(endPoint, "eplist") 
+      <ul class="resource_list">
+      @Resource.getByEndPoint(endPoint).map { resource =>
+           <li>
+           <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a>
+            @vresource.followIcon(resource, "eplist")
+            @if(resource.lastUpdated != 0) {
+            <span class="sideinfo">[updated @Utils.timeStr((Utils.currentTime()-resource.lastUpdated)) ago]</span>
+            }
+            @if(resource.pollingPeriod != 0) {
+            <span class="sideinfo">[polled every @Utils.timeStr(resource.pollingPeriod)]</span>
+            }
+           </li>
+       }
+      </ul>
+   </li>
+  }
+</ul>
+
 }

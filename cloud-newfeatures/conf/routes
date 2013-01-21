@@ -26,6 +26,8 @@ GET        /endpoints/:id/discover               controllers.CtrlEndPoint.discov
 GET        /endpoints/:id/addResource            controllers.CtrlEndPoint.addResource(id: Long)
 GET        /endpoints/:id/follow                 controllers.CtrlEndPoint.follow(id: Long)
 GET        /endpoints/:id/unfollow               controllers.CtrlEndPoint.unfollow(id: Long)
+GET        /endpoints/:id/toggleFollow           controllers.CtrlEndPoint.toggleFollow(id: Long)
+GET        /endpoints/:id/isFollowing            controllers.CtrlEndPoint.isFollowing(id: Long)
 
 # Resources
 # This way the id is exposed as a queryString in the url, i.e. /resources/?id=1
@@ -39,6 +41,20 @@ GET        /resources/setPeriod              controllers.CtrlResource.setPeriod(
 GET        /resources/clearStream            controllers.CtrlResource.clearStream(id: Long)
 GET        /resources/follow                 controllers.CtrlResource.follow(id: Long)
 GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
+GET        /resources/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
+GET        /resources/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+
+# Resources
+# with ID shown in the url
+GET        /resources/:id                      	 controllers.CtrlResource.get(id: Long)
+GET        /resources/:id/delete                 controllers.CtrlResource.delete(id: Long)
+DELETE     /resources/:id 			                 controllers.CtrlResource.delete(id: Long)
+GET        /resources/:id/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
+GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)
+GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
+GET        /resources/:id/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
+GET        /resources/:id/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
 
 # Streams
 GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
@@ -70,6 +86,9 @@ GET         /dummy/:id/sensors                   controllers.DummyThing.sensors(
 GET         /dummy/:id/sensors/temperature       controllers.DummyThing.temperature(id: Long)
 GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(id: Long)
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
+
+# Javascript Routes
+GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                controllers.Assets.at(path="/public", file)
