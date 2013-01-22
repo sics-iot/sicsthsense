@@ -35,14 +35,20 @@ GET        /endpoints/:id/isFollowing            controllers.CtrlEndPoint.isFoll
 # Probably I'm going to make others like this
 # I might have to keep the parameters names defined as constants in some other file
 #  to make it easier to modify later...
-GET        /resources/                       controllers.CtrlResource.get(id: Long)
-GET        /resources/delete                 controllers.CtrlResource.delete(id: Long)
-GET        /resources/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
-GET        /resources/clearStream            controllers.CtrlResource.clearStream(id: Long)
-GET        /resources/follow                 controllers.CtrlResource.follow(id: Long)
-GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
-GET        /resources/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
-GET        /resources/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+#GET        /resources/                       controllers.CtrlResource.get(id: Long)
+#GET        /resources/delete                 controllers.CtrlResource.delete(id: Long)
+#GET        /resources/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+#GET        /resources/clearStream            controllers.CtrlResource.clearStream(id: Long)
+#GET        /resources/follow                 controllers.CtrlResource.follow(id: Long)
+#GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
+#GET        /resources/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
+#GET        /resources/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+#GET				 /resources/setPublicAccess				 controllers.CtrlResource.setPublicAccess(id: Long)
+#GET				 /resources/removePublicAccess		 controllers.CtrlResource.removePublicAccess(id: Long)
+#GET				 /resources/isPublicAccess				 controllers.CtrlResource.isPublicAccess(id: Long)
+#GET				 /resources/togglePublicAccess		 controllers.CtrlResource.togglePublicAccess(id: Long)
+#GET				 /resources/setPublicAccess				 controllers.CtrlResource.togglePublicAccess(id: Long, access: Boolean)
+
 
 # Resources
 # with ID shown in the url
@@ -53,8 +59,13 @@ GET        /resources/:id/setPeriod              controllers.CtrlResource.setPer
 GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
 GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)
 GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
-GET        /resources/:id/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
+GET        /resources/:id/togglefollow           controllers.CtrlResource.toggleFollow(id: Long)
 GET        /resources/:id/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+GET				 /resources/:id/setPublicAccess				 controllers.CtrlResource.setPublicAccess(id: Long)
+GET				 /resources/:id/removePublicAccess		 controllers.CtrlResource.removePublicAccess(id: Long)
+GET				 /resources/:id/isPublicAccess				 controllers.CtrlResource.isPublicAccess(id: Long)
+GET				 /resources/:id/togglePublicAccess		 controllers.CtrlResource.togglePublicAccess(id: Long)
+GET				 /resources/:id/specifyPublicAccess/:access	 controllers.CtrlResource.specifyPublicAccess(id: Long, access: Boolean)
 
 # Streams
 GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)

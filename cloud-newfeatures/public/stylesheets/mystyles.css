@@ -44,13 +44,20 @@ div.streamplot {
 	background-repeat: no-repeat;
 }
 
-/* span.streamconfig { */
-/* 	float: right; */
-/* 	text-align: right; */
-/* 	position: relative; */
-/* 	top: -240px; */
-/* } */
+span.streamconfig {
+	float: right;
+	text-align: right;
+	position: relative;
+
+}
 
 .streamconfig input[type="radio"]:checked+label{
 	font-weight: bold;
+}
+
+.icon-btn {
+	margin: auto 10px auto;
+}
+.icon-btn i:hover {
+  background-color: rgba(255,0,0,.25);
 }

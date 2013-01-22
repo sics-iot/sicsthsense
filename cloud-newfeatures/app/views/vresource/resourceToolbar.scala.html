@@ -1,0 +1,39 @@
+@(resource: Resource, own: Boolean, shared: Boolean, publicAccess: Boolean)
+@import helper._
+	
+@if(own || shared || publicAccess) {
+	@if(resource.lastUpdated != 0) {
+	 <span class="sideinfo">[updated @Utils.timeStr((Utils.currentTime()-resource.lastUpdated)) ago]</span>
+	 }
+	 @if(resource.pollingPeriod != 0) {
+	 <span class="sideinfo">[polled every @Utils.timeStr(resource.pollingPeriod)]</span>
+	}
+	<span class="rightControl">
+	@vresource.followIcon(resource, "rlist_toolbar") 
+	@if(own) {
+		 @vresource.publicAccessIcon(resource.id, own, resource.isPublicAccess())
+	   @if(resource.pollingPeriod != 0) {
+	     <a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="icon-btn delete icon-pause" rel="tooltip" title="Stop"></a>
+	   }
+	   @if(resource.hasData()) {
+	     <a href="@routes.CtrlResource.clearStream(resource.id)" class="icon-btn icon-remove-sign delete" rel="tooltip" title="Clear"></a>
+	   }
+	   <a href="@routes.CtrlResource.delete(resource.id)" class="icon-btn icon-trash delete" rel="tooltip" title="Delete"></a>
+	 }
+	 </span>
+	 @if(own) {	 
+		 @if(resource.getEndPoint().hasUrl()) {
+		   @form(routes.CtrlResource.setPeriod(resource.id,0)) {
+		     <dl>
+		     <dt class="action">Enter polling interval</dt>
+		     <dd>  
+		       <input type="hidden" name="id" value="@resource.id" />
+		       <input type="number" name="period" required placeholder="Period" class="input" size="4" style="text-align:right;"/>
+		       <input type="submit" value="Ok" class="buttonG"/>
+		     </dd>
+		     </dl>
+		   }
+		 }
+	 }
+ }
+

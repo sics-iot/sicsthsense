@@ -64,6 +64,7 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	public void setPublicAccess( Boolean pub ) {
 		this.publicAccess = pub;
+		this.update();
 	}
 	
 	public Boolean isPublicAccess() {

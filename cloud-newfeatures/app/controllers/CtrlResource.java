@@ -103,4 +103,31 @@ public class CtrlResource extends Controller {
   	}
   }
   
+  public static Result setPublicAccess(Long id) {
+    Resource.get(id).setPublicAccess(true);
+    return ok();
+  }
+  
+  public static Result removePublicAccess(Long id) {
+    Resource.get(id).setPublicAccess(false);
+    return ok();
+  }
+  
+  public static Result specifyPublicAccess(Long id, Boolean acc) {
+    Resource.get(id).setPublicAccess(acc);
+    return ok();
+  }
+  
+  public static Result togglePublicAccess(Long id) {
+    Resource.get(id).setPublicAccess(!Resource.get(id).isPublicAccess());
+    return ok();
+  }
+  
+  public static Result isPublicAccess(Long id) {
+  	if( Resource.get(id).isPublicAccess() ){
+  		return ok("1");
+  	} else {
+  		return ok("0");
+  	}
+  }
 }

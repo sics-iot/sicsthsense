@@ -39,10 +39,14 @@
 	function toggleFollowEndpointButton(event){
 		var $this_button=$(this);
 		var my_endpoint_id=$this_button.attr('parent_id');
+		var current_tooltip_title=$this_button.attr('title');
+		var next_tooltip_title=$this_button.attr('inactive_title');
 	  jsRoutes.controllers.CtrlEndPoint.toggleFollow(my_endpoint_id).ajax({
 	    success: function(msg) {
 	    	$this_button.toggleClass("icon-star-empty follow_endpoint icon-star unfollow_endpoint");
-	    	$('div.container-errormsg').html('<strong>Cool!</strong>');	    	
+	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);
+	    	$this_button.attr('title', next_tooltip_title);
+	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
 	    	//event.stopPropagation();	    	
 	    },
@@ -50,7 +54,7 @@
 	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
 	    	jsRoutes.controllers.CtrlEndPoint.isFollowing(my_endpoint_id).ajax({
 	  	    success: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg).fadeOut();
 	  	    	if(fmsg=="1") {
 	  	    		$this_button.removeClass("icon-star-empty follow_endpoint");
 	  	    		$this_button.addClass("icon-star unfollow_endpoint");
@@ -73,10 +77,14 @@
 	function toggleFollowResourceButton(event){
 		var $this_button=$(this);
 		var my_resource_id=$this_button.attr('parent_id');
+		var current_tooltip_title=$this_button.attr('title');
+		var next_tooltip_title=$this_button.attr('inactive_title');
 	  jsRoutes.controllers.CtrlResource.toggleFollow(my_resource_id).ajax({
 	    success: function(msg) {
 	    	$this_button.toggleClass("icon-star-empty follow_resource icon-star unfollow_resource");
-	    	$('div.container-errormsg').html('<strong>Cool!</strong>');	    	
+	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);  
+	    	$this_button.attr('title', next_tooltip_title);
+	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
 	    	//event.stopPropagation();	    	
 	    },
@@ -112,4 +120,43 @@
 	};
 
 	$('.hide_resources').on("click", hideResourceList);
+	
+	//@routes.CtrlResource.setPublicAccess(id)
+		function togglePublicAccessResourceButton(event){
+		var $this_button=$(this);
+		var my_resource_id=$this_button.attr('parent_id');
+		var current_tooltip_title=$this_button.attr('title');
+		var next_tooltip_title=$this_button.attr('inactive_title');
+	  jsRoutes.controllers.CtrlResource.togglePublicAccess(my_resource_id).ajax({
+	    success: function(msg) {
+	    	$this_button.toggleClass("icon-white set_public_access_resource remove_public_access_resource");
+	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);
+	    	$this_button.attr('title', next_tooltip_title);
+	    	$this_button.attr('inactive_title', current_tooltip_title);
+	    	//event.stopImmediatePropagation();
+	    	//event.stopPropagation();	    	
+	    },
+	    error: function(emsg) {
+	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    	jsRoutes.controllers.CtrlResource.isPublicAccess(my_endpoint_id).ajax({
+	  	    success: function(fmsg) {
+	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+	  	    	if(fmsg=="1") {
+	  	    		$this_button.removeClass("icon-white set_public_access_resource");
+	  	    		$this_button.addClass("remove_public_access_resource");
+	  	    	} else if(fmsg=="0") {
+	  	    		$this_button.removeClass("remove_public_access_resource");
+	  	    		$this_button.addClass("icon-white set_public_access_resource");
+	  	    	} 
+	  	    },
+	  	    error: function(fmsg) {
+	  	    	$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
+	  	    }
+	  	  });
+	    }
+	  });
+	  return false;
+	};
+	$('.set_public_access_resource').on("click", togglePublicAccessResourceButton);
+	$('.remove_public_access_resource').on("click", togglePublicAccessResourceButton);
 	
