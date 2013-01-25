@@ -27,7 +27,7 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     public String description;
     public String location;
         
-    @ManyToOne(cascade = CascadeType.ALL) 
+    @ManyToOne//(cascade = CascadeType.ALL) 
     public User user;
     
   	@OneToMany(mappedBy="endPoint")

@@ -106,7 +106,7 @@ public class Streams extends Controller {
     return ok("ok");
   }
   
-	@Security.Authenticated(Secured.class)
+	//@Security.Authenticated(Secured.class)
 	public static Result getSecured(String userName, String endPointName,
 			String path, Long tail, Long last, Long since) {
 
