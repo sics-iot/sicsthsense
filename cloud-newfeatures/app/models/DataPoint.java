@@ -56,8 +56,10 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
           .findList();
     }
     
-    public static List<DataPoint> getByStreamTail(Resource stream, long tail) {
-      List<DataPoint> set = find.where()
+    public static List<DataPoint> getByStreamTail(Resource stream, long tail) {    	
+    	if(tail==0)
+    		return new ArrayList<DataPoint>();
+    	List<DataPoint> set = find.where()
           .eq("resource", stream)
           .setMaxRows((int)tail)
           .orderBy("timestamp desc")

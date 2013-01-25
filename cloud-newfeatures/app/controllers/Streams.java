@@ -128,7 +128,8 @@ public class Streams extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
-	  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
+	  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since){
+	
 	    final User user = User.getByUserName(userName);
 	    if(user == null) return notFound();
 	    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
@@ -136,28 +137,20 @@ public class Streams extends Controller {
 	    final Resource resource = Resource.getByPath(endPoint, path);
 	    if(resource == null) return notFound();
 	         
-	  
+	
 	    List<DataPoint> dataSet = null;
-	    
-	    if(tail < 0) tail = 0L;
-	    if(last < 0) last = 0L;
-	    if(since < 0) since = 0L;
-	    if(tail == 0 && last == 0 && since ==0) tail = 1L; /* Default behavior: return the last item only */
-	    
-	    if(tail > 0) {
-	      dataSet = DataPoint.getByStreamTail(resource, tail);
-	    } else if(last > 0) {
+	    if(tail<0 && last <0 && since <0){
+	    	tail=1L;
+	    }
+	    if(tail >= 0) {
+	    	dataSet = DataPoint.getByStreamTail(resource, tail);
+	    } else if(last >= 0) {
 	      dataSet = DataPoint.getByStreamLast(resource, last);
-	    } else if(since > 0) {
-	      dataSet = DataPoint.getByStreamSince(resource, since);
+	    } else if(since >= 0) {
+	    	dataSet = DataPoint.getByStreamSince(resource, since);
 	    } else {
-	      dataSet = DataPoint.getByStream(resource);
+	    	throw new RuntimeException("This cannot happen!");
 	    }
-	    
-	    if(dataSet.size() == 0) { /* If no data, return the most recent data */
-	      dataSet = DataPoint.getByStreamTail(resource, 1);
-	    }
-	    
 	    
 	    ObjectNode result = Json.newObject();
 	    ArrayNode time= result.putArray("time");

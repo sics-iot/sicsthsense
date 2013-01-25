@@ -68,8 +68,8 @@ GET				 /resources/:id/togglePublicAccess		 controllers.CtrlResource.togglePubli
 GET				 /resources/:id/specifyPublicAccess/:access	 controllers.CtrlResource.specifyPublicAccess(id: Long, access: Boolean)
 
 # Streams
-GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
-GET        /streams/:user/:endpoint              controllers.Streams.getSecured(user: String, endpoint: String, path: String ?= "", tail: Long ?= 0, last: Long ?=0, since: Long ?= 0)
+GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:user/:endpoint              controllers.Streams.getSecured(user: String, endpoint: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:user/:endpoint/$path<.*>    controllers.Streams.post(user: String, endpoint: String, path: String)
 POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
 
