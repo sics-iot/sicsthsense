@@ -11,6 +11,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+
 import actions.CheckPermissionsAction;
 
 import play.*;
@@ -125,46 +126,49 @@ public class Streams extends Controller {
 			return CheckPermissionsAction.onUnauthorized();
 		}
 	}
-  
+
 	@Security.Authenticated(Secured.class)
-  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
-    final User user = User.getByUserName(userName);
-    if(user == null) return notFound();
-    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
-    if(endPoint == null) return notFound();
-    final Resource resource = Resource.getByPath(endPoint, path);
-    if(resource == null) return notFound();
-         
-    ObjectNode result = Json.newObject();
-    ArrayNode array = result.putArray(path);
-    List<DataPoint> dataSet = null;
-    
-    if(tail < 0) tail = 0L;
-    if(last < 0) last = 0L;
-    if(since < 0) since = 0L;
-    if(tail == 0 && last == 0 && since ==0) tail = 1L; /* Default behavior: return the last item only */
-    
-    if(tail > 0) {
-      dataSet = DataPoint.getByStreamTail(resource, tail);
-    } else if(last > 0) {
-      dataSet = DataPoint.getByStreamLast(resource, last);
-    } else if(since > 0) {
-      dataSet = DataPoint.getByStreamSince(resource, since);
-    } else {
-      dataSet = DataPoint.getByStream(resource);
-    }
-    
-    if(dataSet.size() == 0) { /* If no data, return the most recent data */
-      dataSet = DataPoint.getByStreamTail(resource, 1);
-    }
-    
-    for(DataPoint dataPoint: dataSet) {
-      ObjectNode e = Json.newObject();
-      e.put(new Long(dataPoint.timestamp).toString(), dataPoint.data);
-      array.add(e);
-    }
-    
-    return ok(result);
-  }
-  
+	  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since) {
+	    final User user = User.getByUserName(userName);
+	    if(user == null) return notFound();
+	    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
+	    if(endPoint == null) return notFound();
+	    final Resource resource = Resource.getByPath(endPoint, path);
+	    if(resource == null) return notFound();
+	         
+	  
+	    List<DataPoint> dataSet = null;
+	    
+	    if(tail < 0) tail = 0L;
+	    if(last < 0) last = 0L;
+	    if(since < 0) since = 0L;
+	    if(tail == 0 && last == 0 && since ==0) tail = 1L; /* Default behavior: return the last item only */
+	    
+	    if(tail > 0) {
+	      dataSet = DataPoint.getByStreamTail(resource, tail);
+	    } else if(last > 0) {
+	      dataSet = DataPoint.getByStreamLast(resource, last);
+	    } else if(since > 0) {
+	      dataSet = DataPoint.getByStreamSince(resource, since);
+	    } else {
+	      dataSet = DataPoint.getByStream(resource);
+	    }
+	    
+	    if(dataSet.size() == 0) { /* If no data, return the most recent data */
+	      dataSet = DataPoint.getByStreamTail(resource, 1);
+	    }
+	    
+	    
+	    ObjectNode result = Json.newObject();
+	    ArrayNode time= result.putArray("time");
+	    ArrayNode data= result.putArray("data");
+	    
+	    for(DataPoint dataPoint: dataSet) {
+	    	time.add(dataPoint.timestamp);
+	    	data.add(dataPoint.data);
+
+	    }
+	    
+	    return ok(result);
+	  }
 }

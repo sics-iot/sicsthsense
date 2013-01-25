@@ -19,15 +19,13 @@ var StreamPlots = {
 
 		$.ajax({url: stream.uri+"?since="+stream.since, async: true, success: function(data) {
 				//console.debug(data);
-				var update = data[stream.path].reverse();
-				for (var point in update) {
-					for (var t in update[point]) {
-						// add reading to plot points
-						if(parseInt(t) >= stream.since) {
-							stream.points.push(new Array(parseInt(t)*1000 + StreamPlots.timezone, update[point][t]));
-							console.debug('pushed: '+parseInt(t));
-						}
-					}
+				var time = data["time"].reverse();
+				var data = data["data"].reverse();
+				
+				for (var i=0; i< time.length; i++){
+					
+					stream.points.push(new Array(parseInt(time[i])*1000 + StreamPlots.timezone, data[i]));
+					console.debug('pushed: '+parseInt(i));
 				}
 				
 				if (stream.points.length>0) {
