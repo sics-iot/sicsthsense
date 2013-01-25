@@ -38,8 +38,10 @@ class Poller extends Thread{
 			
 		while(true){
 			try{
-			//	URL url = new URL(resource.fullUrl+"?since="+(lastTime+1));
-				URL url = new URL("http://localhost:9000/streams/niwi/test/t1?tail=10");
+				String urlstr = resource.fullUrl+"?since="+(lastTime+1);
+				System.out.println(urlstr);
+				URL url = new URL(urlstr);
+			//	URL url = new URL("http://localhost:9000/streams/niwi/test/t1?tail=10");
 				//	System.out.println(url);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
@@ -47,24 +49,24 @@ class Poller extends Thread{
 				
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String line;		
+				
 				while((line=br.readLine())!=null){	
-					System.out.println(line);
-				}
-				while((line=br.readLine())!=null){	
-					System.out.println(line.length());
-					if(line.length()<2)
-						continue;
-					System.out.println(line);
-					JsonElement jo = new JsonParser().parse(line);
-					System.out.println(jo);
+				
+				
+				
+					JsonObject jo = new JsonParser().parse(line).getAsJsonObject();
+				
 					//JsonArray ja = jo.get(resource.devices).getAsJsonArray();
-					JsonArray time = null;//jo.get("time").getAsJsonArray();
-					JsonArray data = null;//jo.get("data").getAsJsonArray();
+					JsonArray time = jo.get("time").getAsJsonArray();
+					JsonArray data = jo.get("data").getAsJsonArray();
 					
 					for(int i =0 ; i< time.size(); i++){
-						System.out.println(time.get(i).getAsLong());
-						System.out.println(data.get(i).getAsDouble());
+						long t = time.get(i).getAsLong();
+						double d = data.get(i).getAsDouble();
 						//long time = Long.parseLong(entry.getKey());
+						if(lastTime<t)
+							lastTime=t;
+						consumer.consume(t+" "+d);
 					}
 				}
 //					for(JsonElement e : ja)
