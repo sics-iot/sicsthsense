@@ -40,20 +40,19 @@ public class CheckPermissionsAction extends Action<CheckPermissions> {
 	}
 	
 	public static boolean canAccessResource(String idStr, Long resourceId) {
-		if(idStr != null ){
+		Resource resource = Resource.get(resourceId);
+		if(resource != null && resource.isPublicAccess()) {
+			return true;
+		} else if(idStr != null ){
 			long userID = Long.parseLong(idStr);
-    	User user = User.get(userID);
-    	Resource resource = Resource.get(resourceId);
-    	//userID == Resource.get(resourceId).getUser().id
-    	return ( 
-    			resource != null 
-    			&& ( user != null && ownsResource(idStr, resourceId) ) 
-    			|| resource.isPublicAccess() 
-    			|| resource.isShare( user ) 
-    			);
-    } else { 
+			User user = User.get(userID);
+			return ( 
+    			( user != null && 
+    			(ownsResource(idStr, resourceId) || resource.isShare( user )) 
+    			));
+		} else { 
     	return false;
-    }
+		}
 	}
 	
 	public Result onUnauthorized(Context ctx) {
