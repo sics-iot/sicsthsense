@@ -31,6 +31,7 @@ create table resource (
   polling_period            bigint,
   last_polled               bigint,
   last_updated              bigint,
+  input_parser              varchar(255),
   public_access             boolean,
   constraint uq_resource_1 unique (end_point_id,path),
   constraint pk_resource primary key (id))

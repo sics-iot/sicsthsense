@@ -6,6 +6,9 @@ package controllers;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -18,6 +21,7 @@ import play.*;
 
 import play.libs.F.*;
 import play.libs.*;
+import play.libs.WS.WSRequestHolder;
 import play.mvc.*;
 
 import models.*;
@@ -38,16 +42,40 @@ public class Streams extends Controller {
     final long current = Utils.currentTime();
     //Logger.info("[Streams] periodic timer: " + resource.fullPath() + ", period: " + resource.pollingPeriod + ", last polled: " + (current-resource.lastPolled));
     if (current >= resource.lastPolled + resource.pollingPeriod) {
-      final String url = Utils.concatPath(endPoint.url,resource.path);
+      String path = resource.path;
+      String arguments = "";
+      if(path.indexOf('?') != -1) {
+    	  path = resource.path.substring(0, resource.path.indexOf('?'));
+    	  arguments = resource.path.substring(resource.path.indexOf('?')+1, resource.path.length());
+      }
+      final String url = Utils.concatPath(endPoint.url, path);
+      Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
+      Matcher matcher = pattern.matcher(arguments);
+      Map<String, String> queryParameters = new HashMap<String, String>();
       Logger.info("[Streams] polling: " + resource.fullPath() + ", URL: " + url);
-      WS.url(url).get().map(
+      WSRequestHolder request = WS.url(url);
+      while (matcher.find()) {
+    	  request.setQueryParameter(matcher.group(1), matcher.group(2));
+      } 
+      request.get().map(
         new Function<WS.Response, Boolean>() {
           public Boolean apply(WS.Response response) {
-            JsonNode jsonBody = response.asJson();
-            String textBody = response.getBody();
-            String strBody = jsonBody != null ? jsonBody.asText() : textBody;
+        	System.out.println("type " + response.getHeader("Content-type"));
+        	JsonNode jsonBody = null;
+        	String textBody = null;
+        	String strBody = null;
+        	switch(response.getHeader("Content-type")) {
+        		case "application/json":
+        			jsonBody = response.asJson();
+        			strBody = jsonBody.asText();
+        			break;
+        		default:
+        			textBody = response.getBody();
+        			strBody = textBody.length() + " bytes";
+        			break;
+        	}
             Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
-            parseResponse(endPoint, jsonBody, textBody, resource.path);
+            parseResponse(endPoint, jsonBody, textBody, resource);
             return true;
           }
         }
@@ -64,12 +92,19 @@ public class Streams extends Controller {
     resource.post(data, Utils.currentTime());
   }
   
-  public static boolean parseResponse(EndPoint endPoint, JsonNode jsonBody, String textBody, String path) {
+  public static boolean parseResponse(EndPoint endPoint, JsonNode jsonBody, String textBody, Resource resource) {
     if(jsonBody != null) {
-      if(!parseJsonResponse(endPoint, jsonBody, path)) return false;
+      if(!parseJsonResponse(endPoint, jsonBody, resource.path)) return false;
     } else {
       if(textBody != null) {
-        insertSample(endPoint, path, Float.parseFloat(textBody));
+    	 if(!resource.inputParser.equals("")) {
+    		 Pattern pattern = Pattern.compile(resource.inputParser);
+    		 Matcher matcher = pattern.matcher(textBody);
+    		 if (matcher.find()) {
+    			 textBody = matcher.group(1);
+    		 }
+    	 }
+        insertSample(endPoint, resource.path, Float.parseFloat(textBody));
       } else {
         return false;
       }
@@ -98,8 +133,9 @@ public class Streams extends Controller {
       JsonNode jsonBody = request().body().asJson();
       String textBody = request().body().asText();
       String strBody = jsonBody != null ? jsonBody.toString() : textBody;
+      Resource resource = Resource.getByPath(endPoint, path);
       Logger.info("[Streams] post received from: " + Utils.concatPath(userName, endPointName, path) + ", URI " + request().uri() + ", content type: " + request().getHeader("Content-Type") + ", payload: " + strBody);
-      if(!parseResponse(endPoint, jsonBody, textBody, path)) return badRequest("Bad request");
+      if(!parseResponse(endPoint, jsonBody, textBody, resource)) return badRequest("Bad request");
     } catch (Exception e) {
       return badRequest("Bad request");
     }

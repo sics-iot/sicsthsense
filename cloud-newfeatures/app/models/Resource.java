@@ -27,7 +27,7 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	@Constraints.Required
 	public String path;
-	
+		
 	@OneToMany(mappedBy="resource")
 	public List<DataPoint> dataPoints;
 	
@@ -40,6 +40,8 @@ public class Resource extends Model implements Comparable<Resource> {
 	public long pollingPeriod;
 	public long lastPolled;
 	public long lastUpdated;
+	
+	public String inputParser;
 
 	/* Is it publicly available to others? */
 	public boolean publicAccess = false;
@@ -53,7 +55,6 @@ public class Resource extends Model implements Comparable<Resource> {
 	@ManyToMany(cascade = CascadeType.ALL)
 	public Set<User> sharedWithUsers = new HashSet<User>();
 
-
 	public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(
 			Long.class, Resource.class);
 
@@ -64,6 +65,7 @@ public class Resource extends Model implements Comparable<Resource> {
 		this.pollingPeriod = 0;
 		this.lastPolled = 0;
 		this.lastUpdated = 0;
+		this.inputParser = "";
 	}
 
 	public void setPublicAccess( Boolean pub ) {
@@ -179,6 +181,14 @@ public class Resource extends Model implements Comparable<Resource> {
 		// and this should be the same to all other ManyToOne relationships
 		//clearStream(id);
 		find.ref(id).delete();
+	}
+	
+	public static void setParser(Long id, String inputParser) {
+		Resource resource = get(id);
+		if (resource != null) {
+			resource.inputParser = inputParser;
+			resource.update();
+		}
 	}
 
 	public static void setPeriod(Long id, Long period) {

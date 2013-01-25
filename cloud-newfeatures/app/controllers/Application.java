@@ -53,7 +53,7 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlResource.togglePublicAccess(),
           		controllers.routes.javascript.CtrlEndPoint.follow(),
           		controllers.routes.javascript.CtrlEndPoint.unfollow(),
-              controllers.routes.javascript.CtrlEndPoint.toggleFollow(),
+          		controllers.routes.javascript.CtrlEndPoint.toggleFollow(),
           		controllers.routes.javascript.CtrlEndPoint.isFollowing()
           )
       );

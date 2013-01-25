@@ -1,5 +1,9 @@
 package controllers;
+import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -8,10 +12,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.codehaus.jackson.JsonNode;
-
-import com.ning.http.client.Request;
 
 import play.*;
 
@@ -52,15 +52,18 @@ public class Proxy extends Controller {
                   }
                 }
                 for(String name: headers.keySet()) {
-                  if(!name.equals("HOST")) request = request.setHeader(name, headers.get(name)[0]);
+                  if(name.equals("ACCEPT-ENCODING")) request = request.setHeader(name, ""); /* Don't accept gzip, not supported yet by play 2.0.4 requests */
+                  else if(!name.equals("HOST")) request = request.setHeader(name, headers.get(name)[0]); /* Forge host */
                 }
                 if (method.equals("GET")) { promise = request.get(); }
                 else if (method.equals("POST")) { promise = request.post(body); }
                 else if (method.equals("PUT")) { promise = request.put(body); }
                 else if (method.equals("DELETE")) { promise = request.delete(); }
                 Response response = promise.getWrappedPromise().await(10000, TimeUnit.MILLISECONDS).get();
-                Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", body: " + response.getBody().length() + " bytes");
-                return status(response.getStatus(), response.getBody());
+                String encoding = response.getHeader("Content-encoding"); 
+                Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", encoding: " + encoding + ", body: " + response.getBody().length() + " bytes");
+                String body = response.getBody();
+                return status(response.getStatus(), body);
               } catch (Exception e) {
                 Logger.info("[Proxy] forwarding failed: " + e.getMessage());
                 return badRequest(e.getMessage());

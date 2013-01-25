@@ -62,6 +62,12 @@ public class CtrlResource extends Controller {
     return redirect(routes.Application.manage());
   }
   
+  public static Result setInputParser(Long id, String inputParser) {
+	  if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized();
+	  Resource.setParser(id, inputParser);
+	  return redirect(request().getHeader("referer"));
+  }
+  
   public static Result setPeriod(Long id, Long period) {
     if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized();
     Resource.setPeriod(id, 60*period);

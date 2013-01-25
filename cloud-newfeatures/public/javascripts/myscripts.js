@@ -44,7 +44,6 @@
 	  jsRoutes.controllers.CtrlEndPoint.toggleFollow(my_endpoint_id).ajax({
 	    success: function(msg) {
 	    	$this_button.toggleClass("icon-star-empty follow_endpoint icon-star unfollow_endpoint");
-	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);
 	    	$this_button.attr('title', next_tooltip_title);
 	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
@@ -81,8 +80,7 @@
 		var next_tooltip_title=$this_button.attr('inactive_title');
 	  jsRoutes.controllers.CtrlResource.toggleFollow(my_resource_id).ajax({
 	    success: function(msg) {
-	    	$this_button.toggleClass("icon-star-empty follow_resource icon-star unfollow_resource");
-	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);  
+	    	$this_button.toggleClass("icon-star-empty follow_resource icon-star unfollow_resource");  
 	    	$this_button.attr('title', next_tooltip_title);
 	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
@@ -130,7 +128,6 @@
 	  jsRoutes.controllers.CtrlResource.togglePublicAccess(my_resource_id).ajax({
 	    success: function(msg) {
 	    	$this_button.toggleClass("icon-white set_public_access_resource remove_public_access_resource");
-	    	$('div.container-errormsg').html('<strong>Cool!</strong>').fadeIn(1000).fadeOut(1000);
 	    	$this_button.attr('title', next_tooltip_title);
 	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
