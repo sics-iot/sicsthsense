@@ -66,5 +66,14 @@ public class CheckPermissionsAction extends Action<CheckPermissions> {
 		//current thread
 		return (new CheckPermissionsAction().onUnauthorized(Context.current()));
 	}
+	
+    public static String getUsername(Context ctx) {
+        String id = ctx.session().get("id");
+        if(id != null && User.exists(Long.parseLong(id)))    return id;
+        else                                                 return null;
+    }
+    public static String getUsername() {
+        return getUsername(Context.current());
+    }
 
 }
