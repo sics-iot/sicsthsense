@@ -54,7 +54,7 @@ public class CtrlResource extends Controller {
   
   //@play.db.ebean.Transactional
   public static Result delete(Long id) {
-    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized();
     
     Resource.delete(id);
     //TODO: Improve? Redirecting to manage page since the referrer was deleted!
@@ -63,13 +63,13 @@ public class CtrlResource extends Controller {
   }
   
   public static Result setPeriod(Long id, Long period) {
-    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden();
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized();
     Resource.setPeriod(id, 60*period);
     return redirect(request().getHeader("referer"));
   }
   
   public static Result clearStream(Long id) {
-    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return forbidden(); 
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
     Resource.clearStream(id);
     return redirect(request().getHeader("referer"));
   }
@@ -104,22 +104,26 @@ public class CtrlResource extends Controller {
   }
   
   public static Result setPublicAccess(Long id) {
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
     Resource.get(id).setPublicAccess(true);
     return ok();
   }
   
   public static Result removePublicAccess(Long id) {
-    Resource.get(id).setPublicAccess(false);
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
+  	Resource.get(id).setPublicAccess(false);
     return ok();
   }
   
   public static Result specifyPublicAccess(Long id, Boolean acc) {
-    Resource.get(id).setPublicAccess(acc);
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
+  	Resource.get(id).setPublicAccess(acc);
     return ok();
   }
   
   public static Result togglePublicAccess(Long id) {
-    Resource.get(id).setPublicAccess(!Resource.get(id).isPublicAccess());
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
+  	Resource.get(id).setPublicAccess(!Resource.get(id).isPublicAccess());
     return ok();
   }
   

@@ -58,7 +58,7 @@ public class CheckPermissionsAction extends Action<CheckPermissions> {
 	
 	public Result onUnauthorized(Context ctx) {
 		//String id = ctx.request().username();
-		return unauthorized(views.html.errorPage.render("Unauthorized!\nThis is not shared with you!"));
+		return unauthorized(views.html.errorPage.render("Unauthorized! This is not shared with you!"));
 		//return unauthorized("## You can not read or modify a resource that is not shared with you!");
 	}
 	

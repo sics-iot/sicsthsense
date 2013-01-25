@@ -27,10 +27,14 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	@Constraints.Required
 	public String path;
-	//XXX: Cascade from this side is wrong!
-	@ManyToOne //(cascade = CascadeType.REMOVE)
+	
+	@OneToMany(mappedBy="resource")
+	public List<DataPoint> dataPoints;
+	
+	//XXX: Cascade from this side might be wrong!
+	@ManyToOne//(cascade = CascadeType.ALL)
 	public EndPoint endPoint;
-	@ManyToOne //(cascade = CascadeType.REMOVE)
+	@ManyToOne//(cascade = CascadeType.ALL)
 	public User user;
 
 	public long pollingPeriod;

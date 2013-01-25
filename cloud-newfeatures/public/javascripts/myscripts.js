@@ -51,10 +51,10 @@
 	    	//event.stopPropagation();	    	
 	    },
 	    error: function(emsg) {
-	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>').text(emsg);
 	    	jsRoutes.controllers.CtrlEndPoint.isFollowing(my_endpoint_id).ajax({
 	  	    success: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg).fadeOut();
+	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg).fadeIn(1000).fadeOut(1000);
 	  	    	if(fmsg=="1") {
 	  	    		$this_button.removeClass("icon-star-empty follow_endpoint");
 	  	    		$this_button.addClass("icon-star unfollow_endpoint");

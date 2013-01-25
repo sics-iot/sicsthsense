@@ -31,6 +31,9 @@ public class User extends Model {
     public String lastName;
     public String location;
     
+  	@OneToMany(mappedBy="user")
+  	public List<EndPoint> endPoints; 
+  	
     @ManyToMany
     public List<Resource> followedResources = new ArrayList<Resource>();
     

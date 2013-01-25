@@ -27,8 +27,11 @@ public class EndPoint extends Model implements Comparable<EndPoint> {
     public String description;
     public String location;
         
-    @ManyToOne 
+    @ManyToOne(cascade = CascadeType.ALL) 
     public User user;
+    
+  	@OneToMany(mappedBy="endPoint")
+  	public List<Resource> resources; 
             
     public static Model.Finder<Long,EndPoint> find = new Model.Finder<Long, EndPoint>(Long.class, EndPoint.class);
     
