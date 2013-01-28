@@ -132,12 +132,13 @@ public class Streams extends Controller {
     try {
       JsonNode jsonBody = request().body().asJson();
       String textBody = request().body().asText();
-      String strBody = jsonBody != null ? jsonBody.toString() : textBody;
-      Resource resource = Resource.getByPath(endPoint, path);
+      String strBody = (jsonBody != null) ? jsonBody.toString() : textBody;
+      Resource resource = endPoint.getOrCreateResource(path);
       Logger.info("[Streams] post received from: " + Utils.concatPath(userName, endPointName, path) + ", URI " + request().uri() + ", content type: " + request().getHeader("Content-Type") + ", payload: " + strBody);
-      if(!parseResponse(endPoint, jsonBody, textBody, resource)) return badRequest("Bad request");
+      if(!parseResponse(endPoint, jsonBody, textBody, resource)) return badRequest("Bad request: Can't parse!");
     } catch (Exception e) {
-      return badRequest("Bad request");
+    	Logger.info("[Streams] Exception " + e.getMessage());
+      return badRequest("Bad request: Error!");
     }
     return ok("ok");
   }
