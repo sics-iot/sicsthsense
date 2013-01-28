@@ -28,7 +28,7 @@ public class Resource extends Model implements Comparable<Resource> {
 	@Constraints.Required
 	public String path;
 		
-	@OneToMany(mappedBy="resource")
+	@OneToMany(mappedBy="resource", cascade = CascadeType.ALL)
 	public List<DataPoint> dataPoints;
 	
 	//XXX: Cascade from this side might be wrong!
@@ -123,7 +123,11 @@ public class Resource extends Model implements Comparable<Resource> {
 	public String getUrl() {
 		return Utils.concatPath(endPoint.url, path);
 	}
-
+	
+  public boolean hasUrl() {
+    return endPoint.hasUrl();
+  }
+  
 	public static List<Resource> all() {
 		return find.where().orderBy("path").findList();
 	}
