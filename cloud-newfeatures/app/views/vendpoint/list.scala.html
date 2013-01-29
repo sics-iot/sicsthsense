@@ -23,7 +23,7 @@
 <!--            </li> -->
         <li>
           <a href="@routes.CtrlResource.get(resource.id)">@resource.path</a> 
-          @vresource.resourceToolbar(resource, true, resource.isShare(CtrlUser.getUser()), resource.isPublicAccess())
+          @vresource.resourceToolbar(resource, resource.isOwnedBy(CtrlUser.getUser()), resource.isShare(CtrlUser.getUser()), resource.isPublicAccess())
         </li>
        }
       </ul>

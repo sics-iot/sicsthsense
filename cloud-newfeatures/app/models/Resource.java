@@ -115,6 +115,10 @@ public class Resource extends Model implements Comparable<Resource> {
 	public User getUser() {
 		return User.get(user.id);
 	}
+	
+	public Boolean isOwnedBy(User user) {
+		return user.id == this.user.id;
+	}
 
 	public String fullPath() {
 		return Utils.concatPath(user.userName, endPoint.label, path);
