@@ -3,9 +3,9 @@
 # ~~~~
 
 # Pages
-GET        /authenticate                         controllers.Login.authenticate(openid_identifier: String)
-GET        /openIDCallback                       controllers.Login.openIDCallback()
-GET        /logout                               controllers.Login.logout()
+#GET        /authenticate                         controllers.Login.authenticate(openid_identifier: String)
+#GET        /openIDCallback                       controllers.Login.openIDCallback()
+#GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
 GET        /manage                               controllers.Application.manage()
@@ -104,4 +104,14 @@ GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes(
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                controllers.Assets.at(path="/public", file)
+
+# Secure Social
+# Login page
+GET     /login                      securesocial.controllers.LoginPage.login
+GET     /logout                     securesocial.controllers.LoginPage.logout
+
+# Providers entry points
+GET     /authenticate/:provider     securesocial.controllers.ProviderController.authenticate(provider)
+POST    /authenticate/:provider     securesocial.controllers.ProviderController.authenticateByPost(provider)
+GET     /not-authorized             securesocial.controllers.ProviderController.notAuthorized
 
