@@ -1,0 +1,9 @@
+@(id: Long, own: Boolean, isPublic: Boolean)
+ 	@if(own) {
+		@if(!isPublic) {
+		  <a class="icon-btn icon-globe icon-white set_public_access_resource" parent_id="@id" href="#" rel="tooltip" title="Share with the world!"></a>
+		} else {
+		  <a class="icon-btn icon-globe remove_public_access_resource" parent_id="@id" href="#" rel="tooltip" title="Protect from the world!"></a>
+		}
+	}
+	
