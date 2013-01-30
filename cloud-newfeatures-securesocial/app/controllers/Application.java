@@ -17,28 +17,41 @@ import play.data.*;
 
 import views.html.*;
 import models.*;
+import securesocial.core.Identity;
+import securesocial.core.java.SecureSocial;
 
-@Security.Authenticated(Secured.class)
+//@Security.Authenticated(Secured.class)
 public class Application extends Controller {
   
+//  @SecureSocial.SecuredAction
+//	public static Result index() {
+//		Identity user = (Identity) ctx().args.get(SecureSocial.USER_KEY);
+//		Call destination = routes.Application.home();
+//	}
+  
+	@SecureSocial.SecuredAction
   public static Result home() {
     return ok(homePage.render());
   }
   
+	@SecureSocial.SecuredAction
   public static Result login() {
     return redirect(routes.Application.home());
   }
   
+	@SecureSocial.SecuredAction
   public static Result search() {
     return ok(searchPage.render());
   }
   
+	@SecureSocial.SecuredAction
   public static Result manage() {
+		Identity user = (Identity) ctx().args.get(SecureSocial.USER_KEY);
     return ok(managePage.render(EndPoint.getByUser(CtrlUser.getUser())));
   }
   
   // -- Javascript routing
-  
+	@SecureSocial.SecuredAction
   public static Result javascriptRoutes() {
       response().setContentType("text/javascript");
       return ok(

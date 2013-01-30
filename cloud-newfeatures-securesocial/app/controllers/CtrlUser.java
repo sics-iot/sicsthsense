@@ -20,7 +20,11 @@ import play.data.*;
 import models.*;
 import views.html.*;
 
-@Security.Authenticated(Secured.class)
+import securesocial.core.Identity;
+import securesocial.core.java.SecureSocial;
+
+//@Security.Authenticated(Secured.class)
+@SecureSocial.SecuredAction
 public class CtrlUser extends Controller {
   
   static private Form<User> userForm = form(User.class);

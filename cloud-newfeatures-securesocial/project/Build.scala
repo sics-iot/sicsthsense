@@ -12,7 +12,8 @@ object ApplicationBuild extends Build {
       "mysql" % "mysql-connector-java" % "5.1.18",
       "commons-io" % "commons-io" % "2.3",
       "commons-codec" % "commons-codec" % "1.7",
-      "securesocial" % "securesocial_2.9.1" % "2.0.9"
+      "securesocial" % "securesocial_2.9.1" % "2.0.9",
+      "com.typesafe" % "play-plugins-mailer" % "2.0.4"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
