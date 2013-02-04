@@ -30,6 +30,7 @@
   <dt>Last updated</dt>
   <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60} minutes ago</dd>
   }
+  @if(owned){
   @if(endPoint.hasUrl()) {
 	  @form(routes.CtrlResource.setPeriod(resource.id,0)) {
 	    <dt class="action">Enter polling interval</dt>
@@ -48,5 +49,6 @@
           <input type="submit" value="Ok" class="buttonG"/>
           (<a href="http://regexpal.com/">regexpal.com</a> is useful!)
         </dd>
+        }
         }
   </dl>

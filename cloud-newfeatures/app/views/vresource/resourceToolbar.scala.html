@@ -23,6 +23,9 @@
 	}
 	
 	<span class="rightControl">
+	
+	@vresource.followIcon(resource, "rlist_toolbar")
+	
 	@if(own) {
 		 <a href="@routes.CtrlResource.delete(resource.id)" class="icon-btn icon-trash delete" rel="tooltip" title="Delete"></a>
 		 @if(resource.hasData()) {
@@ -74,8 +77,7 @@
 		  <a class="icon-btn icon-globe icon-white set_public_access_resource" parent_id="@resource.id" href="#" rel="tooltip" title="Share with the world!"></a>
 		} else {
 		  <a class="icon-btn icon-globe remove_public_access_resource" parent_id="@resource.id" href="#" rel="tooltip" title="Protect from the world!"></a>
-		}
-		@vresource.followIcon(resource, "rlist_toolbar") 
+		} 
 	 }
 	 </span>
  }
