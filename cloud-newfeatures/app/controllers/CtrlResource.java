@@ -74,6 +74,12 @@ public class CtrlResource extends Controller {
     return redirect(request().getHeader("referer"));
   }
   
+  public static Result setLabelName(Long id, String label) {
+    if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized();
+    Resource.setLabelName(id, label);
+    return redirect(request().getHeader("referer"));
+  }
+  
   public static Result clearStream(Long id) {
     if(!CheckPermissionsAction.ownsResource(session("id"), id)) return CheckPermissionsAction.onUnauthorized(); 
     Resource.clearStream(id);

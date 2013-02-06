@@ -14,6 +14,11 @@
     </dl>
   }
   
+  <br />
   @vendpoint.list{<h1>Your end points</h1>}(endPoints)
+  <br />
   @vresource.listStreams{<h1>Your resources</h1>}(Resource.getByUser(CtrlUser.getUser()))
+  <br />
+  @vlabel.list{<h1>Your labels</h1>}(User.getLabelsByUser(CtrlUser.getUser()))
+  <br /> <br /> <br />
 }

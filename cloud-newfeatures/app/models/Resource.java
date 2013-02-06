@@ -27,6 +27,8 @@ public class Resource extends Model implements Comparable<Resource> {
 
 	@Constraints.Required
 	public String path;
+
+	public String label;
 		
 	@OneToMany(mappedBy="resource", cascade = CascadeType.ALL)
 	public List<DataPoint> dataPoints;
@@ -62,6 +64,7 @@ public class Resource extends Model implements Comparable<Resource> {
 		this.endPoint = endPoint;
 		this.user = endPoint.getUser();
 		this.path = path;
+		this.label = "";
 		this.pollingPeriod = 0;
 		this.lastPolled = 0;
 		this.lastUpdated = 0;
@@ -150,6 +153,12 @@ public class Resource extends Model implements Comparable<Resource> {
 				.findList();
 	}
 
+	public static Resource getByLabel(User user, String label) {
+		Logger.info("getByLabel() finding label "+label);
+		return find.where().eq("user", user).eq("label",label).orderBy("label")
+				.findUnique();
+	}
+
 	public static List<Resource> getByUserWithData(User user) {
 		return find.where().gt("lastUpdated", 0).eq("user", user)
 				.orderBy("path").findList();
@@ -203,6 +212,14 @@ public class Resource extends Model implements Comparable<Resource> {
 		Resource resource = get(id);
 		if (resource != null) {
 			resource.pollingPeriod = period;
+			resource.update();
+		}
+	}
+
+	public static void setLabelName(Long id, String label) {
+		Resource resource = get(id);
+		if (resource != null) {
+			resource.label = label;
 			resource.update();
 		}
 	}
