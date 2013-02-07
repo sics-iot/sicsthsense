@@ -1,0 +1,76 @@
+@(resource: Resource)
+
+@import helper._
+
+@displayResource(endPoint: EndPoint) = {
+	    
+	 @if(endPoint.hasUrl()) {
+      <dl>
+      <dt class="action">Proxy</dt>
+      <dd>
+        <form id="proxy@resource.id" action="@routes.Proxy.forwardById(resource.id, "")">
+	       <select id="method@resource.id" name="method" >
+           <option value="GET">GET</option>
+           <option value="POST">POST</option>
+           <option value="PUT">PUT</option>
+           <option value="DELETE">DELETE</option>
+         </select>
+         <input input type="text" id="arguments@resource.id" name="arguments" placeholder="arguments" size="8"/>
+         <input input type="text" id="body@resource.id" name="body" placeholder="body" size="8"/>
+         <input type="submit" value="Send" class="buttonG"/>
+        </form>
+        <img id="ajax_wait@resource.id" src="@routes.Assets.at("images/ajax_wait.gif")" height="20" align="top" style="visibility:hidden;"></img>
+      </dd>
+      
+      <div id="response@resource.id" style="display: none">
+	      <dt class="action">
+	        <span id="response1@resource.id"></span>
+	      </dt>
+	      <dd>
+	        <code><span id="response2@resource.id"></span></code> <a id="hide@resource.id" href="." class="delete">[hide]</a></dd>
+	      </dd>
+	      
+      </div>
+       </dl>
+     
+     <script type="text/javascript">
+	  $('#proxy@resource.id').submit(function() {
+	    var method = $("select#method@resource.id").val();
+	    var arguments = $("input#arguments@resource.id").val();
+	    var url = "@routes.Proxy.forwardById(resource.id, "")" + arguments;
+	    var body = $("input#body@resource.id").val();
+	    $("#ajax_wait@resource.id").css("visibility","visible");
+	    $.ajax({
+	    	  url: url,
+	    	  context: document.body,
+	    	  timeout: 5000,
+	    	  type: method,
+	    	  data: body,
+	    	  contentType: "text/plain",
+    	    error: function(x, t, m) {
+    	    	$("#response1@resource.id").html("Error");
+    	    	$("#response2@resource.id").text(m);
+            $("#response@resource.id").show();
+    	    	$("#ajax_wait@resource.id").css("visibility","hidden");
+    	    },
+    	    success: function(response) {
+    	    	$("#response1@resource.id").html("Response");
+            $("#response2@resource.id").text(response);
+            $("#response@resource.id").show();
+            $("#ajax_wait@resource.id").css("visibility","hidden");
+           }
+	    	});
+	    			    
+	    return false;
+	  });
+	  
+	  $('#hide@resource.id').click(function() {
+		  $("#response@resource.id").hide();              
+	      return false;
+	    });
+	  
+	  </script>
+	}
+}
+
+@displayResource(resource.getEndPoint())

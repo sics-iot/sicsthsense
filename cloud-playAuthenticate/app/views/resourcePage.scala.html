@@ -1,0 +1,32 @@
+@(resource: Resource, owned: Boolean)
+
+@import helper._
+
+
+@layout("Resource Details: @resource.path", session) {
+
+  @displayResource(resource, owned, resource.getEndPoint(),resource.getUser())
+ 
+  @vresource.include(resource)
+
+  <dl>
+
+
+  @if(owned && resource.pollingPeriod != 0) {
+    <dt class="action">Stop polling</dt>
+    <dd><a href="@routes.CtrlResource.setPeriod(resource.id, 0)" class="delete">[stop]</a></dd>
+  }
+  @if(owned && resource.hasData()) {
+    <dt class="action">Clear stream</dt> 
+    <dd><a href="@routes.CtrlResource.clearStream(resource.id)" class="delete">[clear]</a></dd>
+  }
+  @if(owned) {
+    <dt class="action">Delete resource</dt>
+    <dd><a href="@routes.CtrlResource.delete(resource.id)" class="delete">[delete]</a></dd>
+  }
+  
+  </dl>
+    
+  @vresource.includeStream(resource) 
+
+}

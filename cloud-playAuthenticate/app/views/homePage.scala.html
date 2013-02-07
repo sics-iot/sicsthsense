@@ -1,0 +1,22 @@
+@import helper._
+
+@showFollowed(endPoints: List[EndPoint], resources: List[Resource]) = {
+
+  @vendpoint.list{<h1>End points you follow</h1>}(CtrlUser.getUser().followedEndPoints())
+
+  @vresource.listStreams{<h1>Resources you follow</h1>}(CtrlUser.getUser().followedResources())
+  
+  @if(endPoints.size == 0 && resources.size == 0) {
+    You don't follow any end point nor resource yet. <a href="@routes.Application.search()">Search</a> public resources or <a href="@routes.Application.manage()">add yours</a> to get started!<p/>
+  }
+}
+
+@layout("Home", session) {
+@if(CtrlUser.getUser() != null) {
+  @showFollowed(CtrlUser.getUser().followedEndPoints(), CtrlUser.getUser().followedResources())
+  } else {
+   <h1>CtrlUser.getUser() == null</h1>
+   @controllers.Login.logout()
+  } 
+
+}

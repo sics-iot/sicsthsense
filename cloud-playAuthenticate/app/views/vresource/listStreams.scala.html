@@ -1,0 +1,20 @@
+@(header: Html)(resources: List[Resource])
+
+@if(resources.length > 0) {
+  
+  @header
+  
+  <ul>
+    @for(resource <- resources) {
+      <li> 
+      <a href="@routes.CtrlResource.get(resource.id)">@resource.getUser().userName/@resource.getEndPoint().label@resource.path</a>
+      @vresource.followIcon(resource, "slist")
+      @if(resource.pollingPeriod != 0) {
+        [polled every @{resource.pollingPeriod/60} min]
+      }
+      @vresource.include(resource)
+      @vresource.includeStream(resource)
+      </li>
+    }
+  </ul>
+}

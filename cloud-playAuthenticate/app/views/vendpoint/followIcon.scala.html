@@ -1,0 +1,8 @@
+@(endPoint: EndPoint, prefix: String)
+
+@if(!CtrlUser.getUser().followsEndPoint(endPoint)) {
+  <a class="icon-star-empty follow_endpoint" parent_id="@endPoint.id" id="followep@prefix@endPoint.id" href="#" title="Follow" inactive_title="Stop following"></a>
+} else {
+  <a class="icon-star unfollow_endpoint" parent_id="@endPoint.id" id="unfollowep@prefix@endPoint.id" href="#" title="Stop following" inactive_title="Followg"></a>
+}
+

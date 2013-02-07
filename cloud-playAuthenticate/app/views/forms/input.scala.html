@@ -1,0 +1,10 @@
+@(edit: Boolean, itype: String, name: String, label: String, value: String)
+
+<dt>@label</dt>
+<dd>
+@if(edit) {
+<input type="@itype" name="@name" value="@value" size="32" />
+} else {
+@value
+}
+</dd>
