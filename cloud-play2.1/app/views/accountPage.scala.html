@@ -1,0 +1,26 @@
+@(user: User, userForm: Form[User])
+
+@import helper._
+
+@displayUser(user: User) = {
+@if(userForm != null) {
+<span class="logged"><a href="@routes.CtrlUser.get()">[Cancel]</a></span>
+} else {
+<span class="logged"><a href="@routes.CtrlUser.edit()">[Edit]</a></span>
+}
+
+   @forms.form(routes.CtrlUser.submit()) {
+	    <dt>Mail</dt>
+	    <dd>@user.email</dd>
+	    @forms.input(userForm!=null, "text", "userName", "User name", user.userName)
+	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
+	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
+	    @forms.input(userForm!=null, "text", "location", "Location", user.location)
+	    @if(userForm!=null) { @forms.submit(userForm!=null, "Update") }
+  }
+  
+}
+
+@layout("Account", session) {
+  @displayUser(user)
+}
