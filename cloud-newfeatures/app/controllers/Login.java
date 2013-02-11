@@ -22,7 +22,7 @@ import play.mvc.Http.Context;
 import views.html.*;
 
 public class Login extends Controller {
-   
+  
   public static Result authenticate(String openid_identifier) {
     Map<String, String> attributes = new HashMap<String, String>();
     attributes.put("email", "http://axschema.org/contact/email");
