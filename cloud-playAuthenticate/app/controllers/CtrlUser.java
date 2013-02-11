@@ -23,11 +23,12 @@ import play.data.*;
 
 import models.*;
 import views.html.*;
+import play.data.Form;
 
 @Security.Authenticated(Secured.class)
 public class CtrlUser extends Controller {
   
-  static private Form<User> userForm = form(User.class);
+	  static private Form<User> userForm = Form.form(User.class);
   
 	static public User getUser() {
 		// return User.get(Long.parseLong(session().get("id")));

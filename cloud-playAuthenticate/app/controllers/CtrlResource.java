@@ -27,11 +27,12 @@ import play.data.*;
 
 import models.*;
 import views.html.*;
+import play.data.Form;
 
 @Security.Authenticated(Secured.class)
 public class CtrlResource extends Controller {
   
-  static private Form<Resource> resourceForm = form(Resource.class);
+  static private Form<Resource> resourceForm = Form.form(Resource.class);
   
  // @CheckPermissions(type = Resource.class)
   public static Result get(Long id) {

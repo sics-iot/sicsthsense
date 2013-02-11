@@ -23,12 +23,13 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import actions.CheckPermissionsAction;
+import play.data.Form;
 
 @Security.Authenticated(Secured.class)
 public class CtrlEndPoint extends Controller {
   
-  static private Form<EndPoint> epForm = form(EndPoint.class);
-  static private Form<Resource> resourceForm = form(Resource.class);
+  static private Form<EndPoint> epForm = Form.form(EndPoint.class);
+  static private Form<Resource> resourceForm = Form.form(Resource.class);
   
   public static Result add() {
     Form<EndPoint> theForm = epForm.bindFromRequest();
