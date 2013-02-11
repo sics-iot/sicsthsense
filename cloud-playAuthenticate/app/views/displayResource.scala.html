@@ -14,6 +14,8 @@
     <dd><a href="@routes.CtrlEndPoint.get(endPoint.id)">@endPoint.label</a></dd>
     <dt>Path</dt>
     <dd>@resource.path</dd>
+	<dt>Label</dt>
+    <dd>@resource.label</dd>
     @if(!resource.inputParser.equals("")) {
     <dt>Input parser</dt>
     <dd>@resource.inputParser</dd>
@@ -30,6 +32,7 @@
   <dt>Last updated</dt>
   <dd>@{(controllers.Utils.currentTime()-resource.lastUpdated)/60} minutes ago</dd>
   }
+  @if(owned){
   @if(endPoint.hasUrl()) {
 	  @form(routes.CtrlResource.setPeriod(resource.id,0)) {
 	    <dt class="action">Enter polling interval</dt>
@@ -40,6 +43,14 @@
         </dd>
       }
   }
+  @form(routes.CtrlResource.setLabelName(resource.id,"")) {
+	    <dt class="action">Set label</dt>
+        <dd>  
+          <input input type="hidden" name="id" value="@resource.id" />
+          <input input type="string" name="label" required placeholder="Label" class="input" size="4" style="text-align:right;"/>
+          <input type="submit" value="Ok" class="buttonG"/>
+        </dd>
+        }
   @form(routes.CtrlResource.setInputParser(resource.id,"")) {
 	    <dt class="action">Set input parser (regexp)</dt>
         <dd>  
@@ -48,5 +59,6 @@
           <input type="submit" value="Ok" class="buttonG"/>
           (<a href="http://regexpal.com/">regexpal.com</a> is useful!)
         </dd>
+        }
         }
   </dl>

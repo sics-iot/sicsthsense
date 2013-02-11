@@ -148,6 +148,25 @@ public class User extends Model {
       return followedEndPoints.contains(endPoint);
     }
     
+	// Liam: currently requires naughty embedded HTML, can only be
+	// rectified with an appropriate architecture discussion
+	public static List<String> getLabelsByUser(User user) {
+		List<String> labels = new ArrayList<String>();
+		// pull devices with a label
+		List<EndPoint> devices = EndPoint.getByUser(user);
+		for (EndPoint device: devices) {
+			String url ="/"+user.userName+"/"+device.label; 
+			labels.add(url);
+		}
+		// pull resources with a label
+		List<Resource> resources = Resource.getByUser(user);
+		for (Resource resource: resources) {
+			String url = "/"+user.userName+"/"+resource.label;
+			labels.add(url);
+		}
+		return labels;
+	}
+
     public void verify() {
       userName = userName.replaceAll( "[^\\w.-]", "" );
     }

@@ -146,19 +146,26 @@ public class Streams extends Controller {
 	//@Security.Authenticated(Secured.class)
 	public static Result getSecured(String userName, String endPointName,
 			String path, Long tail, Long last, Long since) {
-
+	
+		//Logger.info("getSecured() "+userName+" "+endPointName+" "+path);
 		final User user = User.getByUserName(userName);
 		if (user == null)
 			return notFound();
-		final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
-		if (endPoint == null)
-			return notFound();
-		final Resource resource = Resource.getByPath(endPoint, path);
+		
+		// removed final keywords to allow reaassignment
+		// also, label's will be checked if the device doesnt exist now
+		Resource resource = null;
+		EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
+		if (endPoint != null) { // found a valid endPoint
+			resource = Resource.getByPath(endPoint, path);
+		} else { // otherwise check if there exists a matching label/alias
+			resource = Resource.getByLabel(user, endPointName);
+		}
 		if (resource == null)
 			return notFound();
 
 		if (CheckPermissionsAction.canAccessResource(session("id"), resource.id)) {
-			return get(userName, endPointName, path, tail, last, since);
+			return get(userName, resource.getEndPoint().label, resource.path, tail, last, since);
 		} else {
 			return CheckPermissionsAction.onUnauthorized();
 		}
@@ -167,13 +174,13 @@ public class Streams extends Controller {
 	@Security.Authenticated(Secured.class)
 	  private static Result get(String userName, String endPointName, String path, Long tail, Long last, Long since){
 	
+		//Logger.info("get()  "+userName+" endPoint:"+endPointName+" path:"+path);
 	    final User user = User.getByUserName(userName);
 	    if(user == null) return notFound();
 	    final EndPoint endPoint = EndPoint.getByLabel(user, endPointName);
 	    if(endPoint == null) return notFound();
 	    final Resource resource = Resource.getByPath(endPoint, path);
 	    if(resource == null) return notFound();
-	         
 	
 	    List<DataPoint> dataSet = null;
 	    if(tail<0 && last <0 && since <0){

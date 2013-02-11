@@ -34,6 +34,7 @@ create table linked_account (
 create table resource (
   id                        bigint not null,
   path                      varchar(255),
+  label                     varchar(255),
   end_point_id              bigint,
   user_id                   bigint,
   polling_period            bigint,

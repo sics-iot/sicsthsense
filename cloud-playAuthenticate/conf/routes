@@ -57,6 +57,7 @@ GET        /resources/:id                      	 controllers.CtrlResource.get(id
 GET        /resources/:id/delete                 controllers.CtrlResource.delete(id: Long)
 DELETE     /resources/:id 			                 controllers.CtrlResource.delete(id: Long)
 GET        /resources/:id/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+GET        /resources/:id/setLabel				controllers.CtrlResource.setLabelName(id: Long, label: String)
 GET        /resources/:id/setInputParser         controllers.CtrlResource.setInputParser(id: Long, parser: String)
 GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
 GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)

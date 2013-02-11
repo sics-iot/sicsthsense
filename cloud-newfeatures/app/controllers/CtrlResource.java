@@ -24,6 +24,7 @@ import play.mvc.Http.Context;
 import play.mvc.Http.RequestBody;
 import play.mvc.Http.Session;
 import play.data.*;
+import play.data.Form.*;
 
 import models.*;
 import views.html.*;
@@ -31,7 +32,7 @@ import views.html.*;
 @Security.Authenticated(Secured.class)
 public class CtrlResource extends Controller {
   
-  static private Form<Resource> resourceForm = form(Resource.class);
+  static private Form<Resource> resourceForm = Form.form(Resource.class);
   
  // @CheckPermissions(type = Resource.class)
   public static Result get(Long id) {

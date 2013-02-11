@@ -59,7 +59,7 @@ public class Proxy extends Controller {
                 else if (method.equals("POST")) { promise = request.post(body); }
                 else if (method.equals("PUT")) { promise = request.put(body); }
                 else if (method.equals("DELETE")) { promise = request.delete(); }
-                Response response = promise.getWrappedPromise().await(10000, TimeUnit.MILLISECONDS).get();
+                Response response = Akka.asPromise(promise.getWrappedPromise()).get(10000L, TimeUnit.MILLISECONDS);
                 String encoding = response.getHeader("Content-encoding"); 
                 Logger.info("[Proxy] got response for: " + method + ", to: " + url + ", encoding: " + encoding + ", body: " + response.getBody().length() + " bytes");
                 String body = response.getBody();

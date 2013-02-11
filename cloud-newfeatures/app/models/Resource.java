@@ -154,7 +154,6 @@ public class Resource extends Model implements Comparable<Resource> {
 	}
 
 	public static Resource getByLabel(User user, String label) {
-		Logger.info("getByLabel() finding label "+label);
 		return find.where().eq("user", user).eq("label",label).orderBy("label")
 				.findUnique();
 	}
