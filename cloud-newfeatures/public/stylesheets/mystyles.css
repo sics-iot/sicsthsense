@@ -8,7 +8,7 @@ pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
 .texttt { font-family: inconsolata, monospace; }
 .update { color: #4F75AF; }
 .delete { color: #ff7140; }
-.rightControl { float: right; }
+.rightControl { float: right; padding-right: 150px; }
 .logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
 .error {
 	margin: 10px 0px 10px 0px;

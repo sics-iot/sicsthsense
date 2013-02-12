@@ -1,0 +1,747 @@
+2013-02-11 23:20:56,910 - [INFO] - from play in main 
+Listening for HTTP on /0:0:0:0:0:0:0:0:9000
+
+2013-02-11 23:20:59,132 - [INFO] - from play in New I/O  worker #1 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:20:59,628 - [ERROR] - from application in New I/O  worker #1 
+
+
+! @6dad3k2gd - Internal server error, for (GET) [/] ->
+
+play.api.db.evolutions.InvalidDatabaseRevision: Database 'default' needs evolution![An SQL script need to be run on your database.]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1$$anonfun$apply$1.apply$mcV$sp(Evolutions.scala:457) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin.withLock(Evolutions.scala:478) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1.apply(Evolutions.scala:434) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1.apply(Evolutions.scala:432) ~[play-jdbc_2.10.jar:2.1.0]
+	at scala.collection.immutable.List.foreach(List.scala:309) ~[scala-library.jar:na]
+	at play.api.db.evolutions.EvolutionsPlugin.onStart(Evolutions.scala:432) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1$$anonfun$apply$mcV$sp$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1$$anonfun$apply$mcV$sp$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at scala.collection.immutable.List.foreach(List.scala:309) ~[scala-library.jar:na]
+	at play.api.Play$$anonfun$start$1.apply$mcV$sp(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:18) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$.start(Play.scala:62) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1$$anonfun$1.apply(ApplicationProvider.scala:133) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1$$anonfun$1.apply(ApplicationProvider.scala:106) ~[play_2.10.jar:2.1.0]
+	at scala.Option.map(Option.scala:145) ~[scala-library.jar:na]
+	at play.core.ReloadableApplication$$anonfun$get$1.apply(ApplicationProvider.scala:106) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1.apply(ApplicationProvider.scala:104) ~[play_2.10.jar:2.1.0]
+	at scala.util.Either$RightProjection.flatMap(Either.scala:523) [scala-library.jar:na]
+	at play.core.ReloadableApplication.get(ApplicationProvider.scala:104) ~[play_2.10.jar:2.1.0]
+	at play.core.server.Server$class.sendHandler$1(Server.scala:56) [play_2.10.jar:2.1.0]
+	at play.core.server.Server$$anonfun$getHandlerFor$4.apply(Server.scala:88) [play_2.10.jar:2.1.0]
+	at play.core.server.Server$$anonfun$getHandlerFor$4.apply(Server.scala:87) [play_2.10.jar:2.1.0]
+	at scala.util.Either$RightProjection.flatMap(Either.scala:523) [scala-library.jar:na]
+	at play.core.server.Server$class.getHandlerFor(Server.scala:87) [play_2.10.jar:2.1.0]
+	at play.core.server.NettyServer.getHandlerFor(NettyServer.scala:34) [play_2.10.jar:2.1.0]
+	at play.core.server.netty.PlayDefaultUpstreamHandler.messageReceived(PlayDefaultUpstreamHandler.scala:103) [play_2.10.jar:2.1.0]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:793) [netty.jar:na]
+	at org.jboss.netty.handler.codec.http.HttpContentDecoder.messageReceived(HttpContentDecoder.java:104) [netty.jar:na]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:793) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296) [netty.jar:na]
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.unfoldAndFireMessageReceived(FrameDecoder.java:455) [netty.jar:na]
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:538) [netty.jar:na]
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:437) [netty.jar:na]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:560) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:84) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.AbstractNioWorker.processSelectedKeys(AbstractNioWorker.java:472) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.AbstractNioWorker.run(AbstractNioWorker.java:333) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:35) [netty.jar:na]
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:102) [netty.jar:na]
+	at org.jboss.netty.util.internal.DeadLockProofWorker$1.run(DeadLockProofWorker.java:42) [netty.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110) [na:1.7.0_12-ea]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603) [na:1.7.0_12-ea]
+	at java.lang.Thread.run(Thread.java:722) [na:1.7.0_12-ea]
+
+2013-02-11 23:20:59,912 - [ERROR] - from application in New I/O  worker #1 
+
+
+! @6dad3k2gd - Internal server error, for (GET) [/] ->
+
+play.api.db.evolutions.InvalidDatabaseRevision: Database 'default' needs evolution![An SQL script need to be run on your database.]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1$$anonfun$apply$1.apply$mcV$sp(Evolutions.scala:457) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin.withLock(Evolutions.scala:478) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1.apply(Evolutions.scala:434) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.db.evolutions.EvolutionsPlugin$$anonfun$onStart$1.apply(Evolutions.scala:432) ~[play-jdbc_2.10.jar:2.1.0]
+	at scala.collection.immutable.List.foreach(List.scala:309) ~[scala-library.jar:na]
+	at play.api.db.evolutions.EvolutionsPlugin.onStart(Evolutions.scala:432) ~[play-jdbc_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1$$anonfun$apply$mcV$sp$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1$$anonfun$apply$mcV$sp$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at scala.collection.immutable.List.foreach(List.scala:309) ~[scala-library.jar:na]
+	at play.api.Play$$anonfun$start$1.apply$mcV$sp(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$$anonfun$start$1.apply(Play.scala:63) ~[play_2.10.jar:2.1.0]
+	at play.utils.Threads$.withContextClassLoader(Threads.scala:18) ~[play_2.10.jar:2.1.0]
+	at play.api.Play$.start(Play.scala:62) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1$$anonfun$1.apply(ApplicationProvider.scala:133) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1$$anonfun$1.apply(ApplicationProvider.scala:106) ~[play_2.10.jar:2.1.0]
+	at scala.Option.map(Option.scala:145) ~[scala-library.jar:na]
+	at play.core.ReloadableApplication$$anonfun$get$1.apply(ApplicationProvider.scala:106) ~[play_2.10.jar:2.1.0]
+	at play.core.ReloadableApplication$$anonfun$get$1.apply(ApplicationProvider.scala:104) ~[play_2.10.jar:2.1.0]
+	at scala.util.Either$RightProjection.flatMap(Either.scala:523) [scala-library.jar:na]
+	at play.core.ReloadableApplication.get(ApplicationProvider.scala:104) ~[play_2.10.jar:2.1.0]
+	at play.core.server.Server$class.sendHandler$1(Server.scala:56) [play_2.10.jar:2.1.0]
+	at play.core.server.Server$$anonfun$getHandlerFor$4.apply(Server.scala:88) [play_2.10.jar:2.1.0]
+	at play.core.server.Server$$anonfun$getHandlerFor$4.apply(Server.scala:87) [play_2.10.jar:2.1.0]
+	at scala.util.Either$RightProjection.flatMap(Either.scala:523) [scala-library.jar:na]
+	at play.core.server.Server$class.getHandlerFor(Server.scala:87) [play_2.10.jar:2.1.0]
+	at play.core.server.NettyServer.getHandlerFor(NettyServer.scala:34) [play_2.10.jar:2.1.0]
+	at play.core.server.netty.PlayDefaultUpstreamHandler.messageReceived(PlayDefaultUpstreamHandler.scala:103) [play_2.10.jar:2.1.0]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:793) [netty.jar:na]
+	at org.jboss.netty.handler.codec.http.HttpContentDecoder.messageReceived(HttpContentDecoder.java:104) [netty.jar:na]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:793) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:296) [netty.jar:na]
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.unfoldAndFireMessageReceived(FrameDecoder.java:455) [netty.jar:na]
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:538) [netty.jar:na]
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:437) [netty.jar:na]
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:75) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:565) [netty.jar:na]
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:560) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268) [netty.jar:na]
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:84) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.AbstractNioWorker.processSelectedKeys(AbstractNioWorker.java:472) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.AbstractNioWorker.run(AbstractNioWorker.java:333) [netty.jar:na]
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:35) [netty.jar:na]
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:102) [netty.jar:na]
+	at org.jboss.netty.util.internal.DeadLockProofWorker$1.run(DeadLockProofWorker.java:42) [netty.jar:na]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1110) [na:1.7.0_12-ea]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603) [na:1.7.0_12-ea]
+	at java.lang.Thread.run(Thread.java:722) [na:1.7.0_12-ea]
+
+2013-02-11 23:21:02,750 - [INFO] - from application in New I/O  worker #1 
+Application shutdown...
+
+2013-02-11 23:21:02,787 - [INFO] - from play in New I/O  worker #1 
+Starting application default Akka system.
+
+2013-02-11 23:21:02,787 - [INFO] - from play in New I/O  worker #1 
+Shutdown application default Akka system.
+
+2013-02-11 23:21:02,986 - [INFO] - from play in New I/O  worker #1 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:21:03,094 - [INFO] - from application in New I/O  worker #1 
+Application has started
+
+2013-02-11 23:21:03,105 - [INFO] - from play in New I/O  worker #1 
+Starting application default Akka system.
+
+2013-02-11 23:21:03,113 - [INFO] - from play in New I/O  worker #1 
+Application started (Dev)
+
+2013-02-11 23:21:07,589 - [INFO] - from application in play-akka.actor.default-dispatcher-6 
+created
+
+2013-02-11 23:21:07,590 - [INFO] - from application in play-akka.actor.default-dispatcher-6 
+ok
+
+2013-02-11 23:23:20,269 - [INFO] - from application in New I/O  worker #2 
+Application shutdown...
+
+2013-02-11 23:23:20,269 - [INFO] - from play in New I/O  worker #2 
+Shutdown application default Akka system.
+
+2013-02-11 23:23:20,332 - [INFO] - from play in New I/O  worker #2 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:23:20,413 - [INFO] - from application in New I/O  worker #2 
+Application has started
+
+2013-02-11 23:23:20,421 - [INFO] - from play in New I/O  worker #2 
+Starting application default Akka system.
+
+2013-02-11 23:23:20,422 - [INFO] - from play in New I/O  worker #2 
+Application started (Dev)
+
+2013-02-11 23:31:39,578 - [INFO] - from application in New I/O  worker #5 
+Application shutdown...
+
+2013-02-11 23:31:39,578 - [INFO] - from play in New I/O  worker #5 
+Shutdown application default Akka system.
+
+2013-02-11 23:31:39,673 - [INFO] - from play in New I/O  worker #5 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:31:39,750 - [INFO] - from application in New I/O  worker #5 
+Application has started
+
+2013-02-11 23:31:39,757 - [INFO] - from play in New I/O  worker #5 
+Starting application default Akka system.
+
+2013-02-11 23:31:39,759 - [INFO] - from play in New I/O  worker #5 
+Application started (Dev)
+
+2013-02-11 23:34:10,901 - [INFO] - from application in New I/O  worker #5 
+Application shutdown...
+
+2013-02-11 23:34:10,901 - [INFO] - from play in New I/O  worker #5 
+Shutdown application default Akka system.
+
+2013-02-11 23:34:10,964 - [INFO] - from play in New I/O  worker #5 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:34:11,038 - [INFO] - from application in New I/O  worker #5 
+Application has started
+
+2013-02-11 23:34:11,046 - [INFO] - from play in New I/O  worker #5 
+Starting application default Akka system.
+
+2013-02-11 23:34:11,047 - [INFO] - from play in New I/O  worker #5 
+Application started (Dev)
+
+2013-02-11 23:36:39,432 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-11 23:36:39,432 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-11 23:36:39,493 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:36:39,555 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-11 23:36:39,562 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-11 23:36:39,564 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-11 23:38:00,706 - [INFO] - from application in New I/O  worker #7 
+Application shutdown...
+
+2013-02-11 23:38:00,707 - [INFO] - from play in New I/O  worker #7 
+Shutdown application default Akka system.
+
+2013-02-11 23:38:00,764 - [INFO] - from play in New I/O  worker #7 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:38:00,819 - [INFO] - from application in New I/O  worker #7 
+Application has started
+
+2013-02-11 23:38:00,825 - [INFO] - from play in New I/O  worker #7 
+Starting application default Akka system.
+
+2013-02-11 23:38:00,826 - [INFO] - from play in New I/O  worker #7 
+Application started (Dev)
+
+2013-02-11 23:39:03,114 - [INFO] - from application in New I/O  worker #5 
+Application shutdown...
+
+2013-02-11 23:39:03,115 - [INFO] - from play in New I/O  worker #5 
+Shutdown application default Akka system.
+
+2013-02-11 23:39:03,507 - [INFO] - from play in New I/O  worker #5 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:39:03,563 - [INFO] - from application in New I/O  worker #5 
+Application has started
+
+2013-02-11 23:39:03,570 - [INFO] - from play in New I/O  worker #5 
+Starting application default Akka system.
+
+2013-02-11 23:39:03,571 - [INFO] - from play in New I/O  worker #5 
+Application started (Dev)
+
+2013-02-11 23:39:30,160 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-11 23:39:30,161 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-11 23:39:30,213 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:39:30,269 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-11 23:39:30,276 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-11 23:39:30,277 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-11 23:42:38,867 - [INFO] - from application in New I/O  worker #10 
+Application shutdown...
+
+2013-02-11 23:42:38,868 - [INFO] - from play in New I/O  worker #10 
+Shutdown application default Akka system.
+
+2013-02-11 23:42:38,919 - [INFO] - from play in New I/O  worker #10 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:42:38,980 - [INFO] - from application in New I/O  worker #10 
+Application has started
+
+2013-02-11 23:42:38,986 - [INFO] - from play in New I/O  worker #10 
+Starting application default Akka system.
+
+2013-02-11 23:42:38,987 - [INFO] - from play in New I/O  worker #10 
+Application started (Dev)
+
+2013-02-11 23:58:52,039 - [INFO] - from application in New I/O  worker #7 
+Application shutdown...
+
+2013-02-11 23:58:52,040 - [INFO] - from play in New I/O  worker #7 
+Shutdown application default Akka system.
+
+2013-02-11 23:58:52,132 - [INFO] - from play in New I/O  worker #7 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:58:52,187 - [INFO] - from application in New I/O  worker #7 
+Application has started
+
+2013-02-11 23:58:52,193 - [INFO] - from play in New I/O  worker #7 
+Starting application default Akka system.
+
+2013-02-11 23:58:52,194 - [INFO] - from play in New I/O  worker #7 
+Application started (Dev)
+
+2013-02-11 23:59:15,679 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-11 23:59:15,680 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-11 23:59:16,059 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-11 23:59:16,159 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-11 23:59:16,165 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-11 23:59:16,166 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 00:00:17,141 - [INFO] - from application in New I/O  worker #11 
+Application shutdown...
+
+2013-02-12 00:00:17,142 - [INFO] - from play in New I/O  worker #11 
+Shutdown application default Akka system.
+
+2013-02-12 00:00:17,191 - [INFO] - from play in New I/O  worker #11 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:00:17,247 - [INFO] - from application in New I/O  worker #11 
+Application has started
+
+2013-02-12 00:00:17,254 - [INFO] - from play in New I/O  worker #11 
+Starting application default Akka system.
+
+2013-02-12 00:00:17,255 - [INFO] - from play in New I/O  worker #11 
+Application started (Dev)
+
+2013-02-12 00:00:32,545 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-12 00:00:32,545 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-12 00:00:32,924 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:00:32,981 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-12 00:00:32,987 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-12 00:00:32,989 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 00:00:52,877 - [INFO] - from application in New I/O  worker #7 
+Application shutdown...
+
+2013-02-12 00:00:52,878 - [INFO] - from play in New I/O  worker #7 
+Shutdown application default Akka system.
+
+2013-02-12 00:00:53,260 - [INFO] - from play in New I/O  worker #7 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:00:53,315 - [INFO] - from application in New I/O  worker #7 
+Application has started
+
+2013-02-12 00:00:53,322 - [INFO] - from play in New I/O  worker #7 
+Starting application default Akka system.
+
+2013-02-12 00:00:53,324 - [INFO] - from play in New I/O  worker #7 
+Application started (Dev)
+
+2013-02-12 00:01:53,031 - [INFO] - from application in New I/O  worker #5 
+Application shutdown...
+
+2013-02-12 00:01:53,032 - [INFO] - from play in New I/O  worker #5 
+Shutdown application default Akka system.
+
+2013-02-12 00:01:53,124 - [INFO] - from play in New I/O  worker #5 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:01:53,184 - [INFO] - from application in New I/O  worker #5 
+Application has started
+
+2013-02-12 00:01:53,191 - [INFO] - from play in New I/O  worker #5 
+Starting application default Akka system.
+
+2013-02-12 00:01:53,192 - [INFO] - from play in New I/O  worker #5 
+Application started (Dev)
+
+2013-02-12 00:03:21,278 - [INFO] - from application in New I/O  worker #7 
+Application shutdown...
+
+2013-02-12 00:03:21,278 - [INFO] - from play in New I/O  worker #7 
+Shutdown application default Akka system.
+
+2013-02-12 00:03:21,329 - [INFO] - from play in New I/O  worker #7 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:03:21,384 - [INFO] - from application in New I/O  worker #7 
+Application has started
+
+2013-02-12 00:03:21,391 - [INFO] - from play in New I/O  worker #7 
+Starting application default Akka system.
+
+2013-02-12 00:03:21,392 - [INFO] - from play in New I/O  worker #7 
+Application started (Dev)
+
+2013-02-12 00:09:23,171 - [INFO] - from application in New I/O  worker #12 
+Application shutdown...
+
+2013-02-12 00:09:23,172 - [INFO] - from play in New I/O  worker #12 
+Shutdown application default Akka system.
+
+2013-02-12 00:09:23,389 - [INFO] - from play in New I/O  worker #12 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:09:23,441 - [INFO] - from application in New I/O  worker #12 
+Application has started
+
+2013-02-12 00:09:23,447 - [INFO] - from play in New I/O  worker #12 
+Starting application default Akka system.
+
+2013-02-12 00:09:23,448 - [INFO] - from play in New I/O  worker #12 
+Application started (Dev)
+
+2013-02-12 00:19:32,583 - [INFO] - from application in New I/O  worker #1 
+Application shutdown...
+
+2013-02-12 00:19:32,583 - [INFO] - from play in New I/O  worker #1 
+Shutdown application default Akka system.
+
+2013-02-12 00:19:32,657 - [INFO] - from play in New I/O  worker #1 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:19:32,720 - [INFO] - from application in New I/O  worker #1 
+Application has started
+
+2013-02-12 00:19:32,728 - [INFO] - from play in New I/O  worker #1 
+Starting application default Akka system.
+
+2013-02-12 00:19:32,729 - [INFO] - from play in New I/O  worker #1 
+Application started (Dev)
+
+2013-02-12 00:20:49,519 - [INFO] - from application in New I/O  worker #1 
+Application shutdown...
+
+2013-02-12 00:20:49,519 - [INFO] - from play in New I/O  worker #1 
+Shutdown application default Akka system.
+
+2013-02-12 00:20:49,664 - [INFO] - from play in New I/O  worker #1 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:20:49,715 - [INFO] - from application in New I/O  worker #1 
+Application has started
+
+2013-02-12 00:20:49,721 - [INFO] - from play in New I/O  worker #1 
+Starting application default Akka system.
+
+2013-02-12 00:20:49,722 - [INFO] - from play in New I/O  worker #1 
+Application started (Dev)
+
+2013-02-12 00:30:15,260 - [INFO] - from application in New I/O  worker #2 
+Application shutdown...
+
+2013-02-12 00:30:15,261 - [INFO] - from play in New I/O  worker #2 
+Shutdown application default Akka system.
+
+2013-02-12 00:30:15,469 - [INFO] - from play in New I/O  worker #2 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 00:30:15,567 - [INFO] - from application in New I/O  worker #2 
+Application has started
+
+2013-02-12 00:30:15,573 - [INFO] - from play in New I/O  worker #2 
+Starting application default Akka system.
+
+2013-02-12 00:30:15,574 - [INFO] - from play in New I/O  worker #2 
+Application started (Dev)
+
+2013-02-12 09:28:22,245 - [INFO] - from application in New I/O  worker #8 
+Application shutdown...
+
+2013-02-12 09:28:22,246 - [INFO] - from play in New I/O  worker #8 
+Shutdown application default Akka system.
+
+2013-02-12 09:28:22,326 - [INFO] - from play in New I/O  worker #8 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:28:22,381 - [INFO] - from application in New I/O  worker #8 
+Application has started
+
+2013-02-12 09:28:22,387 - [INFO] - from play in New I/O  worker #8 
+Starting application default Akka system.
+
+2013-02-12 09:28:22,389 - [INFO] - from play in New I/O  worker #8 
+Application started (Dev)
+
+2013-02-12 09:29:00,014 - [INFO] - from application in New I/O  worker #11 
+Application shutdown...
+
+2013-02-12 09:29:00,015 - [INFO] - from play in New I/O  worker #11 
+Shutdown application default Akka system.
+
+2013-02-12 09:29:00,051 - [INFO] - from play in New I/O  worker #11 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:29:00,105 - [INFO] - from application in New I/O  worker #11 
+Application has started
+
+2013-02-12 09:29:00,110 - [INFO] - from play in New I/O  worker #11 
+Starting application default Akka system.
+
+2013-02-12 09:29:00,111 - [INFO] - from play in New I/O  worker #11 
+Application started (Dev)
+
+2013-02-12 09:32:37,122 - [INFO] - from application in New I/O  worker #12 
+Application shutdown...
+
+2013-02-12 09:32:37,124 - [INFO] - from play in New I/O  worker #12 
+Shutdown application default Akka system.
+
+2013-02-12 09:32:37,228 - [INFO] - from play in New I/O  worker #12 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:32:37,279 - [INFO] - from application in New I/O  worker #12 
+Application has started
+
+2013-02-12 09:32:37,284 - [INFO] - from play in New I/O  worker #12 
+Starting application default Akka system.
+
+2013-02-12 09:32:37,285 - [INFO] - from play in New I/O  worker #12 
+Application started (Dev)
+
+2013-02-12 09:37:22,016 - [INFO] - from application in New I/O  worker #11 
+Application shutdown...
+
+2013-02-12 09:37:22,017 - [INFO] - from play in New I/O  worker #11 
+Shutdown application default Akka system.
+
+2013-02-12 09:37:22,154 - [INFO] - from play in New I/O  worker #11 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:37:22,209 - [INFO] - from application in New I/O  worker #11 
+Application has started
+
+2013-02-12 09:37:22,215 - [INFO] - from play in New I/O  worker #11 
+Starting application default Akka system.
+
+2013-02-12 09:37:22,216 - [INFO] - from play in New I/O  worker #11 
+Application started (Dev)
+
+2013-02-12 09:37:45,754 - [INFO] - from application in New I/O  worker #12 
+Application shutdown...
+
+2013-02-12 09:37:45,754 - [INFO] - from play in New I/O  worker #12 
+Shutdown application default Akka system.
+
+2013-02-12 09:37:45,885 - [INFO] - from play in New I/O  worker #12 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:37:45,938 - [INFO] - from application in New I/O  worker #12 
+Application has started
+
+2013-02-12 09:37:45,943 - [INFO] - from play in New I/O  worker #12 
+Starting application default Akka system.
+
+2013-02-12 09:37:45,944 - [INFO] - from play in New I/O  worker #12 
+Application started (Dev)
+
+2013-02-12 09:39:13,214 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-12 09:39:13,215 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-12 09:39:13,348 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:39:13,400 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-12 09:39:13,405 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-12 09:39:13,406 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 09:49:11,196 - [INFO] - from application in New I/O  worker #12 
+Application shutdown...
+
+2013-02-12 09:49:11,197 - [INFO] - from play in New I/O  worker #12 
+Shutdown application default Akka system.
+
+2013-02-12 09:49:11,338 - [INFO] - from play in New I/O  worker #12 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:49:11,387 - [INFO] - from application in New I/O  worker #12 
+Application has started
+
+2013-02-12 09:49:11,392 - [INFO] - from play in New I/O  worker #12 
+Starting application default Akka system.
+
+2013-02-12 09:49:11,393 - [INFO] - from play in New I/O  worker #12 
+Application started (Dev)
+
+2013-02-12 09:49:19,876 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-12 09:49:19,876 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-12 09:49:20,011 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:49:20,059 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-12 09:49:20,065 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-12 09:49:20,066 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 09:49:47,835 - [INFO] - from application in New I/O  worker #8 
+Application shutdown...
+
+2013-02-12 09:49:47,836 - [INFO] - from play in New I/O  worker #8 
+Shutdown application default Akka system.
+
+2013-02-12 09:49:47,964 - [INFO] - from play in New I/O  worker #8 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:49:48,016 - [INFO] - from application in New I/O  worker #8 
+Application has started
+
+2013-02-12 09:49:48,021 - [INFO] - from play in New I/O  worker #8 
+Starting application default Akka system.
+
+2013-02-12 09:49:48,022 - [INFO] - from play in New I/O  worker #8 
+Application started (Dev)
+
+2013-02-12 09:50:10,000 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-12 09:50:10,001 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-12 09:50:10,148 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:50:10,199 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-12 09:50:10,204 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-12 09:50:10,205 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 09:52:19,749 - [INFO] - from application in New I/O  worker #13 
+Application shutdown...
+
+2013-02-12 09:52:19,750 - [INFO] - from play in New I/O  worker #13 
+Shutdown application default Akka system.
+
+2013-02-12 09:52:19,879 - [INFO] - from play in New I/O  worker #13 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:52:19,931 - [INFO] - from application in New I/O  worker #13 
+Application has started
+
+2013-02-12 09:52:19,936 - [INFO] - from play in New I/O  worker #13 
+Starting application default Akka system.
+
+2013-02-12 09:52:19,937 - [INFO] - from play in New I/O  worker #13 
+Application started (Dev)
+
+2013-02-12 09:52:43,644 - [INFO] - from application in New I/O  worker #9 
+Application shutdown...
+
+2013-02-12 09:52:43,645 - [INFO] - from play in New I/O  worker #9 
+Shutdown application default Akka system.
+
+2013-02-12 09:52:43,765 - [INFO] - from play in New I/O  worker #9 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:52:43,817 - [INFO] - from application in New I/O  worker #9 
+Application has started
+
+2013-02-12 09:52:43,853 - [INFO] - from play in New I/O  worker #9 
+Starting application default Akka system.
+
+2013-02-12 09:52:43,854 - [INFO] - from play in New I/O  worker #9 
+Application started (Dev)
+
+2013-02-12 09:52:58,777 - [INFO] - from application in New I/O  worker #8 
+Application shutdown...
+
+2013-02-12 09:52:58,778 - [INFO] - from play in New I/O  worker #8 
+Shutdown application default Akka system.
+
+2013-02-12 09:52:58,896 - [INFO] - from play in New I/O  worker #8 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 09:52:58,949 - [INFO] - from application in New I/O  worker #8 
+Application has started
+
+2013-02-12 09:52:58,955 - [INFO] - from play in New I/O  worker #8 
+Starting application default Akka system.
+
+2013-02-12 09:52:58,956 - [INFO] - from play in New I/O  worker #8 
+Application started (Dev)
+
+2013-02-12 11:39:15,361 - [INFO] - from application in New I/O  worker #14 
+Application shutdown...
+
+2013-02-12 11:39:15,362 - [INFO] - from play in New I/O  worker #14 
+Shutdown application default Akka system.
+
+2013-02-12 11:39:15,492 - [INFO] - from play in New I/O  worker #14 
+database [default] connected at jdbc:h2:~/sicsthsensedb.db
+
+2013-02-12 11:39:15,541 - [INFO] - from application in New I/O  worker #14 
+Application has started
+
+2013-02-12 11:39:15,547 - [INFO] - from play in New I/O  worker #14 
+Starting application default Akka system.
+
+2013-02-12 11:39:15,548 - [INFO] - from play in New I/O  worker #14 
+Application started (Dev)
+

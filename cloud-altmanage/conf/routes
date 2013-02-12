@@ -1,0 +1,108 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Pages
+GET        /authenticate                         controllers.Login.authenticate(openid_identifier: String)
+GET        /openIDCallback                       controllers.Login.openIDCallback()
+GET        /logout                               controllers.Login.logout()
+GET        /                                     controllers.Application.home()
+GET        /search                               controllers.Application.search()
+GET        /manage                               controllers.Application.manage()
+GET        /API                                  controllers.Public.about()
+
+# Accounts
+GET        /account                              controllers.CtrlUser.get()
+GET        /account/edit                         controllers.CtrlUser.edit()
+GET        /account/submit                       controllers.CtrlUser.submit()
+
+# End points
+GET        /endpoints/add                        controllers.CtrlEndPoint.add()
+GET        /endpoints/:id                        controllers.CtrlEndPoint.get(id: Long)
+GET        /endpoints/:id/edit                   controllers.CtrlEndPoint.edit(id: Long)
+GET        /endpoints/:id/delete                 controllers.CtrlEndPoint.delete(id: Long)
+GET        /endpoints/:id/submit                 controllers.CtrlEndPoint.submit(id: Long)
+GET        /endpoints/:id/discover               controllers.CtrlEndPoint.discover(id: Long)
+GET        /endpoints/:id/addResource            controllers.CtrlEndPoint.addResource(id: Long)
+GET        /endpoints/:id/follow                 controllers.CtrlEndPoint.follow(id: Long)
+GET        /endpoints/:id/unfollow               controllers.CtrlEndPoint.unfollow(id: Long)
+GET        /endpoints/:id/toggleFollow           controllers.CtrlEndPoint.toggleFollow(id: Long)
+GET        /endpoints/:id/isFollowing            controllers.CtrlEndPoint.isFollowing(id: Long)
+
+# Resources
+# This way the id is exposed as a queryString in the url, i.e. /resources/?id=1
+#  therefore, I can get it from the Http.Context easily.
+# Probably I'm going to make others like this
+# I might have to keep the parameters names defined as constants in some other file
+#  to make it easier to modify later...
+#GET        /resources/                       controllers.CtrlResource.get(id: Long)
+#GET        /resources/delete                 controllers.CtrlResource.delete(id: Long)
+#GET        /resources/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+#GET        /resources/clearStream            controllers.CtrlResource.clearStream(id: Long)
+#GET        /resources/follow                 controllers.CtrlResource.follow(id: Long)
+#GET        /resources/unfollow               controllers.CtrlResource.unfollow(id: Long)
+#GET        /resources/toggleFollow           controllers.CtrlResource.toggleFollow(id: Long)
+#GET        /resources/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+#GET				 /resources/setPublicAccess				 controllers.CtrlResource.setPublicAccess(id: Long)
+#GET				 /resources/removePublicAccess		 controllers.CtrlResource.removePublicAccess(id: Long)
+#GET				 /resources/isPublicAccess				 controllers.CtrlResource.isPublicAccess(id: Long)
+#GET				 /resources/togglePublicAccess		 controllers.CtrlResource.togglePublicAccess(id: Long)
+#GET				 /resources/setPublicAccess				 controllers.CtrlResource.togglePublicAccess(id: Long, access: Boolean)
+
+
+# Resources
+# with ID shown in the url
+GET        /resources/:id                      	 controllers.CtrlResource.get(id: Long)
+GET        /resources/:id/delete                 controllers.CtrlResource.delete(id: Long)
+DELETE     /resources/:id 			                 controllers.CtrlResource.delete(id: Long)
+GET        /resources/:id/setPeriod              controllers.CtrlResource.setPeriod(id: Long, period: Long)
+GET        /resources/:id/setLabel				controllers.CtrlResource.setLabelName(id: Long, label: String)
+GET        /resources/:id/setInputParser         controllers.CtrlResource.setInputParser(id: Long, parser: String)
+GET        /resources/:id/clearStream            controllers.CtrlResource.clearStream(id: Long)
+GET        /resources/:id/follow                 controllers.CtrlResource.follow(id: Long)
+GET        /resources/:id/unfollow               controllers.CtrlResource.unfollow(id: Long)
+GET        /resources/:id/togglefollow           controllers.CtrlResource.toggleFollow(id: Long)
+GET        /resources/:id/isFollowing            controllers.CtrlResource.isFollowing(id: Long)
+GET				 /resources/:id/setPublicAccess				 controllers.CtrlResource.setPublicAccess(id: Long)
+GET				 /resources/:id/removePublicAccess		 controllers.CtrlResource.removePublicAccess(id: Long)
+GET				 /resources/:id/isPublicAccess				 controllers.CtrlResource.isPublicAccess(id: Long)
+GET				 /resources/:id/togglePublicAccess		 controllers.CtrlResource.togglePublicAccess(id: Long)
+GET				 /resources/:id/specifyPublicAccess/:access	 controllers.CtrlResource.specifyPublicAccess(id: Long, access: Boolean)
+
+# Streams
+GET        /streams/:user/:endpoint/$path<.*>    controllers.Streams.getSecured(user: String, endpoint: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:user/:endpoint              controllers.Streams.getSecured(user: String, endpoint: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /streams/:user/:endpoint/$path<.*>    controllers.Streams.post(user: String, endpoint: String, path: String)
+POST       /streams/:user/:endpoint              controllers.Streams.post(user: String, endpoint: String, path: String ?= "")
+
+# Proxy
+GET        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+POST       /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+PUT        /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+DELETE     /proxy/:user/:endpoint/$path<.*>      controllers.Proxy.forwardByPath(user: String, endpoint: String, path: String)
+
+GET        /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+POST       /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+PUT        /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+DELETE     /proxy/:id                            controllers.Proxy.forwardById(id: Long, arguments: String)
+
+# Json inspection
+#GET        /users                                controllers.JsonInspect.getUserList()
+#GET        /users/:user                          controllers.JsonInspect.getUser(user: String)
+#GET        /endpoints/:user/:endpoint            controllers.JsonInspect.getEndPoint(user: String, endpoint: String)
+#GET        /resources/:user/:endpoint/$path<.*>  controllers.JsonInspect.getResource(user: String, endpoint: String, path: String)
+#GET        /db/                                  controllers.CtrlDataBase.getJson()
+
+# Dummy thing
+GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
+GET         /dummy/:id/sensors                   controllers.DummyThing.sensors(id: Long)
+GET         /dummy/:id/sensors/temperature       controllers.DummyThing.temperature(id: Long)
+GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(id: Long)
+POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
+
+# Javascript Routes
+GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file                controllers.Assets.at(path="/public", file)
+

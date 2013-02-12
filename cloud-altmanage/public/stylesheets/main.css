@@ -1,0 +1,112 @@
+body { color: #222; font-family: arial, sans-serif; font-size: 12pt; }
+h1, h2, h3, h4 { color: #444; padding: 0; margin: 0.6em 0 0.2em 0; clear:both; }
+h1 { font-size: 1.7em; }
+h2 { font-size: 1.3em; }
+h3 { font-size: 1.2em; }
+
+a img { border-width: 0px; }
+p { margin: 0 0 0.5em 0; }
+ul { margin: 0 0 0 2em; padding: 0; }
+
+a { text-decoration: none; color: #4F75AF; }
+a:hover { color: #000; }
+code { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
+	border: 1px solid #ddd; border-radius: 3px; height: 4px; padding: 0; }
+pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
+  border: 1px solid #ddd; border-radius: 3px; padding: .2em; }
+
+body { background-color: #fafafa; }
+
+#header { background-color: #333; }
+#header h1 { color: #eee; padding: 0; margin: 0; text-align: center; 
+  font-size: 40pt; text-shadow: 4px 4px 4px #000;
+  font-family: georgia, palatino, pala, serif; font-weight:bold; font-style: italic; }
+#header ul { max-width: 800px; margin: 0 auto; padding: 0 0 4px 0; font-size: 1.2em; }
+#header ul li { display: inline; padding-right: 30px; text-shadow: 2px 2px 2px #000; }
+#header a { color: #dddddd; }
+#header a:hover { color: #ffffff; }
+
+#content { max-width: 800px; margin: 16px auto; padding: 0; }
+.inputL { height: 2em; padding: 0; width: 89%; }
+.buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 10%;}
+.buttonG { border: 1px solid #888; background-color: #eee; border-radius: 6px; }
+.texttt { font-family: inconsolata, monospace; }
+.update { color: #4F75AF; }
+.delete { color: #ff7140; }
+.rightControl { float: right; }
+.logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
+.error {
+	margin: 10px 0px 10px 0px;
+	font-size: 20pt; text-shadow: 2px 2px 2px #000;
+	clear: both;
+	text-align: center;
+	float: center;
+	color: #ff5540;
+	height: 2em;
+	border: 2px solid #888;
+	background-color: #eee;
+}
+form { display: inline; }
+
+.sideinfo {
+	padding-left: 0.3em;
+	font-style: italic;
+	font-size: 0.8em;
+	color: #666;
+}
+
+fieldset { clear: both; }
+ 
+dl {
+	  margin: 0;
+	  padding: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+dt.action {
+    font-weight:normal; 
+}
+
+dt, dd {
+	  margin: 2px 0;
+	  min-height: 1.2em;
+}
+
+dt {
+    clear: both;
+    float: left;
+    min-width: 20%;
+    font-weight:bold;
+    text-align: right;
+}
+dd {
+    float: left;
+    margin-left: 0.5em;
+    max-width: 75%;
+}
+
+div.streamtitle {
+	font-weight:bold; 
+	margin: 0.6em 0 0.2em 0;
+	color: #444;
+}
+
+div.streamplot {
+	width:100%;
+	height:200px;
+	margin: 10px 0px 10px 0px;
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
+}
+
+span.streamconfig {
+	float: right;
+	text-align: right;
+	position: relative;
+	top: -240px;
+}
+
+.streamconfig input[type="radio"]:checked+label{
+	font-weight: bold;
+}
