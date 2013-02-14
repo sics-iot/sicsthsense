@@ -26,6 +26,9 @@ public class GenericSource extends UserOwnedResource {
   public GenericSource(User user) {
     super(user);
   }
+  public GenericSource() {
+    super();
+  }
   
   public static GenericSource create(User user) {
   	if(user != null){
@@ -38,9 +41,11 @@ public class GenericSource extends UserOwnedResource {
   
   public void setInputParser(String inputParser) {
 		this.inputParser = inputParser;
-//		if(this.id != 0) {
-//			this.update();
-//		}			
+		if(this.id != 0) {
+			this.update();
+		}			
 	}
+  
+  
 
 }

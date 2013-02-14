@@ -12,38 +12,29 @@ import com.avaje.ebean.*;
 
 import controllers.Utils;
 
+/** T could be any comparable type; i.e. Long, Double, String, etc. */
 @Entity 
-public class DataPoint extends Model implements Comparable<DataPoint> {
-  
-    /**
+public abstract class DataPoint extends Model implements Comparable<DataPoint> {
+
+		/**
 	 * 
 	 */
-	private static final long serialVersionUID = 159529385564134763L;
+	private static final long serialVersionUID = 2919758328697338009L;
 
 		@Id
     public Long id;
   
+		@Column(nullable = false)
     @ManyToOne 
     public Stream stream;
     
-    //should be a template to a type
-    ///we should support: Long, Double and String
-    public double data;
+    /** T could be any comparable type; i.e. Long, Double, String, etc. */   
     public long timestamp;
+    //public static final String type= T.getClass().ToString();
           
     public static Model.Finder<Long,DataPoint> find = new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
     
-    public DataPoint(Stream stream, double data, long timestamp) {
-      this.stream = stream;
-      this.data = data;
-      this.timestamp = timestamp;
-    }
-    
-    public static DataPoint add(Stream stream, double data, long timestamp) {
-      DataPoint dataPoint = new DataPoint(stream, data, timestamp);
-      dataPoint.save();
-      return dataPoint;
-    }
+    public abstract DataPoint add();
     
     public static long getCount() {
       return find.findRowCount();
@@ -66,14 +57,6 @@ public class DataPoint extends Model implements Comparable<DataPoint> {
           .findList();
 //      return set.subList(set.size()-(int)tail, set.size());
       return set;
-    }
-    
-    public static List<DataPoint> getByStreamSince(Resource stream, long since) {
-      return find.where()
-          .eq("resource", stream)
-          .ge("timestamp", since)
-          .orderBy("timestamp desc")
-          .findList();
     }
     
     public static List<DataPoint> getByStreamLast(Stream stream, long last) {

@@ -51,6 +51,10 @@ public class UserOwnedResource extends Model {
     this.user = user;
   }
   
+  public UserOwnedResource() {
+  	super();
+  }
+  
   /** Create a new instance and save it in the db*/
   public static UserOwnedResource create(User user) {
   	if(user != null){
