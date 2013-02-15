@@ -23,6 +23,16 @@ create table end_point (
   constraint pk_end_point primary key (id))
 ;
 
+create table file (
+  uuid                      bigint,
+  path                      varchar(255),
+  owner                     varchar(255),
+  type                      integer,
+  ref_id                    bigint,
+  constraint ck_file_type check (type in (0,1)),
+  constraint uq_file_1 unique (owner,path))
+;
+
 create table pipeline (
   id                        bigint not null,
   path                      varchar(255),
@@ -140,6 +150,8 @@ SET REFERENTIAL_INTEGRITY FALSE;
 drop table if exists data_point;
 
 drop table if exists end_point;
+
+drop table if exists file;
 
 drop table if exists pipeline;
 
