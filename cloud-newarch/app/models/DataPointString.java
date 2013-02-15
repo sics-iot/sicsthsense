@@ -1,10 +1,21 @@
 package models;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
 import javax.persistence.Transient;
 
 import com.avaje.ebean.validation.Length;
 
+@Entity
+@Inheritance
+@DiscriminatorValue("string")
 public class DataPointString extends DataPoint {
+
+	public DataPointString() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 

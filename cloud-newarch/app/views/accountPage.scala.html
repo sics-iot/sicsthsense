@@ -11,11 +11,11 @@
 
    @forms.form(routes.CtrlUser.submit()) {
 	    <dt>Mail</dt>
-	    <dd>@user.email</dd>
-	    @forms.input(userForm!=null, "text", "userName", "User name", user.userName)
-	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
-	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
-	    @forms.input(userForm!=null, "text", "location", "Location", user.location)
+	    <dd>@user.getEmail()</dd>
+	    @forms.input(userForm!=null, "text", "userName", "User name", user.getUserName())
+	    @forms.input(userForm!=null, "text", "firstName", "First name", user.getFirstName())
+	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.getLastName())
+	    @forms.input(userForm!=null, "text", "location", "Location", user.getLocation())
 	    @if(userForm!=null) { @forms.submit(userForm!=null, "Update") }
   }
   

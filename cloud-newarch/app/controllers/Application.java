@@ -1,7 +1,5 @@
 package controllers;
 
-import models.Resource;
-
 import play.*;
 
 import play.core.Router.Routes;

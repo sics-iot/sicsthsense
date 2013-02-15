@@ -5,6 +5,10 @@ import javax.persistence.*;
 
 import play.db.ebean.*;
 
+@Entity
+@Inheritance
+@DiscriminatorColumn(length=16)
+@DiscriminatorValue("generic_source")
 public class GenericSource extends UserOwnedResource {
 	 /**
 	 * The serialization runtime associates with each serializable class 

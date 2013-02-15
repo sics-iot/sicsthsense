@@ -9,6 +9,9 @@ import com.avaje.ebean.annotation.EnumValue;
 import play.mvc.PathBindable;
 import play.db.ebean.*;
 
+@Entity
+@Inheritance
+@DiscriminatorValue("stream")
 public class Stream extends GenericSource implements PathBindable<Stream> {
 
 	/**
@@ -36,9 +39,9 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 	
 	/** The maximum duration to be kept.
 	 * This should be used with the database to limit the size of the datapoints list */
-	public long historySize=1L;
+	public Long historySize=1L;
 	
-	public long getHistorySize() {
+	public Long getHistorySize() {
 		return historySize;
 	}
 
@@ -49,7 +52,7 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 	}
 
 	/** Last time a point was inserted */
-	public long lastUpdated=0L;
+	public Long lastUpdated=0L;
 		
 	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
 		Long.class, Stream.class);
@@ -91,7 +94,7 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 	}
 		
 	public Boolean hasData() {
-		return lastUpdated != 0;
+		return lastUpdated != 0L;
 	}
 
 	public void post(double data, long time) {
@@ -131,7 +134,7 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
 		stream.pollingProperties.lastPolled = 0;
-		stream.lastUpdated = 0;
+		stream.lastUpdated = 0L;
 		stream.update();
 		if (stream != null) {
 			DataPoint.deleteByStream(stream);

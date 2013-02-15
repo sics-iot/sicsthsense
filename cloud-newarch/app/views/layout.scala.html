@@ -63,13 +63,12 @@ padding: 10px;
 				</form>
 				
 				<!-- User menu -->
-				 @if(session != null && session.get("id") != null &&
-					User.get(session.get("id").toLong) != null) {
+				 @if(session != null && Secured.getUsername(session) != null) {
 		    <ul class="nav pull-right ">		   
 			    <li class="dropdown">
 				    <a href="#" class="dropdown-toggle" 
 				    data-toggle="dropdown">
-				    <i class="icon-user icon-white"> </i>@User.get(session.get("id").toLong).userName
+				    <i class="icon-user icon-white"> </i>@Secured.getUsername(session)
 				    	<b class="caret"></b>
 				    </a>
 				    <ul class="dropdown-menu">

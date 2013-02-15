@@ -1,6 +1,18 @@
 package models;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+
+@Entity
+@Inheritance
+@DiscriminatorValue("double")
 public class DataPointDouble extends DataPoint {
+
+	public DataPointDouble() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 

@@ -13,9 +13,7 @@ import com.avaje.ebean.*;
 
 //the table name "user" might be invalid for some db systems
 @Entity
-@Table(name = "user_object", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "user_name" }),
-		@UniqueConstraint(columnNames = { "email" }) })
+@Table(name = "user")
 public class User extends Model implements PathBindable<User> {
 
 	/**
@@ -26,29 +24,55 @@ public class User extends Model implements PathBindable<User> {
 	@Id
 	public Long id;
 
-	@Formats.NonEmpty
-	private String email;
+	@Column(length = 256, unique = true, nullable = false)
+  @Constraints.MaxLength(256)
+  @Constraints.Required
+  @Constraints.Email
+	public String email;
 
+	//private List<String> linkedEmails = new ArrayList<String>(10);
+	
 	/** Secret token for authentication */
 	private String token;
 
+	/** Secret token for session authentication */
+	@Transient
+	public String currentSessionToken;
+	
 	public String getEmail() {
 		return email;
 	}
 
+	@Column(length = 256, unique = true, nullable = false)
+  @Constraints.MaxLength(256)
+  @Constraints.Required
 	@Formats.NonEmpty
-	private String userName;
+	protected String userName;
 
 	public String getUserName() {
 		return userName;
 	}
 
-	public String firstName;
-	public String lastName;
-	public String location;
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	protected String firstName;
+	protected String lastName;
+	protected String location;
 
 	@Column(nullable = false)
 	public Date creationDate;
+	
+	public Date lastLogin;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
 	public List<UserOwnedResource> ownedResources = new ArrayList<UserOwnedResource>();
@@ -63,6 +87,7 @@ public class User extends Model implements PathBindable<User> {
 
 	public User(String email, String userName, String firstName, String lastName,
 			String location) {
+		this.creationDate = new Date();
 		this.email = email.toLowerCase();
 		this.userName = userName.toLowerCase();
 		this.firstName = firstName;
@@ -70,11 +95,20 @@ public class User extends Model implements PathBindable<User> {
 		this.location = location;
 	}
 
+	public void updateUser(User user) {
+		this.userName = user.userName.toLowerCase();
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
+		this.location = user.location;
+		update();
+	}
+	
 	public User() {
 		this.creationDate = new Date();
 	}
 
-	public static User create(User user) {
+	public static User create(User user) {		
+		user.generateToken();
 		user.save();
 		// is this necessary? -YES!
 		user.saveManyToManyAssociations("ownedResources");
@@ -82,9 +116,14 @@ public class User extends Model implements PathBindable<User> {
 		return user;
 	}
 
-	public String createToken() {
-		token = UUID.randomUUID().toString();
+	public Date updateLastLogin() {
+		this.lastLogin = new Date();
 		save();
+		return this.lastLogin;
+	}
+	public String generateToken() {
+		token = UUID.randomUUID().toString();
+		//save();
 		return token;
 	}
 

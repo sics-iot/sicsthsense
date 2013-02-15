@@ -21,8 +21,9 @@ import play.libs.WS;
 
 
 @Entity
-@Table(name = "file", uniqueConstraints = { @UniqueConstraint(columnNames = {
-		"owner", "path" }) })
+@Table(name = "file", uniqueConstraints = { 
+		@UniqueConstraint(columnNames = {"owner", "path" }) 
+		})
 public class File extends Model {
 
 	/**
@@ -57,7 +58,7 @@ public class File extends Model {
 	@Constraints.Required
 	Filetype type;
 	
-	long refID; // probably should be some other type
+	Long refID; // probably should be some other type
 
 	public static Finder<Long,File> find = new Finder<Long,File>(Long.class, File.class); 
 

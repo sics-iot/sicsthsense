@@ -1,7 +1,15 @@
 package models;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.Table;
+
 import play.db.ebean.Model;
 
+@Entity
+@Inheritance
+@DiscriminatorValue("operator")
 public class Operator extends GenericSource {
 
 	/**

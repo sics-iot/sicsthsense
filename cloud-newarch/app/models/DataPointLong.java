@@ -1,6 +1,18 @@
 package models;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+
+@Entity
+@Inheritance
+@DiscriminatorValue("long")
 public class DataPointLong extends DataPoint {
+
+	public DataPointLong() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 

@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +20,8 @@ import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 @Entity
-@Table(name="user_owned_resource")
+@Inheritance
+@DiscriminatorColumn(length=16)
 public class UserOwnedResource extends Model {
 
 	 /**

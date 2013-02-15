@@ -13,7 +13,9 @@ import com.avaje.ebean.*;
 import controllers.Utils;
 
 /** T could be any comparable type; i.e. Long, Double, String, etc. */
-@Entity 
+@Entity
+@Inheritance
+@DiscriminatorColumn(length=16)
 public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
 		/**
@@ -29,13 +31,18 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
     public Stream stream;
     
     /** T could be any comparable type; i.e. Long, Double, String, etc. */   
-    public long timestamp;
+    public Long timestamp;
     //public static final String type= T.getClass().ToString();
           
     public static Model.Finder<Long,DataPoint> find = new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
     
     public abstract DataPoint add();
-    
+
+		public DataPoint() {
+		super();
+		// TODO Auto-generated constructor stub
+		}
+		
     public static long getCount() {
       return find.findRowCount();
     }
