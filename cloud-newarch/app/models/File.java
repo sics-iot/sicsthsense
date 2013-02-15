@@ -22,9 +22,14 @@ import play.libs.WS;
 
 @Entity
 @Table(name = "file", uniqueConstraints = { 
-		@UniqueConstraint(columnNames = {"owner", "path" }) 
+		@UniqueConstraint(columnNames = {"owner_id", "path" }) 
 		})
 public class File extends Model {
+
+	public File() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 
@@ -49,7 +54,7 @@ public class File extends Model {
 	//String owner;
 	
 	//I changed the type to User so it reflects the DB relations --Beshr
-	@Column(nullable = false)
+	@Column(name = "owner_id", nullable = false)
 	@Constraints.Required
   @ManyToOne
   User owner;

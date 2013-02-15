@@ -111,7 +111,6 @@ public class User extends Model implements PathBindable<User> {
 		user.generateToken();
 		user.save();
 		// is this necessary? -YES!
-		user.saveManyToManyAssociations("ownedResources");
 		user.saveManyToManyAssociations("followedResources");
 		return user;
 	}
