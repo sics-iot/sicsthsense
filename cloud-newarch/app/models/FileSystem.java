@@ -29,7 +29,7 @@ public class FileSystem {
 	}
 
 	public List<File> listFiles(User user) {
-		return File.find.where().eq("owner",user.userName).findList();
+		return File.find.where().eq("owner",user).findList();
 	}
 
 	private void createDirectory(User user, String dirpath) {
@@ -65,7 +65,7 @@ public class FileSystem {
 	}
 
 	public boolean fileExists(User user, String path) {
-		File f = File.find.where().eq("owner",user.userName).eq("path", path).findUnique();
+		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f==null) { // if file exists
 			return true;
 		} else {
@@ -74,7 +74,7 @@ public class FileSystem {
 	}
 
 	public boolean isDir(User user, String path) {
-		File f = File.find.where().eq("owner",user.userName).eq("path", path).findUnique();
+		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f.type == File.Filetype.DIR) {
 			return true;
 		} else {
@@ -83,7 +83,7 @@ public class FileSystem {
 	}
 
 	public File readFile(User user, String path) {
-		File f = File.find.where().eq("owner",user.userName).eq("path", path).findUnique();
+		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f != null) { // if file exists
 			return f;
 		} else {
@@ -97,7 +97,7 @@ public class FileSystem {
 		if (f!=null) {
 			f.delete();
 		} else {
-			Logger.warn("File path to delete  does not exist:: "+path);
+			Logger.warn("File path to delete does not exist:: "+path);
 		}
 	}
 
