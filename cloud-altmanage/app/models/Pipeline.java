@@ -69,7 +69,8 @@ public class Pipeline extends Resource {
 	public String matchRegex(String input) {
 		Matcher m = regex.matcher(input);
 		if (m.find()) {
-			return m.group();
+			//1 Gives the first match, 0 gives the whole expression
+			return m.group(1);
 		} else {
 			return "Not Match";
 		}
