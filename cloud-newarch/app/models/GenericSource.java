@@ -4,11 +4,12 @@ import java.util.*;
 import javax.persistence.*;
 
 import play.db.ebean.*;
+import scala.reflect.internal.Trees.Super;
 
 @Entity
 @Inheritance
-//@DiscriminatorColumn(length=16)
 @DiscriminatorValue("generic_source")
+@DiscriminatorColumn(length=16)
 public class GenericSource extends UserOwnedResource {
 	 /**
 	 * The serialization runtime associates with each serializable class 
@@ -17,7 +18,8 @@ public class GenericSource extends UserOwnedResource {
 	//@Transient
 	private static final long serialVersionUID = 6496834518631996535L;
 
-  public PollingProperties pollingProperties=null;
+	@OneToOne(cascade=CascadeType.ALL)
+	public PollingProperties pollingProperties=null;
   
 	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
   public List<Stream> outputStreams;
@@ -35,12 +37,7 @@ public class GenericSource extends UserOwnedResource {
   }
   
   public static GenericSource create(User user) {
-  	if(user != null){
-	  	GenericSource persistedSource = new GenericSource(user);
-	  	persistedSource.save();
-	  	return persistedSource;
-  	}
-  	return null;
+  	return (GenericSource.create(user));
   }
   
   public void setInputParser(String inputParser) {

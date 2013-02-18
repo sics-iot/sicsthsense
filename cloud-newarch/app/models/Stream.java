@@ -26,10 +26,12 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 		@EnumValue("L")
 		LONG,
 		@EnumValue("S")
-		STRING
+		STRING,
+		@EnumValue("U")
+		UNDEFINED
 	}
 	
-	public StreamType type = StreamType.DOUBLE;
+	public StreamType type = StreamType.UNDEFINED;
 
 	@ManyToOne
 	public GenericSource source;
@@ -97,28 +99,43 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 		return lastUpdated != 0L;
 	}
 
-	public void post(double data, long time) {
+	public boolean post(double data, long time) {
+		if(type == StreamType.UNDEFINED) {
+			type = StreamType.DOUBLE;
+		}
 		if(type == StreamType.DOUBLE) {
 			DataPoint dp = new DataPointDouble(this, data, time).add();
 			lastUpdated = time;
 			update();
+			return true;
 		}
+		return false;
 	}
 
-	public void post(long data, long time) {
+	public boolean post(long data, long time) {
+		if(type == StreamType.UNDEFINED) {
+			type = StreamType.LONG;
+		}
 		if(type == StreamType.LONG) {
 			DataPoint dp = new DataPointLong(this, data, time).add();
 			lastUpdated = time;
 			update();
+			return true;
 		}
+		return false;
 	}
 	
-	public void post(String data, long time) {
+	public boolean post(String data, long time) {
+		if(type == StreamType.UNDEFINED) {
+			type = StreamType.STRING;
+		}
 		if(type == StreamType.STRING) {
 			DataPoint dp = new DataPointString(this, data, time).add();
 			lastUpdated = time;
 			update();
+			return true;
 		}
+		return false;
 	}
 	
 	public static void delete(Long id) {
@@ -133,7 +150,7 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
-		stream.pollingProperties.lastPolled = 0;
+		stream.pollingProperties.lastPolled = 0L;
 		stream.lastUpdated = 0L;
 		stream.update();
 		if (stream != null) {

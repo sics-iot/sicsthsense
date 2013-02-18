@@ -13,7 +13,7 @@ import com.avaje.ebean.*;
 
 //the table name "user" might be invalid for some db systems
 @Entity
-@Table(name = "user")
+@Table(name = "user_account")
 public class User extends Model implements PathBindable<User> {
 
 	/**
@@ -126,7 +126,7 @@ public class User extends Model implements PathBindable<User> {
 		return token;
 	}
 
-	public static User findByToken(String token) {
+	public static User getByToken(String token) {
 		if (token == null) {
 			return null;
 		}
@@ -154,6 +154,10 @@ public class User extends Model implements PathBindable<User> {
 		return find.byId(id);
 	}
 
+	public Long getId() {
+		return new Long(id);
+	}
+	
 	public static User getByEmail(String email) {
 		return find.where().eq("email", email).findUnique();
 	}

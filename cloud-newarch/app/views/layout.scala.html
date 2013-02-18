@@ -46,7 +46,7 @@ padding: 10px;
 					<li>
 					<a class="brand" href="@routes.Application.home()">
 						<Strong>Sics<sup>th</sup>Sense</Strong></a></li> 
-					@if(session != null && session.get("id") != null) {
+					@if(session != null && Secured.getUsername(session) != null) {
 					<li><a href="@routes.Application.home()">Home</a></li>
 					<li><a href="@routes.Application.search()">Search</a></li>
 					<li><a href="@routes.Application.manage()">Manage</a></li>

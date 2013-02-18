@@ -60,18 +60,25 @@ public class UserOwnedResource extends Model {
   }
   
   /** Create a new instance and save it in the db*/
-  public static UserOwnedResource create(User user) {
-  	if(user != null){
-			UserOwnedResource persisted = new UserOwnedResource(user);
-	  	persisted.save();
-	  	persisted.saveManyToManyAssociations("sharedWithUsers");
-	  	return persisted;
+  public static UserOwnedResource create(UserOwnedResource res) {
+  	if(res.user != null){
+			res.save();
+	  	res.saveManyToManyAssociations("sharedWithUsers");
+	  	return res;
   	}
   	return null;
   }
   
-	public Boolean isOwnedBy(User user) {
-		return user.id == this.user.id;
+  public static UserOwnedResource create(User user) {
+			UserOwnedResource persisted = new UserOwnedResource(user);
+	  	return create(persisted);
+  }
+  
+	public static boolean isOwnedBy(UserOwnedResource res, User user) {
+		if(res != null && res.user != null && user != null) {
+			return user.id == res.user.id;
+		}
+		return false;
 	}
 
 	public static List<UserOwnedResource> all() {

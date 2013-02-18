@@ -9,8 +9,18 @@ import play.db.ebean.Model;
 
 @Entity
 @Inheritance
-@DiscriminatorValue("operator")
+@DiscriminatorValue("oper_obj")
 public class Operator extends GenericSource {
+
+	public Operator() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Operator(User user) {
+		super(user);
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 
