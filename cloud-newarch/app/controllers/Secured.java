@@ -11,11 +11,20 @@ public class Secured extends Security.Authenticator {
 
 	@Override
 	public String getUsername(Context ctx) {
-		return getUsername(ctx.session());
+		String name = getUsername(ctx.session());
+		return (name != null) ? name : getUsername(ctx.request());
 	}
 	
 	public static String getUsername(Session session) {
 		Long id = getUserId(session);
+		if(id != null){
+			return User.get(id).getUserName();
+		}
+		return null;
+	}
+	
+	public static String getUsername(Request request) {
+		Long id = getUserId(request);
 		if(id != null){
 			return User.get(id).getUserName();
 		}

@@ -23,6 +23,19 @@ GET         /dummy/:id/sensors/temperature       controllers.DummyThing.temperat
 GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(id: Long)
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
 
+# Streams
+GET        /streams/:ownerName/$path<.*>    controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:ownerName              controllers.CtrlStream.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /streams/$path<.*>    						controllers.CtrlStream.post(path: String)
+POST       /streams/              					controllers.CtrlStream.post(path: String ?= "")
+
+# Streams, API
+GET        /api/streams/$path<.*> 	  		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /api/streams/      	    	 		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /api/ids/streams/:id	          controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /api/streams/$path<.*>    			controllers.CtrlStream.postByUserKey(user_token: String, path: String)
+POST       /api/streams/              		controllers.CtrlStream.postByUserKey(user_token: String, path: String ?= "")
+
 # Javascript Routes
 GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
 

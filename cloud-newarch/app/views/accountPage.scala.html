@@ -12,6 +12,8 @@
    @forms.form(routes.CtrlUser.submit()) {
 	    <dt>Mail</dt>
 	    <dd>@user.getEmail()</dd>
+	    <dt>SecretToken (Should be hidden!)</dt>
+	    <dd>@user.getToken()</dd>
 	    @forms.input(userForm!=null, "text", "userName", "User name", user.getUserName())
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.getFirstName())
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.getLastName())

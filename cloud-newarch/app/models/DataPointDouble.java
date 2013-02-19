@@ -35,4 +35,8 @@ public class DataPointDouble extends DataPoint {
 		return null;
 	}
 
+  public Double getData() {
+  	return data;
+  }
+
 }

@@ -47,6 +47,8 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
       return find.findRowCount();
     }
     
+    public abstract Object getData();
+    
     public static List<DataPoint> getByStream(Stream stream) {
       return find.where()
           .eq("stream", stream)

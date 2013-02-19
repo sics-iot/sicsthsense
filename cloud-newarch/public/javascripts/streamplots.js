@@ -9,7 +9,7 @@ var StreamPlots = {
 		$('#'+stream.id).css('background-color', 'silver');
 		
 		stream.points = [];
-		stream.since = parseInt(((new Date()).getTime() - window) / 1000);
+		stream.since = parseInt(((new Date()).getTime() - window));
 		stream.window = window;
 		this.poll(stream);
 	},
@@ -24,13 +24,13 @@ var StreamPlots = {
 				
 				for (var i=0; i< time.length; i++){
 					
-					stream.points.push(new Array(parseInt(time[i])*1000 + StreamPlots.timezone, data[i]));
+					stream.points.push(new Array(parseInt(time[i]) + StreamPlots.timezone, data[i]));
 					console.debug('pushed: '+parseInt(i));
 				}
 				
 				if (stream.points.length>0) {
 				
-					stream.since = (stream.points[stream.points.length-1][0]-StreamPlots.timezone)/1000 + 1;
+					stream.since = (stream.points[stream.points.length-1][0]-StreamPlots.timezone) + 1;
 					console.debug('since: '+stream.since);				
 	
 					while (stream.points[0][0] < stream.points[stream.points.length-1][0] - stream.window) {
@@ -46,7 +46,7 @@ var StreamPlots = {
 			}});
 	},
 
-	timezone: -(new Date()).getTimezoneOffset()*60*1000, // in ms, distance to UTC (so negative)
+	timezone: -(new Date()).getTimezoneOffset()*60, // in ms, distance to UTC (so negative)
 	
 	options: {
 		series: {
@@ -59,7 +59,7 @@ var StreamPlots = {
 			timeformat: "%y-%m-%d %H:%M:%S",
 			minTickSize: [1, "second"],
 			ticks: 6,
-			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60
 		},
 	}
 };

@@ -14,7 +14,7 @@ import com.avaje.ebean.*;
 //the table name "user" might be invalid for some db systems
 @Entity
 @Table(name = "user_account")
-public class User extends Model implements PathBindable<User> {
+public class User extends Model implements  Comparable<User> { //PathBindable<User>,
 
 	/**
 	 * 
@@ -34,6 +34,10 @@ public class User extends Model implements PathBindable<User> {
 	
 	/** Secret token for authentication */
 	private String token;
+
+	public String getToken() {
+		return token;
+	}
 
 	/** Secret token for session authentication */
 	@Transient
@@ -202,29 +206,33 @@ public class User extends Model implements PathBindable<User> {
 		super.update();
 	}
 	
-	@Override
-	public User bind(String key, String id) {
-	// TODO check key?
-		User user = get(Long.parseLong(id));
-		if (user != null) {
-			return user;
-		} else {
-			throw new IllegalArgumentException("User with id " + id + " not found");
-		}
-	}
+//	@Override
+//	public User bind(String key, String userName) {
+//	// TODO check key?
+//		User user = getByUserName(userName);
+////		return user;
+//		if (user != null) {
+//			return user;
+//		} else {
+//			throw new IllegalArgumentException("User with id " + id + " not found");
+//		}
+//	}
+//
+//	@Override
+//	public String unbind(String key) {
+//		// TODO check key?
+//		return userName;
+//	}
+//
+//	@Override
+//	public String javascriptUnbind() {
+//	// TODO check key?
+//		return "function(k,v) {\n" +
+//						"    return v.userName;" +
+//		        "}";
+//	}
 
-	@Override
-	public String unbind(String key) {
-		// TODO check key?
-		return id.toString();
-	}
-
-	@Override
-	public String javascriptUnbind() {
-	// TODO check key?
-		return "function(k,v) {\n" +
-						"    return v.id;" +
-		        "}";
-	}
-
+	public int compareTo(User user) {
+    return token.compareTo(user.token);
+  }
 }

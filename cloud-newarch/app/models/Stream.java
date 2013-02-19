@@ -4,7 +4,10 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.annotation.EnumValue;
+
+import controllers.Utils;
 
 import play.mvc.PathBindable;
 import play.db.ebean.*;
@@ -150,14 +153,53 @@ public class Stream extends GenericSource implements PathBindable<Stream> {
 
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
-		stream.pollingProperties.lastPolled = 0L;
-		stream.lastUpdated = 0L;
-		stream.update();
 		if (stream != null) {
-			DataPoint.deleteByStream(stream);
+			stream.pollingProperties.lastPolled = 0L;
+			stream.lastUpdated = 0L;
+			stream.update();
+			stream.deleteDataPoints();
 		}
 	}
 
+	public List<DataPoint> getDataPoints() {
+    return dataPoints;
+  }
+  
+  public List<DataPoint> getDataPointsTail(long tail) {    	
+  	if(tail==0)
+  		return new ArrayList<DataPoint>(); //TODO should this be return new ArrayList<DataPoint>(0) ??
+  	List<DataPoint> set = DataPoint.find.where()
+        .eq("stream", this)
+        .setMaxRows((int)tail)
+        .orderBy("timestamp desc")
+        .findList();
+//    return set.subList(set.size()-(int)tail, set.size());
+    return set;
+  }
+  
+  public List<DataPoint> getDataPointsLast(long last) {
+    return this.getDataPointsSince(Utils.currentTime() - last);
+  }
+  
+  public List<DataPoint> getDataPointsSince(long since) {
+    return DataPoint.find.where()
+        .eq("stream", this)
+        .ge("timestamp", since)
+        .orderBy("timestamp desc")
+        .findList();
+  }
+  
+  public void deleteDataPoints() {
+    Ebean.delete(dataPoints);
+//    List<Long> ids = new LinkedList<Long>();
+//    for(DataPoint element: list) {
+//      ids.add(element.id);
+//    }
+//    for(Long id: ids) {
+//      find.ref(id).delete(); 
+//    }
+  }
+  
 	public StreamType getType() {
 		return type;
 	}

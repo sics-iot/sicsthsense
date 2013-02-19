@@ -34,5 +34,7 @@ public class DataPointLong extends DataPoint {
 		}
 		return null;
 	}
-
+	public Long getData() {
+  	return data;
+  }
 }

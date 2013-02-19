@@ -44,5 +44,8 @@ public class DataPointString extends DataPoint {
 		}
 		return null;
 	}
-
+	
+	public String getData() {
+  	return data;
+  }
 }

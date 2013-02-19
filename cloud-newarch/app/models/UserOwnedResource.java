@@ -116,7 +116,11 @@ public class UserOwnedResource extends Model {
 	}
 	
 	public Boolean isShare(User user) {
-		return user != null && sharedWithUsers.contains(user);
+		return user != null && (sharedWithUsers.contains(user));
+	}
+	
+	public Boolean canRead(User user) {
+		return isPublicAccess() || (user != null && (isShare(user) || this.user == user));
 	}
 	
 	public List<User> getShare() {
