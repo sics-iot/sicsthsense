@@ -1,0 +1,44 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Pages
+GET        /authenticate                         controllers.Login.authenticate(openid_identifier: String)
+GET        /openIDCallback                       controllers.Login.openIDCallback()
+GET        /logout                               controllers.Login.logout()
+GET        /                                     controllers.Application.home()
+GET        /search                               controllers.Application.search()
+GET        /manage                               controllers.Application.manage()
+GET        /API                                  controllers.Public.about()
+
+# Accounts
+GET        /account                              controllers.CtrlUser.get()
+GET        /account/edit                         controllers.CtrlUser.edit()
+GET        /account/submit                       controllers.CtrlUser.submit()
+
+# Dummy thing
+GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
+GET         /dummy/:id/sensors                   controllers.DummyThing.sensors(id: Long)
+GET         /dummy/:id/sensors/temperature       controllers.DummyThing.temperature(id: Long)
+GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(id: Long)
+POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
+
+# Streams
+GET        /streams/:ownerName/$path<.*>		controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:ownerName					controllers.CtrlStream.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /streams/$path<.*>    				controllers.CtrlStream.post(path: String)
+POST       /streams/              				controllers.CtrlStream.post(path: String ?= "")
+
+# Streams, API
+GET        /api/streams/$path<.*>		 		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /api/streams/				 		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /api/ids/streams/:id				    controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /api/streams/$path<.*>    			controllers.CtrlStream.postByUserKey(user_token: String, path: String)
+POST       /api/streams/						controllers.CtrlStream.postByUserKey(user_token: String, path: String ?= "")
+
+# Javascript Routes
+GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file                controllers.Assets.at(path="/public", file)
+

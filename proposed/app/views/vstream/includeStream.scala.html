@@ -1,0 +1,47 @@
+@(stream: Stream)
+
+@WIN_5M() = {5*60*1000}
+@WIN_30M() = {30*60*1000}
+@WIN_1H() = {60*60*1000}
+@WIN_1D() = {24*60*60*1000}
+@WIN_1W() = {7*24*60*60*1000}
+@WIN_1M() = {30*24*60*60*1000}
+@WIN_1Y() = {365*24*60*60*1000}
+
+@if(stream != null && stream.hasData()) {
+  
+	<span id="streamconfig@{stream.uid}" class="streamconfig form-inline">
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_5M" id="streamwindow@{stream.uid}-1"><label for="streamwindow@{stream.uid}-1">5min</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_30M" id="streamwindow@{stream.uid}-2"><label for="streamwindow@{stream.uid}-2">30min</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_1H" id="streamwindow@{stream.uid}-3"><label for="streamwindow@{stream.uid}-3">1h</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_1D" id="streamwindow@{stream.uid}-4"><label for="streamwindow@{stream.uid}-4">1d</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_1W" id="streamwindow@{stream.uid}-5"><label for="streamwindow@{stream.uid}-5">1w</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_1M" id="streamwindow@{stream.uid}-6"><label for="streamwindow@{stream.uid}-6">1m</label>
+	    <input type="radio" name="streamwindow@{stream.uid}" value="@WIN_1Y" id="streamwindow@{stream.uid}-7"><label for="streamwindow@{stream.uid}-7">1y</label>
+	</span>
+	<div id="streamtitle@{stream.uid}" class="streamtitle">Data stream</div>
+	<div id="streamplot@{stream.uid}" class="streamplot"></div>
+
+	<script type="text/javascript">
+		// one global JavaScript object per stream
+		var streamplot@{stream.uid} = new Object();
+		streamplot@{stream.uid}.id = 'streamplot@{stream.uid}';
+		streamplot@{stream.uid}.uri = '@{routes.CtrlStream.getDataById(stream.uid)}';
+		//streamplot@{stream.uid}.path = '{stream.path.substring(1)}'; // for parsing the returned JSON
+		streamplot@{stream.uid}.window = @WIN_1D; // in ms
+		streamplot@{stream.uid}.since = parseInt(((new Date()).getTime() - streamplot@{stream.uid}.window)); // in s for database
+		streamplot@{stream.uid}.points = [];
+		streamplot@{stream.uid}.timeout = null;
+
+		$(function () {
+			// init Flot plot
+			streamplot@{stream.uid}.plot = $.plot($("#streamplot@{stream.uid}"), [ streamplot@{stream.uid}.points ], StreamPlots.options);
+			// setup config form
+			$("input:radio[name='streamwindow@{stream.uid}']").filter('[value="@WIN_1D"]').attr('checked', true);
+			$("input:radio[name='streamwindow@{stream.uid}']").change( function(){
+				StreamPlots.setWindow(streamplot@{stream.uid}, eval($("input:radio[name='streamwindow@{stream.uid}']:checked").val()) ); });
+			// start polling
+			StreamPlots.poll(streamplot@{stream.uid});
+		});
+	</script>
+}
