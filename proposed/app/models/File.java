@@ -51,7 +51,6 @@ public class File extends Model {
 	@Constraints.Required
 	String path;
 	
-	//I changed the type to User so it reflects the DB relations --Beshr
 	@Column(name = "owner_id", nullable = false)
 	@Constraints.Required
 	@ManyToOne

@@ -32,9 +32,14 @@ public class Stream extends Model {
 		UNDEFINED
 	}
 	
-	public long uid;
+	@Id
+	public Long id;
+	
 	public StreamType type = StreamType.UNDEFINED;
 
+	@ManyToOne
+	User owner;
+	
 	@ManyToOne
 	public Source source;
 	
@@ -88,7 +93,7 @@ public class Stream extends Model {
 	}
 	
 	public Stream(User user) {
-		super(user);
+		this.owner = user;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -101,7 +106,7 @@ public class Stream extends Model {
 		return lastUpdated != 0L;
 	}
 
-	public boolean post(double data, long time) {
+	protected boolean post(double data, long time) {
 		if(type == StreamType.UNDEFINED) {
 			type = StreamType.DOUBLE;
 		}
@@ -114,7 +119,7 @@ public class Stream extends Model {
 		return false;
 	}
 
-	public boolean post(long data, long time) {
+	protected boolean post(long data, long time) {
 		if(type == StreamType.UNDEFINED) {
 			type = StreamType.LONG;
 		}
@@ -127,7 +132,7 @@ public class Stream extends Model {
 		return false;
 	}
 	
-	public boolean post(String data, long time) {
+	protected boolean post(String data, long time) {
 		if(type == StreamType.UNDEFINED) {
 			type = StreamType.STRING;
 		}
@@ -188,7 +193,7 @@ public class Stream extends Model {
         .findList();
   }
   
-  public void deleteDataPoints() {
+  private void deleteDataPoints() {
     Ebean.delete(dataPoints);
 //    List<Long> ids = new LinkedList<Long>();
 //    for(DataPoint element: list) {

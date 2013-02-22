@@ -19,7 +19,12 @@ public class Source extends Model {
 	 */
 	//@Transient
 	private static final long serialVersionUID = 6496834518631996535L;
-
+	@Id
+	public Lond id;
+	
+	@ManyToOne
+	User owner;
+	
 	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
 	public List<Stream> outputStreams;
 
@@ -29,12 +34,12 @@ public class Source extends Model {
 	public String pollingAuthenticationKey=null;
   
 	/** HTML, JSON, RegEx */
-	private String inputType=null; // to overide the contentType
+	private String inputType=null; // to overide MIME contentType of input
 	
 	public static Model.Finder<Long,Source> find = new Model.Finder<Long, Source>(Long.class, Source.class);
 
 	public Source(User user) {
-		super(user);
+		this.owner = user;
 	}
 	public Source() {
 		super();
