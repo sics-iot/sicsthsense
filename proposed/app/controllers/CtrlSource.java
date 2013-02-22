@@ -28,27 +28,33 @@ public class CtrlSource extends Controller {
 	}
 
 	private static Result post(User currentUser, String path) {
-
+		return TODO;
 		// resolve device from device list
 		// if public: good
 		// if this currentUser.username is in ACL: good
 		// else error message
-
-		try {	
-			JsonNode jsonBody = request().body().asJson();
-			String textBody = request().body().asText();
-			String strBody = (jsonBody != null) ? jsonBody.toString() : textBody;
-			Logger.info("[Streams] post received from: " + " URI "
-					+ request().uri() + ", content type: "
-					+ request().getHeader("Content-Type") + ", payload: " + strBody);
-			if (!parseResponse(currentUser, jsonBody, textBody, path))
-				return badRequest("Bad request: Can't parse!");
-		} catch (Exception e) {
-			Logger.info("[Streams] Exception " + e.getMessage());
-			Logger.info("[Streams] User null" + Boolean.toString(currentUser == null));
-			return badRequest("Bad request: Error!");
+	}
+	private static Result post(Long id, String key) {
+		Source source = Source.get(id, key);
+		if (source != null) {
+			try {
+				JsonNode jsonBody = request().body().asJson();
+				String textBody = request().body().asText();
+				String strBody = (jsonBody != null) ? jsonBody.toString() : textBody;
+				Logger.info("[Streams] post received from: " + " URI "
+						+ request().uri() + ", content type: "
+						+ request().getHeader("Content-Type") + ", payload: " + strBody);
+				if (!source.parseResponse(jsonBody, textBody, path))
+					return badRequest("Bad request: Can't parse!");
+			} catch (Exception e) {
+				Logger.info("[Streams] Exception " + e.getMessage());
+				Logger.info("[Streams] User null"
+						+ Boolean.toString(currentUser == null));
+				return badRequest("Bad request: Error!");
+			}
+			return ok("ok");
 		}
-		return ok("ok");
+		return notFound();
 	}
 	
 	@Security.Authenticated(Secured.class)
@@ -56,53 +62,7 @@ public class CtrlSource extends Controller {
 		return TODO;
 	}
 	
-	private static Stream getOrAddByPath(User currentUser, String path) {
-		if (currentUser == null)
-			return null;
-		File f = FileSystem.readFile(currentUser, path);
-		if (f == null) {
-			Stream stream = (Stream)Stream.create(new Stream(currentUser));
-			f = FileSystem.addFile(currentUser, path);
-			f.setLink(stream);
-			Logger.info("[Streams] Creating stream at: " + currentUser.getUserName() + path);
-		}
-		UserOwnedResource resource = f.getLink();
-		if (resource != null && resource instanceof Stream) {
-				return (Stream)resource;
-			}
-		return null;
-	}
-
-	private static boolean parseResponse(User currentUser, JsonNode jsonBody, String textBody, String path) {
-		if (jsonBody != null) {
-			if (!parseJsonResponse(currentUser, jsonBody, path))
-				return false;
-		} else {
-			if (textBody != null) {
-				Stream stream = getOrAddByPath(currentUser, path);
-				Logger.info("[Posting now] " + textBody + " at " + Utils.currentTime() + " to: " + path);
-				return stream.post(Double.parseDouble(textBody), Utils.currentTime());
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static boolean parseJsonResponse(User currentUser, JsonNode jsonNode, String path) {
-		if (jsonNode.isValueNode()) {
-			Stream stream = getOrAddByPath(currentUser, path);
-			return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
-		} else {
-			Iterator<String> it = jsonNode.getFieldNames();
-			while (it.hasNext()) {
-				String field = it.next();
-				if (!parseJsonResponse(currentUser, jsonNode.get(field),	Utils.concatPath(path, field)))
-					return false;
-			}
-		}
-		return true;
-	}
+	
 	
 	public static Result getData(String ownerName, String path, Long tail, Long last, Long since) {
 			final User user = Secured.getCurrentUser();

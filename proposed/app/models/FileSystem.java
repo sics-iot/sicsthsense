@@ -4,6 +4,12 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import models.Vfile;
+import models.FileSystem;
+import models.Stream;
+import models.User;
+import models.UserOwnedResource;
+
 import org.codehaus.jackson.JsonNode;
 
 import play.Logger;
@@ -28,18 +34,11 @@ public class FileSystem {
 		// give a warning to user?
 	}
 
-	public static List<File> listFiles(User user) {
-		return File.find.where().eq("owner",user).findList();
+	public static List<Vfile> listFiles(User user) {
+		return Vfile.find.where().eq("owner",user).findList();
 	}
 
-	private static void createDirectory(User user, String dirpath) {
-		// should check exists?
-		
-		File dir = new File(user, dirpath, File.Filetype.DIR);
-		dir.save();
-	}
-
-	public static File addFile(User user, String path) {
+	public static Vfile addFile(User user, String path) {
 		int i=0;
 		int sep=-1;
 		while ( (sep=path.indexOf('/',sep)) != -1 ) { // for each subdir into path
@@ -53,21 +52,19 @@ public class FileSystem {
 				return null;
 			}
 		}
-
 		// create file, filename: sep-end
-		File f = new File(user,path,File.Filetype.FILE);
-		f.save();
+		Vfile f = Vfile.create(new Vfile(user,path,Vfile.Filetype.FILE));
 		return f;
 	}
 				
-	public static void addDirectory(User user, String path) {
+	public static Vfile addDirectory(User user, String path) {
 		// create file, filename: sep-end
-		File dir = new File(user, path, File.Filetype.DIR);
-		dir.save();
+		Vfile dir = Vfile.create( new Vfile(user, path, Vfile.Filetype.DIR) );
+		return dir;
 	}
 
 	public static boolean fileExists(User user, String path) {
-		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
+		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f==null) { // if file exists
 			return true;
 		} else {
@@ -76,31 +73,32 @@ public class FileSystem {
 	}
 
 	public static boolean isDir(User user, String path) {
-		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
-		if (f.type == File.Filetype.DIR) {
+		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
+		if (f.type == Vfile.Filetype.DIR) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public static File readFile(User user, String path) {
-		File f = File.find.where().eq("owner",user).eq("path", path).findUnique();
+	public static Vfile readFile(User user, String path) {
+		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f != null) { // if file exists
 			return f;
 		} else {
-			Logger.error("File path does not exist:: "+path);
+			Logger.error("Vfile path does not exist:: "+path);
 			return null;
 		}
 	}
 
 	public static void deleteFile(User user, String path) {
-		File f = readFile(user,path);
+		Vfile f = readFile(user,path);
 		if (f!=null) {
 			f.delete();
 		} else {
-			Logger.warn("File path to delete does not exist:: "+path);
+			Logger.warn("Vfile path to delete does not exist:: "+path);
 		}
 	}
+	
 
 }

@@ -38,7 +38,7 @@ public class Stream extends Model {
 	public StreamType type = StreamType.UNDEFINED;
 
 	@ManyToOne
-	User owner;
+	public User owner;
 	
 	@ManyToOne
 	public Source source;
@@ -70,13 +70,13 @@ public class Stream extends Model {
 	private String token;
 	
 	/** Call to create, or update an access token */
-	public String createToken() {
+	protected String createToken() {
 		token = UUID.randomUUID().toString();
 		save();
 		return token;
 	}
 	
-	public String getToken() {
+	protected String getToken() {
 		return token;
 	}
 	
@@ -90,6 +90,11 @@ public class Stream extends Model {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public Stream(User user, Source source) {
+		this.owner = user;
+		this.source = source;
 	}
 	
 	public Stream(User user) {
