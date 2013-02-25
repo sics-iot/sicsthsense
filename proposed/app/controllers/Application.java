@@ -28,13 +28,7 @@ public class Application extends Controller {
   public static Result manage() {
   	User currentUser = Secured.getCurrentUser();
   	//Ugly work around to get Streams only
-  	List<Stream> streams = new ArrayList<Stream>();
-  	for(UserOwnedResource res : currentUser.ownedResources ) {
-  		if( res instanceof Stream) {
-  			streams.add((Stream)res);
-  		}
-  	}	
-    return ok(managePage.render(streams));
+    return ok(managePage.render(currentUser.streamList));
   }
   
   // -- Javascript routing

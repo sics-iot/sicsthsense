@@ -4,11 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import models.Vfile;
-import models.FileSystem;
-import models.Stream;
-import models.User;
-import models.UserOwnedResource;
+import models.*;
 
 import org.codehaus.jackson.JsonNode;
 

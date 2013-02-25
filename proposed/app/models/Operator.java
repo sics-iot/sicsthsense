@@ -1,25 +1,35 @@
 package models;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
+import java.util.List;
+
+import javax.persistence.*;
 
 import play.db.ebean.Model;
 
 @Entity
-@Inheritance
-@DiscriminatorValue("operators")
+@Table(name = "operators")
+//@Inheritance
+//@DiscriminatorValue("operators")
 public class Operator extends Model {
+	@Id
+	public Long id;
+	
+	@ManyToOne
+	public User owner;
+	
+	@ManyToMany(cascade=CascadeType.ALL)
+	public List<Stream> outputStreams;
 
+	@ManyToMany(cascade=CascadeType.ALL)
+	public List<Stream> inputStreams;
+	
 	public Operator() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public Operator(User user) {
-		super(user);
-		// TODO Auto-generated constructor stub
+		this.owner = user;
 	}
 
 	/**

@@ -36,7 +36,7 @@ public class Vfile extends Model {
 	 */
 	private static final long serialVersionUID = 1766439519493690841L;
 
-	enum Filetype {
+	public enum Filetype {
 		@EnumValue("F")
 		FILE, 
 		@EnumValue("D")
@@ -75,7 +75,11 @@ public class Vfile extends Model {
 	}
 	
 	public static Vfile create(Vfile file) {
-		return file.save();
+		if (file.owner != null) {
+			file.save();
+			return file;
+		}
+		return null;
 	}
 	
 	public Filetype getType() {

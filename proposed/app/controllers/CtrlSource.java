@@ -17,24 +17,26 @@ import models.*;
 public class CtrlSource extends Controller {
 
 	@Security.Authenticated(Secured.class)
-	public static Result post(String path) {
+	public static Result post(Long id) {
 			User currentUser = Secured.getCurrentUser();
-			return post(currentUser, path);
+			return post(currentUser, id);
 	}
 	
-	public static Result postByUserKey(String ownerToken, String path) {
+	public static Result postByUserKey(String ownerToken, Long id) {
 		User owner = User.getByToken(ownerToken);
-		return post(owner, path);
+		return post(owner, id);
 	}
 
-	private static Result post(User currentUser, String path) {
+	private static Result post(User currentUser, Long id) {
+		
 		return TODO;
 		// resolve device from device list
 		// if public: good
 		// if this currentUser.username is in ACL: good
 		// else error message
 	}
-	private static Result post(Long id, String key) {
+	
+	public static Result postByKey(Long id, String key) {
 		Source source = Source.get(id, key);
 		if (source != null) {
 			try {
@@ -74,11 +76,11 @@ public class CtrlSource extends Controller {
 	public static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
     //if(user == null) return notFound();
-		UserOwnedResource stream = Stream.get(id);
-		if(!(stream instanceof Stream)) {
+		Stream stream = Stream.get(id);
+		if(stream == null) {
 			return notFound();
 		}
-    return getData(user, (Stream)stream, tail, last, since);
+    return getData(user, stream, tail, last, since);
  }
 	
 	public static Result getDataByUserKey(String user_token, String path, Long tail, Long last, Long since) {
@@ -90,15 +92,14 @@ public class CtrlSource extends Controller {
 	
 	//@Security.Authenticated(Secured.class)
 	private static Result getData(User currentUser, User owner, String path, Long tail, Long last, Long since){
-		File f = FileSystem.readFile(owner, path);
+		Vfile f = FileSystem.readFile(owner, path);
 		if (f == null) {
 			return notFound();
 		}
-		UserOwnedResource resource = f.getLink();
-		if (resource == null || ! (resource instanceof Stream)) {
+		Stream stream = f.getLink();
+		if (stream == null) {
 			return notFound();
 		}
-		Stream stream = (Stream) resource;
 		return getData(currentUser, stream, tail, last, since);
 		
 	}

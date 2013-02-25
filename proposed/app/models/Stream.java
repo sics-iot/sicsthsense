@@ -106,7 +106,30 @@ public class Stream extends Model {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	/** Create a persisted stream */
+	public static Stream create(User user) {
+		Stream stream = new Stream(user);
+		stream.save();
+	}
 		
+	/** Persist a stream */
+	public static Stream create(Stream stream) {
+		if(stream.owner != null)
+			stream.save();
+	}
+	
+	public static Stream get(Long id) {
+		return find.byId(id);
+	}
+	
+	public boolean canRead(User user) {
+		return(publicAccess || owner == user); // || isShare(user);
+	}
+	
+	public boolean canRead(String key) {
+		return(publicAccess || this.token == key); 
+	}
+	
 	public Boolean hasData() {
 		return lastUpdated != 0L;
 	}

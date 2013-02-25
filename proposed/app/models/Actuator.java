@@ -15,9 +15,14 @@ public class Actuator extends Model {
 	 */
 	//@Transient
 	private static final long serialVersionUID = 6496834518631996535L;
-
-	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
-	public List<Stream> outputStreams;
+	@Id
+	public Long id;
+	
+	@ManyToOne
+	public User owner;
+	
+//	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
+//	public List<Stream> outputStreams;
 
 	/** HTML, JSON, RegEx */
 	private String inputParser;
