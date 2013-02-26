@@ -32,7 +32,7 @@ public class Source extends Model {
 	public User owner;
 	
 	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
-	public List<Stream> outputStreams;
+	public List<Stream> outputStreams = new ArrayList<Stream>();
 
 	public Long pollingPeriod=0L;
 	public Long lastPolled=0L;
@@ -40,7 +40,7 @@ public class Source extends Model {
 	public String pollingAuthenticationKey=null;
   
 	@OneToMany(mappedBy="source", cascade=CascadeType.ALL)
-	public List<StreamParser> streamParsers;
+	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 	
 	/** Secret token for authenticating posts coming from outside */
 	private String token; 
