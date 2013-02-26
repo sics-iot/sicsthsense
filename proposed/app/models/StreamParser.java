@@ -26,65 +26,69 @@ public class StreamParser extends Model {
 	 */
 	public enum parserType {
 		@EnumValue("R")
-		REGEX,
+		REGEX, 
 		@EnumValue("J")
-		JSON,
+		JSON, 
 		@EnumValue("X")
 		XPATH
-		};
+	};
+
 	@Id
 	public Long id;
 
 	@ManyToOne
 	public Source source;
-	
-	//@OneToMany
-//	@Transient
-//	public Stream stream;
-	
+
+	// @OneToMany
+	// @Transient
+	// public Stream stream;
+
 	@ManyToOne
 	public Vfile vfile;
-	
+
 	/** RegEx, Xpath, JSON path */
-	public String inputParser; 
-	 
-	/** JSON, HTML, text, XML, ... 
-	 * to overide MIME contentType of input 
-	 * Right now, it could be defined as application/json,
-	 * otherwise, request's content is handeled as text */
-	public String inputType = null; 
-	
+	public String inputParser;
+
+	/**
+	 * JSON, HTML, text, XML, ... to overide MIME contentType of input Right now,
+	 * it could be defined as application/json, otherwise, request's content is
+	 * handeled as text
+	 */
+	public String inputType = null;
+
 	@Transient
 	public Pattern regexPattern;
 
 	public StreamParser() {
 		super();
 	}
-	
-	public StreamParser(Source source, String inputParser, String inputType, String path) {
+
+	public StreamParser(Source source, String inputParser, String inputType,
+			String path) {
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
 		this.vfile = getOrCreateByPath(path);
 		super();
 	}
-	
-	public StreamParser(Source source, String inputParser, String inputType, Vfile vfile) {
+
+	public StreamParser(Source source, String inputParser, String inputType,
+			Vfile vfile) {
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
 		this.vfile = vfile;
 		super();
 	}
-	
+
 	public static StreamParser create(StreamParser parser) {
-		if(parser.source != null && parser.inputParser != null) {
+		if (parser.source != null && parser.inputParser != null) {
 			parser.save();
 			return parser;
 		}
 		return null;
 	}
-	
+
 	public boolean setInputParser(String inputParser) {
 		this.inputParser = inputParser;
 		if (inputParser != null) {
@@ -96,16 +100,15 @@ public class StreamParser extends Model {
 		}
 		return false;
 	}
-	
-	/* parseResponse(Request req)
-	 * 	chooses the parser based on content-type.
-	 * 	inputType overrides the content-type.
-	 * returns: true if could post 
+
+	/*
+	 * parseResponse(Request req) chooses the parser based on content-type.
+	 * inputType overrides the content-type. returns: true if could post
 	 */
 	public boolean parseResponse(Request req) {
 		try {
-			if ("application/json".equalsIgnoreCase( inputType )
-					|| "application/json".equalsIgnoreCase( req.getHeader("Content-Type") )) {
+			if ("application/json".equalsIgnoreCase(inputType)
+					|| "application/json".equalsIgnoreCase(req.getHeader("Content-Type")) ) {
 				JsonNode jsonBody = req.body().asJson();
 				return parseJsonResponse(jsonBody);
 			} else {
@@ -125,32 +128,34 @@ public class StreamParser extends Model {
 			stream = vfile.getLink();
 			String result = matcher.group(1);
 			return stream.post(Double.parseDouble(result), Utils.currentTime());
-			}
+		}
 		return false;
 	}
 
-	/** parses requests as JSON
-	 * inputParser is used as the path to the nested json node
-	 * i.e. inputParser could be:
-	 * room1/sensors/temp/value */
+	/**
+	 * parses requests as JSON inputParser is used as the path to the nested json
+	 * node i.e. inputParser could be: room1/sensors/temp/value
+	 */
 	private boolean parseJsonResponse(JsonNode jsonNode) {
-	// TODO check concat path against inputParser, get the goal and stop
-		//TODO (linear time) form a list of nested path elements from the gui, and get the specefic nodes one by one...
-//		String path = "";
-//		Iterator<String> it = jsonNode.getFieldNames();
-//		while (it.hasNext()) {
-//			String field = it.next();
-//			path += field;
-//			jsonNode = jsonNode.get(field);
-//			
-//			if (jsonNode != null && jsonNode.isValueNode() && path.equalsIgnoreCase(inputParser)) {
-//				Stream stream = vfile.getLink();
-//				return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
-//			} else {
-//				path += ".";
-//			}
-//		}
-//		return false;
+		// TODO check concat path against inputParser, get the goal and stop
+		// TODO (linear time) form a list of nested path elements from the gui, and
+		// get the specefic nodes one by one...
+		// String path = "";
+		// Iterator<String> it = jsonNode.getFieldNames();
+		// while (it.hasNext()) {
+		// String field = it.next();
+		// path += field;
+		// jsonNode = jsonNode.get(field);
+		//
+		// if (jsonNode != null && jsonNode.isValueNode() &&
+		// path.equalsIgnoreCase(inputParser)) {
+		// Stream stream = vfile.getLink();
+		// return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
+		// } else {
+		// path += ".";
+		// }
+		// }
+		// return false;
 		String pathParser = "([\\d\\w\\s-]+)+\\\\?$";
 		Pattern pathPattern = Pattern.compile(pathParser);
 		Matcher matcher = pathPattern.matcher(inputParser);
@@ -177,8 +182,8 @@ public class StreamParser extends Model {
 		} else if (f.getType() == Vfile.Filetype.DIR) {
 			int i = 0;
 			do{
-				f = FileSystem.addFile((source.owner, path + "\\newstream" + Integer.toString(i));
-			} while(!fileExists(source.owner, path + "\\newstream" + Integer.toString(i++)));
+				f = FileSystem.addFile( source.owner, path + "\\newstream" + Integer.toString(i) );
+			}while( !FileSystem.fileExists( source.owner, path + "\\newstream" + Integer.toString(i++) ) );
 		 }
 		if (f.getType() == Vfile.Filetype.FILE) {
 			Stream stream = f.getLink();
@@ -194,4 +199,3 @@ public class StreamParser extends Model {
 		return null;
 	}
 }
-
