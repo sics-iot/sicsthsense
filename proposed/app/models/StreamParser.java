@@ -17,6 +17,9 @@ import org.codehaus.jackson.node.ObjectNode;
 import play.db.ebean.*;
 import play.Logger;
 
+import play.mvc.Http.Request;
+
+
 @Entity
 @Table(name = "parsers")
 public class StreamParser extends Model {
@@ -65,20 +68,20 @@ public class StreamParser extends Model {
 
 	public StreamParser(Source source, String inputParser, String inputType,
 			String path) {
+		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
-		this.vfile = getOrCreateByPath(path);
-		super();
+		this.vfile = getOrCreateStreamFile(path);
 	}
 
 	public StreamParser(Source source, String inputParser, String inputType,
 			Vfile vfile) {
+		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
 		this.vfile = vfile;
-		super();
 	}
 
 	public static StreamParser create(StreamParser parser) {
@@ -101,7 +104,7 @@ public class StreamParser extends Model {
 		return false;
 	}
 
-	/*
+	/**
 	 * parseResponse(Request req) chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post
 	 */
@@ -120,19 +123,27 @@ public class StreamParser extends Model {
 		}
 		return false;
 	}
-
+/**
+ * Parses the request using inputParser as regex and posts the first match
+ *  
+ * @param textBody
+ * @return true if could post
+ */
 	private boolean parseTextResponse(String textBody) {
-		Matcher matcher = regexPattern.matcher(textBody);
-		if (textBody != null && matcher.find()) {
-			Stream stream;
-			stream = vfile.getLink();
-			String result = matcher.group(1);
-			return stream.post(Double.parseDouble(result), Utils.currentTime());
+		Stream stream = vfile.getLink();
+		if (inputParser != null && inputParser != "") {
+			Matcher matcher = regexPattern.matcher(textBody);
+			if (textBody != null && matcher.find()) {
+				String result = matcher.group(1);
+				return stream.post(Double.parseDouble(result), Utils.currentTime());
+			}
+		} else {
+			return stream.post(Double.parseDouble(textBody), Utils.currentTime());
 		}
 		return false;
 	}
 
-	/**
+	/*
 	 * parses requests as JSON inputParser is used as the path to the nested json
 	 * node i.e. inputParser could be: room1/sensors/temp/value
 	 */
@@ -171,7 +182,7 @@ public class StreamParser extends Model {
 		return false;
 	}
 
-	private Vfile getOrCreateByPath(String path) {
+	private Vfile getOrCreateStreamFile(String path) {
 		if (source == null || (source != null && source.owner == null)) {
 			Logger.error("[StreamParser] user does not exist.");
 			return null;
@@ -188,7 +199,7 @@ public class StreamParser extends Model {
 		if (f.getType() == Vfile.Filetype.FILE) {
 			Stream stream = f.getLink();
 			if (stream == null) {
-				stream = Stream.create(new Stream(owner, this.source));
+				stream = Stream.create(new Stream(source.owner, this.source));
 				f.setLink(stream);
 				Logger.info("[StreamParser] Creating stream at: " + source.owner.getUserName()
 						+ path);

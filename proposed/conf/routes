@@ -24,21 +24,22 @@ GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(i
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
 
 # Streams
-GET        /streams/:ownerName/$path<.*>		controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-GET        /streams/:ownerName					controllers.CtrlStream.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-POST       /streams/$path<.*>    				controllers.CtrlStream.post(path: String)
-POST       /streams/              				controllers.CtrlStream.post(path: String ?= "")
+GET        /streams/:ownerName/$path<.*>		controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:ownerName							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 
 # Streams, API
-GET        /api/streams/$path<.*>		 		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-GET        /api/streams/				 		controllers.CtrlStream.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-GET        /api/ids/streams/:id				    controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-POST       /api/streams/$path<.*>    			controllers.CtrlStream.postByUserKey(user_token: String, path: String)
-POST       /api/streams/						controllers.CtrlStream.postByUserKey(user_token: String, path: String ?= "")
+GET        /api/streams/:id						    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST       /api/streams/:id			    				controllers.CtrlSource.postBySourceKey(id : Long, source_key: String)
+#using user_token
+POST       /api/users/streams/:id			    	controllers.CtrlSource.postByUserKey(id : Long, user_token: String)
+GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+
 
 # Javascript Routes
-GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
+GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                controllers.Assets.at(path="/public", file)
+GET        /assets/*file                		controllers.Assets.at(path="/public", file)
 
