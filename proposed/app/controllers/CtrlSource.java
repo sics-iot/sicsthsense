@@ -29,6 +29,7 @@ public class CtrlSource extends Controller {
 		  return badRequest("Bad request");
 		} else {
 		  Source submitted = theForm.get();
+		  Source.create(submitted);
 		  return redirect(routes.Application.manage());
 		}
 	}
@@ -54,12 +55,12 @@ public class CtrlSource extends Controller {
     if(theForm.hasErrors()) {
       return badRequest("Bad request");
     } else {
-  		User currentUser = Secured.getCurrentUser();
-      Source submitted = theForm.get();
-      try { Source.create(submitted); }
-      catch (Exception e) { return badRequest("Bad request"); }
-      return redirect(routes.CtrlSource.getById(submitted.id));
-    }
+		User currentUser = Secured.getCurrentUser();
+		Source submitted = theForm.get();
+		try { Source.create(submitted); }
+		catch (Exception e) { return badRequest("Bad request"); }
+		return redirect(routes.CtrlSource.getById(submitted.id));
+	}
   }
 	
 	public static Result postByUserKey(Long id, String ownerToken) {
