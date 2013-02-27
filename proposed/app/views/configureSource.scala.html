@@ -1,0 +1,39 @@
+@(streams: List[Stream])
+
+@import helper._
+
+@layout("Manage", session) {
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span2 bs-docs-sidebar">
+		<br /> <br /> <br /> 
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="#"><i class="icon-chevron-right"></i>Sources</a></li>
+          <li><a href="#"><i class="icon-chevron-right"></i>External Streams</a></li>
+          <li><a href="#"><i class="icon-chevron-right"></i>Operators</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+	<br \>
+      <!--Body content-->
+  <h1>Add new source</h1>
+     
+   @helper.form(action = routes.CtrlSource.add()) {
+    <dl>
+      <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
+      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
+      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
+      <input type="submit" value="Register" class="buttonLG"/>
+    </dl>
+  }
+  <br />
+  <br />
+
+    </div>
+  </div>
+
+
+
+}
