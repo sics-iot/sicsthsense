@@ -22,6 +22,24 @@ public class CtrlSource extends Controller {
 
 	static private Form<Source> sourceForm = Form.form(Source.class);
 
+	// poll the source data and fill the stream definition form
+	// with default sensible parameters for the user to confirm
+	@Security.Authenticated(Secured.class)
+	public static Result initialise() {
+		Form<Source> theForm = sourceForm.bindFromRequest();
+		if(theForm.hasErrors()) {
+		  return badRequest("Bad request");
+		} else {
+			Source submitted = theForm.get();
+			// get data
+			submitted.initialise():
+			// parse initially, and guess values 		
+
+		  return redirect(routes.Application.configureSource());
+		}
+	}
+
+	// create the source and corresponding streamparser objects
 	@Security.Authenticated(Secured.class)
 	public static Result add() {
 		Form<Source> theForm = sourceForm.bindFromRequest();
@@ -29,7 +47,11 @@ public class CtrlSource extends Controller {
 		  return badRequest("Bad request");
 		} else {
 		  Source submitted = theForm.get();
+
+					
+
 		  Source.create(submitted);
+			// Stream Parse create()s
 		  return redirect(routes.Application.manage());
 		}
 	}

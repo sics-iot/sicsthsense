@@ -4,12 +4,10 @@
 
 @layout("Manage", session) {
 
- <div class="container">
-
     <!-- Docs nav
     ================================================== -->
     <div class="row">
-      <div class="span3 bs-docs-sidebar">
+      <div class="span2 bs-docs-sidebar">
 		<br /> <br /> <br /> 
         <ul class="nav nav-list bs-docs-sidenav">
           <li><a href="#"><i class="icon-chevron-right"></i>Sources</a></li>
@@ -20,9 +18,9 @@
       <div class="span9">
 	<br \>
       <!--Body content-->
-  <h1>Register new source</h1>
+  <h1>Add new source</h1>
      
-   @helper.form(action = routes.CtrlSource.add()) {
+   @helper.form(action = routes.CtrlSource.initialise()) {
     <dl>
       <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
       <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
@@ -40,7 +38,6 @@
 
     </div>
   </div>
-</div>
 
 
 

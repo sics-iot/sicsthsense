@@ -39,6 +39,9 @@ POST       /api/users/streams/:id			    	controllers.CtrlSource.postByUserKey(id
 GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
+# Source
+GET		/source/add			controllers.CtrlSource.add()
+GET		/source/initialise	controllers.CtrlSource.initialise()
 
 # Javascript Routes
 GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()
