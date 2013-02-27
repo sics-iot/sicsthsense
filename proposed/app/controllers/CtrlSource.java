@@ -15,10 +15,23 @@ import play.libs.Json;
 import play.mvc.*;
 import views.html.accountPage;
 import models.*;
+import play.data.Form;
 
+@Security.Authenticated(Secured.class)
 public class CtrlSource extends Controller {
 
 	static private Form<Source> sourceForm = Form.form(Source.class);
+
+	@Security.Authenticated(Secured.class)
+	public static Result add() {
+		Form<Source> theForm = sourceForm.bindFromRequest();
+		if(theForm.hasErrors()) {
+		  return badRequest("Bad request");
+		} else {
+		  Source submitted = theForm.get();
+		  return redirect(routes.Application.manage());
+		}
+	}
 
 	@Security.Authenticated(Secured.class)
 	public static Result post(Long id) {
