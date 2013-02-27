@@ -10,11 +10,15 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
+import play.data.Form;
 import play.libs.Json;
 import play.mvc.*;
+import views.html.accountPage;
 import models.*;
 
 public class CtrlSource extends Controller {
+
+	static private Form<Source> sourceForm = Form.form(Source.class);
 
 	@Security.Authenticated(Secured.class)
 	public static Result post(Long id) {
@@ -22,6 +26,25 @@ public class CtrlSource extends Controller {
 		return post(currentUser, id);
 	}
 
+	@Security.Authenticated(Secured.class)      
+  public static Result edit() {
+    return TODO; //ok(accountPage.render(getUser(), userForm));
+  }
+	
+	@Security.Authenticated(Secured.class)      
+  public static Result submit() {
+  	Form<Source> theForm = sourceForm.bindFromRequest();
+    if(theForm.hasErrors()) {
+      return badRequest("Bad request");
+    } else {
+  		User currentUser = Secured.getCurrentUser();
+      Source submitted = theForm.get();
+      try { current.updateUser(submitted); }
+      catch (Exception e) { return badRequest("Bad request"); }
+      return redirect(routes.CtrlSource.getById(submitted.id));
+    }
+  }
+	
 	public static Result postByUserKey(Long id, String ownerToken) {
 		User owner = User.getByToken(ownerToken);
 		return post(owner, id);

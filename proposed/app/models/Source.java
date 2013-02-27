@@ -22,6 +22,7 @@ import play.mvc.Http.Request;
 @Entity
 @Table(name = "sources")
 public class Source extends Model {
+
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
@@ -52,16 +53,40 @@ public class Source extends Model {
 			Long.class, Source.class);
 
 	/** Call to create, or update an access token */
-	protected String createToken() {
-		token = UUID.randomUUID().toString();
-		save();
+	private String updateToken() {
+		String newtoken = UUID.randomUUID().toString();
+		token = newtoken;
+		if(id > 0) {
+			this.update();
+		}
 		return token;
+	}
+	
+	public Source(User owner, Long pollingPeriod,
+			Long lastPolled, String pollingUrl, String pollingAuthenticationKey) {
+		super();
+		this.owner = owner;
+		this.pollingPeriod = pollingPeriod;
+		this.lastPolled = lastPolled;
+		this.pollingUrl = pollingUrl;
+		this.pollingAuthenticationKey = pollingAuthenticationKey;
 	}
 
 	protected String getToken() {
 		return token;
 	}
 
+	public void updateSource(Source source) {
+		this.pollingPeriod = source.pollingPeriod;
+		this.lastPolled = source.lastPolled;
+		this.pollingUrl = source.pollingUrl;
+		this.pollingAuthenticationKey = source.pollingAuthenticationKey;
+		if(token == null || "".equalsIgnoreCase(token)) {
+			updateToken();
+		}
+		update();
+	}
+	
 	public Boolean checkToken(String token) {
 		return token == this.token;
 	}
@@ -92,6 +117,15 @@ public class Source extends Model {
 		if (user != null) {
 			Source source = new Source(user);
 			source.save();
+			return source;
+		}
+		return null;
+	}
+	
+	public static Source create(Source source) {
+		if (source.owner != null) {
+			source.save();
+			source.updateToken();
 			return source;
 		}
 		return null;

@@ -132,6 +132,7 @@ public class StreamParser extends Model {
 	private boolean parseTextResponse(String textBody) {
 		Stream stream = vfile.getLink();
 		if (inputParser != null && inputParser != "") {
+			regexPattern = Pattern.compile(inputParser);
 			Matcher matcher = regexPattern.matcher(textBody);
 			if (textBody != null && matcher.find()) {
 				String result = matcher.group(1);

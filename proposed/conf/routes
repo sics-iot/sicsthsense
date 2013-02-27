@@ -28,6 +28,9 @@ GET        /streams/:ownerName/$path<.*>		controllers.CtrlSource.getData(ownerNa
 GET        /streams/:ownerName							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 
+# Sources
+GET				/sources/:id											controllers.CtrlSource.getById(id: Long)
+
 # Streams, API
 GET        /api/streams/:id						    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /api/streams/:id			    				controllers.CtrlSource.postBySourceKey(id : Long, source_key: String)
