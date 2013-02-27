@@ -33,13 +33,17 @@ public class CtrlSource extends Controller {
 	
 	@Security.Authenticated(Secured.class)      
   public static Result submit() {
+		/* TODO:
+		 * Create source from Form or update existing
+		 * Create a parser from an embedded form and associate the parser with the new source
+		*/
   	Form<Source> theForm = sourceForm.bindFromRequest();
     if(theForm.hasErrors()) {
       return badRequest("Bad request");
     } else {
   		User currentUser = Secured.getCurrentUser();
       Source submitted = theForm.get();
-      try { current.updateUser(submitted); }
+      try { Source.create(submitted); }
       catch (Exception e) { return badRequest("Bad request"); }
       return redirect(routes.CtrlSource.getById(submitted.id));
     }
