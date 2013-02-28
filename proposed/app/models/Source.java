@@ -63,11 +63,11 @@ public class Source extends Model {
 	}
 	
 	public Source(User owner, Long pollingPeriod,
-			Long lastPolled, String pollingUrl, String pollingAuthenticationKey) {
+			 String pollingUrl, String pollingAuthenticationKey) {
 		super();
 		this.owner = owner;
 		this.pollingPeriod = pollingPeriod;
-		this.lastPolled = lastPolled;
+		this.lastPolled = 0L;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
 	}

@@ -1,4 +1,4 @@
-@(streams: List[Stream])
+@(myForm: Form[SkeletonSource])
 
 @import helper._
 
@@ -19,8 +19,14 @@
 	<br \>
       <!--Body content-->
   <h1>Add new source</h1>
-     
-   @helper.form(action = routes.CtrlSource.add()) {
+	@helper.form(action = routes.CtrlSource.add()) { 
+	    @helper.inputText(myForm("pollingUrl"))
+	    @helper.inputText(myForm("pollingPeriod"))
+	    @helper.inputText(myForm("pollingAuthenticationKey"))
+	     <!--
+	    helper.inputPassword(myForm("password"))
+	   	repeat(field("phones"), min = 0) { phone => phoneField(phone("number")) }
+			-->
     <dl>
       <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
       <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
@@ -33,7 +39,5 @@
 
     </div>
   </div>
-
-
 
 }

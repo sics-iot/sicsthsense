@@ -10,6 +10,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
+import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.*;
@@ -20,6 +21,7 @@ import play.data.Form;
 @Security.Authenticated(Secured.class)
 public class CtrlSource extends Controller {
 
+	static private Form<SkeletonSource> skeletonSourceForm = Form.form(SkeletonSource.class);
 	static private Form<Source> sourceForm = Form.form(Source.class);
 
 	// poll the source data and fill the stream definition form
@@ -32,29 +34,52 @@ public class CtrlSource extends Controller {
 		} else {
 			Source submitted = theForm.get();
 			// get data
-			submitted.initialise():
-			// parse initially, and guess values 		
+			//submitted.initialise():
+			// parse initially, and guess values
+			SkeletonSource skeleton = new SkeletonSource(1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null, null, null);
+			skeletonSourceForm.fill(skeleton);
 
-		  return redirect(routes.Application.configureSource());
+		  return ok(views.html.configureSource.render(skeletonSourceForm));
 		}
 	}
-
-	// create the source and corresponding streamparser objects
+	
+	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
-	public static Result add() {
-		Form<Source> theForm = sourceForm.bindFromRequest();
-		if(theForm.hasErrors()) {
-		  return badRequest("Bad request");
-		} else {
-		  Source submitted = theForm.get();
-
-					
-
-		  Source.create(submitted);
-			// Stream Parse create()s
-		  return redirect(routes.Application.manage());
+	public static Result add() {		
+		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
+		// validate form
+		SkeletonSource skeleton = theForm.get();
+		User currentUser = Secured.getCurrentUser();
+		Source submitted = Source.create(new Source(currentUser,
+				skeleton.pollingPeriod, skeleton.pollingUrl,
+				skeleton.pollingAuthenticationKey));
+		for (int i = 0; i < skeleton.inputParsers.size(); i++) {
+			StreamParser sp = new StreamParser(submitted,
+					skeleton.inputParsers.get(i), skeleton.inputType.get(i),
+					skeleton.vfilePaths.get(i));
+			StreamParser.create(sp);
 		}
+        //TODO: validate the form... error handling
+		//if(theForm.hasErrors()) {
+		  //return badRequest("Bad request");
+		//} else {
+		  //Source submitted = theForm.get();
+		  return redirect(routes.Application.manage());
 	}
+
+	//
+//DynamicForm requestData = Form.form().bindFromRequest();
+//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
+//String pollingUrl = requestData.get("pollingUrl");
+//String authentication = requestData.get("authentication");
+
+//extracting stream parsers
+//int n = 0;
+//while() {
+//String inputType = requestData.get("inputType["+ Integer.toString(n)+"]")
+//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
+//}
+//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
 
 	@Security.Authenticated(Secured.class)
 	public static Result post(Long id) {
@@ -67,22 +92,25 @@ public class CtrlSource extends Controller {
     return TODO; //ok(accountPage.render(getUser(), userForm));
   }
 	
-	@Security.Authenticated(Secured.class)      
-  public static Result submit() {
-		/* TODO:
-		 * Create source from Form or update existing
-		 * Create a parser from an embedded form and associate the parser with the new source
-		*/
-  	Form<Source> theForm = sourceForm.bindFromRequest();
-    if(theForm.hasErrors()) {
-      return badRequest("Bad request");
-    } else {
-		User currentUser = Secured.getCurrentUser();
-		Source submitted = theForm.get();
-		try { Source.create(submitted); }
-		catch (Exception e) { return badRequest("Bad request"); }
-		return redirect(routes.CtrlSource.getById(submitted.id));
-	}
+	@Security.Authenticated(Secured.class)
+	public static Result modify(Long id) {
+		/*
+		 * TODO: Create source from Form or update existing Create a parser from an
+		 * embedded form and associate the parser with the new source
+		 */
+		Form<Source> theForm = sourceForm.bindFromRequest();
+		if (theForm.hasErrors()) {
+			return badRequest("Bad request");
+		} else {
+			User currentUser = Secured.getCurrentUser();
+			Source submitted = theForm.get();
+			try {
+				Source.get(id, currentUser).updateSource(submitted);
+			} catch (Exception e) {
+				return badRequest("Bad request");
+			}
+			return redirect(routes.CtrlSource.getById(submitted.id));
+		}    
   }
 	
 	public static Result postByUserKey(Long id, String ownerToken) {
