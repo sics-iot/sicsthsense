@@ -1,6 +1,32 @@
 @(myForm: Form[SkeletonSource])
 
 @import helper._
+@import helper.twitterBootstrap._
+
+@title = {
+Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
+}
+
+@streamParserGroup(field: Field, className: String = "parser") = {
+<div class="twipsies well @className">
+	<a class="removeParser btn danger pull-right">Remove this parser</a>
+	@inputText(
+		field("vfilePath"),
+		'_label -> "Stream path"
+	)
+
+	@inputText(
+		field("inputParser"),
+		'_label -> "Input parser"
+	)
+
+	@inputText(
+		field("inputType"),
+		'_label -> "Content type",
+		'_value -> "application/json"
+	)
+</div>
+}
 
 @layout("Manage", session) {
 
@@ -17,27 +43,111 @@
       </div>
       <div class="span9">
 	<br \>
+
       <!--Body content-->
+	      <!-- TODO: handle errors-->
+	      @if(false) {
+	      <div class="alert-message error">
+		      <p><strong>Oops</strong> Please fix all errors</p>
+	      </div>
+	      }
   <h1>Add new source</h1>
-	@helper.form(action = routes.CtrlSource.add()) { 
-	    @helper.inputText(myForm("pollingUrl"))
-	    @helper.inputText(myForm("pollingPeriod"))
-	    @helper.inputText(myForm("pollingAuthenticationKey"))
-	     <!--
-	    helper.inputPassword(myForm("password"))
-	   	repeat(field("phones"), min = 0) { phone => phoneField(phone("number")) }
-			-->
-    <dl>
-      <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
-      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
-      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
-      <input type="submit" value="Register" class="buttonLG"/>
-    </dl>
+	@helper.form(action = routes.CtrlSource.add(), 'id -> "form") {
+	      <fieldset>
+		      <legend>Source configuration</legend>
+	      @inputText(
+			    myForm("pollingUrl"),
+		      '_label -> "URL",
+		      '_help -> "Polling URL"
+	      )
+	      @inputText(
+			    myForm("pollingPeriod"),
+		      '_label -> "Period",
+		      '_help -> "Polling period"
+	      )
+	      @inputText(
+		      myForm("pollingAuthenticationKey"),
+		      '_label -> "Authentication key",
+		      '_help -> "Enter authentication details if required by polled source"
+		      )
+
+	      </fieldset>
+
+	      <fieldset>
+		      <legend>Stream Parsers</legend>
+		      <div id="parsers">
+
+			      @repeat(myForm("streamParserWrapers")) { spw =>
+			        @streamParserGroup(spw)
+			      }
+
+			      @**
+			      * Keep an hidden block that will be used as template for Javascript copy code
+			      **@
+			      @streamParserGroup(
+				      myForm("streamParserWrapers[x]"),
+				      className = "parsers_template"
+			      )
+
+			      <div class="manage">
+				      <a class="addParser btn success">Add another stream parser</a>
+			      </div>
+
+		      </div>
+
+	      </fieldset>
+
+	      <div class="actions">
+		      <input type="submit" class="btn primary" value="Insert">
+		      <a href="@routes.Application.manage()" class="btn">Cancel</a>
+	      </div>
   }
+	      <script type="text/javascript" charset="utf-8">
+
+		      $('.removeParser').live('click', function(e) {
+		      $(this).parents('.parser').remove()
+		      renumber()
+		      })
+
+		      $('.addParser').live('click', function(e) {
+		      var template = $('.parsers_template')
+		      template.before('<div class="twipsies well parser">' + template.html() + '</div>')
+		      renumber()
+		      })
+
+		      $('#form').submit(function() {
+		      $('.parsers_template').remove()
+		      })
+
+		      // -- renumber fields
+
+		      // Rename fields to have a coherent payload like:
+		      //
+		      // informations[0].label
+		      // informations[0].email
+		      // informations[0].phones[0]
+		      // informations[0].phones[1]
+		      // ...
+		      //
+		      // This is probably not the easiest way to do it. A jQuery plugin would help.
+
+		      var renumber = function(phones) {
+			      $('.parser').each(function(i) {
+				      $('input', this).each(function() {
+				      $(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'))
+				      })
+
+			      })
+		      }
+
+	      </script>
+
+	      <!-- end add source-->
   <br />
   <br />
 
     </div>
   </div>
+
 
 }

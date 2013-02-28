@@ -27,14 +27,14 @@ public class StreamParser extends Model {
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
 	 */
-	public enum parserType {
-		@EnumValue("R")
-		REGEX, 
-		@EnumValue("J")
-		JSON, 
-		@EnumValue("X")
-		XPATH
-	};
+//	public enum parserType {
+//		@EnumValue("R")
+//		REGEX,
+//		@EnumValue("J")
+//		JSON,
+//		@EnumValue("X")
+//		XPATH
+//	};
 
 	@Id
 	public Long id;
@@ -53,9 +53,9 @@ public class StreamParser extends Model {
 	public String inputParser;
 
 	/**
-	 * JSON, HTML, text, XML, ... to overide MIME contentType of input Right now,
+	 * JSON, HTML, text, XML, ... to override MIME contentType of input Right now,
 	 * it could be defined as application/json, otherwise, request's content is
-	 * handeled as text
+	 * handled as text
 	 */
 	public String inputType = null;
 

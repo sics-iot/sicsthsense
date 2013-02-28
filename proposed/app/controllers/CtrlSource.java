@@ -36,7 +36,7 @@ public class CtrlSource extends Controller {
 			// get data
 			//submitted.initialise():
 			// parse initially, and guess values
-			SkeletonSource skeleton = new SkeletonSource(1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null, null, null);
+			SkeletonSource skeleton = new SkeletonSource(1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
 			skeletonSourceForm.fill(skeleton);
 
 		  return ok(views.html.configureSource.render(skeletonSourceForm));
@@ -50,13 +50,9 @@ public class CtrlSource extends Controller {
 		// validate form
 		SkeletonSource skeleton = theForm.get();
 		User currentUser = Secured.getCurrentUser();
-		Source submitted = Source.create(new Source(currentUser,
-				skeleton.pollingPeriod, skeleton.pollingUrl,
-				skeleton.pollingAuthenticationKey));
-		for (int i = 0; i < skeleton.inputParsers.size(); i++) {
-			StreamParser sp = new StreamParser(submitted,
-					skeleton.inputParsers.get(i), skeleton.inputType.get(i),
-					skeleton.vfilePaths.get(i));
+		Source submitted = Source.create(skeleton.getSource(currentUser));
+		List<StreamParser> spList = skeleton.getStreamParsers(submitted);
+		for (StreamParser sp : spList) {
 			StreamParser.create(sp);
 		}
         //TODO: validate the form... error handling
