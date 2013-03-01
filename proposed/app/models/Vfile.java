@@ -36,7 +36,7 @@ public class Vfile extends Model {
 	 */
 	private static final long serialVersionUID = 1766439519493690841L;
 
-	public enum Filetype {
+	public static enum Filetype {
 		@EnumValue("F")
 		FILE, 
 		@EnumValue("D")
@@ -79,6 +79,7 @@ public class Vfile extends Model {
 			file.save();
 			return file;
 		}
+		Logger.error("Could not create file because owner is null: " + file.path);
 		return null;
 	}
 	

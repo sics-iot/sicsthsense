@@ -36,7 +36,7 @@ public class FileSystem {
 
 	public static Vfile addFile(User user, String path) {
 		int i=0;
-		int sep=-1;
+		int sep=2;
 		while ( (sep=path.indexOf('/',sep)) != -1 ) { // for each subdir into path
 			String ancestors = path.substring(0, sep);
 			if (!fileExists(user, ancestors)) { // if parent doesnt exist
@@ -70,7 +70,7 @@ public class FileSystem {
 
 	public static boolean isDir(User user, String path) {
 		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
-		if (f.type == Vfile.Filetype.DIR) {
+		if (f != null && f.type == Vfile.Filetype.DIR) {
 			return true;
 		} else {
 			return false;

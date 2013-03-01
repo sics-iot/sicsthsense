@@ -50,6 +50,9 @@ public class CtrlSource extends Controller {
 		// validate form
 		SkeletonSource skeleton = theForm.get();
 		User currentUser = Secured.getCurrentUser();
+		if(currentUser == null) {
+			Logger.error("[CtrlSource.add] currentUser is null!");
+		}
 		Source submitted = Source.create(skeleton.getSource(currentUser));
 		List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 		for (StreamParser sp : spList) {

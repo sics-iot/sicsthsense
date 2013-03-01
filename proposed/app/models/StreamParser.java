@@ -96,7 +96,7 @@ public class StreamParser extends Model {
 		this.inputParser = inputParser;
 		if (inputParser != null) {
 			regexPattern = Pattern.compile(inputParser);
-			if (this.id != 0) {
+			if (this.id != null) {
 				this.update();
 			}
 			return true;
