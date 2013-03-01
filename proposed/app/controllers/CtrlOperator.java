@@ -24,7 +24,7 @@ public class CtrlOperator extends Controller {
 	static private Form<Operator> operatorForm = Form.form(Operator.class);
 
 	@Security.Authenticated(Secured.class)
-	public static Result add() {		
+	public static Result attach() {		
 		Form<Operator> theForm = operatorForm.bindFromRequest();
 		if(theForm.hasErrors()) {
 		  return badRequest("Bad request");

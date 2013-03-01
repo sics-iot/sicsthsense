@@ -30,6 +30,11 @@ public class Application extends Controller {
   	//Ugly work around to get Streams only
     return ok(managePage.render(currentUser.streamList));
   }
+  public static Result attachOperator() {
+  	User currentUser = Secured.getCurrentUser();
+  	//Ugly work around to get Streams only
+    return ok(attachOperatorPage.render(currentUser.streamList));
+  }
   
   // -- Javascript routing
   public static Result javascriptRoutes() {

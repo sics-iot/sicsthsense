@@ -28,6 +28,11 @@ public class Operator extends Model {
 		// TODO Auto-generated constructor stub
 	}
 
+	public static Operator attach() {
+		Operator operator = new Operator();
+		return operator;
+	}
+
 	public Operator(User user) {
 		this.owner = user;
 	}

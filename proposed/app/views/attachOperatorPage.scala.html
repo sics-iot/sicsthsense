@@ -1,6 +1,7 @@
 @(streams: List[Stream])
-# needs user sources, external streams? available operators?
-# available operators for this user!
+@** needs user sources, external streams? available operators?
+ available operators for this user!
+ **@
 
 @import helper._
 
@@ -35,24 +36,29 @@
       <div class="span9">
 	<br \>
       <!--Body content-->
-  <h1>Add operator to existing source</h1>
-     
-   @helper.form(action = routes.CtrlSource.initialise()) {
+  <h1>Attach operator to existing Stream</h1>
+  <br />
+   @helper.form(action = routes.CtrlOperator.attach()) {
     <dl>
-      <input input type="text" name="input" required placeholder="Label of input stream" class="inputL" />
-      <input input type="text" name="output" required placeholder="Label of the new stream" class="inputL" />
-      <input input type="" name="operator" class="" value="sum"/>
-      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
-      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
-      <input type="submit" value="Register" class="buttonLG"/>
+			Input Stream: <select name=="inputStream">
+				<option value="stream1">Stream1</option>
+				<option value="stream2">Stream2</option>
+				@for(stream <- streams) {
+				<option value="@stream.id">@stream.id</option>
+				}
+			</select>
+			Operator type: <select name=="operatorType">
+				<option value="add">Add</option>
+				<option value="sum">Sum</option>
+				<option value="max">Max</option>
+			</select>
+			<input input type="text" name="output" required placeholder="Label of the new stream" class="inputL" /><br />
+      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/><br />
+
+      <input type="submit" value="Attach" class="buttonLG"/>
     </dl>
   }
   <br />
-  <h1>Your streams</h1>
-  @for(stream <- streams) {
-  	@vstream.includeStream(stream)
-  	<br />
-  }
   <br />
 
     </div>
