@@ -33,13 +33,15 @@ Should take these parameters, for the side navigation menu
   <br />
 	
 <!-- Stream listing and visualizing -->
-  <h1>Your streams</h1>
-	@for(source <- sources) {
-  	@for(stream <- source.outputStreams) {
-  		@vstream.includeStream(stream)
-  		<br />
-  		}
- 	}
+	@if(sources.length > 0) {
+		<h1>Your streams</h1>
+		@for(source <- sources) {
+			@for(stream <- source.outputStreams) {
+				@vstream.includeStream(stream)
+			  <br />
+			}
+		}
+	}
   <br />
 
     </div>
