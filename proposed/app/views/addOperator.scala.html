@@ -1,0 +1,63 @@
+@(streams: List[Stream])
+# needs user sources, external streams? available operators?
+# available operators for this user!
+
+@import helper._
+
+@layout("Manage", session) {
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span2 bs-docs-sidebar">
+		<br /> <br /> <br /> 
+        <ul class="nav nav-list bs-docs-sidenav">
+					<li><a href="#" onClick="document.getElementById('sourcelist').style.display="none";"><i class="icon-chevron-right"></i>Sources</a>
+					<ul id="sourcelist">
+						<li><a href="#"></i>Source1</a></li>
+						<li><a href="#"></i>Source2</a></li>
+					</ul>
+					</li>
+					<li><a href="#"><i class="icon-chevron-right"></i>External Streams</a>
+					<ul id="extStreams">
+						<li><a href="#"></i>Stream1</a></li>
+						<li><a href="#"></i>Stream2</a></li>
+					</ul>
+					</li>
+					<li><a href="#"><i class="icon-chevron-right"></i>Operators</a>
+					<ul id="operators">
+						<li><a href="#"></i>Sum</a></li>
+						<li><a href="#"></i>Max</a></li>
+					</ul>
+					</li>
+        </ul>
+      </div>
+      <div class="span9">
+	<br \>
+      <!--Body content-->
+  <h1>Add operator to existing source</h1>
+     
+   @helper.form(action = routes.CtrlSource.initialise()) {
+    <dl>
+      <input input type="text" name="input" required placeholder="Label of input stream" class="inputL" />
+      <input input type="text" name="output" required placeholder="Label of the new stream" class="inputL" />
+      <input input type="" name="operator" class="" value="sum"/>
+      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
+      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
+      <input type="submit" value="Register" class="buttonLG"/>
+    </dl>
+  }
+  <br />
+  <h1>Your streams</h1>
+  @for(stream <- streams) {
+  	@vstream.includeStream(stream)
+  	<br />
+  }
+  <br />
+
+    </div>
+  </div>
+
+
+
+}
