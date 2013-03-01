@@ -28,13 +28,17 @@ public class Operator extends Model {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static Operator attach() {
-		Operator operator = new Operator();
-		return operator;
+	public Operator(User user, String input, String output) {
+		this.owner = user;
+
 	}
 
-	public Operator(User user) {
-		this.owner = user;
+
+	public static Operator create(User user, String input, String output) {
+		Operator operator = new Operator(user,input,output);
+		try { operator.save(); }
+		catch (Exception e) {}
+		return operator;
 	}
 
 	/**

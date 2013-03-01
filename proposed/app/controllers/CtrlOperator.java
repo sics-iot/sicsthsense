@@ -31,7 +31,7 @@ public class CtrlOperator extends Controller {
 		} else {
 			Operator operator = theForm.get();
 			User currentUser = Secured.getCurrentUser();
-			////Operator submitted = Operator.create(operator.getSource(currentUser));
+			Operator.create(currentUser,"in","out");
 		  return redirect(routes.Application.manage());
 		}
 	}

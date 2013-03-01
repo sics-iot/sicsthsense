@@ -1,4 +1,4 @@
-@(streams: List[Stream])
+@(sources: List[Source])
 @** needs user sources, external streams? available operators?
  available operators for this user!
  **@
@@ -11,30 +11,11 @@
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-		<br /> <br /> <br /> 
-        <ul class="nav nav-list bs-docs-sidenav">
-					<li><a href="#" onClick="document.getElementById('sourcelist').style.display="none";"><i class="icon-chevron-right"></i>Sources</a>
-					<ul id="sourcelist">
-						<li><a href="#"></i>Source1</a></li>
-						<li><a href="#"></i>Source2</a></li>
-					</ul>
-					</li>
-					<li><a href="#"><i class="icon-chevron-right"></i>External Streams</a>
-					<ul id="extStreams">
-						<li><a href="#"></i>Stream1</a></li>
-						<li><a href="#"></i>Stream2</a></li>
-					</ul>
-					</li>
-					<li><a href="#"><i class="icon-chevron-right"></i>Operators</a>
-					<ul id="operators">
-						<li><a href="#"></i>Sum</a></li>
-						<li><a href="#"></i>Max</a></li>
-					</ul>
-					</li>
-        </ul>
+			@manage.navigationMenu(sources)
+			@** should pass theses parameters(sources, extStreams) **@
       </div>
       <div class="span9">
-	<br \>
+			<br \>
       <!--Body content-->
   <h1>Attach operator to existing Stream</h1>
   <br />
@@ -43,10 +24,11 @@
 			Input Stream: <select name=="inputStream">
 				<option value="stream1">Stream1</option>
 				<option value="stream2">Stream2</option>
-				@for(stream <- streams) {
+				@* @for(stream <- streams) {
 				<option value="@stream.id">@stream.id</option>
-				}
+				} *@
 			</select>
+			&nbsp; &nbsp; &nbsp;
 			Operator type: <select name=="operatorType">
 				<option value="add">Add</option>
 				<option value="sum">Sum</option>
