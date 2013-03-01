@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import play.Logger;
 import play.db.ebean.Model;
 
 @Entity
@@ -28,14 +29,14 @@ public class Operator extends Model {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Operator(User user, String input, String output) {
+	public Operator(User user, String output, String inputStream1, String inputStream2) {
 		this.owner = user;
-
+		Logger.warn("Operator() "+output+" "+inputStream1+" "+inputStream2);
 	}
 
-
-	public static Operator create(User user, String input, String output) {
-		Operator operator = new Operator(user,input,output);
+	public static Operator create(User user, String output, String inputStream1, String inputStream2) {
+		Logger.warn("Operator.create() "+output+" "+inputStream1+" "+inputStream2);
+		Operator operator = new Operator(user,output,inputStream1,inputStream2);
 		try { operator.save(); }
 		catch (Exception e) {}
 		return operator;

@@ -21,7 +21,7 @@
   <br />
    @helper.form(action = routes.CtrlOperator.attach()) {
     <dl>
-			Input Stream: <select name=="inputStream">
+			Input Stream: <select name=="inputStream1">
 				@for(source <- sources) {
 					@for(stream <- source.outputStreams) {
 						<option value="@stream.id">@stream.id</option>
@@ -29,13 +29,22 @@
 				}
 				<option value="fakestream1">FakeStream1</option>
 			</select>
-			&nbsp; &nbsp; &nbsp;
+			&nbsp; &nbsp;
+			Input Stream2: <select name=="inputStream2">
+				@for(source <- sources) {
+					@for(stream <- source.outputStreams) {
+						<option value="@stream.id">@stream.id</option>
+					}
+				}
+				<option value="fakestream1">FakeStream1</option>
+			</select>
+			<br />
 			Operator type: <select name=="operatorType">
 				<option value="add">Add</option>
 				<option value="sum">Sum</option>
 				<option value="max">Max</option>
 			</select>
-			<input input type="text" name="output" required placeholder="Label of the new stream" class="inputL" /><br />
+			<input input type="text" name="output" required placeholder="Label of the output stream" class="inputL" /><br />
       <input input type="hidden" name="ownerName" class="inputL" value="someuser"/><br />
 
       <input type="submit" value="Attach" class="buttonLG"/>
