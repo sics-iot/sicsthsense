@@ -34,17 +34,12 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-		<br /> <br /> <br /> 
-        <ul class="nav nav-list bs-docs-sidenav">
-          <li><a href="#"><i class="icon-chevron-right"></i>Sources</a></li>
-          <li><a href="#"><i class="icon-chevron-right"></i>External Streams</a></li>
-          <li><a href="#"><i class="icon-chevron-right"></i>Operators</a></li>
-        </ul>
+			@views.manage.navigationMenu @** should pass theses parameters(sources, extStreams, operators)**@
       </div>
       <div class="span9">
-	<br \>
+				<br \>
 
-      <!--Body content-->
+ 	      <!--Body content-->
 	      <!-- TODO: handle errors-->
 	      @if(false) {
 	      <div class="alert-message error">
