@@ -17,9 +17,9 @@
       <div class="span9">
 			<br \>
       <!--Body content-->
-  <h1>Attach operator to existing Stream</h1>
+  <h1>Attach function to existing Stream</h1>
   <br />
-   @helper.form(action = routes.CtrlOperator.attach()) {
+   @helper.form(action = routes.CtrlFunction.attach()) {
     <dl>
 			Input Stream: <select name=="inputStream1">
 				@for(source <- sources) {
@@ -39,7 +39,7 @@
 				<option value="fakestream1">FakeStream1</option>
 			</select>
 			<br />
-			Operator type: <select name=="operatorType">
+			Function type: <select name=="operatorType">
 				<option value="add">Add</option>
 				<option value="sum">Sum</option>
 				<option value="max">Max</option>
@@ -52,7 +52,6 @@
   }
   <br />
   <br />
-
     </div>
   </div>
 

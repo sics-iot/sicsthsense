@@ -9,7 +9,7 @@ import scala.reflect.internal.Trees.Super;
 
 @Entity
 @Table(name = "actuators")
-public class Actuator extends Model {
+public class Actuator extends Operator {
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID

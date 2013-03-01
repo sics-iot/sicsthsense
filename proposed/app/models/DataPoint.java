@@ -22,21 +22,22 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	 * 
 	 */
 	private static final long serialVersionUID = 2919758328697338009L;
-
-	@Id
-    public Long id;
   
 	@Column(nullable = false)
     @ManyToOne 
     public Stream stream;
     
     /** T could be any comparable type; i.e. Long, Double, String, etc. */   
+	@Column(unique = true, nullable = false)
     public Long timestamp;
     //public static final String type= T.getClass().ToString();
-          
+
+
+
     public static Model.Finder<Long,DataPoint> find = new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
     
     public abstract DataPoint add();
+
 
 	public DataPoint() {
 		super();

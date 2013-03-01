@@ -24,9 +24,11 @@ Should take these parameters, for the side navigation menu
 	@if(sources.length > 0) {
 		<h1>Your streams</h1>
 		@for(source <- sources) {
-			@for(stream <- source.outputStreams) {
-				@vstream.includeStream(stream)
-			  <br />
+			@if(source.outputStreams != null) {
+				@for(stream <- source.outputStreams) {
+					@vstream.includeStream(stream)
+					<br />
+				}
 			}
 		}
 	}
@@ -35,7 +37,7 @@ Should take these parameters, for the side navigation menu
 	<h1>Add new source</h1>   
    @helper.form(action = routes.CtrlSource.initialise()) {
     <dl>
-      <input input type="text" name="label" required placeholder="Label of the stream" class="inputL" />
+      <input input type="text" name="label" required placeholder="Label of the source" class="inputL" />
       <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
 			<br />
       <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>

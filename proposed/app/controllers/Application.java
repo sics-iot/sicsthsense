@@ -30,9 +30,9 @@ public class Application extends Controller {
   	//Ugly work around to get Streams only
     return ok(managePage.render(currentUser.sourceList));
   }
-  public static Result attachOperator() {
+  public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(attachOperatorPage.render(currentUser.sourceList));
+    return ok(attachFunctionPage.render(currentUser.sourceList));
   }
   
   // -- Javascript routing

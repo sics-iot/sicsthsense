@@ -38,8 +38,6 @@ public class SkeletonSource {
 
 	}
 
-
-
 	public SkeletonSource(Source source, StreamParserWraper... spws) {
 		if(source != null) {
 			this.pollingPeriod = source.pollingPeriod;

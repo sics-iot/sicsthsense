@@ -19,19 +19,19 @@ import models.*;
 import play.data.Form;
 
 @Security.Authenticated(Secured.class)
-public class CtrlOperator extends Controller {
+public class CtrlFunction extends Controller {
 
-	static private Form<Operator> operatorForm = Form.form(Operator.class);
+	static private Form<Function> functionForm = Form.form(Function.class);
 
 	@Security.Authenticated(Secured.class)
 	public static Result attach() {		
-		Form<Operator> theForm = operatorForm.bindFromRequest();
+		Form<Function> theForm = functionForm.bindFromRequest();
 		if(theForm.hasErrors()) {
 		  return badRequest("Bad request");
 		} else {
-			Operator operator = theForm.get();
+			Function operator = theForm.get();
 			User currentUser = Secured.getCurrentUser();
-			Operator.create(currentUser,theForm.field("output").value(),theForm.field("inputStream1").value(),theForm.field("inputStream2").value());
+			Function.create(currentUser,theForm.field("output").value(),theForm.field("inputStream1").value(),theForm.field("inputStream2").value());
 		  return redirect(routes.Application.manage());
 		}
 	}
@@ -48,12 +48,12 @@ public class CtrlOperator extends Controller {
 		 * TODO: Create source from Form or update existing Create a parser from an
 		 * embedded form and associate the parser with the new source
 		 */
-		Form<Operator> theForm = operatorForm.bindFromRequest();
+		Form<Function> theForm = functionForm.bindFromRequest();
 		if (theForm.hasErrors()) {
 			return badRequest("Bad request");
 		} else {
 			User currentUser = Secured.getCurrentUser();
-			Operator submitted = theForm.get();
+			Function submitted = theForm.get();
 			try {
 				//Source.get(id, currentUser).updateSource(submitted);
 			} catch (Exception e) {

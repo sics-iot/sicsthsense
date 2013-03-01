@@ -40,15 +40,28 @@ public class Stream extends Model {
 	@ManyToOne
 	public Source source;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
-	public List<DataPoint> dataPoints = new ArrayList<DataPoint>();
+	@OneToOne(mappedBy="linkedStream")
+	public Vfile file;
 
 	public boolean publicAccess = false;
+
 	/**
 	 * The maximum duration to be kept. This should be used with the database to
 	 * limit the size of the datapoints list
 	 */
 	public Long historySize = 1L;
+
+	/** Last time a point was inserted */
+	public Long lastUpdated = 0L;
+
+	/** Secret token for authentication */
+	private String token;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+	public List<DataPoint> dataPoints = new ArrayList<DataPoint>();
+
+
+
 
 	public Long getHistorySize() {
 		return historySize;
@@ -60,15 +73,8 @@ public class Stream extends Model {
 		this.historySize = historySize;
 	}
 
-	/** Last time a point was inserted */
-	public Long lastUpdated = 0L;
-
 	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
 			Long.class, Stream.class);
-
-	/** Secret token for authentication */
-	private String token;
-
 	/** Call to create, or update an access token */
 	protected String createToken() {
 		token = UUID.randomUUID().toString();

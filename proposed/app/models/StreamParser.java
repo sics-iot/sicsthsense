@@ -42,12 +42,8 @@ public class StreamParser extends Model {
 	@ManyToOne
 	public Source source;
 
-	// @OneToMany
-	// @Transient
-	// public Stream stream;
-
 	@ManyToOne
-	public Vfile vfile;
+	public Stream stream;
 
 	/** RegEx, Xpath, JSON path */
 	public String inputParser;
@@ -72,16 +68,16 @@ public class StreamParser extends Model {
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
-		this.vfile = getOrCreateStreamFile(path);
+		this.stream = getOrCreateStreamFile(path).linkedStream;
 	}
 
 	public StreamParser(Source source, String inputParser, String inputType,
-			Vfile vfile) {
+			Stream stream) {
 		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
-		this.vfile = vfile;
+		this.stream = stream;
 	}
 
 	public static StreamParser create(StreamParser parser) {
@@ -130,7 +126,6 @@ public class StreamParser extends Model {
  * @return true if could post
  */
 	private boolean parseTextResponse(String textBody) {
-		Stream stream = vfile.getLink();
 		if (inputParser != null && inputParser != "") {
 			regexPattern = Pattern.compile(inputParser);
 			Matcher matcher = regexPattern.matcher(textBody);
@@ -176,7 +171,6 @@ public class StreamParser extends Model {
 			String field = matcher.group(++i);
 			jsonNode = jsonNode.path(field);
 			if (jsonNode != null && jsonNode.isValueNode()) {
-				Stream stream = vfile.getLink();
 				return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
 			}
 		}

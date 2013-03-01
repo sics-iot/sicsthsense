@@ -9,7 +9,7 @@ GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
 GET        /manage                               controllers.Application.manage()
-GET        /attachOperator											controllers.Application.attachOperator()
+GET        /attachFunction									controllers.Application.attachFunction()
 GET        /API                                  controllers.Public.about()
 
 # Accounts
@@ -44,8 +44,8 @@ GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_
 POST		/source/add			controllers.CtrlSource.add()
 POST		/source/initialise	controllers.CtrlSource.initialise()
 
-# Operator
-POST		/attachOperator/attach			controllers.CtrlOperator.attach()
+#Function 
+POST		/attachFunction/attach			controllers.CtrlFunction.attach()
 
 # Javascript Routes
 GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()

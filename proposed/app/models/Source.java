@@ -21,22 +21,22 @@ import play.mvc.Http.Request;
 
 @Entity
 @Table(name = "sources")
-public class Source extends Model {
+public class Source extends Operator {
+
+    @Id
+    public Long id;
+
+    @ManyToOne//(cascade = CascadeType.ALL) 
+    public User owner;
+
+    @ManyToOne//(cascade = CascadeType.ALL) 
+		public List<Stream> outputStreams;
 
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
 	 */
 	// @Transient
-	private static final long serialVersionUID = 6496834518631996535L;
-	@Id
-	public Long id;
-
-	@ManyToOne
-	public User owner;
-
-	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
-	public List<Stream> outputStreams = new ArrayList<Stream>();
 
 	public Long pollingPeriod = 0L;
 	public Long lastPolled = 0L;
@@ -48,6 +48,7 @@ public class Source extends Model {
 
 	/** Secret token for authenticating posts coming from outside */
 	private String token;
+
 
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
 			Long.class, Source.class);
