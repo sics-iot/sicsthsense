@@ -31,16 +31,11 @@ public class CtrlOperator extends Controller {
 		} else {
 			Operator operator = theForm.get();
 			User currentUser = Secured.getCurrentUser();
-			Operator submitted = Operator.create(operator.getSource(currentUser));
+			////Operator submitted = Operator.create(operator.getSource(currentUser));
 		  return redirect(routes.Application.manage());
 		}
 	}
 
-	@Security.Authenticated(Secured.class)
-	public static Result post(Long id) {
-		User currentUser = Secured.getCurrentUser();
-		return post(currentUser, id);
-	}
 
 	@Security.Authenticated(Secured.class)      
   public static Result edit() {
@@ -53,46 +48,26 @@ public class CtrlOperator extends Controller {
 		 * TODO: Create source from Form or update existing Create a parser from an
 		 * embedded form and associate the parser with the new source
 		 */
-		Form<Source> theForm = sourceForm.bindFromRequest();
+		Form<Operator> theForm = operatorForm.bindFromRequest();
 		if (theForm.hasErrors()) {
 			return badRequest("Bad request");
 		} else {
 			User currentUser = Secured.getCurrentUser();
-			Source submitted = theForm.get();
+			Operator submitted = theForm.get();
 			try {
-				Source.get(id, currentUser).updateSource(submitted);
+				//Source.get(id, currentUser).updateSource(submitted);
 			} catch (Exception e) {
 				return badRequest("Bad request");
 			}
-			return redirect(routes.CtrlSource.getById(submitted.id));
+		  return redirect(routes.Application.manage());
 		}    
   }
 	
-	public static Result postByUserKey(Long id, String ownerToken) {
-		User owner = User.getByToken(ownerToken);
-		return post(owner, id);
-	}
-
-	private static Result post(User user, Long id) {
-		// rightnow only owner can post
-		Source source = Source.get(id, user);
-		return postBySource(source);
-		// resolve device from device list
-		// if public: good
-		// if this currentUser.username is in ACL: good
-		// else error message
-	}
-
-	public static Result postBySourceKey(Long id, String key) {
-		Source source = Source.get(id, key);
-		return postBySource(source);
-	}
-
 
 	@Security.Authenticated(Secured.class)
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();
-		Source source = Source.get(id, currentUser);
+		//Operator operator = Operator.get(id, currentUser);
 		return TODO;
 	}
 
