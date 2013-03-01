@@ -1,7 +1,7 @@
 @(streams: List[Stream])
 @** 
 Should take these parameters, for the side navigation menu
-@(sources : List[Source], extStreams : List[Stream], operators : List[Operator]) 
+(sources : List[Source], extStreams : List[Stream]) 
 **@	
 @** needs user sources, external streams? available operators? **@
 @import helper._
@@ -12,7 +12,8 @@ Should take these parameters, for the side navigation menu
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-			@views.manage.navigationMenu @** should pass theses parameters(sources, extStreams, operators)**@
+			@manage.navigationMenu 
+			@** should pass theses parameters(sources, extStreams) **@
       </div>
       <div class="span9">
 				<br \>

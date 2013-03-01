@@ -157,3 +157,39 @@
 	$('.set_public_access_resource').on("click", togglePublicAccessResourceButton);
 	$('.remove_public_access_resource').on("click", togglePublicAccessResourceButton);
 	
+			      $('.removeParser').on("click", function(e) {
+			      $(this).parents('.parser').remove();
+			      renumber();
+		      });
+
+		      $('.addParser').on("click", function(e) {
+			      var template = $('.parsers_template');
+			      template.before('<div class="twipsies well parser">' + template.html() + '</div>');
+			      renumber();
+		      });
+
+		      $('add_source_form').submit(function() {
+		      	$('.parsers_template').remove();
+		      });
+
+		      // -- renumber fields
+
+		      // Rename fields to have a coherent payload like:
+		      //
+		      // informations[0].label
+		      // informations[0].email
+		      // informations[0].phones[0]
+		      // informations[0].phones[1]
+		      // ...
+		      //
+		      // This is probably not the easiest way to do it. A jQuery plugin would help.
+
+		      var renumber = function(phones) {
+			      $('.parser').each(function(i) {
+				      $('input', this).each(function() {
+				      $(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+				      });
+
+			      });
+		      };
+	
