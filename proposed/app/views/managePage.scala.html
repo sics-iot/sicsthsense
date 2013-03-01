@@ -14,9 +14,11 @@
 					<ul id="sourcelist">
 						<li><a href="#"></i>Source1</a></li>
 						<li><a href="#"></i>Source2</a></li>
-			<!--			@for(source<- sources) {
-						 <li><a href="#"></i>@source.name</a></li>
-					 } -->
+						@**	scala template comment
+						@for(source<- sources) {
+							<li><a href="#"></i>@source.name</a></li>
+					 	} 
+						**@
 					</ul>
 					</li>
 					<li><a href="#"><i class="icon-chevron-right"></i>External Streams</a>

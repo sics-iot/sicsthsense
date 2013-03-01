@@ -12,9 +12,13 @@ import play.data.validation.Constraints;
 import sun.rmi.log.LogInputStream;
 
 public class SkeletonSource {
+	
 	public Long pollingPeriod = 0L;
+	
 	public String pollingUrl = null;
+	
 	public String pollingAuthenticationKey = null;
+	
 	public List<StreamParserWraper> streamParserWrapers;
 
 	public SkeletonSource(Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
@@ -52,7 +56,7 @@ public class SkeletonSource {
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
-		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length);
+		this.streamParserWrapers = new ArrayList<StreamParserWraper>();
 		for(StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);
 		}
@@ -84,7 +88,7 @@ public class SkeletonSource {
 		}
 		return false;
 	}
-	public class StreamParserWraper {
+	public static class StreamParserWraper {
 		@Constraints.Required
 		public String vfilePath;
 		/** RegEx, Xpath, JSON path */
