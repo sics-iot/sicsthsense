@@ -20,18 +20,6 @@ Should take these parameters, for the side navigation menu
 
  	<!--Body content-->
 
-	<!-- Small add source form -->
-	<h1>Add new source</h1>   
-   @helper.form(action = routes.CtrlSource.initialise()) {
-    <dl>
-      <input input type="text" name="label" required placeholder="Label of the device" class="inputL" />
-      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
-      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
-      <input type="submit" value="Register" class="buttonLG"/>
-    </dl>
-  }
-  <br />
-	
 <!-- Stream listing and visualizing -->
 	@if(sources.length > 0) {
 		<h1>Your streams</h1>
@@ -42,6 +30,20 @@ Should take these parameters, for the side navigation menu
 			}
 		}
 	}
+	<br /> <br />
+	<!-- Small add source form -->
+	<h1>Add new source</h1>   
+   @helper.form(action = routes.CtrlSource.initialise()) {
+    <dl>
+      <input input type="text" name="label" required placeholder="Label of the stream" class="inputL" />
+      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
+			<br />
+      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
+      <input type="submit" value="Register" class="buttonLG"/>
+    </dl>
+  }
+  <br />
+	
   <br />
 
     </div>

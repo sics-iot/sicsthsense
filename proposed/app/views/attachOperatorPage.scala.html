@@ -22,11 +22,12 @@
    @helper.form(action = routes.CtrlOperator.attach()) {
     <dl>
 			Input Stream: <select name=="inputStream">
-				<option value="stream1">Stream1</option>
-				<option value="stream2">Stream2</option>
-				@* @for(stream <- streams) {
-				<option value="@stream.id">@stream.id</option>
-				} *@
+				@for(source <- sources) {
+					@for(stream <- source.outputStreams) {
+						<option value="@stream.id">@stream.id</option>
+					}
+				}
+				<option value="fakestream1">FakeStream1</option>
 			</select>
 			&nbsp; &nbsp; &nbsp;
 			Operator type: <select name=="operatorType">

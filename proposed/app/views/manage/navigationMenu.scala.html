@@ -7,10 +7,10 @@ Should take these parameters
         <ul class="nav nav-list bs-docs-sidenav">
 					<li><a href="#" onClick="document.getElementById('sourcelist').style.display="none";"><i class="icon-chevron-right"></i>Sources</a>
 					<ul id="sourcelist">
-						<li><a href="#"></i>FakeSource1</a></li>
 						@for(source<- sources) {
 							<li><a href="/sources/@source.id"></i>@source.id</a></li>
 					 	} 
+						<li><a href="#"></i>FakeSource1</a></li>
 					</ul>
 					</li>
 					<li><a href="#"><i class="icon-chevron-right"></i>External Streams</a>

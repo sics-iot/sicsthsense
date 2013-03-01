@@ -33,7 +33,7 @@ public class Application extends Controller {
   public static Result attachOperator() {
   	User currentUser = Secured.getCurrentUser();
   	//Ugly work around to get Streams only
-    return ok(attachOperatorPage.render(currentUser.streamList));
+    return ok(attachOperatorPage.render(currentUser.sourceList));
   }
   
   // -- Javascript routing
