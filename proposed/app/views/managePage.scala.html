@@ -1,4 +1,4 @@
-@(streams: List[Stream])
+@(sources : List[Source])
 @** 
 Should take these parameters, for the side navigation menu
 (sources : List[Source], extStreams : List[Stream]) 
@@ -12,7 +12,7 @@ Should take these parameters, for the side navigation menu
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-			@manage.navigationMenu 
+			@manage.navigationMenu(sources) 
 			@** should pass theses parameters(sources, extStreams) **@
       </div>
       <div class="span9">
@@ -34,11 +34,12 @@ Should take these parameters, for the side navigation menu
 	
 <!-- Stream listing and visualizing -->
   <h1>Your streams</h1>
-  @for(stream <- streams) {
-  	@vstream.includeStream(stream)
-  	<br />
-  }
-
+	@for(source <- sources) {
+  	@for(stream <- source.outputStreams) {
+  		@vstream.includeStream(stream)
+  		<br />
+  		}
+ 	}
   <br />
 
     </div>
