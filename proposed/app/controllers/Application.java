@@ -16,6 +16,8 @@ import models.*;
 
 @Security.Authenticated(Secured.class)
 public class Application extends Controller {
+
+	static private Form<Source> sourceForm = Form.form(Source.class);
   
   public static Result home() {
     return ok(homePage.render());
@@ -28,6 +30,11 @@ public class Application extends Controller {
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
     return ok(attachFunctionPage.render(currentUser.sourceList));
+  }
+
+  public static Result manage() {
+  	User currentUser = Secured.getCurrentUser();
+    return ok(managePage.render(currentUser.sourceList,sourceForm));
   }
   
   // -- Javascript routing

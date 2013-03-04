@@ -1,11 +1,14 @@
 package models;
 
+import java.net.*;
+import java.io.*;
 import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import controllers.Utils;
-
-import models.*;
 
 import javax.persistence.*;
 
@@ -13,12 +16,19 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import play.*;
+import play.core.Router.Routes;
+import play.Logger;
 import play.data.validation.Constraints;
 import play.db.ebean.*;
-import scala.reflect.internal.Trees.Super;
-import play.Logger;
+import play.mvc.*;
+import controllers.*;
+import play.data.Form;
 
 import play.mvc.Http.Request;
+
+import models.*;
+import views.html.*;
 
 @Entity
 @Table(name = "sources")
@@ -39,12 +49,10 @@ public class Source extends Operator {
 	 */
 	// @Transient
 
+	public String label = "NewSource";
   public Long pollingPeriod = 0L;
-	
   public Long lastPolled = 0L;
-	
 	public String pollingUrl = null;
-	
 	public String pollingAuthenticationKey = null;
 
 	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
@@ -70,6 +78,7 @@ public class Source extends Operator {
 	public Source(User owner, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
 		super();
+		this.label = label;
 		this.owner = owner;
 		this.pollingPeriod = pollingPeriod;
 		this.lastPolled = 0L;
@@ -87,6 +96,7 @@ public class Source extends Operator {
 	}
 
 	public void updateSource(Source source) {
+		this.label = source.label;
 		this.pollingPeriod = source.pollingPeriod;
 		this.lastPolled = source.lastPolled;
 		this.pollingUrl = source.pollingUrl;
@@ -95,6 +105,90 @@ public class Source extends Operator {
 			updateToken();
 		}
 		update();
+	}
+
+	/**
+	public void performRequest() {
+
+      WSRequestHolder request = WS.url(pollingUrl);
+      request.get().map(
+        new Function<WS.Response, Boolean>() {
+          public Boolean apply(WS.Response response) {
+        	System.out.println("type " + response.getHeader("Content-type"));
+        	JsonNode jsonBody = null;
+        	String textBody = null;
+        	String strBody = null;
+        	switch(response.getHeader("Content-type")) {
+        		case "application/json":
+        			jsonBody = response.asJson();
+        			strBody = jsonBody.asText();
+        			break;
+        		default:
+        			textBody = response.getBody();
+        			strBody = textBody.length() + " bytes";
+        			break;
+        	}
+            //Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
+            //parseResponse(endPoint, jsonBody, textBody, resource);
+            return true;
+          }
+        }
+      );
+      //lastPolled = current;
+	}
+*/
+
+	public HttpURLConnection probe() {
+		Logger.warn("probe(): "+pollingUrl);
+		HttpURLConnection connection = null;  
+		PrintWriter outWriter = null;  
+		BufferedReader serverResponse = null;  
+		StringBuffer returnBuffer = new StringBuffer();  
+		String line;  
+		User currentUser = Secured.getCurrentUser();
+
+		try { 
+			connection = ( HttpURLConnection ) new URL( pollingUrl ).openConnection();  
+			connection.setRequestMethod( "GET" );  
+			//connection.setDoOutput( true );  
+			/*	
+			//CREATE A WRITER FOR OUTPUT  
+			outWriter = new PrintWriter( connection.getOutputStream() );  
+			//PARAMETERS  
+			buff.append( "param1=" );   
+			buff.append( URLEncoder.encode( "Param 1 Value", "UTF-8" ) );  
+			buff.append( "&" );  
+			buff.append( "param2=" );   
+			buff.append( URLEncoder.encode( "Param 2 Value", "UTF-8" ) );  
+			//SEND PARAMETERS  
+			outWriter.println( buff.toString() );  
+			outWriter.flush();  
+			outWriter.close();  
+			*/	
+			return connection;
+
+		} catch (MalformedURLException mue) {  
+			mue.printStackTrace();  
+		  //return badRequest("Malformed URL");
+		} catch (IOException ioe) {  
+			ioe.printStackTrace();  
+		  //return badRequest("IO Exception on probe()");
+		} finally {  
+			if (connection!=null) connection.disconnect();  	
+			if (serverResponse!=null) { try {serverResponse.close();} catch (Exception ex) {}  }  
+		}  
+		return null;
+	}
+
+	public boolean poll() {
+		// perform a poll() if it is time
+		long time = System.currentTimeMillis() / 1000L;
+		if ( (lastPolled+pollingPeriod) < time) {
+			return false; // dont poll yet
+		}
+		Logger.info("Poll() happening!");
+		lastPolled = time;
+		return true;
 	}
 	
 	public Boolean checkToken(String token) {
@@ -147,11 +241,12 @@ public class Source extends Operator {
 
 	public boolean parseAndPost(Request req) {
 		boolean result = false;
+		/*
 		for (StreamParser sp : streamParsers) {
 			if (sp != null) {
 				result |= sp.parseResponse(req);
 			}
-		}
+		}*/
 		return result;
 	}
 

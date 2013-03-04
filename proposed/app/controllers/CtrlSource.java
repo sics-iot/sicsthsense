@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.*;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -14,66 +15,115 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.*;
-import views.html.accountPage;
-import models.*;
 import play.data.Form;
+import java.net.*;
+
+import models.*;
+import views.html.*;
 
 @Security.Authenticated(Secured.class)
 public class CtrlSource extends Controller {
 
 	static private Form<SkeletonSource> skeletonSourceForm = Form.form(SkeletonSource.class);
 	static private Form<Source> sourceForm = Form.form(Source.class);
-	//static public Form<Source> sourceFormInitial = Form.form(Source.class);
 
-	public static Result manage() {
-  	User currentUser = Secured.getCurrentUser();
-  	//Ugly work around to get Streams only
-    return ok(views.html.managePage.render(currentUser.sourceList, sourceForm));
-  }
-	
 	// poll the source data and fill the stream definition form
 	// with default sensible parameters for the user to confirm
 	@Security.Authenticated(Secured.class)
 	public static Result initialise() {
 		Form<Source> theForm = sourceForm.bindFromRequest();
 		if(theForm.hasErrors()) {
-			Logger.error("[CtrlSource.initialise] Form errors: " + theForm.errors().toString());
 		  return badRequest("Bad request");
 		} else {
+			User currentUser = Secured.getCurrentUser();
 			Source submitted = theForm.get();
-			//Logger.info("[CtrlSource.initialise] Submitted polling URL: " + submitted.pollingUrl + " Period: " + submitted.pollingPeriod.toString());
+			StringBuffer returnBuffer = new StringBuffer();  
+			BufferedReader serverResponse;
+
 			// get data
-			//submitted.initialise():
-			// parse initially, and guess values
-			SkeletonSource skeleton = new SkeletonSource(submitted);
+			HttpURLConnection connection = submitted.probe();
+			String contentType = connection.getContentType();
+			Logger.warn(contentType);
+			try {
+				serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
+				String line;
+				while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
+			} catch (IOException ioe) {  
+				return badRequest("Error collecting data from the source URL");
+			}
+			// decide to how to parse this data	
+			if (contentType.matches("application/json.*")) {
+				Logger.warn("json file!");
+				return parseJson(returnBuffer.toString(),submitted);
+			} else if (contentType.matches("text/html.*")) {
+				Logger.warn("html file!");
+			} else {
+				Logger.warn("Unknown content type!");
+			}	
+
+			SkeletonSource skeleton = new SkeletonSource(submitted.label,1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
 			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
-		  return ok(views.html.configureSource.render(skeletonSourceForm));
+
+		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
 		}
 	}
-	
+
+	@Security.Authenticated(Secured.class)
+	public static Result parseJson(String data, Source submitted) {
+			User currentUser = Secured.getCurrentUser();
+			Logger.warn("Trying to parse Json to then auto fill in StreamParsers!");
+
+			JsonNode root = Json.parse(data);
+
+			Iterator<String> sit = root.getFieldNames();
+			while (sit.hasNext()) {
+				String str = sit.next();
+				Logger.warn("Field: "+str);
+			}
+			Iterator<JsonNode> nit = root.getElements();
+			while (nit.hasNext()) {
+				JsonNode n = nit.next();
+				Logger.warn("Node: "+n.getTextValue());
+			}
+
+			SkeletonSource skeleton = new SkeletonSource(submitted.label,1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
+		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
+
+	}
+
 	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
 	public static Result add() {		
 		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
 		// validate form
-		SkeletonSource skeleton = theForm.get();
-		User currentUser = Secured.getCurrentUser();
-		if(currentUser == null) {
-			Logger.error("[CtrlSource.add] currentUser is null!");
+		if(theForm.hasErrors()) {
+		  return badRequest("Bad request");
+		} else {
+			SkeletonSource skeleton = theForm.get();
+			User currentUser = Secured.getCurrentUser();
+			if (currentUser == null) { Logger.error("[CtrlSource.add] currentUser is null!"); }
+
+			//Logger.warn("Submit type: "+ skeletonSourceForm.get("poll") );
+
+			if (false) { // if repoll() source
+				return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
+			} else {
+				Source submitted = Source.create(skeleton.getSource(currentUser));
+				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
+				for (StreamParser sp : spList) {
+					StreamParser.create(sp);
+				}
+				return redirect(routes.CtrlSource.manage());
+			}
 		}
-		Source submitted = Source.create(skeleton.getSource(currentUser));
-		List<StreamParser> spList = skeleton.getStreamParsers(submitted);
-		for (StreamParser sp : spList) {
-			StreamParser.create(sp);
-		}
-        //TODO: validate the form... error handling
-		//if(theForm.hasErrors()) {
-		  //return badRequest("Bad request");
-		//} else {
-		  //Source submitted = theForm.get();
-		  return redirect(routes.CtrlSource.manage());
 	}
 
+	// create the source and corresponding StreamParser objects
+	@Security.Authenticated(Secured.class)
+	public static Result manage() {		
+  	User currentUser = Secured.getCurrentUser();
+    return ok(managePage.render(currentUser.sourceList,sourceForm));
+	}
 	//
 //DynamicForm requestData = Form.form().bindFromRequest();
 //Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
@@ -165,7 +215,10 @@ public class CtrlSource extends Controller {
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();
 		Source source = Source.get(id, currentUser);
-		return TODO;
+		if (source == null) {
+			return badRequest("Source does not exist: "+id);
+		}
+		return ok(sourcePage.render(currentUser.sourceList,source));
 	}
 
 	public static Result getData(String ownerName, String path, Long tail,

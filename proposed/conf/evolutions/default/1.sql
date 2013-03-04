@@ -32,6 +32,7 @@ create table operators (
 create table sources (
   id                        bigint not null,
   owner_id                  bigint,
+  label                     varchar(255),
   polling_period            bigint,
   last_polled               bigint,
   polling_url               varchar(255),

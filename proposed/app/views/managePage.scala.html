@@ -39,9 +39,14 @@ Should take these parameters, for the side navigation menu
 	      <fieldset>
 		      <legend>Source configuration</legend>
 	      @inputText(
+			    myForm("label"),
+		      '_label -> "Label",
+		      '_help -> "Label to name this source"
+	      )
+	      @inputText(
 			    myForm("pollingUrl"),
 		      '_label -> "URL",
-		      '_help -> "Polling URL"
+		      '_help -> "URL to poll for data"
 	      )
 	      @inputText(
 			    myForm("pollingPeriod"),
@@ -51,7 +56,7 @@ Should take these parameters, for the side navigation menu
 	      @inputText(
 		      myForm("pollingAuthenticationKey"),
 		      '_label -> "Authentication key",
-		      '_help -> "Enter authentication details if required by polled source"
+		      '_help -> "Only enter authentication details if required by polled source"
 		      )
 				
  				<div class="actions">
@@ -61,7 +66,7 @@ Should take these parameters, for the side navigation menu
 @**   
     <dl>
       <input input type="text" name="label" required placeholder="Label of the source" class="inputL" />
-      <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
+      <input input type="url" name="pollingUrl" placeholder="Publically reachable URL (optional)" class="inputL" />
 			<br />
       <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
       <input type="submit" value="Register" class="buttonLG"/>
