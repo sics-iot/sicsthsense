@@ -23,22 +23,30 @@ public class CtrlSource extends Controller {
 
 	static private Form<SkeletonSource> skeletonSourceForm = Form.form(SkeletonSource.class);
 	static private Form<Source> sourceForm = Form.form(Source.class);
+	//static public Form<Source> sourceFormInitial = Form.form(Source.class);
 
+	public static Result manage() {
+  	User currentUser = Secured.getCurrentUser();
+  	//Ugly work around to get Streams only
+    return ok(views.html.managePage.render(currentUser.sourceList, sourceForm));
+  }
+	
 	// poll the source data and fill the stream definition form
 	// with default sensible parameters for the user to confirm
 	@Security.Authenticated(Secured.class)
 	public static Result initialise() {
 		Form<Source> theForm = sourceForm.bindFromRequest();
 		if(theForm.hasErrors()) {
+			Logger.error("[CtrlSource.initialise] Form errors: " + theForm.errors().toString());
 		  return badRequest("Bad request");
 		} else {
 			Source submitted = theForm.get();
+			//Logger.info("[CtrlSource.initialise] Submitted polling URL: " + submitted.pollingUrl + " Period: " + submitted.pollingPeriod.toString());
 			// get data
 			//submitted.initialise():
 			// parse initially, and guess values
-			SkeletonSource skeleton = new SkeletonSource(1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
-			skeletonSourceForm.fill(skeleton);
-
+			SkeletonSource skeleton = new SkeletonSource(submitted);
+			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(skeletonSourceForm));
 		}
 	}
@@ -63,7 +71,7 @@ public class CtrlSource extends Controller {
 		  //return badRequest("Bad request");
 		//} else {
 		  //Source submitted = theForm.get();
-		  return redirect(routes.Application.manage());
+		  return redirect(routes.CtrlSource.manage());
 	}
 
 	//

@@ -8,8 +8,8 @@ GET        /openIDCallback                       controllers.Login.openIDCallbac
 GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
-GET        /manage                               controllers.Application.manage()
-GET        /attachFunction									controllers.Application.attachFunction()
+GET        /manage                               controllers.CtrlSource.manage()
+GET        /attachFunction											 controllers.Application.attachFunction()
 GET        /API                                  controllers.Public.about()
 
 # Accounts
@@ -41,8 +41,8 @@ GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 # Source
-POST		/source/add			controllers.CtrlSource.add()
-POST		/source/initialise	controllers.CtrlSource.initialise()
+GET		/source/add													controllers.CtrlSource.add()
+GET		/source/initialise									controllers.CtrlSource.initialise()
 
 #Function 
 POST		/attachFunction/attach			controllers.CtrlFunction.attach()

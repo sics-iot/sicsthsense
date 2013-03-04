@@ -25,19 +25,36 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 
 	@Column(length = 256, unique = true, nullable = false)
 	@Constraints.MaxLength(256)
-	@Constraints.Required
+	@Formats.NonEmpty
 	@Constraints.Email
 	public String email;
 
-	//private List<String> linkedEmails = new ArrayList<String>(10);
+	@Column(length = 256, unique = true, nullable = false)
+	@Constraints.MaxLength(256)
+	@Constraints.Required
+	@Formats.NonEmpty
+	public String userName;
+	
+	public String firstName;
+	public String lastName;
+	public String location;
+
+	@Column(nullable = false)
+	public Date creationDate;
+	
+	public Date lastLogin;
 	
 	/** Secret token for authentication */
 	private String token;
 
-	public String getToken() {
-		return token;
-	}
-
+	@OneToMany(mappedBy = "owner")
+	public List<Source> sourceList = new ArrayList<Source>();
+	@OneToMany(mappedBy = "owner")
+	public List<Stream> streamList = new ArrayList<Stream>();
+	@OneToMany(mappedBy = "owner")
+	public List<Actuator> actuatorList = new ArrayList<Actuator>();
+	
+	//private List<String> linkedEmails = new ArrayList<String>(10);
 	/** Secret token for session authentication */
 	@Transient
 	public String currentSessionToken;
@@ -46,12 +63,10 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		return email;
 	}
 
-	@Column(length = 256, unique = true, nullable = false)
-	@Constraints.MaxLength(256)
-	@Constraints.Required
-	@Formats.NonEmpty
-	protected String userName;
-
+	public String getToken() {
+		return token;
+	}
+	
 	public String getUserName() {
 		return userName;
 	}
@@ -67,25 +82,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String getLocation() {
 		return location;
 	}
-
-	protected String firstName;
-	protected String lastName;
-	protected String location;
-
-	@Column(nullable = false)
-	public Date creationDate;
-	
-	public Date lastLogin;
-
-	@OneToMany(mappedBy = "owner")
-	public List<Source> sourceList = new ArrayList<Source>();
-	@OneToMany(mappedBy = "owner")
-	public List<Stream> streamList = new ArrayList<Stream>();
-	@OneToMany(mappedBy = "owner")
-	public List<Actuator> actuatorList = new ArrayList<Actuator>();
-
 	// -- Queries
-
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(
 			Long.class, User.class);
 

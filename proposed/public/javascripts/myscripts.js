@@ -157,39 +157,43 @@
 	$('.set_public_access_resource').on("click", togglePublicAccessResourceButton);
 	$('.remove_public_access_resource').on("click", togglePublicAccessResourceButton);
 	
-			      $('.removeParser').on("click", function(e) {
-			      $(this).parents('.parser').remove();
-			      renumber();
-		      });
+  // -- renumber fields
 
-		      $('.addParser').on("click", function(e) {
-			      var template = $('.parsers_template');
-			      template.before('<div class="twipsies well parser">' + template.html() + '</div>');
-			      renumber();
-		      });
+  // Rename fields to have a coherent payload like:
+  //
+  // informations[0].label
+  // informations[0].email
+  // informations[0].phones[0]
+  // informations[0].phones[1]
+  // ...
+  //
+  // This is probably not the easiest way to do it. A jQuery plugin would help.
+	function renumberParsers(streamParserWrapers) {
+		$('.parser input', this).each(function(i) {
+			$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+			//$(this).attr('id', $(this).attr('id').replace(/streamParserWrapers_.+?_/g, 'streamParserWrapers_' + i + '_'));
+    });
+ 	};
 
-		      $('add_source_form').submit(function() {
-		      	$('.parsers_template').remove();
-		      });
+	function removeParser(e) {
+		var streamParserWrapers = $(this).parents('.parsers')
+		$(this).parents('.parser').remove();
+   	renumberParsers(streamParserWrapers);
+  };
+  $('.removeParser').on("click", removeParser);
 
-		      // -- renumber fields
+	function insertParser(e) {
+		var streamParserWrapers = $(this).parents('.parsers')
+  	var template = $('.parsers_template');
+   	template.before('<div class="twipsies well parser">' + template.html() + '</div>');
+   	renumberParsers(streamParserWrapers);
+  };
+  $('.addParser').on("click", insertParser);
 
-		      // Rename fields to have a coherent payload like:
-		      //
-		      // informations[0].label
-		      // informations[0].email
-		      // informations[0].phones[0]
-		      // informations[0].phones[1]
-		      // ...
-		      //
-		      // This is probably not the easiest way to do it. A jQuery plugin would help.
+  $('#add_source_form').submit(function() {
+  	$('.parsers_template').remove();
+  });
 
-		      var renumber = function(phones) {
-			      $('.parser').each(function(i) {
-				      $('input', this).each(function() {
-				      $(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
-				      });
 
-			      });
-		      };
-	
+  
+

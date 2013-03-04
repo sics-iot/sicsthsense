@@ -9,7 +9,6 @@ import javax.persistence.OneToMany;
 
 import models.*;
 import play.data.validation.Constraints;
-import sun.rmi.log.LogInputStream;
 
 public class SkeletonSource {
 	
@@ -21,13 +20,21 @@ public class SkeletonSource {
 	
 	public List<StreamParserWraper> streamParserWrapers;
 
-	public SkeletonSource(Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+	public SkeletonSource(Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey) {
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
+	}
+	
+	public SkeletonSource(Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+		this(pollingPeriod, pollingUrl, pollingAuthenticationKey);
 		this.streamParserWrapers = streamParserWrapers;
 	}
 
+	public SkeletonSource(Source source) {
+		this(source, (List<StreamParserWraper>) null);
+	}
+	
 	public SkeletonSource(Source source, List<StreamParserWraper> streamParserWrapers) {
 		if(source != null) {
 			this.pollingPeriod = source.pollingPeriod;
@@ -35,7 +42,6 @@ public class SkeletonSource {
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = streamParserWrapers;
-
 	}
 
 	public SkeletonSource(Source source, StreamParserWraper... spws) {

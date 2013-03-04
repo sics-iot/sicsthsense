@@ -12,11 +12,10 @@ create table actuators (
 
 create table data_point (
   DTYPE                     varchar(16) not null,
-  id                        bigint not null,
   stream_id                 bigint,
-  timestamp                 bigint,
+  timestamp                 bigint not null,
   data                      bigint,
-  constraint pk_data_point primary key (id))
+  constraint uq_data_point_timestamp unique (timestamp))
 ;
 
 create table functions (
@@ -66,13 +65,13 @@ create table parsers (
 create table users (
   id                        bigint not null,
   email                     varchar(256) not null,
-  token                     varchar(255),
   user_name                 varchar(256) not null,
   first_name                varchar(255),
   last_name                 varchar(255),
   location                  varchar(255),
   creation_date             timestamp not null,
   last_login                timestamp,
+  token                     varchar(255),
   constraint uq_users_email unique (email),
   constraint uq_users_user_name unique (user_name),
   constraint pk_users primary key (id))
@@ -96,8 +95,6 @@ create table functions_streams (
   constraint pk_functions_streams primary key (functions_id, streams_id))
 ;
 create sequence actuators_seq;
-
-create sequence data_point_seq;
 
 create sequence functions_seq;
 
@@ -167,8 +164,6 @@ drop table if exists vfiles;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists actuators_seq;
-
-drop sequence if exists data_point_seq;
 
 drop sequence if exists functions_seq;
 

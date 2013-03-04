@@ -1,4 +1,4 @@
-@(sources : List[Source])
+@(sources : List[Source], myForm : Form[Source])
 @** 
 Should take these parameters, for the side navigation menu
 (sources : List[Source], extStreams : List[Stream]) 
@@ -36,6 +36,29 @@ Should take these parameters, for the side navigation menu
 	<!-- Small add source form -->
 	<h1>Add new source</h1>   
    @helper.form(action = routes.CtrlSource.initialise()) {
+	      <fieldset>
+		      <legend>Source configuration</legend>
+	      @inputText(
+			    myForm("pollingUrl"),
+		      '_label -> "URL",
+		      '_help -> "Polling URL"
+	      )
+	      @inputText(
+			    myForm("pollingPeriod"),
+		      '_label -> "Period",
+		      '_help -> "Polling period"
+	      )
+	      @inputText(
+		      myForm("pollingAuthenticationKey"),
+		      '_label -> "Authentication key",
+		      '_help -> "Enter authentication details if required by polled source"
+		      )
+				
+ 				<div class="actions">
+		      <input type="submit" class="btn primary" value="Add">
+	      </div>
+	      </fieldset>
+@**   
     <dl>
       <input input type="text" name="label" required placeholder="Label of the source" class="inputL" />
       <input input type="url" name="url" placeholder="Publically reachable URL (optional)" class="inputL" />
@@ -43,6 +66,8 @@ Should take these parameters, for the side navigation menu
       <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
       <input type="submit" value="Register" class="buttonLG"/>
     </dl>
+**@
+
   }
   <br />
 	

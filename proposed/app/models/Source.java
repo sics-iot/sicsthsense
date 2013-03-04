@@ -13,6 +13,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import play.data.validation.Constraints;
 import play.db.ebean.*;
 import scala.reflect.internal.Trees.Super;
 import play.Logger;
@@ -38,9 +39,12 @@ public class Source extends Operator {
 	 */
 	// @Transient
 
-	public Long pollingPeriod = 0L;
-	public Long lastPolled = 0L;
+  public Long pollingPeriod = 0L;
+	
+  public Long lastPolled = 0L;
+	
 	public String pollingUrl = null;
+	
 	public String pollingAuthenticationKey = null;
 
 	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
@@ -73,6 +77,11 @@ public class Source extends Operator {
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
 	}
 
+	public Source(Long pollingPeriod,
+			 String pollingUrl, String pollingAuthenticationKey) {
+		this(null, pollingPeriod, pollingUrl, pollingAuthenticationKey);
+	}
+	
 	protected String getToken() {
 		return token;
 	}

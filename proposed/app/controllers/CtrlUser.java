@@ -43,18 +43,25 @@ public class CtrlUser extends Controller {
   public static Result edit() {
     return ok(accountPage.render(getUser(), userForm));
   }
-  
-  public static Result submit() {
-    Form<User> theForm = userForm.bindFromRequest();
-    if(theForm.hasErrors()) {
-      return badRequest("Bad request");
-    } else {
-      User current = getUser();
-      User submitted = theForm.get();
-      try { current.updateUser(submitted); }
-      catch (Exception e) { return badRequest("Bad request"); }
-      return redirect(routes.CtrlUser.get());
-    }
-  }
+
+	public static Result submit() {
+		Form<User> theForm = userForm.bindFromRequest();
+		if (theForm.hasErrors()) {
+			return badRequest("Form errors: " + theForm.errors().toString());
+		} else {
+			User current = getUser();
+			User submitted = theForm.get();
+			submitted.id = current.id;
+			submitted.email = current.email;
+			try {
+				//submitted.update();
+				current.updateUser(submitted);
+
+			} catch (Exception e) {
+				return badRequest("Bad request");
+			}
+			return redirect(routes.CtrlUser.get());
+		}
+	}
     
 }

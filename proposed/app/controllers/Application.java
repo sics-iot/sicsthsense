@@ -25,11 +25,6 @@ public class Application extends Controller {
     return TODO;
   }
   
-  public static Result manage() {
-  	User currentUser = Secured.getCurrentUser();
-  	//Ugly work around to get Streams only
-    return ok(managePage.render(currentUser.sourceList));
-  }
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
     return ok(attachFunctionPage.render(currentUser.sourceList));
