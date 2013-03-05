@@ -106,13 +106,28 @@ public class Stream extends Model {
 		}
 	}
 
-	public Stream(User user, Source source) {
+	public Stream(User user, Source source, StreamType type) {
 		this.owner = user;
 		this.source = source;
+		this.type = type;
+		switch( this.type ) {
+		case DOUBLE:
+			this.dataPoints = this.dataPointsDouble;
+			break;
+		case STRING:
+			this.dataPoints = this.dataPointsString;
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public Stream(User user, Source source) {
+		this(user, source, StreamType.UNDEFINED);
 	}
 
 	public Stream(User user) {
-		this.owner = user;
+		this(user, null, StreamType.UNDEFINED);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -145,7 +160,7 @@ public class Stream extends Model {
 	}
 
 	public boolean canRead(User user) {
-		return (publicAccess || owner == user); // || isShare(user);
+		return (publicAccess || owner.equals(user)); // || isShare(user);
 	}
 
 	public boolean canRead(String key) {
