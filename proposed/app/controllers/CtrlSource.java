@@ -49,19 +49,20 @@ public class CtrlSource extends Controller {
 				String line;
 				while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
 			} catch (IOException ioe) {  
+				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace().toString());
 				return badRequest("Error collecting data from the source URL");
 			}
 			// decide to how to parse this data	
-			if (contentType.matches("application/json.*")) {
-				Logger.warn("json file!");
-				return parseJson(returnBuffer.toString(),submitted);
+			if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
+				Logger.info("json file!");
+				return parseJson(returnBuffer.toString(), submitted);
 			} else if (contentType.matches("text/html.*")) {
-				Logger.warn("html file!");
+				Logger.info("html file!");
 			} else {
 				Logger.warn("Unknown content type!");
 			}	
 
-			SkeletonSource skeleton = new SkeletonSource(submitted.label,1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
+			SkeletonSource skeleton = new SkeletonSource(submitted);
 			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
 
 		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
@@ -71,22 +72,23 @@ public class CtrlSource extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result parseJson(String data, Source submitted) {
 			User currentUser = Secured.getCurrentUser();
-			Logger.warn("Trying to parse Json to then auto fill in StreamParsers!");
+			Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
 
 			JsonNode root = Json.parse(data);
 
 			Iterator<String> sit = root.getFieldNames();
 			while (sit.hasNext()) {
 				String str = sit.next();
-				Logger.warn("Field: "+str);
+				Logger.info("Field: "+str);
 			}
 			Iterator<JsonNode> nit = root.getElements();
 			while (nit.hasNext()) {
 				JsonNode n = nit.next();
-				Logger.warn("Node: "+n.getTextValue());
+				Logger.info("Node: "+n.getTextValue());
 			}
 
-			SkeletonSource skeleton = new SkeletonSource(submitted.label,1L,submitted.pollingUrl, submitted.pollingAuthenticationKey, null);
+			SkeletonSource skeleton = new SkeletonSource(submitted);
+			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
 
 	}
