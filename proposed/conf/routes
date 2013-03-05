@@ -32,6 +32,7 @@ POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 # Sources
 POST		/sources/add												controllers.CtrlSource.add()
 POST		/sources/initialise									controllers.CtrlSource.initialise()
+POST		/sources/modify/:id									controllers.CtrlSource.modify(id: Long)
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 
 # Streams, API

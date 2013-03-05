@@ -118,7 +118,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 
 	public Date updateLastLogin() {
 		this.lastLogin = new Date();
-		save();
+		update();
 		return this.lastLogin;
 	}
 	public String generateToken() {
@@ -187,5 +187,9 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	
 	public int compareTo(User user) {
 		return token.compareTo(user.token);
+	}
+	
+	public boolean equals(User user) {
+		return token.equals(user.token) && this.id == user.id;
 	}
 }

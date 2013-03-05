@@ -34,7 +34,7 @@ public class Application extends Controller {
 
   public static Result manage() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(managePage.render(currentUser.sourceList,sourceForm));
+    return ok(managePage.render(currentUser.sourceList, sourceForm));
   }
   
   // -- Javascript routing

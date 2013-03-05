@@ -10,6 +10,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import com.avaje.ebean.Ebean;
+
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -49,7 +51,7 @@ public class CtrlSource extends Controller {
 				String line;
 				while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
 			} catch (IOException ioe) {  
-				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace().toString());
+				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
 				return badRequest("Error collecting data from the source URL");
 			}
 			// decide to how to parse this data	
@@ -63,9 +65,9 @@ public class CtrlSource extends Controller {
 			}	
 
 			SkeletonSource skeleton = new SkeletonSource(submitted);
-			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
+			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 
-		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
+		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 		}
 	}
 
@@ -88,8 +90,8 @@ public class CtrlSource extends Controller {
 			}
 
 			SkeletonSource skeleton = new SkeletonSource(submitted);
-			skeletonSourceForm = skeletonSourceForm.fill(skeleton);
-		  return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
+			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
+		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 
 	}
 
@@ -108,7 +110,7 @@ public class CtrlSource extends Controller {
 			//Logger.warn("Submit type: "+ skeletonSourceForm.get("poll") );
 
 			if (false) { // if repoll() source
-				return ok(views.html.configureSource.render(currentUser.sourceList,skeletonSourceForm,skeleton));
+				return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceForm));
 			} else {
 				Source submitted = Source.create(skeleton.getSource(currentUser));
 				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
@@ -124,7 +126,7 @@ public class CtrlSource extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result manage() {		
   	User currentUser = Secured.getCurrentUser();
-    return ok(managePage.render(currentUser.sourceList,sourceForm));
+    return ok(managePage.render(currentUser.sourceList, sourceForm));
 	}
 	//
 //DynamicForm requestData = Form.form().bindFromRequest();
@@ -157,20 +159,35 @@ public class CtrlSource extends Controller {
 		 * TODO: Create source from Form or update existing Create a parser from an
 		 * embedded form and associate the parser with the new source
 		 */
-		Form<Source> theForm = sourceForm.bindFromRequest();
+		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
+		// validate form
 		if (theForm.hasErrors()) {
-			return badRequest("Bad request");
+			return badRequest("Bad request: " + theForm.errors());
 		} else {
+			SkeletonSource skeleton = theForm.get();
 			User currentUser = Secured.getCurrentUser();
-			Source submitted = theForm.get();
+			Source source = Source.get(id, currentUser);
+			if (source == null) {
+				return badRequest("Source does not exist: " + id);
+			}
+			Source submitted = skeleton.getSource(currentUser);
+			List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 			try {
-				Source.get(id, currentUser).updateSource(submitted);
+				source.updateSource(submitted);
+				if (spList != null) {
+					for (StreamParser sp : spList) {
+						if (sp.id != null) {
+							sp.update();
+						}
+					}
+				} //else { Ebean.delete( source.streamParsers ); }
 			} catch (Exception e) {
+				Logger.error(e.getMessage() + " Stack trace:\n" + e.getStackTrace()[0].toString());
 				return badRequest("Bad request");
 			}
-			return redirect(routes.CtrlSource.getById(submitted.id));
-		}    
-  }
+			return redirect(routes.CtrlSource.getById(id));
+		}
+	}
 	
 	public static Result postByUserKey(Long id, String ownerToken) {
 		User owner = User.getByToken(ownerToken);
@@ -203,7 +220,7 @@ public class CtrlSource extends Controller {
 					return badRequest("Bad request: Can't parse!");
 				}
 			} catch (Exception e) {
-				Logger.info("[Streams] Exception " + e.getMessage());
+				Logger.error("[Streams] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
 //				Logger.info("[Streams] User null"
 //						+ Boolean.toString(currentUser == null));
 				return badRequest("Bad request: Error!");
@@ -218,9 +235,11 @@ public class CtrlSource extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		Source source = Source.get(id, currentUser);
 		if (source == null) {
-			return badRequest("Source does not exist: "+id);
+			return badRequest("Source does not exist: " + id);
 		}
-		return ok(sourcePage.render(currentUser.sourceList,source));
+		SkeletonSource skeleton = new SkeletonSource(source);
+		Form<SkeletonSource> myForm = skeletonSourceForm.fill(skeleton);
+		return ok(sourcePage.render(currentUser.sourceList, myForm));
 	}
 
 	public static Result getData(String ownerName, String path, Long tail,

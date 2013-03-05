@@ -51,6 +51,8 @@ public class Vfile extends Model {
 	@Constraints.Required
 	String path;
 	
+
+
 	@Column(name = "owner_id", nullable = false)
 	@Constraints.Required
 	@ManyToOne
@@ -85,7 +87,9 @@ public class Vfile extends Model {
 	public Filetype getType() {
 		return type;
 	}
-	
+		public String getPath() {
+		return path;
+	}
 	public void setLink(Stream linkedStream) {
 		this.linkedStream = linkedStream;
 		if(id != null) {

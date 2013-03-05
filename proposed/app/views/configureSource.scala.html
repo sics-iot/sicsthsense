@@ -1,4 +1,4 @@
-@(sources: List[Source], myForm: Form[SkeletonSource], skeleton: SkeletonSource)
+@(sources: List[Source], myForm: Form[SkeletonSource])
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -77,7 +77,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
 	      </fieldset>
 
-		      <input type="submit" name="poll" class="btn primary" value="Poll URL">
+		      <input type="submit" name="poll" class="btn btn-primary" value="Poll URL">
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers">
@@ -105,7 +105,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
   <br />
 	      <div class="actions">
-		      <input type="submit" name="add" class="btn primary" value="Add Source">
+		      <input type="submit" name="add" class="btn btn-primary" value="Add Source">
 		      <a href="@routes.CtrlSource.manage()" class="btn">Cancel</a>
 	      </div>
   }

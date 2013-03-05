@@ -75,7 +75,7 @@ public class Source extends Operator {
 		return token;
 	}
 	
-	public Source(User owner, Long pollingPeriod,
+	public Source(User owner, String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
 		super();
 		this.label = label;
@@ -86,9 +86,9 @@ public class Source extends Operator {
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
 	}
 
-	public Source(Long pollingPeriod,
+	public Source(String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
-		this(null, pollingPeriod, pollingUrl, pollingAuthenticationKey);
+		this(null, label, pollingPeriod, pollingUrl, pollingAuthenticationKey);
 	}
 	
 	protected String getToken() {
@@ -168,10 +168,10 @@ public class Source extends Operator {
 			return connection;
 
 		} catch (MalformedURLException mue) {  
-			mue.printStackTrace();  
+			Logger.error(mue.toString() + " Stack trace:\n" + mue.getStackTrace().toString() );  
 		  //return badRequest("Malformed URL");
 		} catch (IOException ioe) {  
-			ioe.printStackTrace();  
+			Logger.error(ioe.toString() + " Stack trace:\n" + ioe.getStackTrace().toString() );
 		  //return badRequest("IO Exception on probe()");
 		} finally {  
 			if (connection!=null) connection.disconnect();  	
@@ -204,7 +204,7 @@ public class Source extends Operator {
 
 	public static Source get(Long id, User user) {
 		Source source = find.byId(id);
-		if (source != null && source.owner == user)
+		if ( source != null && source.owner.equals(user) )
 			return source;
 		return null;
 	}
