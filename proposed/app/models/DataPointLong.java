@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 
 @Entity
-@Inheritance
-@DiscriminatorValue("long")
 public class DataPointLong extends DataPoint {
 
 	public DataPointLong() {
@@ -18,6 +16,7 @@ public class DataPointLong extends DataPoint {
 	 * 
 	 */
 	private static final long serialVersionUID = -6502881310122879601L;
+	
 	public long data;
 
 	public DataPointLong(Stream stream, long data, long timestamp) {
@@ -34,6 +33,7 @@ public class DataPointLong extends DataPoint {
 		}
 		return null;
 	}
+	
 	public Long getData() {
 		return data;
   }

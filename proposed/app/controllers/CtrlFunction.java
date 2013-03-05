@@ -121,7 +121,7 @@ public class CtrlFunction extends Controller {
 		if (!stream.canRead(currentUser))
 			return unauthorized("Private stream!");
 
-		List<DataPoint> dataSet = null;
+		List<? extends DataPoint> dataSet = null;
 		if (tail < 0 && last < 0 && since < 0) {
 			tail = 1L;
 		}

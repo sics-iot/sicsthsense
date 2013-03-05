@@ -8,8 +8,6 @@ import javax.persistence.Transient;
 import com.avaje.ebean.validation.Length;
 
 @Entity
-@Inheritance
-@DiscriminatorValue("string")
 public class DataPointString extends DataPoint {
 
 	public DataPointString() {
@@ -25,6 +23,7 @@ public class DataPointString extends DataPoint {
 	@Transient
 	public final static int maxLength = 160;
 	@Length(min=1, max=maxLength)
+	
 	public String data;
 
 	public DataPointString(Stream stream, String data, long timestamp) {

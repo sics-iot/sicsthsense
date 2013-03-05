@@ -21,11 +21,16 @@ public class Stream extends Model {
 	private static final long serialVersionUID = -8823372604684774587L;
 
 	/* Type of data points this stream stores */
-	public enum StreamType {
+	public static enum StreamType {
 		@EnumValue("D")
-		DOUBLE, @EnumValue("L")
-		LONG, @EnumValue("S")
-		STRING, @EnumValue("U")
+		DOUBLE, 
+		//Long is not needed
+		//TODO: Should provide location instead...s
+		//@EnumValue("L")
+		//LONG, 
+		@EnumValue("S")
+		STRING, 
+		@EnumValue("U")
 		UNDEFINED
 	}
 
@@ -56,12 +61,15 @@ public class Stream extends Model {
 
 	/** Secret token for authentication */
 	private String token;
-
+	
+	@Transient
+	public List<? extends DataPoint> dataPoints;
+	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
-	public List<DataPoint> dataPoints = new ArrayList<DataPoint>();
-
-
-
+	public List<DataPointString> dataPointsString;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+	public List<DataPointDouble> dataPointsDouble;
 
 	public Long getHistorySize() {
 		return historySize;
@@ -151,6 +159,7 @@ public class Stream extends Model {
 	protected boolean post(double data, long time) {
 		if (type == StreamType.UNDEFINED) {
 			type = StreamType.DOUBLE;
+			this.dataPoints = this.dataPointsDouble;
 		}
 		if (type == StreamType.DOUBLE) {
 			DataPoint dp = new DataPointDouble(this, data, time).add();
@@ -161,22 +170,23 @@ public class Stream extends Model {
 		return false;
 	}
 
-	protected boolean post(long data, long time) {
-		if (type == StreamType.UNDEFINED) {
-			type = StreamType.LONG;
-		}
-		if (type == StreamType.LONG) {
-			DataPoint dp = new DataPointLong(this, data, time).add();
-			lastUpdated = time;
-			update();
-			return true;
-		}
-		return false;
-	}
+//	protected boolean post(long data, long time) {
+//		if (type == StreamType.UNDEFINED) {
+//			type = StreamType.LONG;
+//		}
+//		if (type == StreamType.LONG) {
+//			DataPoint dp = new DataPointLong(this, data, time).add();
+//			lastUpdated = time;
+//			update();
+//			return true;
+//		}
+//		return false;
+//	}
 
 	protected boolean post(String data, long time) {
 		if (type == StreamType.UNDEFINED) {
 			type = StreamType.STRING;
+			this.dataPoints = this.dataPointsString;
 		}
 		if (type == StreamType.STRING) {
 			DataPoint dp = new DataPointString(this, data, time).add();
@@ -206,25 +216,28 @@ public class Stream extends Model {
 		}
 	}
 
-	public List<DataPoint> getDataPoints() {
+	public List<? extends DataPoint> getDataPoints() {
 		return dataPoints;
 	}
 
-	public List<DataPoint> getDataPointsTail(long tail) {
-		if (tail == 0)
-			return new ArrayList<DataPoint>(); // TODO should this be return new
-																					// ArrayList<DataPoint>(0) ??
-		List<DataPoint> set = DataPoint.find.where().eq("stream", this)
+	public List<? extends DataPoint> getDataPointsTail(long tail) {
+		if (tail == 0) {
+			tail++;
+			//return new ArrayList<? extends DataPoint>(); // TODO should this be return new
+																					// ArrayList<? extends DataPoint>(0) ??
+		}
+		
+		List<? extends DataPoint> set = DataPoint.find.where().eq("stream", this)
 				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
 		// return set.subList(set.size()-(int)tail, set.size());
 		return set;
 	}
 
-	public List<DataPoint> getDataPointsLast(long last) {
+	public List<? extends DataPoint> getDataPointsLast(long last) {
 		return this.getDataPointsSince(Utils.currentTime() - last);
 	}
 
-	public List<DataPoint> getDataPointsSince(long since) {
+	public List<? extends DataPoint> getDataPointsSince(long since) {
 		return DataPoint.find.where().eq("stream", this).ge("timestamp", since)
 				.orderBy("timestamp desc").findList();
 	}
