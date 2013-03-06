@@ -113,6 +113,13 @@ public class SkeletonSource {
 		}
 		return false;
 	}
+	public void addStreamParser(StreamParserWraper spw) {
+		streamParserWrapers.add(spw);
+	}
+	public void addStreamParser(String vfilePath, String inputParser, String inputType) {
+		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType));
+	}
+
 	public static class StreamParserWraper {
 		public Long parserId;
 		

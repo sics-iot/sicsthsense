@@ -233,6 +233,12 @@ public class Source extends Operator {
 		return null;
 	}
 
+	public static void delete(Long id) {
+		Source source = find.ref(id);
+		Stream.deleteBySource(source);
+		source.delete();
+	}
+
 	public void setPeriod(Long period) {
 		this.pollingPeriod = period;
 	}

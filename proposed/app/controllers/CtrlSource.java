@@ -73,23 +73,28 @@ public class CtrlSource extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result parseJson(String data, Source submitted) {
-			User currentUser = Secured.getCurrentUser();
 			Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
+			User currentUser = Secured.getCurrentUser();
+			SkeletonSource skeleton = new SkeletonSource(submitted);
 
+			// parse JSON and add() all fields
 			JsonNode root = Json.parse(data);
-
 			Iterator<String> sit = root.getFieldNames();
 			while (sit.hasNext()) {
-				String str = sit.next();
-				Logger.info("Field: "+str);
+				String field = sit.next();
+				Logger.info("Field: "+field);
+
+				skeleton.addStreamParser("/"+skeleton.label+"/"+field,field,"application/json");
 			}
+
+			// should probably descend to find all primitive element paths...
+			/*
 			Iterator<JsonNode> nit = root.getElements();
 			while (nit.hasNext()) {
 				JsonNode n = nit.next();
 				Logger.info("Node: "+n.getTextValue());
-			}
+			}*/
 
-			SkeletonSource skeleton = new SkeletonSource(submitted);
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 
@@ -116,6 +121,8 @@ public class CtrlSource extends Controller {
 				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 				for (StreamParser sp : spList) {
 					StreamParser.create(sp);
+					Stream newstream = new Stream();
+					newstream.create(currentUser);
 				}
 				return redirect(routes.CtrlSource.manage());
 			}
@@ -187,6 +194,12 @@ public class CtrlSource extends Controller {
 			}
 			return redirect(routes.CtrlSource.getById(id));
 		}
+	}
+	@Security.Authenticated(Secured.class)
+	public static Result delete(Long id) {
+		// check permission?
+		Source.delete(id);
+		return redirect(routes.CtrlSource.manage());
 	}
 	
 	public static Result postByUserKey(Long id, String ownerToken) {

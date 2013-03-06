@@ -19,8 +19,6 @@ import controllers.Utils;
 import play.libs.F.*;
 import play.libs.WS;
 
-
-
 public class FileSystem {
 
 	public FileSystem() {
@@ -37,19 +35,27 @@ public class FileSystem {
 	public static Vfile addFile(User user, String path) {
 		int i=0;
 		int sep=2;
-		while ( (sep=path.indexOf('/',sep)) != -1 ) { // for each subdir into path
+		//Logger.info(path+" sep "+Integer.toString(sep));
+		while ( (sep=path.indexOf('/',sep+1))+1 != -1 ) { // for each subdir into path
+			if (sep==-1) {break;}
+			//Logger.info(path+" sep "+Integer.toString(sep));
 			String ancestors = path.substring(0, sep);
+			//Logger.info("ancestor: "+ancestors);
 			if (!fileExists(user, ancestors)) { // if parent doesnt exist
 				//create dir
+				//Logger.info("add dir: "+ancestors);
 				addDirectory(user, ancestors);
-			} else if (!isDir(user, path)) { // if file isn't dir
+			} else if (isFile(user, ancestors)) {
 				// complain
-				Logger.error("Path already exists as a file: "+path);
-				return null;
+				Logger.error("Path already exists as a file: "+ancestors);
+				//return null;
+			} else if (isDir(user, ancestors)) { // if file is dir
+				// probably fine	
 			}
 		}
 		// create file, filename: sep-end
 		Vfile f = Vfile.create(new Vfile(user,path,Vfile.Filetype.FILE));
+		//Logger.info("add file: "+path);
 		return f;
 	}
 				
@@ -71,6 +77,15 @@ public class FileSystem {
 	public static boolean isDir(User user, String path) {
 		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f != null && f.type == Vfile.Filetype.DIR) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isFile(User user, String path) {
+		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
+		if (f != null && f.type == Vfile.Filetype.FILE) {
 			return true;
 		} else {
 			return false;

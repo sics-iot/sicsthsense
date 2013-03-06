@@ -221,6 +221,14 @@ public class Stream extends Model {
 		// clearStream(id);
 		find.ref(id).delete();
 	}
+	public static void deleteBySource(Source source) {
+		List<Stream> list = find.where()
+		 .eq("source", source)
+		 .findList();
+		for (Stream stream : list) {
+			stream.delete();
+		}
+	}
 
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
@@ -258,7 +266,9 @@ public class Stream extends Model {
 	}
 
 	private void deleteDataPoints() {
-		Ebean.delete(dataPoints);
+		if (dataPoints != null) {
+			Ebean.delete(dataPoints);
+		}
 		// List<Long> ids = new LinkedList<Long>();
 		// for(DataPoint element: list) {
 		// ids.add(element.id);

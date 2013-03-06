@@ -52,7 +52,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 		      <p><strong>Oops</strong> Please fix all errors</p>
 	      </div>
 	      }
-  <h1>Configure source @myForm("id").value</h1>
+  <h1>Configure '@myForm("label").value'</h1>
 
 	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form") {
 	      <fieldset>
@@ -106,14 +106,18 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 		      </div>
 	      </fieldset>
 	      <div class="actions">
-		      <input type="submit" class="btn btn-primary" value="Update">
+		      <input type="submit" class="btn btn-primary" name="update" value="Update">
 		      <a href="@routes.CtrlSource.manage()" class="btn">Cancel</a>
 	      </div>
   }
-
+		
+  <br />
+	@helper.form(action = routes.CtrlSource.delete(myForm("id").value.toLong), 'id -> "delete_source_form") {
+		<input type="submit" class="btn btn-primary" name="delete" value="Delete">
+	}
 	      <!-- end modify source-->
-  <br />
-  <br />
+  <br /> <br />
+  <br /> <br />
 
     </div>
   </div>

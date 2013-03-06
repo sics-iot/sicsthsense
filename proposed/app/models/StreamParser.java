@@ -191,9 +191,9 @@ public class StreamParser extends Model {
 			f = FileSystem.addFile(source.owner, path);
 		} else if (f.getType() == Vfile.Filetype.DIR) {
 			int i = 0;
-			do{
+			do {
 				f = FileSystem.addFile( source.owner, path + "\\newstream" + Integer.toString(i) );
-			}while( !FileSystem.fileExists( source.owner, path + "\\newstream" + Integer.toString(i++) ) );
+			} while( !FileSystem.fileExists( source.owner, path + "\\newstream" + Integer.toString(i++) ) );
 		 }
 		if (f.getType() == Vfile.Filetype.FILE) {
 			Stream stream = f.getLink();
