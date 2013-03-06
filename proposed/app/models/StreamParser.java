@@ -23,11 +23,15 @@ import play.mvc.Http.Request;
 @Entity
 @Table(name = "parsers")
 public class StreamParser extends Model {
+	
+	
+
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
 	 */
-//	public enum parserType {
+	private static final long serialVersionUID = 2972078391685154152L;
+//	public static enum parserType {
 //		@EnumValue("R")
 //		REGEX,
 //		@EnumValue("J")

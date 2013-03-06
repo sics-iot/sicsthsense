@@ -1,0 +1,53 @@
+@(streams : List[Stream])
+
+@import helper._
+
+@layout("Streams", session) {
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span2 bs-docs-sidebar">
+
+			<div id="vfileTree">
+  <ul>
+    <li><a>Team A's Projects</a>
+      <ul>
+    <li><a>Iteration 1</a>
+          <ul>
+            <li><a>Story A</a></li>
+            <li><a>Story B</a></li>
+            <li><a>Story C</a></li>
+          </ul>
+        </li>
+    <li><a>Iteration 2</a>
+          <ul>
+        <li><a>Story D</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+      </div>
+
+      <div class="span9">
+				<br \>
+
+ 	<!--Body content-->
+
+	<!-- Stream listing and visualizing -->
+	@if(streams.length > 0) {
+		<h1>Your streams</h1>
+				@for(stream <- streams) {
+					@vstream.includeStream(stream)
+					<br />
+				}
+			}
+	<br /> <br />
+	
+    </div>
+  </div>
+
+}

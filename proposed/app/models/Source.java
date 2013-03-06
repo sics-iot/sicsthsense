@@ -32,20 +32,20 @@ import views.html.*;
 	})
 public class Source extends Operator {
 
-    @Id
-    public Long id;
+	@Id
+  public Long id;
 
-    @ManyToOne//(cascade = CascadeType.ALL) 
-    public User owner;
+  @ManyToOne//(cascade = CascadeType.ALL) 
+  public User owner;
 
-    @ManyToOne//(cascade = CascadeType.ALL) 
-		public List<Stream> outputStreams;
+  @ManyToOne//(cascade = CascadeType.ALL) 
+	public List<Stream> outputStreams;
 
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
 	 */
-	// @Transient
+  private static final long serialVersionUID = 7683451697925144957L;
 
 	public String label = "NewSource";
   public Long pollingPeriod = 0L;
@@ -166,10 +166,10 @@ public class Source extends Operator {
 			return connection;
 
 		} catch (MalformedURLException mue) {  
-			Logger.error(mue.toString() + " Stack trace:\n" + mue.getStackTrace().toString() );  
+			Logger.error(mue.toString() + " Stack trace:\n" + mue.getStackTrace()[0].toString() );  
 		  //return badRequest("Malformed URL");
 		} catch (IOException ioe) {  
-			Logger.error(ioe.toString() + " Stack trace:\n" + ioe.getStackTrace().toString() );
+			Logger.error(ioe.toString() + " Stack trace:\n" + ioe.getStackTrace()[0].toString() );
 		  //return badRequest("IO Exception on probe()");
 		} finally {  
 			if (connection!=null) connection.disconnect();  	
@@ -239,12 +239,13 @@ public class Source extends Operator {
 
 	public boolean parseAndPost(Request req) {
 		boolean result = false;
-		/*
-		for (StreamParser sp : streamParsers) {
-			if (sp != null) {
-				result |= sp.parseResponse(req);
+		if(streamParsers != null) {
+			for (StreamParser sp : streamParsers) {
+				if (sp != null) {
+					result |= sp.parseResponse(req);
+				}
 			}
-		}*/
+		}
 		return result;
 	}
 
