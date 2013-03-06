@@ -1,20 +1,21 @@
 package models;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.Transient;
+import java.util.List;
 
+import javax.persistence.*;
+
+import play.db.ebean.Model;
+
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.validation.Length;
 
+import controllers.Utils;
+
 @Entity
+@Table(name = "data_point_string", uniqueConstraints = { 
+		@UniqueConstraint(columnNames = {"stream_id", "timestamp" }) 
+		})
 public class DataPointString extends DataPoint {
-
-	public DataPointString() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	/**
 	 * 
 	 */
@@ -26,10 +27,16 @@ public class DataPointString extends DataPoint {
 	
 	public String data;
 
-	public DataPointString(Stream stream, String data, long timestamp) {
+	public DataPointString() {
+		this(null, null, null);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public DataPointString(Stream stream, String data, Long timestamp) {
 		this.stream = stream;
 		this.data = data;
 		this.timestamp = timestamp;
+		//find = new Model.Finder<Long, DataPointString>(Long.class, DataPointString.class);
 	}
 
 	public DataPointString add() {
@@ -47,4 +54,5 @@ public class DataPointString extends DataPoint {
 	public String getData() {
   	return data;
   }
+	
 }

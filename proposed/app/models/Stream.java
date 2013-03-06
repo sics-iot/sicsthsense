@@ -62,8 +62,8 @@ public class Stream extends Model {
 	/** Secret token for authentication */
 	private String token;
 	
-	@Transient
-	public List<? extends DataPoint> dataPoints;
+	@javax.persistence.Transient
+	public List dataPoints;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<DataPointString> dataPointsString;
@@ -232,7 +232,7 @@ public class Stream extends Model {
 	}
 
 	public List<? extends DataPoint> getDataPoints() {
-		return dataPoints;
+		return (List<? extends DataPoint>)dataPoints;
 	}
 
 	public List<? extends DataPoint> getDataPointsTail(long tail) {

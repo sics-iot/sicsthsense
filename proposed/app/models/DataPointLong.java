@@ -1,25 +1,26 @@
 package models;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
+import javax.persistence.*;
 
-@Entity
+//@Entity
 public class DataPointLong extends DataPoint {
-
-	public DataPointLong() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6502881310122879601L;
 	
-	public long data;
+	public Long data;
 
-	public DataPointLong(Stream stream, long data, long timestamp) {
+	@Column(nullable = false)
+	@ManyToOne
+	public Stream stream;
+	public DataPointLong() {
+		this(null, null, null);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public DataPointLong(Stream stream, Long data, Long timestamp) {
 		this.stream = stream;
 		this.data = data;
 		this.timestamp = timestamp;

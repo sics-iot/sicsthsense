@@ -10,12 +10,18 @@ create table actuators (
   constraint pk_actuators primary key (id))
 ;
 
-create table data_point (
-  DTYPE                     varchar(16) not null,
+create table data_point_double (
   stream_id                 bigint,
-  timestamp                 bigint not null,
-  data                      bigint,
-  constraint uq_data_point_timestamp unique (timestamp))
+  timestamp                 bigint,
+  data                      double,
+  constraint uq_data_point_double_1 unique (stream_id,timestamp))
+;
+
+create table data_point_string (
+  stream_id                 bigint,
+  timestamp                 bigint,
+  data                      varchar(160),
+  constraint uq_data_point_string_1 unique (stream_id,timestamp))
 ;
 
 create table functions (
@@ -38,6 +44,7 @@ create table sources (
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
   token                     varchar(255),
+  constraint uq_sources_1 unique (owner_id,label),
   constraint pk_sources primary key (id))
 ;
 
@@ -50,7 +57,7 @@ create table streams (
   history_size              bigint,
   last_updated              bigint,
   token                     varchar(255),
-  constraint ck_streams_type check (type in ('U','D','L','S')),
+  constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
 ;
 
@@ -113,24 +120,26 @@ create sequence vfiles_seq;
 
 alter table actuators add constraint fk_actuators_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_actuators_owner_1 on actuators (owner_id);
-alter table data_point add constraint fk_data_point_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_data_point_stream_2 on data_point (stream_id);
-alter table functions add constraint fk_functions_owner_3 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_functions_owner_3 on functions (owner_id);
-alter table sources add constraint fk_sources_owner_4 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_sources_owner_4 on sources (owner_id);
-alter table streams add constraint fk_streams_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_streams_owner_5 on streams (owner_id);
-alter table streams add constraint fk_streams_source_6 foreign key (source_id) references sources (id) on delete restrict on update restrict;
-create index ix_streams_source_6 on streams (source_id);
-alter table parsers add constraint fk_parsers_source_7 foreign key (source_id) references sources (id) on delete restrict on update restrict;
-create index ix_parsers_source_7 on parsers (source_id);
-alter table parsers add constraint fk_parsers_stream_8 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_parsers_stream_8 on parsers (stream_id);
-alter table vfiles add constraint fk_vfiles_owner_9 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_vfiles_owner_9 on vfiles (owner_id);
-alter table vfiles add constraint fk_vfiles_linkedStream_10 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_vfiles_linkedStream_10 on vfiles (linked_stream_id);
+alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_data_point_double_stream_2 on data_point_double (stream_id);
+alter table data_point_string add constraint fk_data_point_string_stream_3 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_data_point_string_stream_3 on data_point_string (stream_id);
+alter table functions add constraint fk_functions_owner_4 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_functions_owner_4 on functions (owner_id);
+alter table sources add constraint fk_sources_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_sources_owner_5 on sources (owner_id);
+alter table streams add constraint fk_streams_owner_6 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_streams_owner_6 on streams (owner_id);
+alter table streams add constraint fk_streams_source_7 foreign key (source_id) references sources (id) on delete restrict on update restrict;
+create index ix_streams_source_7 on streams (source_id);
+alter table parsers add constraint fk_parsers_source_8 foreign key (source_id) references sources (id) on delete restrict on update restrict;
+create index ix_parsers_source_8 on parsers (source_id);
+alter table parsers add constraint fk_parsers_stream_9 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_parsers_stream_9 on parsers (stream_id);
+alter table vfiles add constraint fk_vfiles_owner_10 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_vfiles_owner_10 on vfiles (owner_id);
+alter table vfiles add constraint fk_vfiles_linkedStream_11 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_vfiles_linkedStream_11 on vfiles (linked_stream_id);
 
 
 
@@ -144,7 +153,9 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists actuators;
 
-drop table if exists data_point;
+drop table if exists data_point_double;
+
+drop table if exists data_point_string;
 
 drop table if exists functions;
 

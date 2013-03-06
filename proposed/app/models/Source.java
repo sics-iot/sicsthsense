@@ -3,10 +3,6 @@ package models;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +27,9 @@ import models.*;
 import views.html.*;
 
 @Entity
-@Table(name = "sources")
+@Table(name = "sources", uniqueConstraints = { 
+	@UniqueConstraint(columnNames = {"owner_id", "label" }) 
+	})
 public class Source extends Operator {
 
     @Id

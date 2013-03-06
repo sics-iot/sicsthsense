@@ -16,21 +16,21 @@ import controllers.Utils;
 @javax.persistence.MappedSuperclass
 public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
+	@Column(name = "stream_id", nullable = false)
+	@ManyToOne
+	public Stream stream;
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2919758328697338009L;
 
-	@Column(nullable = false)
-	@ManyToOne
-	public Stream stream;
-
 	/** T could be any comparable type; i.e. Long, Double, String, etc. */
-	@Column(unique = true, nullable = false)
+	//@Column(unique = true, nullable = false)
+	//@Id
 	public Long timestamp;
-
-	public static Model.Finder<Long, DataPoint> find = new Model.Finder<Long, DataPoint>(
-			Long.class, DataPoint.class);
+	
+	public static Model.Finder<Long, ? extends DataPoint> find =  new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
 
 	public abstract DataPoint add();
 
@@ -45,6 +45,16 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
 	public abstract Object getData();
 
+//	public abstract List<? extends DataPoint> getByStream(Stream stream);
+//
+//	public abstract List<? extends DataPoint> getByStreamTail(Stream stream, long tail);
+//
+//	public static List<? extends DataPoint> getByStreamLast(Stream stream, long last);
+//
+//	public static List<? extends DataPoint> getByStreamSince(Stream stream, long since);
+//
+//	public static void deleteByStream(Stream stream);
+	
 	public static List<? extends DataPoint> getByStream(Stream stream) {
 		return find.where().eq("stream", stream).orderBy("timestamp desc")
 				.findList();
@@ -82,8 +92,8 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 		// for(Long id: ids) {
 		// find.ref(id).delete();
 		// }
-	}
-
+	}	
+	
 	public int compareTo(DataPoint point) {
 		return Long.valueOf(this.timestamp).compareTo(point.timestamp);
 	}
