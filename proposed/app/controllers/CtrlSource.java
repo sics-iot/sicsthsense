@@ -71,33 +71,37 @@ public class CtrlSource extends Controller {
 		}
 	}
 
+	
+	@Security.Authenticated(Secured.class)
+	public static void parseJsonNode(JsonNode node, SkeletonSource skeleton) {
+			
+		Iterator<String> fieldIt = node.getFieldNames();
+		while (fieldIt.hasNext()) {
+			String field = fieldIt.next();
+			Logger.info("Field: "+field);
+			skeleton.addStreamParser("/"+skeleton.label+"/"+field,field,"application/json");
+		}
+		// should probably descend to all nodes to find all primitive element paths...
+		Iterator<JsonNode> nodeIt = node.getElements();
+		while (nodeIt.hasNext()) {
+			JsonNode n = nodeIt.next();
+			Logger.info("Node: "+n.getTextValue());
+			parseJsonNode(n,skeleton);
+		}
+	}
+
 	@Security.Authenticated(Secured.class)
 	public static Result parseJson(String data, Source submitted) {
 			Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
 			User currentUser = Secured.getCurrentUser();
 			SkeletonSource skeleton = new SkeletonSource(submitted);
 
-			// parse JSON and add() all fields
+			// recusively parse JSON and add() all fields
 			JsonNode root = Json.parse(data);
-			Iterator<String> sit = root.getFieldNames();
-			while (sit.hasNext()) {
-				String field = sit.next();
-				Logger.info("Field: "+field);
-
-				skeleton.addStreamParser("/"+skeleton.label+"/"+field,field,"application/json");
-			}
-
-			// should probably descend to find all primitive element paths...
-			/*
-			Iterator<JsonNode> nit = root.getElements();
-			while (nit.hasNext()) {
-				JsonNode n = nit.next();
-				Logger.info("Node: "+n.getTextValue());
-			}*/
+			parseJsonNode(root,skeleton);
 
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
-
 	}
 
 	// create the source and corresponding StreamParser objects

@@ -10,23 +10,10 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 @streamParserGroup(field: Field, className: String = "parser") = {
 <div class="twipsies well @className">
 	<a class="removeParser btn btn-danger pull-right">Remove this parser</a>
-	@inputText(field("parserId"), '_label -> "Parser Id", 'readonly -> "readonly")
-	@inputText(
-		field("vfilePath"),
-		'_label -> "Stream path",
-		'readonly -> "readonly"
-	)
-
-	@inputText(
-		field("inputParser"),
-		'_label -> "Input parser"
-	)
-
-	@inputText(
-		field("inputType"),
-		'_label -> "Content type",
-		'_value -> "application/json"
-	)
+	@inputText(field("parserId"),   '_label -> "Parser Id",   'readonly -> "readonly")
+	@inputText(field("vfilePath"),  '_label -> "Stream path", 'readonly -> "readonly")
+	@inputText(field("inputParser"),'_label -> "Input parser")
+	@inputText(field("inputType"),  '_label -> "Content type", '_value -> "application/json")
 </div>
 }
 
