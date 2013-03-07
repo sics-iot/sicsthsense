@@ -255,10 +255,10 @@ public class Stream extends Model {
 																					// ArrayList<? extends DataPoint>(0) ??
 		}
 		
-		List<? extends DataPoint> set = DataPoint.find.where().eq("stream", this)
+		List<DataPointDouble> set = DataPointDouble.find.where().eq("stream", this)
 				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
 		// return set.subList(set.size()-(int)tail, set.size());
-		return set;
+		return (List<? extends DataPoint>)set;
 	}
 
 	public List<? extends DataPoint> getDataPointsLast(long last) {

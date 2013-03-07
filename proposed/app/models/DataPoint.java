@@ -33,6 +33,7 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	//@Id
 	public Long timestamp;
 	
+	// this is probably bad
 	public static Model.Finder<Long, ? extends DataPoint> find =  new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
 
 	public abstract DataPoint add();

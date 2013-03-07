@@ -25,6 +25,7 @@ public class DataPointDouble extends DataPoint {
 	 * 
 	 */
 	private static final long serialVersionUID = -6502881310122879601L;
+	public static Model.Finder<Long, DataPointDouble> find =  new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
 	public Double data;
 
 	public DataPointDouble(Stream stream, Double data, Long timestamp) {

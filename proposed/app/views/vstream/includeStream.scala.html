@@ -27,7 +27,7 @@
 		var streamplot@{stream.id} = new Object();
 		streamplot@{stream.id}.id = 'streamplot@{stream.id}';
 		streamplot@{stream.id}.uri = '@{routes.CtrlSource.getDataById(stream.id)}';
-		//streamplot@{stream.id}.path = '{stream.path.substring(1)}'; // for parsing the returned JSON
+		streamplot@{stream.id}.path = '@{stream.file.getPath().substring(1)}'; // for parsing the returned JSON
 		streamplot@{stream.id}.window = @WIN_1D; // in ms
 		streamplot@{stream.id}.since = parseInt(((new Date()).getTime() - streamplot@{stream.id}.window)); // in s for database
 		streamplot@{stream.id}.points = [];
