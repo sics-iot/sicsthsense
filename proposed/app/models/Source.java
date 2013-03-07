@@ -261,7 +261,7 @@ public void asynchPoll() {
 		long currentTime = System.currentTimeMillis() / 1000L;
 		Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
 		if ( (lastPolled+pollingPeriod) > currentTime) { return false; }
-		Logger.info("Poll() happening!");
+		//Logger.info("Poll() happening!");
 
 		asynchPoll();
 

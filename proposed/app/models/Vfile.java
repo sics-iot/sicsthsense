@@ -57,6 +57,10 @@ public class Vfile extends Model {
 	@Constraints.Required
 	@ManyToOne
 	User owner;
+
+	public User getOwner() {
+		return owner;
+	}
 	
 	@Column(nullable = false)
 	@Constraints.Required
@@ -87,7 +91,8 @@ public class Vfile extends Model {
 	public Filetype getType() {
 		return type;
 	}
-		public String getPath() {
+	
+	public String getPath() {
 		return path;
 	}
 	public void setLink(Stream linkedStream) {

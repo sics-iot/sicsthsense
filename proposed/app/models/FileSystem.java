@@ -29,7 +29,7 @@ public class FileSystem {
 	}
 
 	public static List<Vfile> listFiles(User user) {
-		return Vfile.find.where().eq("owner",user).findList();
+		return Vfile.find.where().eq("owner",user).orderBy("path").findList();
 	}
 
 	public static Vfile addFile(User user, String path) {
@@ -50,24 +50,28 @@ public class FileSystem {
 				Logger.error("Path already exists as a file: "+ancestors);
 				//return null;
 			} else if (isDir(user, ancestors)) { // if file is dir
+				//Logger.info("Dir exists: "+ancestors);
 				// probably fine	
+			} else {
+				Logger.info("File system broke! "+ancestors);
 			}
 		}
 		// create file, filename: sep-end
 		Vfile f = Vfile.create(new Vfile(user,path,Vfile.Filetype.FILE));
-		//Logger.info("add file: "+path);
+		Logger.info("add file: "+path);
 		return f;
 	}
 				
 	public static Vfile addDirectory(User user, String path) {
 		// create file, filename: sep-end
 		Vfile dir = Vfile.create( new Vfile(user, path, Vfile.Filetype.DIR) );
+		//Logger.info("add dir: "+path);
 		return dir;
 	}
 
 	public static boolean fileExists(User user, String path) {
 		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
-		if (f==null) { // if file exists
+		if (f!=null) { // if file exists
 			return true;
 		} else {
 			return false;

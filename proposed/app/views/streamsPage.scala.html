@@ -8,11 +8,14 @@
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-
+			<a>Streams tree</a>
 			<div id="vfileTree">
   <ul>
+		@for(vf <- FileSystem.listFiles(streams(0).owner)) {
+				<li><a>@vf.getPath()</a></li> 
+			}
     <li><a>Team A's Projects</a>
-      <ul>
+      <ul>			
     <li><a>Iteration 1</a>
           <ul>
             <li><a>Story A</a></li>
@@ -41,6 +44,10 @@
 	@if(streams.length > 0) {
 		<h1>Your streams</h1>
 				@for(stream <- streams) {
+					@if(stream != null && stream.file != null) {
+						@stream.file.getPath()
+					}
+					<br />
 					@vstream.includeStream(stream)
 					<br />
 				}

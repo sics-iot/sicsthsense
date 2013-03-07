@@ -53,6 +53,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public List<Stream> streamList = new ArrayList<Stream>();
 	@OneToMany(mappedBy = "owner")
 	public List<Actuator> actuatorList = new ArrayList<Actuator>();
+	@OneToMany(mappedBy = "owner")
+	public List<Vfile> fileList = new ArrayList<Vfile>();
 	
 	//private List<String> linkedEmails = new ArrayList<String>(10);
 	/** Secret token for session authentication */
