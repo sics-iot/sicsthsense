@@ -34,6 +34,8 @@ public class Streams extends Controller {
         .findList();
     for(Resource resource: withPolling) {
       poll(resource);
+			// resource.poll()
+			// really:  source.poll()
     }      
   }
   

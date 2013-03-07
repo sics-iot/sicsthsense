@@ -16,7 +16,8 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import play.db.ebean.*;
 import play.Logger;
-
+import play.libs.*;
+import play.libs.WS.WSRequestHolder;
 import play.mvc.Http.Request;
 
 
@@ -106,6 +107,7 @@ public class StreamParser extends Model {
 	 * parseResponse(Request req) chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post
 	 */
+	/*
 	public boolean parseResponse(Request req) {
 		try {
 			if ("application/json".equalsIgnoreCase(inputType)
@@ -118,6 +120,25 @@ public class StreamParser extends Model {
 			}
 		} catch (Exception e) {
 			Logger.info("[Streams] Exception " + e.getMessage());
+		}
+		return false;
+	}*/
+	/**
+	 * parseResponse(Request req) chooses the parser based on content-type.
+	 * inputType overrides the content-type. returns: true if could post
+	 */
+	public boolean parseResponse(WS.Response response) {
+		try {
+			if ("application/json".equalsIgnoreCase(inputType)
+					|| "application/json".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
+				JsonNode jsonBody = response.asJson();
+				return parseJsonResponse(jsonBody);
+			} else {
+				String textBody = response.getBody();
+				return parseTextResponse(textBody);
+			}
+		} catch (Exception e) {
+			Logger.info("[StreamParser] Exception " + e.getMessage());
 		}
 		return false;
 	}

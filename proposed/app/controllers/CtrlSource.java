@@ -278,6 +278,7 @@ public class CtrlSource extends Controller {
 		// if(user == null) return notFound();
 		Stream stream = Stream.get(id);
 		if (stream == null) {
+			Logger.warn("Stream not found!");
 			return notFound();
 		}
 		return getData(user, stream, tail, last, since);

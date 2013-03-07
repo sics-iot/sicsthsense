@@ -24,12 +24,12 @@ import models.*;
 public class Poller extends Controller {
   
   public static void pollAll() {
-		Logger.info("Poller pollAll()");
+		//Logger.info("Poller pollAll()");
     List<Source> withPolling = Source.find.where()
         .gt("pollingPeriod", 0)
         .findList();
     for(Source source: withPolling) {
-			Logger.info("Poller poll a source");
+			//Logger.info("Poller poll a source");
       source.poll();
     }      
   }

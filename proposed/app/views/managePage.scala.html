@@ -11,7 +11,7 @@ Should take these parameters, for the side navigation menu
     <!-- Docs nav
     ================================================== -->
     <div class="row">
-      <div class="span2 bs-docs-sidebar">
+      <div class="span3 bs-docs-sidebar">
 			@manage.navigationMenu(sources) 
 			@** should pass theses parameters(sources, extStreams) **@
       </div>
@@ -33,7 +33,7 @@ Should take these parameters, for the side navigation menu
 	<br /> <br />
 	<!-- Small add source form -->
 	<h1>Add new source</h1>   
-   @helper.form(action = routes.CtrlSource.initialise()) {
+	@helper.form(action = routes.CtrlSource.initialise(),args = 'class -> "form-horizontal") {
 	      <fieldset>
 		      <legend>Source configuration</legend>
 	      @inputText(
@@ -61,15 +61,6 @@ Should take these parameters, for the side navigation menu
 		      <input type="submit" class="btn primary" value="Add">
 	      </div>
 	      </fieldset>
-@**   
-    <dl>
-      <input input type="text" name="label" required placeholder="Label of the source" class="inputL" />
-      <input input type="url" name="pollingUrl" placeholder="Publically reachable URL (optional)" class="inputL" />
-			<br />
-      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/>
-      <input type="submit" value="Register" class="buttonLG"/>
-    </dl>
-**@
 
   }
   <br />

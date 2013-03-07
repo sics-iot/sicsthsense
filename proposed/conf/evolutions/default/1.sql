@@ -11,17 +11,21 @@ create table actuators (
 ;
 
 create table data_point_double (
+  id                        bigint not null,
   stream_id                 bigint,
   timestamp                 bigint,
   data                      double,
-  constraint uq_data_point_double_1 unique (stream_id,timestamp))
+  constraint uq_data_point_double_1 unique (stream_id,timestamp),
+  constraint pk_data_point_double primary key (id))
 ;
 
 create table data_point_string (
+  id                        bigint not null,
   stream_id                 bigint,
   timestamp                 bigint,
   data                      varchar(160),
-  constraint uq_data_point_string_1 unique (stream_id,timestamp))
+  constraint uq_data_point_string_1 unique (stream_id,timestamp),
+  constraint pk_data_point_string primary key (id))
 ;
 
 create table functions (
@@ -104,6 +108,10 @@ create table functions_streams (
 ;
 create sequence actuators_seq;
 
+create sequence data_point_double_seq;
+
+create sequence data_point_string_seq;
+
 create sequence functions_seq;
 
 create sequence operators_seq;
@@ -176,6 +184,10 @@ drop table if exists vfiles;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists actuators_seq;
+
+drop sequence if exists data_point_double_seq;
+
+drop sequence if exists data_point_string_seq;
 
 drop sequence if exists functions_seq;
 

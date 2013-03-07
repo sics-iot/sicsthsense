@@ -16,7 +16,7 @@ class PeriodicMonitor extends Actor {
       / we just poll everyone each second and let them choose to 
       / not act, according to their polling freq.
       */
-      Logger.info("Periodic Monitor")
+      //Logger.info("Periodic Monitor")
       Poller.pollAll()
     }
   }

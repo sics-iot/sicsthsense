@@ -13,18 +13,18 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.*;
-import play.core.Router.Routes;
-import play.Logger;
-import play.data.validation.Constraints;
-import play.db.ebean.*;
-import play.mvc.*;
-import controllers.*;
-import play.data.Form;
 
+import play.db.ebean.*;
+import play.libs.F.*;
+import play.libs.*;
+import play.libs.WS.WSRequestHolder;
+import play.mvc.*;
 import play.mvc.Http.Request;
 
 import models.*;
+import controllers.*;
 import views.html.*;
+import play.data.validation.Constraints;
 
 @Entity
 @Table(name = "sources", uniqueConstraints = { 
@@ -59,16 +59,6 @@ public class Source extends Operator {
 
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
 			Long.class, Source.class);
-
-	/** Call to create, or update an access token */
-	private String updateToken() {
-		String newtoken = UUID.randomUUID().toString();
-		token = newtoken;
-		if(id > 0) {
-			this.update();
-		}
-		return token;
-	}
 	
 	public Source(User owner, String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
@@ -88,12 +78,22 @@ public class Source extends Operator {
 
 	public Source(User user) {
 		this.owner = user;
-		this.lastPolled=0;
+		this.lastPolled=0L;
 	}
 
 	public Source() {
 		super();
-		this.lastPolled=0;
+		this.lastPolled=0L;
+	}
+
+	/** Call to create, or update an access token */
+	private String updateToken() {
+		String newtoken = UUID.randomUUID().toString();
+		token = newtoken;
+		if(id > 0) {
+			this.update();
+		}
+		return token;
 	}
 	
 	protected String getToken() {
@@ -143,6 +143,7 @@ public class Source extends Operator {
 	}
 */
 
+	// construct a synchronous connnection to the URL to be probed in rela time
 	public HttpURLConnection probe() {
 		Logger.warn("probe(): "+pollingUrl);
 		HttpURLConnection connection = null;  
@@ -185,15 +186,87 @@ public class Source extends Operator {
 		return null;
 	}
 
+	// register asychronous polling of data
+public void asynchPoll() {
+      String arguments = "";
+			String path = "";
+      Map<String, String> queryParameters = new HashMap<String, String>();
+
+      if(pollingUrl.indexOf('?') != -1) {
+    	  arguments = pollingUrl.substring(pollingUrl.indexOf('?')+1, pollingUrl.length());
+      }
+
+      Logger.info("[Streams] polling, URL: " + pollingUrl + " args: "+arguments);
+      WSRequestHolder request = WS.url(pollingUrl);
+
+      Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
+      Matcher matcher = pattern.matcher(arguments);
+      while (matcher.find()) { request.setQueryParameter(matcher.group(1), matcher.group(2)); } 
+
+      request.get().map(
+        new F.Function<WS.Response, Boolean>() {
+          public Boolean apply(WS.Response response) {
+						Logger.info("type " + response.getHeader("Content-type"));
+						JsonNode jsonBody = null;
+						String textBody = null;
+						String strBody = null;
+						switch(response.getHeader("Content-type")) {
+							case "application/json":
+								jsonBody = response.asJson();
+								strBody = jsonBody.asText();
+								break;
+							default:
+								Logger.info("we have other data");
+								textBody = response.getBody();
+								strBody = textBody.length() + " bytes";
+								break;
+						}
+						Logger.info("[Streams] polling response for: " + pollingUrl + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
+						parseResponse(response, jsonBody, textBody);
+						return true;
+          }
+        }
+      );
+      lastPolled = System.currentTimeMillis() / 1000L;
+      update();
+    }
+
+  public boolean parseResponse(WS.Response response, JsonNode jsonBody, String textBody) {
+    if(jsonBody != null) {
+			for (StreamParser sp: streamParsers) {
+				sp.parseResponse(response);
+			}
+      //if(!parseJsonResponse(jsonBody, resource.path)) return false;
+    } else {
+			/*
+      if(textBody != null) {
+    	 if(!resource.inputParser.equals("")) {
+    		 Pattern pattern = Pattern.compile(resource.inputParser);
+    		 Matcher matcher = pattern.matcher(textBody);
+    		 if (matcher.find()) {
+    			 textBody = matcher.group(1);
+    		 }
+    	 }
+        insertSample(endPoint, resource.path, Float.parseFloat(textBody));
+      } else {
+        return false;
+      }*/
+    }
+    return true;
+  }
+
+
 	public boolean poll() {
 		// perform a poll() if it is time
-		long time = System.currentTimeMillis() / 1000L;
-		if ( (lastPolled+pollingPeriod) < time) {
-			Logger.info("Poll() not happening!");
-			return false; // dont poll yet
-		}
+		long currentTime = System.currentTimeMillis() / 1000L;
+		Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
+		if ( (lastPolled+pollingPeriod) > currentTime) { return false; }
 		Logger.info("Poll() happening!");
-		lastPolled = time;
+
+		asynchPoll();
+
+		this.lastPolled = currentTime;
+		save();
 		return true;
 	}
 	
@@ -249,7 +322,8 @@ public class Source extends Operator {
 		if(streamParsers != null) {
 			for (StreamParser sp : streamParsers) {
 				if (sp != null) {
-					result |= sp.parseResponse(req);
+					// Liam: not sure what to do here, breaking build...
+					//result |= sp.parseResponse(req);
 				}
 			}
 		}

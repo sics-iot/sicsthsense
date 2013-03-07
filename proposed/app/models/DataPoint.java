@@ -19,6 +19,9 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	@Column(name = "stream_id", nullable = false)
 	@ManyToOne
 	public Stream stream;
+
+	@Id
+	public Long id;
 	
 	/**
 	 * 
