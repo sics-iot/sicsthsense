@@ -196,7 +196,7 @@ public void asynchPoll() {
     	  arguments = pollingUrl.substring(pollingUrl.indexOf('?')+1, pollingUrl.length());
       }
 
-      Logger.info("[Streams] polling, URL: " + pollingUrl + " args: "+arguments);
+      //Logger.info("[Stream] polling, URL: " + pollingUrl + " args: "+arguments);
       WSRequestHolder request = WS.url(pollingUrl);
 
       Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
@@ -206,7 +206,7 @@ public void asynchPoll() {
       request.get().map(
         new F.Function<WS.Response, Boolean>() {
           public Boolean apply(WS.Response response) {
-						Logger.info("type " + response.getHeader("Content-type"));
+						//Logger.info("type " + response.getHeader("Content-type"));
 						JsonNode jsonBody = null;
 						String textBody = null;
 						String strBody = null;
@@ -221,7 +221,7 @@ public void asynchPoll() {
 								strBody = textBody.length() + " bytes";
 								break;
 						}
-						Logger.info("[Streams] polling response for: " + pollingUrl + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
+						//Logger.info("[Streams] polling response for: " + pollingUrl + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
 						parseResponse(response, jsonBody, textBody);
 						return true;
           }
@@ -259,7 +259,7 @@ public void asynchPoll() {
 	public boolean poll() {
 		// perform a poll() if it is time
 		long currentTime = System.currentTimeMillis() / 1000L;
-		Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
+		//Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
 		if ( (lastPolled+pollingPeriod) > currentTime) { return false; }
 		//Logger.info("Poll() happening!");
 
