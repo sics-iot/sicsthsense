@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.io.*;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -73,20 +74,21 @@ public class CtrlSource extends Controller {
 
 	
 	@Security.Authenticated(Secured.class)
-	public static void parseJsonNode(JsonNode node, SkeletonSource skeleton) {
-			
-		Iterator<String> fieldIt = node.getFieldNames();
-		while (fieldIt.hasNext()) {
-			String field = fieldIt.next();
-			Logger.info("Field: "+field);
-			skeleton.addStreamParser("/"+skeleton.label+"/"+field,field,"application/json");
-		}
-		// should probably descend to all nodes to find all primitive element paths...
-		Iterator<JsonNode> nodeIt = node.getElements();
+	public static void parseJsonNode(JsonNode node, SkeletonSource skeleton, String parents) {
+		// descend to all nodes to find all primitive element paths...
+		Iterator<String> nodeIt = node.getFieldNames();
 		while (nodeIt.hasNext()) {
-			JsonNode n = nodeIt.next();
-			Logger.info("Node: "+n.getTextValue());
-			parseJsonNode(n,skeleton);
+			String field = nodeIt.next();
+			//Logger.info("field: "+field);
+			JsonNode n = node.get(field);
+			if (n.isValueNode()) {
+				Logger.info("value node: "+parents+"/"+field);
+				skeleton.addStreamParser("/"+skeleton.label+parents+"/"+field, parents+"/"+field, "application/json");
+			} else {
+				String fullNodeName = parents+"/"+field;
+				Logger.info("Node: "+fullNodeName);
+				parseJsonNode(n,skeleton,fullNodeName);
+			}
 		}
 	}
 
@@ -96,10 +98,14 @@ public class CtrlSource extends Controller {
 			User currentUser = Secured.getCurrentUser();
 			SkeletonSource skeleton = new SkeletonSource(submitted);
 
-			// recusively parse JSON and add() all fields
-			JsonNode root = Json.parse(data);
-			parseJsonNode(root,skeleton);
-
+			try {
+				// recusively parse JSON and add() all fields
+				JsonNode root = Json.parse(data);
+				parseJsonNode(root,skeleton,"");
+			} catch (Exception e) {
+				// nevermind, move on...
+			}
+	
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 	}

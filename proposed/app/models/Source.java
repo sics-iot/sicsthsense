@@ -38,9 +38,6 @@ public class Source extends Operator {
   @ManyToOne//(cascade = CascadeType.ALL) 
   public User owner;
 
-  @ManyToOne//(cascade = CascadeType.ALL) 
-	public List<Stream> outputStreams;
-
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
@@ -87,6 +84,16 @@ public class Source extends Operator {
 	public Source(String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
 		this(null, label, pollingPeriod, pollingUrl, pollingAuthenticationKey);
+	}
+
+	public Source(User user) {
+		this.owner = user;
+		this.lastPolled=0;
+	}
+
+	public Source() {
+		super();
+		this.lastPolled=0;
 	}
 	
 	protected String getToken() {
@@ -182,6 +189,7 @@ public class Source extends Operator {
 		// perform a poll() if it is time
 		long time = System.currentTimeMillis() / 1000L;
 		if ( (lastPolled+pollingPeriod) < time) {
+			Logger.info("Poll() not happening!");
 			return false; // dont poll yet
 		}
 		Logger.info("Poll() happening!");
@@ -207,14 +215,6 @@ public class Source extends Operator {
 		return null;
 	}
 
-	public Source(User user) {
-		this.owner = user;
-	}
-
-	public Source() {
-		super();
-	}
-
 	public static Source create(User user) {
 		if (user != null) {
 			Source source = new Source(user);
@@ -235,6 +235,7 @@ public class Source extends Operator {
 
 	public static void delete(Long id) {
 		Source source = find.ref(id);
+		//StreamParser.deleteBySource(source);
 		Stream.deleteBySource(source);
 		source.delete();
 	}

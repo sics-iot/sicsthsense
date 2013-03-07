@@ -97,7 +97,7 @@ public class FileSystem {
 		if (f != null) { // if file exists
 			return f;
 		} else {
-			Logger.error("Vfile path does not exist:: "+path);
+			Logger.info("Vfile path does not exist:: "+path);
 			return null;
 		}
 	}

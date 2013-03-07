@@ -3,7 +3,7 @@ import play.libs.Akka
 import scala.concurrent.duration._
 import akka.actor._
 import models._
-import controllers.Sources
+import controllers.Poller
 import scala.compat.Platform
 import play.api.libs.concurrent.Execution.Implicits._
 
@@ -16,7 +16,8 @@ class PeriodicMonitor extends Actor {
       / we just poll everyone each second and let them choose to 
       / not act, according to their polling freq.
       */
-      Sources.pollAll()
+      Logger.info("Periodic Monitor")
+      Poller.pollAll()
     }
   }
   

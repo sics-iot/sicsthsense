@@ -12,7 +12,8 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	<a class="removeParser btn btn-danger pull-right">Remove this parser</a>
 	@inputText(
 		field("vfilePath"),
-		'_label -> "Stream path"
+		'_label -> "Stream path",
+		'_class -> "input-small"
 	)
 
 	@inputText(
@@ -51,7 +52,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      </div>
 	      }
   <h1>Adding source</h1>
-	@helper.form(action = routes.CtrlSource.add(), 'id -> "add_source_form") {
+	@helper.form(action = routes.CtrlSource.add(), 'class -> "form-inline", 'id -> "add_source_form") {
 	      <fieldset>
 		      <legend>Source configuration</legend>
 	      @inputText(

@@ -23,19 +23,14 @@
     <dl>
 			Input Stream: <select name=="inputStream1">
 				@for(source <- sources) {
-					@for(stream <- source.outputStreams) {
-						<option value="@stream.id">@stream.id</option>
+					@for(streamparser <- source.streamParsers) {
+						<option value="@streamparser.stream.id">@streamparser.stream.id</option>
 					}
 				}
 				<option value="fakestream1">FakeStream1</option>
 			</select>
 			&nbsp; &nbsp;
 			Input Stream2: <select name=="inputStream2">
-				@for(source <- sources) {
-					@for(stream <- source.outputStreams) {
-						<option value="@stream.id">@stream.id</option>
-					}
-				}
 				<option value="fakestream1">FakeStream1</option>
 			</select>
 			<br />

@@ -66,8 +66,7 @@ public class StreamParser extends Model {
 		super();
 	}
 
-	public StreamParser(Source source, String inputParser, String inputType,
-			String path) {
+	public StreamParser(Source source, String inputParser, String inputType, String path) {
 		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
@@ -75,8 +74,7 @@ public class StreamParser extends Model {
 		this.stream = getOrCreateStreamFile(path).linkedStream;
 	}
 
-	public StreamParser(Source source, String inputParser, String inputType,
-			Stream stream) {
+	public StreamParser(Source source, String inputParser, String inputType, Stream stream) {
 		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
@@ -194,7 +192,7 @@ public class StreamParser extends Model {
 			do {
 				f = FileSystem.addFile( source.owner, path + "\\newstream" + Integer.toString(i) );
 			} while( !FileSystem.fileExists( source.owner, path + "\\newstream" + Integer.toString(i++) ) );
-		 }
+		}
 		if (f.getType() == Vfile.Filetype.FILE) {
 			Stream stream = f.getLink();
 			if (stream == null) {

@@ -45,7 +45,7 @@ public class Stream extends Model {
 	@ManyToOne
 	public Source source;
 
-	@OneToOne(mappedBy="linkedStream")
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="linkedStream")
 	public Vfile file;
 
 	public boolean publicAccess = false;
@@ -70,6 +70,11 @@ public class Stream extends Model {
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<DataPointDouble> dataPointsDouble;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+	public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
+
+
 
 	public Long getHistorySize() {
 		return historySize;

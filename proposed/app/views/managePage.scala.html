@@ -24,11 +24,9 @@ Should take these parameters, for the side navigation menu
 	@if(sources.length > 0) {
 		<h1>Your streams</h1>
 		@for(source <- sources) {
-			@if(source.outputStreams != null) {
-				@for(stream <- source.outputStreams) {
-					@vstream.includeStream(stream)
-					<br />
-				}
+			@for(streamparser <- source.streamParsers) {
+				@vstream.includeStream(streamparser.stream)
+				<br />
 			}
 		}
 	}
