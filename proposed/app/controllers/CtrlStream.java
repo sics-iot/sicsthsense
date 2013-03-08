@@ -57,7 +57,24 @@ public class CtrlStream extends Controller {
 		if (stream == null) return notFound();
 		return getData(user, stream, -1L, -1L, -1L);
 	}
+
+	public static Result postByKey(String key) {
+		final Stream stream = Stream.getByKey(key);
+		if (stream == null) return notFound();
+		final User user = stream.owner;
+		if (user == null) return notFound();
+		return post(stream);
+	}
 	
+	public static Result post(Stream stream) {
+		String strBody = request().body().asText();
+		long currentTime = Utils.currentTime();
+		if (!stream.post(strBody, currentTime)) {
+			return badRequest("Bad request: Error!");
+		} else {
+			return ok("ok");
+		}
+	}
 //	private static Stream getOrAddByPath(User currentUser, String path) {
 //		if (currentUser == null)
 //			return null;
@@ -118,13 +135,6 @@ public class CtrlStream extends Controller {
     //if(user == null) return notFound();
 		Stream stream = Stream.get(id);	
     return getData(user, (Stream)stream, tail, last, since);
- }
-	
-	public static Result getDataByUserKey(String user_token, String path, Long tail, Long last, Long since) {
-		final User user = Secured.getCurrentUser();
-		final User owner = User.getByToken(user_token);
-    //if(user == null) return notFound();
-    return getData(user, owner, path, tail, last, since);
  }
 	
 	//@Security.Authenticated(Secured.class)

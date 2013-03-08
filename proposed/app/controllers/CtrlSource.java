@@ -221,16 +221,6 @@ public class CtrlSource extends Controller {
 		Source source = Source.getByUserLabel(owner, label);
 		return post(owner, source.id);
 	}
-
-	public static Result getByLabel(String user, String label) {
-		User owner = User.getByUserName(user);
-		Source source = Source.getByUserLabel(owner, label);
-		if (source== null) {
-			Logger.warn("Source not found!");
-			return notFound();
-		}
-			return ok("ok");
-	}
 		
 	private static Result post(User user, Long id) {
 		// rightnow only owner can post
@@ -266,6 +256,16 @@ public class CtrlSource extends Controller {
 			return ok("ok");
 		}
 		return notFound();
+	}
+
+	public static Result getByLabel(String user, String label) {
+		User owner = User.getByUserName(user);
+		Source source = Source.getByUserLabel(owner, label);
+		if (source== null) {
+			Logger.warn("Source not found!");
+			return notFound();
+		}
+			return ok("ok");
 	}
 
 	@Security.Authenticated(Secured.class)

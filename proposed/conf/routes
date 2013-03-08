@@ -45,9 +45,11 @@ GET			/api/:key														controllers.CtrlStream.getByKey(key: String)
 POST    /api/:user/:label										controllers.CtrlSource.postByLabel(user: String, label: String)
 GET			/api/:user/:label										controllers.CtrlSource.getByLabel( user: String, label: String)
 
+POST		/api/streams/:key						    	controllers.CtrlStream.postByKey(key: String)
+GET			/api/streams/:key						    	controllers.CtrlStream.getByKey( key: String)
+
 # deprecated
 GET        /api/streams/:id						    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-#using user_token
 GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 

@@ -203,7 +203,7 @@ public class Stream extends Model {
 //		return false;
 //	}
 
-	protected boolean post(String data, long time) {
+	public boolean post(String data, long time) {
 		if (type == StreamType.UNDEFINED) {
 			type = StreamType.STRING;
 			this.dataPoints = this.dataPointsString;
