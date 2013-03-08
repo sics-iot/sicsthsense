@@ -59,8 +59,8 @@ public class Stream extends Model {
 	/** Last time a point was inserted */
 	public Long lastUpdated = 0L;
 
-	/** Secret token for authentication */
-	private String token;
+	/** Secret key for authentication */
+	private String key;
 	
 	@javax.persistence.Transient
 	public List dataPoints;
@@ -88,24 +88,24 @@ public class Stream extends Model {
 
 	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
 			Long.class, Stream.class);
-	/** Call to create, or update an access token */
-	protected String createToken() {
-		token = UUID.randomUUID().toString();
+	/** Call to create, or update an access key */
+	protected String createKey() {
+		key = UUID.randomUUID().toString();
 		save();
-		return token;
+		return key;
 	}
 
-	protected String getToken() {
-		return token;
+	protected String getKey() {
+		return key;
 	}
 
-	public static Stream findByToken(String token) {
-		if (token == null) {
+	public static Stream findByKey(String key) {
+		if (key == null) {
 			return null;
 		}
 
 		try {
-			return find.where().eq("token", token).findUnique();
+			return find.where().eq("key", key).findUnique();
 		} catch (Exception e) {
 			return null;
 		}
@@ -169,7 +169,7 @@ public class Stream extends Model {
 	}
 
 	public boolean canRead(String key) {
-		return (publicAccess || this.token == key);
+		return (publicAccess || this.key == key);
 	}
 
 	public Boolean hasData() {
@@ -244,6 +244,7 @@ public class Stream extends Model {
 		}
 	}
 
+
 	public List<? extends DataPoint> getDataPoints() {
 		return (List<? extends DataPoint>)dataPoints;
 	}
@@ -268,6 +269,10 @@ public class Stream extends Model {
 	public List<? extends DataPoint> getDataPointsSince(long since) {
 		return DataPoint.find.where().eq("stream", this).ge("timestamp", since)
 				.orderBy("timestamp desc").findList();
+	}
+
+	public static Stream getByKey(String key) {
+		return find.where().eq("key", key).findUnique();
 	}
 
 	private void deleteDataPoints() {

@@ -37,13 +37,17 @@ POST		/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 
 # Streams, API
+POST    /api/:key														controllers.CtrlSource.postByKey(key: String)
+# Sources API
+GET			/api/:key														controllers.CtrlStream.getByKey(key: String)
+
+#GET			/api/:key														controllers.CtrlSource.getByLabel( user: String, label: String)
 POST    /api/:user/:label										controllers.CtrlSource.postByLabel(user: String, label: String)
 GET			/api/:user/:label										controllers.CtrlSource.getByLabel( user: String, label: String)
+
 # deprecated
 GET        /api/streams/:id						    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-POST       /api/streams/:id			    				controllers.CtrlSource.postBySourceKey(id : Long, source_key: String)
 #using user_token
-POST       /api/users/streams/:id			    	controllers.CtrlSource.postByUserKey(id : Long, user_token: String)
 GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 

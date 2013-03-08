@@ -24,7 +24,6 @@ import java.net.*;
 import models.*;
 import views.html.*;
 
-@Security.Authenticated(Secured.class)
 public class CtrlSource extends Controller {
 
 	static private Form<SkeletonSource> skeletonSourceForm = Form.form(SkeletonSource.class);
@@ -114,7 +113,7 @@ public class CtrlSource extends Controller {
 	public static Result add() {		
 		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
 		// validate form
-		if(theForm.hasErrors()) {
+		if (theForm.hasErrors()) {
 		  return badRequest("Bad request");
 		} else {
 			SkeletonSource skeleton = theForm.get();
@@ -212,8 +211,9 @@ public class CtrlSource extends Controller {
 		return redirect(routes.CtrlSource.manage());
 	}
 	
-	public static Result postByUserKey(Long id, String ownerToken) {
-			return notFound();
+	public static Result postByKey(String key) {
+		Source source = Source.getByKey(key);
+		return post(source.owner, source.id);
 	}
 
 	public static Result postByLabel(String user, String label) {

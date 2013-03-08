@@ -49,6 +49,13 @@ public class CtrlStream extends Controller {
 	public static Result getById(String id) {
 		return TODO;
 	}
+
+	public static Result getByKey(String key) {
+		final User user = Secured.getCurrentUser();
+		final Stream stream = Stream.getByKey(key);
+		//if(user == null) return notFound();
+		return getData(user, stream, -1L, -1L, -1L);
+	}
 	
 //	private static Stream getOrAddByPath(User currentUser, String path) {
 //		if (currentUser == null)

@@ -45,8 +45,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      <fieldset>
 		      <legend>Source parameters</legend>
 
-				Post url: <pre>http://localhost:9000/api/@CtrlUser.getUser().userName/@myForm("label").value</pre>
-				Key (keep secret): <pre>@myForm("token").value</pre>
+				Post url (secret): <pre>http://localhost:9000/api/@myForm("key").value</pre>
 
 				<br />
       @*	@inputText(myForm("id"), '_label -> "Id", 'readonly -> "readonly") *@
@@ -62,12 +61,13 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 			    myForm("pollingPeriod"),
 		      '_label -> "Polling period:"
 	      )
+				@*
 	      @inputText(
 		      myForm("pollingAuthenticationKey"),
 		      '_label -> "Authentication key",
 		      '_help -> "Enter authentication details if required by polled source"
 		      )
-
+				*@
 	      </fieldset>
 
 				<br />

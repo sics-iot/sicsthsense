@@ -52,8 +52,8 @@ public class Source extends Operator {
 	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 
-	/** Secret token for authenticating posts coming from outside */
-	public String token;
+	/** Secret key for authenticating posts coming from outside */
+	public String key;
 
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
 			Long.class, Source.class);
@@ -86,28 +86,28 @@ public class Source extends Operator {
 
 
 	/** Call to create, or update an access token */
-	private String updateToken() {
-		String newtoken = UUID.randomUUID().toString();
-		token = newtoken;
+	private String updateKey() {
+		String newKey = UUID.randomUUID().toString();
+		key = newKey;
 		if(id > 0) {
 			this.update();
 		}
-		return token;
+		return key;
 	}
 	
-	public String getToken() {
-		return token;
+	public String getKey() {
+		return key;
 	}
 
 	public void updateSource(Source source) {
 		this.label = source.label;
-		this.token = source.getToken();
+		this.key = source.getKey();
 		this.pollingPeriod = source.pollingPeriod;
 		this.lastPolled = source.lastPolled;
 		this.pollingUrl = source.pollingUrl;
 		this.pollingAuthenticationKey = source.pollingAuthenticationKey;
-		if(token == null || "".equalsIgnoreCase(token)) {
-			updateToken();
+		if(key == null || "".equalsIgnoreCase(key)) {
+			updateKey();
 		}
 		update();
 	}
@@ -232,8 +232,8 @@ public class Source extends Operator {
 		return true;
 	}
 	
-	public Boolean checkToken(String token) {
-		return token == this.token;
+	public Boolean checkKey(String token) {
+		return key == this.key;
 	}
 
 	public void setPeriod(Long period) {
@@ -255,7 +255,7 @@ public class Source extends Operator {
 
 	public static Source get(Long id, String key) {
 		Source source = find.byId(id);
-		if (source != null && source.checkToken(key))
+		if (source != null && source.checkKey(key))
 			return source;
 		return null;
 	}
@@ -265,6 +265,11 @@ public class Source extends Operator {
 		if ( source != null && source.owner.equals(user) )
 			return source;
 		return null;
+	}
+
+	public static Source getByKey(String key) {
+		Source source = find.where().eq("key",key).findUnique();
+		return source;	
 	}
 
 	public static Source getByUserLabel(User user, String label) {
@@ -284,7 +289,7 @@ public class Source extends Operator {
 	public static Source create(Source source) {
 		if (source.owner != null) {
 			source.save();
-			source.updateToken();
+			source.updateKey();
 			return source;
 		}
 		return null;

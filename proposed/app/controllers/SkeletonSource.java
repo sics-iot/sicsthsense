@@ -14,15 +14,15 @@ import play.data.validation.Constraints;
 public class SkeletonSource {
 	public Long id;
 	public String label = null;
-	public String token = null;
+	public String key = null;
 	public String pollingUrl = null;
 	public Long pollingPeriod = 0L;
 	public String pollingAuthenticationKey = null;
 	public List<StreamParserWraper> streamParserWrapers;
 
-	public SkeletonSource(String label, String token, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+	public SkeletonSource(String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
 		this.label = label;
-		this.token = token;
+		this.key = key;
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
@@ -32,7 +32,7 @@ public class SkeletonSource {
 	public SkeletonSource(Source source, List<StreamParserWraper> streamParserWrapers) {
 		if (source != null) {
 			this.id = source.id;
-			this.token = source.getToken();
+			this.key = source.getKey();
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
@@ -45,7 +45,7 @@ public class SkeletonSource {
 		if (source != null) {
 			this.id = source.id;
 			this.label = source.label;
-			this.token = source.getToken();
+			this.key = source.getKey();
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
@@ -61,7 +61,7 @@ public class SkeletonSource {
 	public SkeletonSource(Source source, StreamParserWraper... spws) {
 		if(source != null) {
 			this.id = source.id;
-			this.token = source.getToken();
+			this.key = source.getKey();
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
@@ -73,10 +73,10 @@ public class SkeletonSource {
 		}
 	}
 
-	public SkeletonSource(Long id, String label, String token, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
+	public SkeletonSource(Long id, String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
 		this.id = id;
 		this.label = label;
-		this.token = token;
+		this.key = key;
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
@@ -110,7 +110,7 @@ public class SkeletonSource {
 	public boolean FillFromSource(Source source) {
 		if(source != null) {
 			this.id = source.id;
-			this.token = source.token;
+			this.key = source.key;
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
