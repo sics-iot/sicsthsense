@@ -71,13 +71,14 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 		      '_label -> "Period",
 		      '_help -> "Polling period"
 	      )
-@*
-	      @inputText(
+
+	      @*
+				inputText(
 		      myForm("pollingAuthenticationKey"),
 		      '_label -> "Authentication key",
 		      '_help -> "Enter authentication details if required by polled source"
-		      )
-*@
+		     )
+				*@
 	      </fieldset>
 
 		      <input type="submit" name="poll" class="btn btn-primary" value="Poll URL">
