@@ -8,7 +8,7 @@ Should take these parameters
 					<li><a href="#" onClick="document.getElementById('sourcelist').style.display="none";"><u>Sources</u></a>
 					<ul id="sourcelist">
 						@for(source<- sources) {
-							<li><a href="/sources/@source.id"></i>@source.label (id: @source.id)</a></li>
+							<li><a href="@{controllers.CtrlSource.getById(source.id)}"></i>@source.label (id: @source.id)</a></li>
 					 	} 
 					</ul>
 					<br />
