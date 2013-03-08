@@ -110,6 +110,7 @@ public class SkeletonSource {
 	public boolean FillFromSource(Source source) {
 		if(source != null) {
 			this.id = source.id;
+			this.token = source.token;
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
