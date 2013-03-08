@@ -1,12 +1,12 @@
 @(stream: Stream)
 
-@WIN_5M() = {5*60*1000}
-@WIN_30M() = {30*60*1000}
-@WIN_1H() = {60*60*1000}
-@WIN_1D() = {24*60*60*1000}
-@WIN_1W() = {7*24*60*60*1000}
-@WIN_1M() = {30*24*60*60*1000}
-@WIN_1Y() = {365*24*60*60*1000}
+@WIN_5M() = {5*60*1000*1000}
+@WIN_30M() = {30*60*1000*1000}
+@WIN_1H() = {60*60*1000*1000}
+@WIN_1D() = {24*60*60*1000*1000}
+@WIN_1W() = {7*24*60*60*1000*1000}
+@WIN_1M() = {30*24*60*60*1000*1000}
+@WIN_1Y() = {365*24*60*60*1000*1000}
 
 @if(stream != null && stream.hasData()) {
   
@@ -23,11 +23,14 @@
 	<div id="streamplot@{stream.id}" class="streamplot"></div>
 
 	<script type="text/javascript">
+
+
+
 		// one global JavaScript object per stream
 		var streamplot@{stream.id} = new Object();
 		streamplot@{stream.id}.id = 'streamplot@{stream.id}';
-		streamplot@{stream.id}.uri = '@{routes.CtrlSource.getDataById(stream.id)}';
-		streamplot@{stream.id}.path = '@{stream.file.getPath().substring(1)}'; // for parsing the returned JSON
+		streamplot@{stream.id}.uri = '@{controllers.CtrlSource.getDataById(stream.id, -1, -1, -1)}';
+		streamplot@{stream.id}.path = '@{stream.file.getPath()}'; // for parsing the returned JSON
 		streamplot@{stream.id}.window = @WIN_1D; // in ms
 		streamplot@{stream.id}.since = parseInt(((new Date()).getTime() - streamplot@{stream.id}.window)); // in s for database
 		streamplot@{stream.id}.points = [];

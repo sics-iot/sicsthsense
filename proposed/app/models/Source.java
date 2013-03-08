@@ -169,58 +169,23 @@ public class Source extends Operator {
       request.get().map(
         new F.Function<WS.Response, Boolean>() {
           public Boolean apply(WS.Response response) {
-						//Logger.info("type " + response.getHeader("Content-type"));
-						JsonNode jsonBody = null;
-						String textBody = null;
-						String strBody = null;
-						switch(response.getHeader("Content-type")) {
-							case "application/json":
-								jsonBody = response.asJson();
-								strBody = jsonBody.asText();
-								break;
-							default:
-								Logger.info("we have other data");
-								textBody = response.getBody();
-								strBody = textBody.length() + " bytes";
-								break;
+						String textBody = response.getBody();
+						Logger.info("Incoming data: " + response.getHeader("Content-type") + textBody);
+						//Stream parsers should handle data parsing and response type checking..
+						for (StreamParser sp: streamParsers) {
+							sp.parseResponse(response);
 						}
-						//Logger.info("[Streams] polling response for: " + pollingUrl + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
-						parseResponse(response, jsonBody, textBody);
 						return true;
           }
         }
       );
-      lastPolled = System.currentTimeMillis() / 1000L;
+      lastPolled = System.currentTimeMillis();
       update();
     }
 
-  public boolean parseResponse(WS.Response response, JsonNode jsonBody, String textBody) {
-    if(jsonBody != null) {
-			for (StreamParser sp: streamParsers) {
-				sp.parseResponse(response);
-			}
-      //if(!parseJsonResponse(jsonBody, resource.path)) return false;
-    } else {
-			/*
-      if(textBody != null) {
-    	 if(!resource.inputParser.equals("")) {
-    		 Pattern pattern = Pattern.compile(resource.inputParser);
-    		 Matcher matcher = pattern.matcher(textBody);
-    		 if (matcher.find()) {
-    			 textBody = matcher.group(1);
-    		 }
-    	 }
-        insertSample(endPoint, resource.path, Float.parseFloat(textBody));
-      } else {
-        return false;
-      }*/
-    }
-    return true;
-  }
-
 	public boolean poll() {
 		// perform a poll() if it is time
-		long currentTime = System.currentTimeMillis() / 1000L;
+		long currentTime = System.currentTimeMillis();
 		//Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
 		if ( (lastPolled+pollingPeriod) > currentTime) { return false; }
 		//Logger.info("Poll() happening!");
@@ -233,7 +198,7 @@ public class Source extends Operator {
 	}
 	
 	public Boolean checkKey(String token) {
-		return key == this.key;
+		return key.equals(this.key);
 	}
 
 	public void setPeriod(Long period) {
