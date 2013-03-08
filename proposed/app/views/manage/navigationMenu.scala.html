@@ -5,10 +5,10 @@ Should take these parameters
 **@				
 				<br /> <br /> <br /> 
         <ul class="nav nav-list bs-docs-sidenav">
-					<li><a href="#" onClick="document.getElementById('sourcelist').style.display="none";"><u>Sources</u></a>
+					<li><a href="#" onClick="$('#sourcelist').toggle();"><u>Sources</u></a>
 					<ul id="sourcelist">
 						@for(source<- sources) {
-							<li><a href="@{controllers.CtrlSource.getById(source.id)}"></i>@source.label (id: @source.id)</a></li>
+							<li><a href="@routes.CtrlSource.getById(source.id)"></i>@source.label (id: @source.id)</a></li>
 					 	} 
 					</ul>
 					<br />
