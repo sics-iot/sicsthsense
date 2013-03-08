@@ -25,8 +25,9 @@ GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(i
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
 
 # Streams
-GET        /streams/:ownerName/$path<.*>		controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-GET        /streams/:ownerName							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /user/:ownerName/$path<.*>						controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+#GET       /user/:ownerName/streams							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/:id								    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 
 # Sources
@@ -40,16 +41,13 @@ GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 POST    /api/:key														controllers.CtrlSource.postByKey(key: String)
 # Sources API
 GET			/api/:key														controllers.CtrlStream.getByKey(key: String)
-
-#GET			/api/:key														controllers.CtrlSource.getByLabel( user: String, label: String)
 POST    /api/:user/:label										controllers.CtrlSource.postByLabel(user: String, label: String)
 GET			/api/:user/:label										controllers.CtrlSource.getByLabel( user: String, label: String)
 
 POST		/api/streams/:key						    	controllers.CtrlStream.postByKey(key: String)
-GET			/api/streams/:key						    	controllers.CtrlStream.getByKey( key: String)
+#GET		/api/streams/:key						    	controllers.CtrlStream.getByKey( key: String)
 
 # deprecated
-GET        /api/streams/:id						    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
