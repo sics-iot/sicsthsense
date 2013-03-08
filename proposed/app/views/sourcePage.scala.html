@@ -10,7 +10,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 @streamParserGroup(field: Field, className: String = "parser") = {
 <div class="twipsies well @className">
 	<a class="removeParser btn btn-danger pull-right">Remove this parser</a>
-	@inputText(field("parserId"),   '_label -> "Parser Id",   'readonly -> "readonly")
+@*	@inputText(field("parserId"),   '_label -> "Parser Id",   'readonly -> "readonly") *@
 	@inputText(field("vfilePath"),  '_label -> "Stream path", 'readonly -> "readonly")
 	@inputText(field("inputParser"),'_label -> "Input parser")
 	@inputText(field("inputType"),  '_label -> "Content type", '_value -> "application/json")
@@ -43,23 +43,24 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
 	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form") {
 	      <fieldset>
-		      <legend>Source configuration</legend>
+		      <legend>Source parameters</legend>
 
-      	@inputText(myForm("id"), '_label -> "Id", 'readonly -> "readonly")
+				Post url: <pre>http://localhost:9000/api/@CtrlUser.getUser().userName/@myForm("label").value</pre>
+				Key: <pre>@myForm("key").value</pre>
+
+				<br />
+      @*	@inputText(myForm("id"), '_label -> "Id", 'readonly -> "readonly") *@
 	      @inputText(
 			    myForm("label"),
-		      '_label -> "Label",
-		      '_help -> "Label"
+		      '_label -> "Label:"
 	      )
 	      @inputText(
 					myForm("pollingUrl"),
-		      '_label -> "URL",
-		      '_help -> "Polling URL"
+		      '_label -> "Polling URL:"
 	      )
 	      @inputText(
 			    myForm("pollingPeriod"),
-		      '_label -> "Period",
-		      '_help -> "Polling period"
+		      '_label -> "Polling period:"
 	      )
 	      @inputText(
 		      myForm("pollingAuthenticationKey"),
@@ -69,6 +70,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
 	      </fieldset>
 
+				<br />
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers">

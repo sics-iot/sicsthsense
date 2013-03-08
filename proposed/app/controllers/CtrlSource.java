@@ -71,7 +71,6 @@ public class CtrlSource extends Controller {
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 		}
 	}
-
 	
 	@Security.Authenticated(Secured.class)
 	public static void parseJsonNode(JsonNode node, SkeletonSource skeleton, String parents) {
@@ -205,6 +204,7 @@ public class CtrlSource extends Controller {
 			return redirect(routes.CtrlSource.getById(id));
 		}
 	}
+
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
 		// check permission?
@@ -213,10 +213,25 @@ public class CtrlSource extends Controller {
 	}
 	
 	public static Result postByUserKey(Long id, String ownerToken) {
-		User owner = User.getByToken(ownerToken);
-		return post(owner, id);
+			return notFound();
 	}
 
+	public static Result postByLabel(String user, String label) {
+		User owner = User.getByUserName(user);
+		Source source = Source.getByUserLabel(owner, label);
+		return post(owner, source.id);
+	}
+
+	public static Result getByLabel(String user, String label) {
+		User owner = User.getByUserName(user);
+		Source source = Source.getByUserLabel(owner, label);
+		if (source== null) {
+			Logger.warn("Source not found!");
+			return notFound();
+		}
+			return ok("ok");
+	}
+		
 	private static Result post(User user, Long id) {
 		// rightnow only owner can post
 		Source source = Source.get(id, user);
@@ -296,25 +311,19 @@ public class CtrlSource extends Controller {
 	private static Result getData(User currentUser, User owner, String path,
 			Long tail, Long last, Long since) {
 		Vfile f = FileSystem.readFile(owner, path);
-		if (f == null) {
-			return notFound();
-		}
+		if (f == null) { return notFound(); }
+
 		Stream stream = f.getLink();
-		if (stream == null) {
-			return notFound();
-		}
+		if (stream == null) { return notFound(); }
+
 		return getData(currentUser, stream, tail, last, since);
 
 	}
 
 	private static Result getData(User currentUser, Stream stream, Long tail,
 			Long last, Long since) {
-		if (stream == null) {
-			return notFound();
-		}
-
-		if (!stream.canRead(currentUser))
-			return unauthorized("Private stream!");
+		if (stream == null) { return notFound(); }
+		if (!stream.canRead(currentUser)) { return unauthorized("Private stream!"); }
 
 		List<? extends DataPoint> dataSet = null;
 		if (tail < 0 && last < 0 && since < 0) {

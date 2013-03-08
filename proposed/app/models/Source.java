@@ -43,7 +43,6 @@ public class Source extends Operator {
 	 * number, called a serialVersionUID
 	 */
   private static final long serialVersionUID = 7683451697925144957L;
-
 	public String label = "NewSource";
   public Long pollingPeriod = 0L;
   public Long lastPolled = 0L;
@@ -54,8 +53,7 @@ public class Source extends Operator {
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 
 	/** Secret token for authenticating posts coming from outside */
-	private String token;
-
+	public String token;
 
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
 			Long.class, Source.class);
@@ -86,6 +84,7 @@ public class Source extends Operator {
 		this.lastPolled=0L;
 	}
 
+
 	/** Call to create, or update an access token */
 	private String updateToken() {
 		String newtoken = UUID.randomUUID().toString();
@@ -96,12 +95,13 @@ public class Source extends Operator {
 		return token;
 	}
 	
-	protected String getToken() {
+	public String getToken() {
 		return token;
 	}
 
 	public void updateSource(Source source) {
 		this.label = source.label;
+		this.token = source.getToken();
 		this.pollingPeriod = source.pollingPeriod;
 		this.lastPolled = source.lastPolled;
 		this.pollingUrl = source.pollingUrl;
@@ -111,37 +111,6 @@ public class Source extends Operator {
 		}
 		update();
 	}
-
-	/**
-	public void performRequest() {
-
-      WSRequestHolder request = WS.url(pollingUrl);
-      request.get().map(
-        new Function<WS.Response, Boolean>() {
-          public Boolean apply(WS.Response response) {
-        	System.out.println("type " + response.getHeader("Content-type"));
-        	JsonNode jsonBody = null;
-        	String textBody = null;
-        	String strBody = null;
-        	switch(response.getHeader("Content-type")) {
-        		case "application/json":
-        			jsonBody = response.asJson();
-        			strBody = jsonBody.asText();
-        			break;
-        		default:
-        			textBody = response.getBody();
-        			strBody = textBody.length() + " bytes";
-        			break;
-        	}
-            //Logger.info("[Streams] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
-            //parseResponse(endPoint, jsonBody, textBody, resource);
-            return true;
-          }
-        }
-      );
-      //lastPolled = current;
-	}
-*/
 
 	// construct a synchronous connnection to the URL to be probed in rela time
 	public HttpURLConnection probe() {
@@ -157,20 +126,16 @@ public class Source extends Operator {
 			connection = ( HttpURLConnection ) new URL( pollingUrl ).openConnection();  
 			connection.setRequestMethod( "GET" );  
 			//connection.setDoOutput( true );  
-			/*	
-			//CREATE A WRITER FOR OUTPUT  
+			/*	//CREATE A WRITER FOR OUTPUT  
 			outWriter = new PrintWriter( connection.getOutputStream() );  
-			//PARAMETERS  
 			buff.append( "param1=" );   
 			buff.append( URLEncoder.encode( "Param 1 Value", "UTF-8" ) );  
 			buff.append( "&" );  
 			buff.append( "param2=" );   
 			buff.append( URLEncoder.encode( "Param 2 Value", "UTF-8" ) );  
-			//SEND PARAMETERS  
 			outWriter.println( buff.toString() );  
 			outWriter.flush();  
-			outWriter.close();  
-			*/	
+			outWriter.close();  */	
 			return connection;
 
 		} catch (MalformedURLException mue) {  
@@ -187,7 +152,7 @@ public class Source extends Operator {
 	}
 
 	// register asychronous polling of data
-public void asynchPoll() {
+	public void asynchPoll() {
       String arguments = "";
 			String path = "";
       Map<String, String> queryParameters = new HashMap<String, String>();
@@ -195,10 +160,8 @@ public void asynchPoll() {
       if(pollingUrl.indexOf('?') != -1) {
     	  arguments = pollingUrl.substring(pollingUrl.indexOf('?')+1, pollingUrl.length());
       }
-
       //Logger.info("[Stream] polling, URL: " + pollingUrl + " args: "+arguments);
       WSRequestHolder request = WS.url(pollingUrl);
-
       Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
       Matcher matcher = pattern.matcher(arguments);
       while (matcher.find()) { request.setQueryParameter(matcher.group(1), matcher.group(2)); } 
@@ -255,7 +218,6 @@ public void asynchPoll() {
     return true;
   }
 
-
 	public boolean poll() {
 		// perform a poll() if it is time
 		long currentTime = System.currentTimeMillis() / 1000L;
@@ -274,6 +236,23 @@ public void asynchPoll() {
 		return token == this.token;
 	}
 
+	public void setPeriod(Long period) {
+		this.pollingPeriod = period;
+	}
+
+	public boolean parseAndPost(Request req) {
+		boolean result = false;
+		if(streamParsers != null) {
+			for (StreamParser sp : streamParsers) {
+				if (sp != null) {
+					// Liam: not sure what to do here, breaking build...
+					//result |= sp.parseResponse(req);
+				}
+			}
+		}
+		return result;
+	}
+
 	public static Source get(Long id, String key) {
 		Source source = find.byId(id);
 		if (source != null && source.checkToken(key))
@@ -286,6 +265,11 @@ public void asynchPoll() {
 		if ( source != null && source.owner.equals(user) )
 			return source;
 		return null;
+	}
+
+	public static Source getByUserLabel(User user, String label) {
+		Source source = find.where().eq("owner",user).eq("label",label).findUnique();
+		return source;
 	}
 
 	public static Source create(User user) {
@@ -311,23 +295,6 @@ public void asynchPoll() {
 		//StreamParser.deleteBySource(source);
 		Stream.deleteBySource(source);
 		source.delete();
-	}
-
-	public void setPeriod(Long period) {
-		this.pollingPeriod = period;
-	}
-
-	public boolean parseAndPost(Request req) {
-		boolean result = false;
-		if(streamParsers != null) {
-			for (StreamParser sp : streamParsers) {
-				if (sp != null) {
-					// Liam: not sure what to do here, breaking build...
-					//result |= sp.parseResponse(req);
-				}
-			}
-		}
-		return result;
 	}
 
 }

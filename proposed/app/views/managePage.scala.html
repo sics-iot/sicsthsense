@@ -14,11 +14,11 @@ Should take these parameters, for the side navigation menu
       <div class="span3 bs-docs-sidebar">
 			@manage.navigationMenu(sources) 
 			@** should pass theses parameters(sources, extStreams) **@
-      </div>
-      <div class="span9">
-				<br \>
+    </div>
 
- 	<!--Body content-->
+    <div class="span9">
+		<br \>
+		<!--Body content-->
 
 <!-- Stream listing and visualizing -->
 	@if(sources.length > 0) {
@@ -30,12 +30,13 @@ Should take these parameters, for the side navigation menu
 			}
 		}
 	}
+
 	<br /> <br />
 	<!-- Small add source form -->
 	<h1>Add new source</h1>   
-	@helper.form(action = routes.CtrlSource.initialise(),args = 'class -> "form-horizontal") {
+	@helper.form(action = routes.CtrlSource.initialise()) {
 	      <fieldset>
-		      <legend>Source configuration</legend>
+		      <legend>Parameters for the source:</legend>
 	      @inputText(
 			    myForm("label"),
 		      '_label -> "Label",
@@ -44,7 +45,7 @@ Should take these parameters, for the side navigation menu
 	      @inputText(
 			    myForm("pollingUrl"),
 		      '_label -> "URL",
-		      '_help -> "URL to poll for data"
+		      '_help -> "URL to poll for data (leave blank for POST'd data)"
 	      )
 	      @inputText(
 			    myForm("pollingPeriod"),
@@ -63,10 +64,8 @@ Should take these parameters, for the side navigation menu
 	      </fieldset>
 
   }
-  <br />
-	
-  <br />
-
+  <br /> <br /> <br /> 
+  <br /> <br /> <br /> 
     </div>
   </div>
 

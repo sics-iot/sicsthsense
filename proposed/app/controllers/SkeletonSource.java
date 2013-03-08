@@ -14,13 +14,15 @@ import play.data.validation.Constraints;
 public class SkeletonSource {
 	public Long id;
 	public String label = null;
+	public String token = null;
 	public String pollingUrl = null;
 	public Long pollingPeriod = 0L;
 	public String pollingAuthenticationKey = null;
 	public List<StreamParserWraper> streamParserWrapers;
 
-	public SkeletonSource(String label, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+	public SkeletonSource(String label, String token, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
 		this.label = label;
+		this.token = token;
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
@@ -28,8 +30,9 @@ public class SkeletonSource {
 	}
 
 	public SkeletonSource(Source source, List<StreamParserWraper> streamParserWrapers) {
-		if(source != null) {
+		if (source != null) {
 			this.id = source.id;
+			this.token = source.getToken();
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
@@ -39,9 +42,10 @@ public class SkeletonSource {
 	}
 
 	public SkeletonSource(Source source) {
-		if(source != null) {
+		if (source != null) {
 			this.id = source.id;
 			this.label = source.label;
+			this.token = source.getToken();
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
@@ -57,31 +61,34 @@ public class SkeletonSource {
 	public SkeletonSource(Source source, StreamParserWraper... spws) {
 		if(source != null) {
 			this.id = source.id;
+			this.token = source.getToken();
 			this.label = source.label;
 			this.pollingPeriod = source.pollingPeriod;
 			this.pollingUrl = source.pollingUrl;
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length);
-		for(StreamParserWraper spw : spws) {
+		for (StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);
 		}
 	}
 
-	public SkeletonSource(Long id, String label, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
+	public SkeletonSource(Long id, String label, String token, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
 		this.id = id;
 		this.label = label;
+		this.token = token;
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>();
-		for(StreamParserWraper spw : spws) {
+		for (StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);
 		}
 	}
 	
 	public SkeletonSource() {
 	}
+
 
 	public Source getSource(User user) {
 		Source src = new Source(user, label,
@@ -92,9 +99,7 @@ public class SkeletonSource {
 	}
 
 	public List<StreamParser> getStreamParsers(Source source) {
-		if(streamParserWrapers == null) {
-			return null;
-		}
+		if (streamParserWrapers == null) { return null; }
 		List<StreamParser> list = new ArrayList<StreamParser>();
 		for (int i = 0; i < streamParserWrapers.size(); i++) {
 			StreamParser sp = streamParserWrapers.get(i).getStreamParser(source);
@@ -116,13 +121,14 @@ public class SkeletonSource {
 	public void addStreamParser(StreamParserWraper spw) {
 		streamParserWrapers.add(spw);
 	}
+
 	public void addStreamParser(String vfilePath, String inputParser, String inputType) {
 		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType));
 	}
 
+
 	public static class StreamParserWraper {
 		public Long parserId;
-		
 		@Constraints.Required
 		public String vfilePath;
 		/** RegEx, Xpath, JSON path */
@@ -135,10 +141,10 @@ public class SkeletonSource {
 		public String inputType;
 
 		public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType) {
-			this.parserId = id;
+			this.parserId  = id;
 			this.vfilePath = vfilePath;
-			this.inputParser = inputParser;
 			this.inputType = inputType;
+			this.inputParser = inputParser;
 		}
 		
 		public StreamParserWraper(String vfilePath, String inputParser, String inputType) {
@@ -146,12 +152,11 @@ public class SkeletonSource {
 		}
 		
 		public StreamParserWraper(StreamParser sp) {
-			try{
-				this.vfilePath = sp.stream.file.getPath();
-				this.parserId = sp.id;
+			try {
+				this.vfilePath   = sp.stream.file.getPath();
+				this.inputType   = sp.inputType;
 				this.inputParser = sp.inputParser;
-				this.inputType = sp.inputType;
-			}catch(Exception e) {
+			} catch (Exception e) {
 				Logger.error("Error creating StreamParserWraper from StreamParser: " + e.getMessage() + "Stack trace:\n" + e.getStackTrace().toString());
 			}
 		}

@@ -16,10 +16,7 @@ import com.avaje.ebean.*;
 @Table(name = "users")
 public class User extends Model implements Comparable<User> { //PathBindable<User>,
 	/** User class, contains all personal information
-	 * 
 	 */
-	private static final long serialVersionUID = 5178587449713353935L;
-
 	@Id
 	public Long id;
 
@@ -34,19 +31,15 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.Required
 	@Formats.NonEmpty
 	public String userName;
-	
 	public String firstName;
 	public String lastName;
 	public String location;
+	private static final long serialVersionUID = 5178587449713353935L;
 
 	@Column(nullable = false)
 	public Date creationDate;
-	
 	public Date lastLogin;
 	
-	/** Secret token for authentication */
-	private String token;
-
 	@OneToMany(mappedBy = "owner")
 	public List<Source> sourceList = new ArrayList<Source>();
 	@OneToMany(mappedBy = "owner")
@@ -56,37 +49,15 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@OneToMany(mappedBy = "owner")
 	public List<Vfile> fileList = new ArrayList<Vfile>();
 	
-	//private List<String> linkedEmails = new ArrayList<String>(10);
 	/** Secret token for session authentication */
 	@Transient
 	public String currentSessionToken;
+	/** Secret token for authentication */
+	private String token;
+
 	
-	public String getEmail() {
-		return email;
-	}
+	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
-	public String getToken() {
-		return token;
-	}
-	
-	public String getUserName() {
-		return userName;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-	// -- Queries
-	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(
-			Long.class, User.class);
 
 	public User(String email, String userName, String firstName, String lastName,
 			String location) {
@@ -110,13 +81,15 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		this.creationDate = new Date();
 	}
 
-	public static User create(User user) {		
-		user.generateToken();
-		user.save();
-		// is this necessary? -YES!
-		// user.saveManyToManyAssociations("followedResources");
-		return user;
-	}
+
+	public String getEmail() { return email; }
+	public String getToken() { return token; }
+	public String getUserName() { return userName; }
+	public String getFirstName() { return firstName; }
+	public String getLastName() { return lastName; }
+	public String getLocation() { return location; }
+	public Long getId() { return new Long(id); }
+	public boolean exists() { return exists(id); }
 
 	public Date updateLastLogin() {
 		this.lastLogin = new Date();
@@ -128,51 +101,6 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		//save();
 		return token;
 	}
-
-	public static User getByToken(String token) {
-		if (token == null) {
-			return null;
-		}
-
-		try {
-			return find.where().eq("token", token).findUnique();
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public static List<User> all() {
-		return find.where().orderBy("userName asc").findList();
-	}
-
-	public static boolean exists(Long id) {
-		return find.byId(id) != null;
-	}
-
-	public boolean exists() {
-		return exists(id);
-	}
-
-	public static User get(Long id) {
-		return find.byId(id);
-	}
-
-	public Long getId() {
-		return new Long(id);
-	}
-	
-	public static User getByEmail(String email) {
-		return find.where().eq("email", email).findUnique();
-	}
-
-	public static User getByUserName(String userName) {
-		return find.where().eq("user_name", userName).findUnique();
-	}
-
-	public static void delete(Long id) {
-		find.ref(id).delete();
-	}
-
 	public void verify() {
 		userName = userName.replaceAll("[^\\w.-]", "");
 	}
@@ -193,5 +121,47 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	
 	public boolean equals(User user) {
 		return token.equals(user.token) && this.id == user.id;
+	}
+
+
+	public static User create(User user) {		
+		user.generateToken();
+		user.save();
+		// is this necessary? -YES!
+		// user.saveManyToManyAssociations("followedResources");
+		return user;
+	}
+
+	public static User getByToken(String token) {
+		if (token == null) { return null; }
+		try {
+			return find.where().eq("token", token).findUnique();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static List<User> all() {
+		return find.where().orderBy("userName asc").findList();
+	}
+
+	public static boolean exists(Long id) {
+		return find.byId(id) != null;
+	}
+
+	public static User get(Long id) {
+		return find.byId(id);
+	}
+	
+	public static User getByEmail(String email) {
+		return find.where().eq("email", email).findUnique();
+	}
+
+	public static User getByUserName(String userName) {
+		return find.where().eq("user_name", userName).findUnique();
+	}
+
+	public static void delete(Long id) {
+		find.ref(id).delete();
 	}
 }
