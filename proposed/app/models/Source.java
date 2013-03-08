@@ -292,8 +292,9 @@ public class Source extends Operator {
 
 	public static void delete(Long id) {
 		Source source = find.ref(id);
+		source.pollingPeriod = 0L;
 		//StreamParser.deleteBySource(source);
-		Stream.deleteBySource(source);
+		//Stream.deleteBySource(source);
 		source.delete();
 	}
 
