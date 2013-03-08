@@ -123,6 +123,23 @@ public class StreamParser extends Model {
 		}
 		return false;
 	}*/
+	public boolean parseRequest(Request request) {
+		try {
+			if ("application/json".equalsIgnoreCase(inputType)
+					|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type")) ) {
+				JsonNode jsonBody = request.body().asJson();
+				//Logger.info("[StreamParser] as json");
+				return parseJsonResponse(jsonBody);
+			} else {
+				String textBody = request.body().asText();
+				//Logger.info("[StreamParser] as text");
+				return parseTextResponse(textBody);
+			}
+		} catch (Exception e) {
+			Logger.info("[StreamParser] Exception " + e.getMessage());
+		}
+		return false;
+	}
 	/**
 	 * parseResponse(Request req) chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post

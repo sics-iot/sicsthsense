@@ -242,11 +242,12 @@ public class Source extends Operator {
 
 	public boolean parseAndPost(Request req) {
 		boolean result = false;
-		if(streamParsers != null) {
+		if (streamParsers != null) {
 			for (StreamParser sp : streamParsers) {
+				//Logger.info("handing request to stream parser");
 				if (sp != null) {
 					// Liam: not sure what to do here, breaking build...
-					//result |= sp.parseResponse(req);
+					result |= sp.parseRequest(req);
 				}
 			}
 		}

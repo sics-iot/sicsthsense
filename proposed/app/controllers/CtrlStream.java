@@ -52,8 +52,9 @@ public class CtrlStream extends Controller {
 
 	public static Result getByKey(String key) {
 		final User user = Secured.getCurrentUser();
+		if (user == null) return notFound();
 		final Stream stream = Stream.getByKey(key);
-		//if(user == null) return notFound();
+		if (stream == null) return notFound();
 		return getData(user, stream, -1L, -1L, -1L);
 	}
 	
