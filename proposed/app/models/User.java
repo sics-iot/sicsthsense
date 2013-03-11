@@ -150,7 +150,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 
 	public static User get(Long id) {
-		return find.byId(id);
+		return (id==null) ? null : find.byId(id);
 	}
 	
 	public static User getByEmail(String email) {

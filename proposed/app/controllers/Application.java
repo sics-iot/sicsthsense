@@ -25,6 +25,11 @@ public class Application extends Controller {
   
   public static Result search() {
   	User currentUser = Secured.getCurrentUser();
+    return TODO;
+  }
+  
+  public static Result streams() {
+  	User currentUser = Secured.getCurrentUser();
     return ok(streamsPage.render(currentUser.streamList));
   }
   

@@ -14,6 +14,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import com.avaje.ebean.Ebean;
 
 import play.Logger;
+import play.api.mvc.Request;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -41,29 +42,30 @@ public class CtrlSource extends Controller {
 			Source submitted = theForm.get();
 			StringBuffer returnBuffer = new StringBuffer();  
 			BufferedReader serverResponse;
-
+			
+			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
 			// get data
-			HttpURLConnection connection = submitted.probe();
-			String contentType = connection.getContentType();
-			Logger.warn(contentType);
-			try {
-				serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
-				String line;
-				while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
-			} catch (IOException ioe) {  
-				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
-				return badRequest("Error collecting data from the source URL");
+				HttpURLConnection connection = submitted.probe();
+				String contentType = connection.getContentType();
+				Logger.warn(contentType);
+				try {
+					serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
+					String line;
+					while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
+				} catch (IOException ioe) {  
+					Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
+					return badRequest("Error collecting data from the source URL");
+				}
+				// decide to how to parse this data	
+				if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
+					Logger.info("json file!");
+					return parseJson(returnBuffer.toString(), submitted);
+				} else if (contentType.matches("text/html.*")) {
+					Logger.info("html file!");
+				} else {
+					Logger.warn("Unknown content type!");
+				}	
 			}
-			// decide to how to parse this data	
-			if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-				Logger.info("json file!");
-				return parseJson(returnBuffer.toString(), submitted);
-			} else if (contentType.matches("text/html.*")) {
-				Logger.info("html file!");
-			} else {
-				Logger.warn("Unknown content type!");
-			}	
-
 			SkeletonSource skeleton = new SkeletonSource(submitted);
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 
@@ -236,10 +238,12 @@ public class CtrlSource extends Controller {
 		Source source = Source.get(id, key);
 		return postBySource(source);
 	}
-
+	
+	@BodyParser.Of(BodyParser.TolerantText.class)
 	private static Result postBySource(Source source) {
 		if (source != null) {
 			try {
+				// XXX: asText() does not work unless ContentType is "text/plain"
 				String strBody = request().body().asText();
 				Logger.info("[Streams] post received from: " + " URI "
 						+ request().uri() + ", content type: "

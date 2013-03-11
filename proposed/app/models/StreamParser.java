@@ -131,12 +131,12 @@ public class StreamParser extends Model {
 				//Logger.info("[StreamParser] as json");
 				return parseJsonResponse(jsonBody);
 			} else {
-				String textBody = request.body().asText();
+				String textBody = request.body().asText(); //request.body().asRaw().toString();
 				//Logger.info("[StreamParser] as text");
 				return parseTextResponse(textBody);
 			}
 		} catch (Exception e) {
-			Logger.info("[StreamParser] Exception " + e.getMessage());
+			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
 		}
 		return false;
 	}
@@ -155,7 +155,7 @@ public class StreamParser extends Model {
 				return parseTextResponse(textBody);
 			}
 		} catch (Exception e) {
-			Logger.info("[StreamParser] Exception " + e.getMessage());
+			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
 		}
 		return false;
 	}
@@ -166,7 +166,7 @@ public class StreamParser extends Model {
  * @return true if could post
  */
 	private boolean parseTextResponse(String textBody) {
-		if (inputParser != null && inputParser != "") {
+		if (inputParser != null && !inputParser.equalsIgnoreCase("") ) {
 			regexPattern = Pattern.compile(inputParser);
 			Matcher matcher = regexPattern.matcher(textBody);
 			if (textBody != null && matcher.find()) {

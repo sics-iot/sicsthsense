@@ -51,7 +51,7 @@ padding: 10px;
 						<Strong>Sics<sup>th</sup>Sense</Strong></a></li> 
 					@if(session != null && Secured.getUsername(session) != null) {
 					<li><a href="@routes.Application.home()">Home</a></li>
-					<li><a href="@routes.Application.search()">Search</a></li>
+					<li><a href="@routes.Application.streams()">Streams</a></li>
 					<li><a href="@routes.CtrlSource.manage()">Manage</a></li>
 					<li><a href="@routes.CtrlUser.get()">Account</a></li>
 					} else {
