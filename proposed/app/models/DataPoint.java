@@ -34,7 +34,7 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	public Long timestamp;
 	
 	// this is probably bad
-	public static Model.Finder<Long, ? extends DataPoint> find =  new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
+	//public Model.Finder<Long, ? extends DataPoint> find;
 
 	public abstract DataPoint add();
 
@@ -43,63 +43,23 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static long getCount() {
-		return find.findRowCount();
+	public int compareTo(DataPoint point) {
+		return Long.valueOf(this.timestamp).compareTo(point.timestamp);
 	}
+	
+		public abstract Object getData();
 
-	public abstract Object getData();
-
+//	public abstract long getCount();
+//
+//
 //	public abstract List<? extends DataPoint> getByStream(Stream stream);
 //
 //	public abstract List<? extends DataPoint> getByStreamTail(Stream stream, long tail);
 //
-//	public static List<? extends DataPoint> getByStreamLast(Stream stream, long last);
+//	public abstract List<? extends DataPoint> getByStreamLast(Stream stream, long last);
 //
-//	public static List<? extends DataPoint> getByStreamSince(Stream stream, long since);
+//	public abstract List<? extends DataPoint> getByStreamSince(Stream stream, long since);
 //
-//	public static void deleteByStream(Stream stream);
-	
-	public static List<? extends DataPoint> getByStream(Stream stream) {
-		return find.where().eq("stream", stream).orderBy("timestamp desc")
-				.findList();
-	}
-
-	public static List<? extends DataPoint> getByStreamTail(Stream stream, long tail) {
-		if (tail == 0) {
-			tail++;
-		}
-		List<? extends DataPoint> set = find.where().eq("stream", stream)
-				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
-		// return set.subList(set.size()-(int)tail, set.size());
-		return set;
-	}
-
-	public static List<? extends DataPoint> getByStreamLast(Stream stream, long last) {
-		return getByStreamSince(stream, Utils.currentTime() - last);
-	}
-
-	public static List<? extends DataPoint> getByStreamSince(Stream stream, long since) {
-		return find.where().eq("stream", stream).ge("timestamp", since)
-				.orderBy("timestamp desc").findList();
-	}
-
-	public static void deleteByStream(Stream stream) {
-		// TODO this is an ugly workaround, we need to find out how to SQL delete
-		// directly
-		List<? extends DataPoint> list = find.where().eq("stream", stream)
-				.orderBy("timestamp desc").findList();
-		Ebean.delete(list);
-		// List<Long> ids = new LinkedList<Long>();
-		// for(DataPoint element: list) {
-		// ids.add(element.id);
-		// }
-		// for(Long id: ids) {
-		// find.ref(id).delete();
-		// }
-	}	
-	
-	public int compareTo(DataPoint point) {
-		return Long.valueOf(this.timestamp).compareTo(point.timestamp);
-	}
+//	public abstract void deleteByStream(Stream stream);
 
 }

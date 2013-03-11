@@ -244,7 +244,6 @@ public class Stream extends Model {
 		}
 	}
 
-
 	public List<? extends DataPoint> getDataPoints() {
 		return (List<? extends DataPoint>)dataPoints;
 	}
@@ -255,11 +254,15 @@ public class Stream extends Model {
 			//return new ArrayList<? extends DataPoint>(); // TODO should this be return new
 																					// ArrayList<? extends DataPoint>(0) ??
 		}
-		
-		List<DataPointDouble> set = DataPointDouble.find.where().eq("stream", this)
-				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
-		// return set.subList(set.size()-(int)tail, set.size());
-		return (List<? extends DataPoint>)set;
+		List<? extends DataPoint> set = null;
+		if (type == StreamType.STRING) {
+			set = DataPointString.find.where().eq("stream", this)
+					.setMaxRows((int) tail).orderBy("timestamp desc").findList();
+		} else if (type == StreamType.DOUBLE) {
+			set = DataPointDouble.find.where().eq("stream", this)
+					.setMaxRows((int) tail).orderBy("timestamp desc").findList();
+		}
+		return set;
 	}
 
 	public List<? extends DataPoint> getDataPointsLast(long last) {
@@ -267,8 +270,15 @@ public class Stream extends Model {
 	}
 
 	public List<? extends DataPoint> getDataPointsSince(long since) {
-		return DataPoint.find.where().eq("stream", this).ge("timestamp", since)
-				.orderBy("timestamp desc").findList();
+		List<? extends DataPoint> set = null;
+		if (type == StreamType.STRING) {
+			set = DataPointString.find.where().eq("stream", this).ge("timestamp", since)
+					.orderBy("timestamp desc").findList();
+		} else if (type == StreamType.DOUBLE) {
+			set = DataPointDouble.find.where().eq("stream", this).ge("timestamp", since)
+					.orderBy("timestamp desc").findList();
+		}
+		return set;
 	}
 
 	public static Stream getByKey(String key) {

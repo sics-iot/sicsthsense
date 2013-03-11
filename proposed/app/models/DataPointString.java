@@ -27,6 +27,8 @@ public class DataPointString extends DataPoint {
 	
 	public String data;
 
+	public static Model.Finder<Long, DataPointString> find = new Model.Finder<Long, DataPointString>(Long.class, DataPointString.class);
+
 	public DataPointString() {
 		this(null, null, null);
 		// TODO Auto-generated constructor stub
@@ -36,7 +38,6 @@ public class DataPointString extends DataPoint {
 		this.stream = stream;
 		this.data = data;
 		this.timestamp = timestamp;
-		//find = new Model.Finder<Long, DataPointString>(Long.class, DataPointString.class);
 	}
 
 	public DataPointString add() {
@@ -55,4 +56,45 @@ public class DataPointString extends DataPoint {
   	return data;
   }
 	
+  public static List<? extends DataPoint> getByStream(Stream stream) {
+		return find.where().eq("stream", stream).orderBy("timestamp desc")
+				.findList();
+	}
+
+	public static List<? extends DataPoint> getByStreamTail(Stream stream, long tail) {
+		if (tail == 0) {
+			tail++;
+		}
+		List<? extends DataPoint> set = find.where().eq("stream", stream)
+				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
+		// return set.subList(set.size()-(int)tail, set.size());
+		return set;
+	}
+
+	public static List<? extends DataPoint> getByStreamLast(Stream stream, long last) {
+		return getByStreamSince(stream, Utils.currentTime() - last);
+	}
+
+	public static List<? extends DataPoint> getByStreamSince(Stream stream, long since) {
+		return find.where().eq("stream", stream).ge("timestamp", since)
+				.orderBy("timestamp desc").findList();
+	}
+
+	public static void deleteByStream(Stream stream) {
+		// TODO this is an ugly workaround, we need to find out how to SQL delete
+		// directly
+		List<? extends DataPoint> list = find.where().eq("stream", stream)
+				.orderBy("timestamp desc").findList();
+		Ebean.delete(list);
+		// List<Long> ids = new LinkedList<Long>();
+		// for(DataPoint element: list) {
+		// ids.add(element.id);
+		// }
+		// for(Long id: ids) {
+		// find.ref(id).delete();
+		// }
+	}
+	public static long getCount() {
+		return find.findRowCount();
+	}
 }
