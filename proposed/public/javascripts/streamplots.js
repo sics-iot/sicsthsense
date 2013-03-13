@@ -160,13 +160,13 @@ var StreamPlots = {
 		colors: [ "#88b" ],
 		xaxis: {
 			mode: "time",
-			timeformat: "%y-%m-%d %H:%M:%S",
+			//timeformat: "%y-%m-%d %H:%M:%S",
+			tickLength: 5,
 			minTickSize: [1, "second"],
-			ticks: 6,
-			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60
-			,
+			//ticks: 6,
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60,
 			zoomRange: [this.minTickSize, this.max],
-			panRange: [new Date().getTimezoneOffset()*60, this.max]
+			panRange: [null, this.max]
 		},
 		yaxis: {
 			zoomRange: false,
@@ -178,14 +178,13 @@ var StreamPlots = {
 		pan: {
 			interactive: true
 		},
+//		selection: {
+//			mode: "xy"
+//		},
 		grid: {
 			hoverable: false,
 			clickable: true
 		}
-//		,
-//		selection: {
-//			mode: "xy"
-//		}
 	},
 	overview_options : {
 		legend: {
@@ -200,13 +199,12 @@ var StreamPlots = {
 		},
 		xaxis: {
 			mode: "time",
-			timeformat: "%y-%m-%d %H:%M:%S",
-			minTickSize: [1, "second"],
-			ticks: 2,
-			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60
+			timeformat: "%y-%m-%d",
+			//minTickSize: [1, "second"],
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60,
+			ticks: 3
 		},
 		yaxis: {
-			ticks: 3
 		},
 		colors: [ "#77a" ],
 		selection: {
