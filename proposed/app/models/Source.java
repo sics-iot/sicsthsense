@@ -52,6 +52,9 @@ public class Source extends Operator {
 	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 
+	@OneToMany(mappedBy = "source")
+	public List<Stream> streams = new ArrayList<Stream>();
+
 	/** Secret key for authenticating posts coming from outside */
 	public String key;
 
@@ -265,7 +268,12 @@ public class Source extends Operator {
 		Source source = find.ref(id);
 		source.pollingPeriod = 0L;
 		//StreamParser.deleteBySource(source);
-		//Stream.deleteBySource(source);
+		Stream.dattachSource(source);
+		//deattach streams from source
+//		for(Stream stream : source.streams) {
+//			stream.source = null;
+//			stream.update();
+//		}
 		source.delete();
 	}
 

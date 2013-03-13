@@ -234,6 +234,17 @@ public class Stream extends Model {
 			stream.delete();
 		}
 	}
+	
+	public static void dattachSource(Source source) {
+		List<Stream> list = find.where()
+		 .eq("source", source)
+		 .findList();
+		for (Stream stream : list) {
+			stream.source = null;
+			stream.update();
+		}
+		//Ebean.update(list);
+	}
 
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
