@@ -90,21 +90,6 @@ public class StreamParser extends Model {
 		this.stream = stream;
 	}
 
-	public static StreamParser create(StreamParser parser) {
-		if (parser.source != null && parser.inputParser != null) {
-			if(parser.stream == null) {
-				if(parser.streamVfilePath == null) {
-					parser.streamVfilePath = "/" + parser.source.label + "/newstream_" + (new Random(new Date().getTime()).nextInt(10000));
-				}
-				parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
-			}
-			parser.save();
-			return parser;
-		}
-		Logger.warn("[StreamParser] Could not create parser for " + parser.source.label);
-		return null;
-	}
-
 	public boolean setInputParser(String inputParser) {
 		this.inputParser = inputParser;
 		if (inputParser != null) {
@@ -256,6 +241,26 @@ public class StreamParser extends Model {
 			return f;
 		}
 		Logger.error("[StreamParser] couldn't get or create a stream file in " + path);
+		return null;
+	}
+
+
+	public static StreamParser create(StreamParser parser) {
+		if (parser.source != null && parser.inputParser != null) {
+			if (parser.stream == null) {
+				if (parser.streamVfilePath == null) {
+					parser.streamVfilePath = "/" + parser.source.label + "/newstream_" + (new Random(new Date().getTime()).nextInt(10000));
+				}
+				parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
+			}
+			parser.save();
+			return parser;
+		} else {
+			Logger.warn("[StreamParser] Could not create parser for " + parser.source.label + ", source or input bad");
+			if (parser.source == null) { Logger.warn("[StreamParser] source null"); }
+			if (parser.inputParser == null) { Logger.warn("[StreamParser] input parser null"); }
+		}
+		Logger.warn("[StreamParser] Could not create parser for " + parser.source.label);
 		return null;
 	}
 	

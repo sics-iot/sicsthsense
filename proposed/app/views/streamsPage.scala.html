@@ -8,33 +8,34 @@
     ================================================== -->
 	<div class="row">
 		<div class="span2 bs-docs-sidebar">
+
 			<a>Streams tree</a>
 		<div id="vfileTree">
   			<ul>
-				<li><a>No files exist</a></li>
+				<li><a>No streams exist</a></li>
 				@if(streams.length > 0) {
 					@for(vf <- FileSystem.listFiles(streams(0).owner)) {
-					<li><a>@vf.getPath()</a></li> 
+						<li><a>@vf.getPath()</a></li> 
 					}
 				}
   			</ul>
 		</div>
   </div>
 
-      <div class="span9">
-				<br \>
+  <div class="span9">
+		<br \>
 
  	<!--Body content-->
 
 	<!-- Stream listing and visualizing -->
 	@if(streams.length > 0) {
 		<h1>Your streams</h1>
-				@for(stream <- streams) {					
-					<br />
-					@vstream.includeStream(stream)
-					<br />
-				}
-			}
+		@for(stream <- streams) {					
+			<br />
+			@vstream.includeStream(stream)
+			<br />
+		}
+	}
 	<br /> <br />
 	
     </div>

@@ -96,14 +96,18 @@ public class SkeletonSource {
 	public List<StreamParser> getStreamParsers(Source source) {
 		if (streamParserWrapers == null) { return null; }
 		List<StreamParser> list = new ArrayList<StreamParser>();
+
 		for (int i = 0; i < streamParserWrapers.size(); i++) {
-			if(streamParserWrapers.get(i).vfilePath != null) {
+			if (streamParserWrapers.get(i).vfilePath != null) {
 				StreamParser sp = streamParserWrapers.get(i).getStreamParser(source);
 				list.add(sp);
+			} else {
+				Logger.warn("Got a null vfilePath");
 			}
 		}
 		return list;
 	}
+
 	public boolean FillFromSource(Source source) {
 		if(source != null) {
 			this.id = source.id;
