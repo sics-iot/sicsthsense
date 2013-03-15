@@ -6,19 +6,20 @@
 
     <!-- Docs nav
     ================================================== -->
-    <div class="row">
-      <div class="span2 bs-docs-sidebar">
+	<div class="row">
+		<div class="span2 bs-docs-sidebar">
 			<a>Streams tree</a>
-			<div id="vfileTree">
-  <ul>
-	@if(streams.length > 0) {
-		@for(vf <- FileSystem.listFiles(streams(0).owner)) {
-				<li><a>@vf.getPath()</a></li> 
-			}
-	}
-  </ul>
-</div>
-      </div>
+		<div id="vfileTree">
+  			<ul>
+				<li><a>No files exist</a></li>
+				@if(streams.length > 0) {
+					@for(vf <- FileSystem.listFiles(streams(0).owner)) {
+					<li><a>@vf.getPath()</a></li> 
+					}
+				}
+  			</ul>
+		</div>
+  </div>
 
       <div class="span9">
 				<br \>
