@@ -25,8 +25,6 @@ import play.mvc.Http.Request;
 @Table(name = "parsers")
 public class StreamParser extends Model {
 	
-	
-
 	/**
 	 * The serialization runtime associates with each serializable class a version
 	 * number, called a serialVersionUID
@@ -50,6 +48,9 @@ public class StreamParser extends Model {
 	@ManyToOne
 	public Stream stream;
 
+	@Transient
+	public String streamVfilePath;
+	
 	/** RegEx, Xpath, JSON path */
 	public String inputParser;
 
@@ -63,6 +64,9 @@ public class StreamParser extends Model {
 	@Transient
 	public Pattern regexPattern;
 
+	
+	public static Model.Finder<Long, StreamParser> find = new Model.Finder<Long, StreamParser>(Long.class, StreamParser.class);
+
 	public StreamParser() {
 		super();
 	}
@@ -72,7 +76,10 @@ public class StreamParser extends Model {
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
-		this.stream = getOrCreateStreamFile(path).linkedStream;
+		this.streamVfilePath = path;
+		Vfile f = FileSystem.readFile(source.owner, path);
+		this.stream = (f != null) ? f.linkedStream : null;
+		//getOrCreateStreamFile(path).linkedStream;
 	}
 
 	public StreamParser(Source source, String inputParser, String inputType, Stream stream) {
@@ -85,9 +92,16 @@ public class StreamParser extends Model {
 
 	public static StreamParser create(StreamParser parser) {
 		if (parser.source != null && parser.inputParser != null) {
+			if(parser.stream == null) {
+				if(parser.streamVfilePath == null) {
+					parser.streamVfilePath = "/" + parser.source.label + "/newstream_" + (new Random(new Date().getTime()).nextInt(10000));
+				}
+				parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
+			}
 			parser.save();
 			return parser;
 		}
+		Logger.warn("[StreamParser] Could not create parser for " + parser.source.label);
 		return null;
 	}
 
@@ -243,5 +257,9 @@ public class StreamParser extends Model {
 		}
 		Logger.error("[StreamParser] couldn't get or create a stream file in " + path);
 		return null;
+	}
+	
+	public static void delete(Long id) {
+		find.ref(id).delete();
 	}
 }

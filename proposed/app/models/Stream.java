@@ -39,15 +39,6 @@ public class Stream extends Model {
 
 	public StreamType type = StreamType.UNDEFINED;
 
-	@ManyToOne
-	public User owner;
-
-	@ManyToOne
-	public Source source;
-
-	@OneToOne(cascade = CascadeType.ALL, mappedBy="linkedStream")
-	public Vfile file;
-
 	public boolean publicAccess = false;
 
 	/**
@@ -62,6 +53,16 @@ public class Stream extends Model {
 	/** Secret key for authentication */
 	private String key;
 	
+	@ManyToOne
+	public User owner;
+
+	@ManyToOne
+	public Source source;
+
+	//should this be a field in the table? (i.e. not mappedBy)?
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="linkedStream")
+	public Vfile file;
+
 	@javax.persistence.Transient
 	public List dataPoints;
 	
@@ -330,6 +331,8 @@ public class Stream extends Model {
 	public void delete() {
 		// /XXX: Can't delete if a device is sending updates to this stream!
 		// now I'm using ebean.trasaction on the action function...
+		this.file.linkedStream = null;
+		this.file.update();
 		clearStream(this.id);
 		super.delete();
 	}

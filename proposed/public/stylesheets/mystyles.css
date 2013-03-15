@@ -57,8 +57,14 @@ div.streampoint_tooltip {
 	display: none;
 	border: 1px solid #87a;
 	padding: 2px;
-	"background-color": #88b;
+	background-color: #88b;
 	opacity: 0.75;
+}
+
+div.overlay {
+	display: block;
+	opacity: 0.5;
+	background-color: rgba(200, 100, 100, 0.5);
 }
 
 span.streamconfig {
@@ -106,4 +112,8 @@ dd {
     float: left;
     margin-left: 0.5em;
     max-width: 75%;
+}
+
+.parsers_template {
+		display:none;
 }

@@ -55,12 +55,12 @@ create table sources (
 create table streams (
   id                        bigint not null,
   type                      varchar(1),
-  owner_id                  bigint,
-  source_id                 bigint,
   public_access             boolean,
   history_size              bigint,
   last_updated              bigint,
   key                       varchar(255),
+  owner_id                  bigint,
+  source_id                 bigint,
   constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
 ;

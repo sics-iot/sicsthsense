@@ -2,11 +2,6 @@ package controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
 import models.*;
 import play.Logger;
 import play.data.validation.Constraints;
@@ -50,7 +45,7 @@ public class SkeletonSource {
 			this.pollingUrl = source.pollingUrl;
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
 			if (source.streamParsers != null) {
-				streamParserWrapers = new ArrayList<StreamParserWraper>(source.streamParsers.size());
+				streamParserWrapers = new ArrayList<StreamParserWraper>(source.streamParsers.size()+1);
 				for (StreamParser sp : source.streamParsers) {
 					streamParserWrapers.add(new StreamParserWraper(sp));
 				}
@@ -67,7 +62,7 @@ public class SkeletonSource {
 			this.pollingUrl = source.pollingUrl;
 			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
 		}
-		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length);
+		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length+1);
 		for (StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);
 		}
@@ -102,8 +97,10 @@ public class SkeletonSource {
 		if (streamParserWrapers == null) { return null; }
 		List<StreamParser> list = new ArrayList<StreamParser>();
 		for (int i = 0; i < streamParserWrapers.size(); i++) {
-			StreamParser sp = streamParserWrapers.get(i).getStreamParser(source);
-			list.add(sp);
+			if(streamParserWrapers.get(i).vfilePath != null) {
+				StreamParser sp = streamParserWrapers.get(i).getStreamParser(source);
+				list.add(sp);
+			}
 		}
 		return list;
 	}
@@ -132,6 +129,7 @@ public class SkeletonSource {
 		public Long parserId;
 		@Constraints.Required
 		public String vfilePath;
+		//@Constraints.Required
 		/** RegEx, Xpath, JSON path */
 		public String inputParser;
 		/**
@@ -157,8 +155,9 @@ public class SkeletonSource {
 				this.vfilePath   = sp.stream.file.getPath();
 				this.inputType   = sp.inputType;
 				this.inputParser = sp.inputParser;
+				this.parserId = sp.id;
 			} catch (Exception e) {
-				Logger.error("Error creating StreamParserWraper from StreamParser: " + e.getMessage() + "Stack trace:\n" + e.getStackTrace().toString());
+				Logger.error("Error creating StreamParserWraper from StreamParser: " + e.getMessage() + "Stack trace:\n" + e.getStackTrace()[0].toString());
 			}
 		}
 

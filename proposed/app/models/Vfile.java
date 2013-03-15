@@ -104,5 +104,11 @@ public class Vfile extends Model {
 	public Stream getLink() {
 		return linkedStream;
 	}
+	
+	public void delete() {
+		//TODO: Check dependencies
+		//this.linkedStream.file = null;
+		super.delete();
+	}
 
 }

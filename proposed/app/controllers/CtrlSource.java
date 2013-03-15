@@ -127,15 +127,21 @@ public class CtrlSource extends Controller {
 			if (false) { // if repoll() source
 				return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceForm));
 			} else {
-				Source submitted = Source.create(skeleton.getSource(currentUser));
+				Source submitted = skeleton.getSource(currentUser);
+				submitted.id = null;
+				submitted = Source.create(submitted);
 				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 				for (StreamParser sp : spList) {
+					sp.id=null;
 					StreamParser.create(sp);
-					Stream newstream = new Stream();
-					newstream.create(currentUser);
+					//Stream newstream = new Stream();
+					//newstream.create(currentUser);
 				}
-				return redirect(routes.CtrlSource.manage());
+				if(submitted != null && submitted.id != null) {
+					return redirect(routes.CtrlSource.getById(submitted.id));
+				}
 			}
+			return redirect(routes.CtrlSource.manage());
 		}
 	}
 
@@ -211,6 +217,12 @@ public class CtrlSource extends Controller {
 		// check permission?
 		Source.delete(id);
 		return redirect(routes.CtrlSource.manage());
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result deleteParser(Long id) {
+		StreamParser.delete(id);
+		return ok("true");
 	}
 	
 	public static Result postByKey(String key) {

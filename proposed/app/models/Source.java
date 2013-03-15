@@ -25,6 +25,7 @@ import models.*;
 import controllers.*;
 import views.html.*;
 import play.data.validation.Constraints;
+import play.data.validation.Constraints.Required;
 
 @Entity
 @Table(name = "sources", uniqueConstraints = { 
@@ -43,7 +44,8 @@ public class Source extends Operator {
 	 * number, called a serialVersionUID
 	 */
   private static final long serialVersionUID = 7683451697925144957L;
-	public String label = "NewSource";
+	@Required
+  public String label = "NewSource";
   public Long pollingPeriod = 0L;
   public Long lastPolled = 0L;
 	public String pollingUrl = null;
@@ -257,6 +259,9 @@ public class Source extends Operator {
 	
 	public static Source create(Source source) {
 		if (source.owner != null) {
+			if(getByUserLabel(source.owner, source.label) != null) {
+				source.label = source.label + new Random(new Date().getTime()).nextInt(10) + "_at_" + (new Date().toString());
+			}
 			source.save();
 			source.updateKey();
 			return source;
@@ -267,13 +272,8 @@ public class Source extends Operator {
 	public static void delete(Long id) {
 		Source source = find.ref(id);
 		source.pollingPeriod = 0L;
-		//StreamParser.deleteBySource(source);
+		//remove references
 		Stream.dattachSource(source);
-		//deattach streams from source
-//		for(Stream stream : source.streams) {
-//			stream.source = null;
-//			stream.update();
-//		}
 		source.delete();
 	}
 

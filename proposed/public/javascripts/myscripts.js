@@ -168,31 +168,96 @@
   // ...
   //
   // This is probably not the easiest way to do it. A jQuery plugin would help.
-	function renumberParsers(streamParserWrapers) {
-		$('.parser input', this).each(function(i) {
+	function renumberParsers() {
+		console.debug("renumberParsers");
+		$('.parser input').each(function(i) {
+			console.debug("renumbering parser " + i);
 			$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
 			//$(this).attr('id', $(this).attr('id').replace(/streamParserWrapers_.+?_/g, 'streamParserWrapers_' + i + '_'));
     });
  	};
 
-	function removeParser(e) {
-		var streamParserWrapers = $(this).parents('.parsers')
-		$(this).parents('.parser').remove();
-   	renumberParsers(streamParserWrapers);
+ 	var streamParsersToDelete = new Array();
+ 	Array.prototype.destroy = function(obj){
+    while (this.indexOf(obj) != -1) {
+    	this.splice(this.indexOf(obj), 1);
+    };
+ 	}
+ 	//remove from form and renumber the form
+ 	function removeParser(e) {
+ 		var requestDelete = $(this).attr('delete');
+ 		var parserId = $(this).attr('parserId');
+ 		console.debug("parserID " + parserId);
+ 		if(requestDelete=='true') {
+ 			streamParsersToDelete.push(parserId);
+ 			//$(this).toggleClass('icon-trash icon-trash-white');
+ 			$(this).attr('delete','false');
+ 			$(this).parents('.parser').toggleClass('overlay');
+  		console.debug("Parser " + parserId + " request delete");
+ 		} else if (requestDelete=='false'){
+ 			streamParsersToDelete.destroy(parserId);
+ 			//$(this).toggleClass('icon-trash icon-trash-white');
+ 			$(this).attr('delete','true');
+ 			$(this).parents('.parser').toggleClass('overlay');
+  		console.debug("Parser " + parserId + " request delete false");
+ 		} 
+ 		//delete field only
+ 		if(parserId <= 0 || typeof variable_here === 'undefined'){
+			var streamParserWrapers = $(this).parents('.parsers');
+			$(this).parents('.parser').remove();
+			renumberParsers();
+		  $('.removeParser').on("click", removeParser);
+ 		}
+ 		for (var i=0; i<streamParsersToDelete.length; i++) { 
+  		console.debug(streamParsersToDelete[i]);
+  	}
+		//deleteParser(parserId);
+  };
+  
+  //send the delete request to server
+  function deleteParser(parserId) {
+  	jsRoutes.controllers.CtrlSource.deleteParser(parserId).ajax({
+	    success: function(msg) {
+	  		console.debug("Parser " + parserId + " deleted: " + msg);
+	    },
+	    error: function(msg) {
+	    	console.debug("Parser " + parserId + " delete error: " + msg);
+	    }
+	  });	
   };
   $('.removeParser').on("click", removeParser);
 
-	function insertParser(e) {
+  //insert streamParser field
+  function insertParser(e) {
 		var streamParserWrapers = $(this).parents('.parsers')
-  	var template = $('.parsers_template');
-   	template.before('<div class="twipsies well parser">' + template.html() + '</div>');
-   	renumberParsers(streamParserWrapers);
+		var template = $('.parsers_template');
+		template.before('<div class="twipsies well parser">' + template.html() + '</div>');
+		renumberParsers();
+	  $('.removeParser').on("click", removeParser);
   };
   $('.addParser').on("click", insertParser);
-
-  $('#add_source_form').submit(function() {
+  
+  function updateSource(e) {
   	$('.parsers_template').remove();
+  	for (var i=0; i<streamParsersToDelete.length; i++) { 
+  		deleteParser(streamParsersToDelete[i]);
+  		$(this).siblings('[parserId="'+streamParsersToDelete[i]+'"]').remove();
+  	}
+  	streamParsersToDelete = new Array();
+		renumberParsers();
+  };
+  $('#updateSource').on("click", updateSource);
+  //$('#modify_source_form').submit(updateSource);
+  
+  $('#addSource').on("click", function(e) {
+  	$('.parsers_template').remove();
+		renumberParsers();
+		console.debug("Adding new source.");
   });
+//  $('#add_source_form').submit(function() {
+//  	$('.parsers_template').remove();
+//		renumberParsers();
+//  });
 
 //-----------jsTree
 $("#vfileTree").bind("select_node.jstree", function(event, data) {

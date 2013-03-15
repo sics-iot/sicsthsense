@@ -8,7 +8,7 @@ GET        /openIDCallback                       controllers.Login.openIDCallbac
 GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
-GET        /streams                               controllers.Application.streams()
+GET        /streams                              controllers.Application.streams()
 GET        /manage                               controllers.CtrlSource.manage()
 GET        /attachFunction											 controllers.Application.attachFunction()
 GET        /API                                  controllers.Public.about()
@@ -26,38 +26,41 @@ GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(i
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
 
 # Streams
-GET        /user/:ownerName/$path<.*>						controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-#GET       /user/:ownerName/streams							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /user/:ownerName/$path<.*>				controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+#GET       /user/:ownerName/streams					controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /streams/:id								    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 
 # Sources
+GET			/sources/add												controllers.CtrlSource.add()
 POST		/sources/add												controllers.CtrlSource.add()
+GET			/sources/initialise									controllers.CtrlSource.initialise()
 POST		/sources/initialise									controllers.CtrlSource.initialise()
 POST		/sources/modify/:id									controllers.CtrlSource.modify(id: Long)
+GET			/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
 POST		/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
+GET			/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
+POST		/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
+
+
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 
-# Streams, API
-POST    /api/:key														controllers.CtrlSource.postByKey(key: String)
 # Sources API
-GET			/api/:key														controllers.CtrlStream.getByKey(key: String)
-POST    /api/:user/:label										controllers.CtrlSource.postByLabel(user: String, label: String)
-GET			/api/:user/:label										controllers.CtrlSource.getByLabel( user: String, label: String)
+POST    /api/source/:key										controllers.CtrlSource.postByKey(key: String)
+#GET		/api/source/:key										controllers.CtrlSource.getByKey(key: String)
+POST    /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
+GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
 
-POST		/api/streams/:key						    	controllers.CtrlStream.postByKey(key: String)
-GET			/api/streams/:key						    	controllers.CtrlStream.getByKey( key: String)
+# Streams, API
+POST		/api/streams/:key							    	controllers.CtrlStream.postByKey(key: String)
+GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String)
 
 # deprecated
 GET        /api/streams/$path<.*>		 				controllers.CtrlSource.getDataByUserKey(user_token: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /api/streams/				 						controllers.CtrlSource.getDataByUserKey(user_token: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
-# Source
-GET		/source/add													controllers.CtrlSource.add()
-GET		/source/initialise									controllers.CtrlSource.initialise()
-
 #Function 
-POST		/attachFunction/attach			controllers.CtrlFunction.attach()
+POST		/attachFunction/attach							controllers.CtrlFunction.attach()
 
 # Javascript Routes
 GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()

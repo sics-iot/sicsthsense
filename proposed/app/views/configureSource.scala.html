@@ -92,12 +92,12 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
 			      @**
 			      * Keep an hidden block that will be used as template for Javascript copy code
+			      **@
 
 			      @streamParserGroup(
 				      myForm("streamParserWrapers[x]"),
 				      className = "parsers_template"
 			      )
-			      **@
 
 			      <div class="manage">
 				      <a class="addParser btn btn-success">Add another stream parser</a>
@@ -109,7 +109,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
   <br />
 	      <div class="actions">
-		      <input type="submit" name="add" class="btn btn-primary" value="Add Source">
+		      <input type="submit" name="add" class="btn btn-primary" id="addSource" value="Add Source">
 		      <a href="@routes.CtrlSource.manage()" class="btn">Cancel</a>
 	      </div>
   }

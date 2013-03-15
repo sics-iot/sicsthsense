@@ -48,7 +48,8 @@ public class Application extends Controller {
       response().setContentType("text/javascript");
       return ok(
       		play.Routes.javascriptRouter("jsRoutes",
-          		controllers.routes.javascript.Application.home()          		
+          		controllers.routes.javascript.Application.home(),
+          		controllers.routes.javascript.CtrlSource.deleteParser()
           )
       );
   }
