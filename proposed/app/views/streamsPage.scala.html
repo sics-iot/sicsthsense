@@ -11,9 +11,11 @@
 			<a>Streams tree</a>
 			<div id="vfileTree">
   <ul>
+	@if(streams.length > 0) {
 		@for(vf <- FileSystem.listFiles(streams(0).owner)) {
 				<li><a>@vf.getPath()</a></li> 
 			}
+	}
   </ul>
 </div>
       </div>
