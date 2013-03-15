@@ -88,6 +88,9 @@ public class StreamParser extends Model {
 		this.inputType = inputType;
 		this.source = source;
 		this.stream = stream;
+		if(stream != null && stream.file != null) {
+			this.streamVfilePath = stream.file.path;
+		}
 	}
 
 	public boolean setInputParser(String inputParser) {

@@ -189,7 +189,7 @@ public class CtrlSource extends Controller {
 		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
 		// validate form
 		if (theForm.hasErrors()) {
-			return badRequest("Bad request: " + theForm.errors());
+			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
 		} else {
 			SkeletonSource skeleton = theForm.get();
 			User currentUser = Secured.getCurrentUser();
@@ -205,6 +205,8 @@ public class CtrlSource extends Controller {
 					for (StreamParser sp : spList) {
 						if (sp.id != null) {
 							sp.update();
+						} else {
+							StreamParser.create(sp);
 						}
 					}
 				} //else { Ebean.delete( source.streamParsers ); }
@@ -227,6 +229,17 @@ public class CtrlSource extends Controller {
 	public static Result deleteParser(Long id) {
 		StreamParser.delete(id);
 		return ok("true");
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath) {
+		Source source = Source.get(sourceId, Secured.getCurrentUser());
+		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath);
+		parser = StreamParser.create(parser);
+		if(parser != null) {
+			return ok("true");
+		}
+		return ok("false");
 	}
 	
 	public static Result postByKey(String key) {

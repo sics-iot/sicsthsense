@@ -191,20 +191,20 @@
  		var requestDelete = $(this).attr('delete');
  		var parserId = $(this).attr('parserId');
  		console.debug("parserID " + parserId);
- 		if(requestDelete=='true') {
+ 		if(parserId > 0 && requestDelete=='true') {
  			streamParsersToDelete.push(parserId);
  			//$(this).toggleClass('icon-trash icon-trash-white');
  			$(this).attr('delete','false');
  			$(this).parents('.parser').toggleClass('overlay');
   		console.debug("Parser " + parserId + " request delete");
- 		} else if (requestDelete=='false'){
+ 		} else if (parserId > 0 && requestDelete=='false'){
  			streamParsersToDelete.destroy(parserId);
  			//$(this).toggleClass('icon-trash icon-trash-white');
  			$(this).attr('delete','true');
  			$(this).parents('.parser').toggleClass('overlay');
   		console.debug("Parser " + parserId + " request delete false");
  		} 
- 		//delete field only
+ 		//delete form field only
  		if(parserId <= 0 || typeof parserId === 'undefined'){
 			var streamParserWrapers = $(this).parents('.parsers');
 			$(this).parents('.parser').remove();
@@ -230,12 +230,25 @@
   };
   $('.removeParser').on("click", removeParser);
 
-  //insert streamParser field
+  //send the create request to server
+//	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath) {
+
+  function createParser(sourceId, inputParser, inputType, streamPath) {
+  	jsRoutes.controllers.CtrlSource.addParser(sourceId, inputParser, inputType, streamPath).ajax({
+	    success: function(msg) {
+	  		console.debug("Parser " + parserId + " add: " + msg);
+	    },
+	    error: function(msg) {
+	    	console.debug("Parser " + parserId + " add error: " + msg);
+	    }
+	  });	
+  };
+  //insert streamParser form field
   function insertParser(e) {
-		var streamParserWrapers = $(this).parents('.parsers')
 		var template = $('.parsers_template');
-		template.before('<div class="twipsies well parser">' + template.html() + '</div>');
+		template.before('<div class="twipsies well parser" new="true">' + template.html() + '</div>');
 		renumberParsers();
+		//bind button functionality
 	  $('.removeParser').on("click", removeParser);
   };
   $('.addParser').on("click", insertParser);
@@ -248,6 +261,17 @@
   	}
   	streamParsersToDelete = new Array();
 		renumberParsers();
+//		var newParsers = $(this).parents('.parsers').children().find('[new="true"]');
+//		var sourceId = $(this).parents('.parsers').attr("sourceId");
+//  	if(sourceId > 0) {
+//			for (var i=0; i<newParsers.length; i++) {
+//				
+//				inputParser = $(newParsers[i])
+//				, inputType, streamPath
+//	  		createParser(sourceId, inputParser, inputType, streamPath);
+//	  	}
+//  	}
+		
   };
   $('#updateSource').on("click", updateSource);
   //$('#modify_source_form').submit(updateSource);

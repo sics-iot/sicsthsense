@@ -49,7 +49,8 @@ public class Application extends Controller {
       return ok(
       		play.Routes.javascriptRouter("jsRoutes",
           		controllers.routes.javascript.Application.home(),
-          		controllers.routes.javascript.CtrlSource.deleteParser()
+          		controllers.routes.javascript.CtrlSource.deleteParser(),
+          		controllers.routes.javascript.CtrlSource.addParser()
           )
       );
   }
