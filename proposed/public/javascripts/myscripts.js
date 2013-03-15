@@ -205,7 +205,7 @@
   		console.debug("Parser " + parserId + " request delete false");
  		} 
  		//delete field only
- 		if(parserId <= 0 || typeof variable_here === 'undefined'){
+ 		if(parserId <= 0 || typeof parserId === 'undefined'){
 			var streamParserWrapers = $(this).parents('.parsers');
 			$(this).parents('.parser').remove();
 			renumberParsers();
