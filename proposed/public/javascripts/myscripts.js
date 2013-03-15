@@ -264,4 +264,6 @@ $("#vfileTree").bind("select_node.jstree", function(event, data) {
     alert($(data.args[0]).text());
 });  
 $("#vfileTree").jstree();
+$("#vfileTree").on("load", $(this).jstree());
+
 

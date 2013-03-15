@@ -56,6 +56,7 @@ create table streams (
   id                        bigint not null,
   type                      varchar(1),
   public_access             boolean,
+  public_search             boolean,
   history_size              bigint,
   last_updated              bigint,
   key                       varchar(255),
