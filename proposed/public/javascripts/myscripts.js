@@ -170,10 +170,13 @@
   // This is probably not the easiest way to do it. A jQuery plugin would help.
 	function renumberParsers() {
 		console.debug("renumberParsers");
-		$('.parser input').each(function(i) {
-			console.debug("renumbering parser " + i);
-			$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
-			//$(this).attr('id', $(this).attr('id').replace(/streamParserWrapers_.+?_/g, 'streamParserWrapers_' + i + '_'));
+		$('.parser').each(function(i) {
+			console.debug("renumbering parser " + i + $(this).attr('class'));
+			$(this).children().find('input').each(function(j) {
+				console.debug("renumbering field " + $(this).attr('name'));
+				$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+				console.debug("to " + $(this).attr('name'));
+			});
     });
  	};
 

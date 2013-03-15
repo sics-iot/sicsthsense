@@ -119,6 +119,10 @@ public class CtrlSource extends Controller {
 		  return badRequest("Bad request");
 		} else {
 			SkeletonSource skeleton = theForm.get();
+			Logger.info("Adding parser: " 
+					+ "inputParser: " + skeleton.streamParserWrapers.get(0).inputParser 
+					+"vfilePath: " + skeleton.streamParserWrapers.get(0).vfilePath 
+					+"inputType: " + skeleton.streamParserWrapers.get(0).inputType);
 			User currentUser = Secured.getCurrentUser();
 			if (currentUser == null) { Logger.error("[CtrlSource.add] currentUser is null!"); }
 
