@@ -175,7 +175,7 @@ public class Source extends Operator {
         new F.Function<WS.Response, Boolean>() {
           public Boolean apply(WS.Response response) {
 						String textBody = response.getBody();
-						Logger.info("Incoming data: " + response.getHeader("Content-type") + textBody);
+						//Logger.info("Incoming data: " + response.getHeader("Content-type") + textBody);
 						//Stream parsers should handle data parsing and response type checking..
 						for (StreamParser sp: streamParsers) {
 							sp.parseResponse(response);

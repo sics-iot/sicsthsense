@@ -40,6 +40,7 @@ public class Stream extends Model {
 	public StreamType type = StreamType.UNDEFINED;
 
 	public boolean publicAccess = false;
+	public boolean publicSearch = false;
 
 	/**
 	 * The maximum duration to be kept. This should be used with the database to
