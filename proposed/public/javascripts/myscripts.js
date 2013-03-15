@@ -257,7 +257,8 @@
   	$('.parsers_template').remove();
   	for (var i=0; i<streamParsersToDelete.length; i++) { 
   		deleteParser(streamParsersToDelete[i]);
-  		$(this).siblings('[parserId="'+streamParsersToDelete[i]+'"]').remove();
+  		console.debug("Remove DOM: " + $('[parserId="'+streamParsersToDelete[i]+'"]').attr('id'));
+  		$('[parserId="'+streamParsersToDelete[i]+'"]').remove();
   	}
   	streamParsersToDelete = new Array();
 		renumberParsers();

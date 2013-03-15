@@ -13,9 +13,12 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	@**
 		@inputText(field("parserId"),   '_label -> "Parser Id", 'readonly -> "readonly", 'class -> "form-horizontal")	
 	**@
-		<input type="hidden" name="parserId" value='@field("parserId").value' >
+	<div class="clearfix input-small form-horizontal hidden">
+    <div class="input">
+    	<input type="hidden" id="@{field("parserId").id}" name="@{field("parserId").name}" value="@field("parserId").value">
+    </div>
+	</div>
 
-	
 	@if(modifyStreamPath){
 		@inputText(field("vfilePath"), '_label -> "Stream path", 'class -> "form-horizontal")
 	} else {
