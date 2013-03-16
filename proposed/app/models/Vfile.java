@@ -50,8 +50,6 @@ public class Vfile extends Model {
 	@Column(nullable = false)
 	@Constraints.Required
 	String path;
-	
-
 
 	@Column(name = "owner_id", nullable = false)
 	@Constraints.Required
@@ -91,6 +89,9 @@ public class Vfile extends Model {
 	public Filetype getType() {
 		return type;
 	}
+
+	public boolean isFile() {return type==Filetype.FILE;}
+	public boolean isDir() {return type==Filetype.DIR;}
 	
 	public String getPath() {
 		return path;

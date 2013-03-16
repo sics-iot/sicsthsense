@@ -8,17 +8,18 @@
     ================================================== -->
 	<div class="row">
 		<div class="span2 bs-docs-sidebar">
+		<br \> <br \>
 
 			<a>Streams tree</a>
 		<div id="vfileTree">
-  			<ul>
-				<li><a>No streams exist</a></li>
 				@if(streams.length > 0) {
-					@for(vf <- FileSystem.listFiles(streams(0).owner)) {
-						<li><a>@vf.getPath()</a></li> 
-					}
-				}
+  			<ul>
+					@Html(FileSystem.listHTMLFileSystem(streams(0).owner))
   			</ul>
+
+					} else {
+				<li><a>No streams exist</a></li>
+				}
 		</div>
   </div>
 

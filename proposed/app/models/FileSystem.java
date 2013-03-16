@@ -1,6 +1,7 @@
 package models;
 
 import java.util.*;
+import java.lang.StringBuffer;
 
 import javax.persistence.*;
 
@@ -32,6 +33,40 @@ public class FileSystem {
 		return Vfile.find.where().eq("owner",user).orderBy("path").findList();
 	}
 
+
+	public static String listHTMLFileSystem(User user) {
+		StringBuffer sb = new StringBuffer();
+		String ancestors = "";
+		int prevdepth=0;
+		String[] prevdirs={};
+		List<Vfile> files = Vfile.find.where().eq("owner",user).orderBy("path asc").findList();
+
+		for (Vfile f: files) {
+			String[] dirs = f.path.split("/");
+			int sharedAncestors = 0; // how many ancestors are shared with prev path
+
+			for (int i=1; (i<dirs.length && i<prevdirs.length); i++) {
+				if (dirs[i].equals(prevdirs[i])) { sharedAncestors++; } else {break;}
+			}
+			int thisdepth = dirs.length-2; // how many subdirs deep
+			//Logger.info("Path: "+ f.path+"\tDepth: "+thisdepth+" Prevdepth: "+prevdepth+" shared: "+sharedAncestors);
+			if (prevdepth>sharedAncestors) { // we have lists to terminate
+				for (int i=prevdepth; i>sharedAncestors; i--) { sb.append("</ul></li>"); }
+			}
+			sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
+		
+			if (f.isDir()) {
+				sb.append("<ul>"); 
+			} else { 
+				sb.append("</li>"); 
+			}
+			// accounting
+			prevdepth = thisdepth;
+			prevdirs = dirs;
+		}
+		return sb.toString();
+	}
+
 	public static Vfile addFile(User user, String path) {
 		int i=0;
 		int sep=2;
@@ -42,11 +77,9 @@ public class FileSystem {
 			String ancestors = path.substring(0, sep);
 			//Logger.info("ancestor: "+ancestors);
 			if (!fileExists(user, ancestors)) { // if parent doesnt exist
-				//create dir
 				//Logger.info("add dir: "+ancestors);
 				addDirectory(user, ancestors);
 			} else if (isFile(user, ancestors)) {
-				// complain
 				Logger.error("Path already exists as a file: "+ancestors);
 				//return null;
 			} else if (isDir(user, ancestors)) { // if file is dir
