@@ -43,22 +43,23 @@ public class FileSystem {
 
 		for (Vfile f: files) {
 			String[] dirs = f.path.split("/");
+			int thisdepth = dirs.length-2; // how many subdirs deep
 			int sharedAncestors = 0; // how many ancestors are shared with prev path
 
-			for (int i=1; (i<dirs.length && i<prevdirs.length); i++) {
+			for (int i=1; (i<dirs.length && i<prevdirs.length); i++) { // count shared parents
 				if (dirs[i].equals(prevdirs[i])) { sharedAncestors++; } else {break;}
 			}
-			int thisdepth = dirs.length-2; // how many subdirs deep
 			//Logger.info("Path: "+ f.path+"\tDepth: "+thisdepth+" Prevdepth: "+prevdepth+" shared: "+sharedAncestors);
 			if (prevdepth>sharedAncestors) { // we have lists to terminate
-				for (int i=prevdepth; i>sharedAncestors; i--) { sb.append("</ul></li>"); }
+				for (int i=prevdepth; i>sharedAncestors; i--) { sb.append("</ul></li>\n"); }
 			}
-			sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
 		
 			if (f.isDir()) {
-				sb.append("<ul>"); 
+				sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
+				sb.append("<ul>\n"); 
 			} else { 
-				sb.append("</li>"); 
+				sb.append("<li><a a='#'>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
+				sb.append("</li>\n"); 
 			}
 			// accounting
 			prevdepth = thisdepth;

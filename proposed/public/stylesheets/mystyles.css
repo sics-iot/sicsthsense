@@ -119,3 +119,10 @@ dd {
 .hidden {
 		display:none;
 }
+
+/*
+li.jstree-open > a { padding-top: 8px; }
+li.jstree-closed > a { padding-top: 8px; }
+*/
+li.jstree-leaf > a .jstree-icon { display: none; }
+
