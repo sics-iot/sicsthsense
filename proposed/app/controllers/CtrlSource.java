@@ -47,7 +47,7 @@ public class CtrlSource extends Controller {
 			// get data
 				HttpURLConnection connection = submitted.probe();
 				String contentType = connection.getContentType();
-				Logger.warn(contentType);
+				Logger.warn("Probed and found contentType: "+contentType);
 				try {
 					serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
 					String line;
@@ -62,6 +62,7 @@ public class CtrlSource extends Controller {
 					return parseJson(returnBuffer.toString(), submitted);
 				} else if (contentType.matches("text/html.*")) {
 					Logger.info("html file!");
+					return parseHTML(returnBuffer.toString(), submitted);
 				} else {
 					Logger.warn("Unknown content type!");
 				}	
@@ -108,6 +109,19 @@ public class CtrlSource extends Controller {
 	
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result parseHTML(String data, Source submitted) {
+			Logger.info("Adding single default Regex StreamPaser to HTML input");
+			User currentUser = Secured.getCurrentUser();
+			SkeletonSource skeleton = new SkeletonSource(submitted);
+
+			skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","Enter Regex","text/html");
+	
+			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
+		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
+
 	}
 
 	// create the source and corresponding StreamParser objects

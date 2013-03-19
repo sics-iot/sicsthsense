@@ -55,11 +55,9 @@ public class FileSystem {
 			}
 		
 			if (f.isDir()) {
-				sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
-				sb.append("<ul>\n"); 
+				sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n<ul>\n"); // give node name
 			} else { 
-				sb.append("<li><a a='#'>"+ dirs[dirs.length-1] +"</a>\n"); // give node name
-				sb.append("</li>\n"); 
+				sb.append("<li><a a='#'>"+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
 			}
 			// accounting
 			prevdepth = thisdepth;

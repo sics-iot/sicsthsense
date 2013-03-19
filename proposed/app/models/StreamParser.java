@@ -105,26 +105,6 @@ public class StreamParser extends Model {
 		return false;
 	}
 
-	/**
-	 * parseResponse(Request req) chooses the parser based on content-type.
-	 * inputType overrides the content-type. returns: true if could post
-	 */
-	/*
-	public boolean parseResponse(Request req) {
-		try {
-			if ("application/json".equalsIgnoreCase(inputType)
-					|| "application/json".equalsIgnoreCase(req.getHeader("Content-Type")) ) {
-				JsonNode jsonBody = req.body().asJson();
-				return parseJsonResponse(jsonBody);
-			} else {
-				String textBody = req.body().asText();
-				return parseTextResponse(textBody);
-			}
-		} catch (Exception e) {
-			Logger.info("[Streams] Exception " + e.getMessage());
-		}
-		return false;
-	}*/
 	public boolean parseRequest(Request request) {
 		try {
 			if ("application/json".equalsIgnoreCase(inputType)
@@ -142,6 +122,7 @@ public class StreamParser extends Model {
 		}
 		return false;
 	}
+
 	/**
 	 * parseResponse(Request req) chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post
@@ -161,6 +142,7 @@ public class StreamParser extends Model {
 		}
 		return false;
 	}
+
 /**
  * Parses the request using inputParser as regex and posts the first match
  *  

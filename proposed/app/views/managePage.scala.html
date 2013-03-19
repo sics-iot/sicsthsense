@@ -11,7 +11,7 @@ Should take these parameters, for the side navigation menu
     <!-- Docs nav
     ================================================== -->
     <div class="row">
-      <div class="span3 bs-docs-sidebar">
+      <div class="span2 bs-docs-sidebar">
 			@manage.navigationMenu(sources) 
 			@** should pass theses parameters(sources, extStreams) **@
     </div>
@@ -20,18 +20,6 @@ Should take these parameters, for the side navigation menu
 		<br \>
 		<!--Body content-->
 
-<!-- Stream listing and visualizing -->
-	@if(sources.length > 0) {
-		<h1>Your streams</h1>
-		@for(source <- sources) {
-			@for(streamparser <- source.streamParsers) {
-				@vstream.includeStream(streamparser.stream)
-				<br />
-			}
-		}
-	}
-
-	<br /> <br />
 	<!-- Small add source form -->
 	<h1>Add new source</h1>   
 	@helper.form(action = routes.CtrlSource.initialise()) {
@@ -66,6 +54,18 @@ Should take these parameters, for the side navigation menu
 
   }
   <br /> <br /> <br /> 
+<!-- Stream listing and visualizing -->
+	@if(sources.length > 0) {
+		<h1>Your streams</h1>
+		@for(source <- sources) {
+			@for(streamparser <- source.streamParsers) {
+				@vstream.includeStream(streamparser.stream)
+				<br />
+			}
+		}
+	}
+
+	<br /> <br />
   <br /> <br /> <br /> 
     </div>
   </div>
