@@ -50,30 +50,50 @@ public class CtrlStream extends Controller {
 		return TODO;
 	}
 
-	public static Result getByKey(String key) {
+	@Security.Authenticated(Secured.class)
+	public static Result delete(Long id) {
 		final User user = Secured.getCurrentUser();
-		if (user == null) return notFound();
+    //if(user == null) return notFound();
+		Stream stream = Stream.get(id);	
+		Stream.delete(id);
+		return ok();
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result clearStream(Long id) {
+		Stream.delete(id);
+		return ok();
+	}
+	
+	public static Result getByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null) return notFound();
-		return getData(user, stream, -1L, -1L, -1L);
+		return getData(stream.owner, stream, -1L, -1L, -1L);
 	}
 
 	public static Result postByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null) return notFound();
-		final User user = stream.owner;
-		if (user == null) return notFound();
-		return post(stream);
+		return post(stream.owner, stream);
 	}
 	
+	@Security.Authenticated(Secured.class)
 	public static Result post(Stream stream) {
-		String strBody = request().body().asText();
-		long currentTime = Utils.currentTime();
-		if (!stream.post(strBody, currentTime)) {
-			return badRequest("Bad request: Error!");
-		} else {
-			return ok("ok");
+		final User user = Secured.getCurrentUser();
+		return post(user, stream);
+	}
+	
+	private static Result post(User user, Stream stream) {
+		if(stream != null && stream.owner.equals(user)) {
+			String strBody = request().body().asText();
+			long currentTime = Utils.currentTime();
+			if (!stream.post(strBody, currentTime)) {
+				return badRequest("Bad request: Error!");
+			} else {
+				return ok("ok");
+			}
 		}
+		return unauthorized();
 	}
 //	private static Stream getOrAddByPath(User currentUser, String path) {
 //		if (currentUser == null)
@@ -134,7 +154,7 @@ public class CtrlStream extends Controller {
 		final User user = Secured.getCurrentUser();
     //if(user == null) return notFound();
 		Stream stream = Stream.get(id);	
-    return getData(user, (Stream)stream, tail, last, since);
+    return getData(user, stream, tail, last, since);
  }
 	
 	//@Security.Authenticated(Secured.class)

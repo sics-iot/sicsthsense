@@ -168,15 +168,17 @@ public class StreamParser extends Model {
  * @return true if could post
  */
 	private boolean parseTextResponse(String textBody) {
-		if (inputParser != null && !inputParser.equalsIgnoreCase("") ) {
-			regexPattern = Pattern.compile(inputParser);
-			Matcher matcher = regexPattern.matcher(textBody);
-			if (textBody != null && matcher.find()) {
-				String result = matcher.group(1);
-				return stream.post(Double.parseDouble(result), Utils.currentTime());
+		if( stream != null ) {
+			if (inputParser != null && !inputParser.equalsIgnoreCase("") ) {
+				regexPattern = Pattern.compile(inputParser);
+				Matcher matcher = regexPattern.matcher(textBody);
+				if (textBody != null && matcher.find()) {
+					String result = matcher.group(1);
+					return stream.post(Double.parseDouble(result), Utils.currentTime());
+				}
+			} else {
+				return stream.post(Double.parseDouble(textBody), Utils.currentTime());
 			}
-		} else {
-			return stream.post(Double.parseDouble(textBody), Utils.currentTime());
 		}
 		return false;
 	}
@@ -205,15 +207,17 @@ public class StreamParser extends Model {
 		// }
 		// }
 		// return false;
-		String pathParser = "([\\d\\w\\s-]+)+\\\\?$";
-		Pattern pathPattern = Pattern.compile(pathParser);
-		Matcher matcher = pathPattern.matcher(inputParser);
-		int i = 0;
-		while (i < matcher.groupCount() && matcher.find() && jsonNode != null) {
-			String field = matcher.group(++i);
-			jsonNode = jsonNode.path(field);
-			if (jsonNode != null && jsonNode.isValueNode()) {
-				return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
+		if( stream != null ) {
+			String pathParser = "([\\d\\w\\s-]+)+\\\\?$";
+			Pattern pathPattern = Pattern.compile(pathParser);
+			Matcher matcher = pathPattern.matcher(inputParser);
+			int i = 0;
+			while (i < matcher.groupCount() && matcher.find() && jsonNode != null) {
+				String field = matcher.group(++i);
+				jsonNode = jsonNode.path(field);
+				if (jsonNode != null && jsonNode.isValueNode()) {
+					return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
+				}
 			}
 		}
 		return false;
@@ -222,6 +226,10 @@ public class StreamParser extends Model {
 	private Vfile getOrCreateStreamFile(String path) {
 		if (source == null || (source != null && source.owner == null)) {
 			Logger.error("[StreamParser] user does not exist.");
+			return null;
+		}
+		if (path == null) {
+			Logger.error("[Path] Null.");
 			return null;
 		}
 		Vfile f = FileSystem.readFile(source.owner, path);

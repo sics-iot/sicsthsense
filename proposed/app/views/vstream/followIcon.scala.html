@@ -1,0 +1,7 @@
+@(stream: Stream, prefix: String)
+ 
+@if(!CtrlUser.getUser().isfollowingStream(stream)) {
+  <a class="icon-btn icon-star-empty follow_stream" parent_id="@stream.id" id="followr@prefix@stream.id" href="#" rel="tooltip" title="Follow" inactive_title="Stop following"></a>
+} else {
+  <a class="icon-btn icon-star unfollow_stream" parent_id="@stream.id" id="unfollowr@prefix@stream.id" href="#" rel="tooltip" title="Stop following" inactive_title="Follow"></a>
+}

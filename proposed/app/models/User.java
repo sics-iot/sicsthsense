@@ -49,6 +49,9 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@OneToMany(mappedBy = "owner")
 	public List<Vfile> fileList = new ArrayList<Vfile>();
 	
+  @ManyToMany
+  public List<Stream> followedStreams = new ArrayList<Stream>();
+	
 	/** Secret token for session authentication */
 	@Transient
 	public String currentSessionToken;
@@ -123,12 +126,33 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		return token.equals(user.token) && this.id == user.id;
 	}
 
-
+  public void followStream(Stream stream) {
+    if(stream != null && stream.id > 0L) {
+      followedStreams.add(stream);
+    }
+    this.saveManyToManyAssociations("followedStreams");
+  }
+  
+  public void unfollowStream(Stream stream) {
+    if(stream != null && stream.id > 0L) {
+      followedStreams.remove(stream);
+    }
+    this.saveManyToManyAssociations("followedStreams");
+  }
+  
+  public boolean isfollowingStream(Stream stream) {
+   return (stream != null) && followedStreams.contains(stream);
+  }
+  
+  public List<Stream> followedStreams() {
+  	return followedStreams;
+  }
+  
 	public static User create(User user) {		
 		user.generateToken();
 		user.save();
 		// is this necessary? -YES!
-		// user.saveManyToManyAssociations("followedResources");
+		user.saveManyToManyAssociations("followedStreams");
 		return user;
 	}
 

@@ -5,10 +5,12 @@ import java.util.*;
 import javax.persistence.*;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlUpdate;
 import com.avaje.ebean.annotation.EnumValue;
 
 import controllers.Utils;
 
+import play.Logger;
 import play.mvc.PathBindable;
 import play.db.ebean.*;
 
@@ -41,6 +43,9 @@ public class Stream extends Model {
 
 	public boolean publicAccess = false;
 	public boolean publicSearch = false;
+	
+	/** Freeze the Stream so any new incoming data is discarded */
+	public boolean frozen = false;
 
 	/**
 	 * The maximum duration to be kept. This should be used with the database to
@@ -51,6 +56,9 @@ public class Stream extends Model {
 	/** Last time a point was inserted */
 	public Long lastUpdated = 0L;
 
+	@Version //for concurrency protection
+	private int version;
+	
 	/** Secret key for authentication */
 	private String key;
 	
@@ -73,10 +81,11 @@ public class Stream extends Model {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<DataPointDouble> dataPointsDouble;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+	@OneToMany(mappedBy = "stream")
 	public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
 
-
+  @ManyToMany(mappedBy = "followedStreams")
+  public List<User> followingUsers = new ArrayList<User>();
 
 	public Long getHistorySize() {
 		return historySize;
@@ -90,14 +99,20 @@ public class Stream extends Model {
 
 	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
 			Long.class, Stream.class);
+	
 	/** Call to create, or update an access key */
 	protected String createKey() {
 		key = UUID.randomUUID().toString();
-		save();
 		return key;
 	}
 
-	protected String getKey() {
+	public String updateKey() {
+		key = createKey();
+		update();
+		return key;
+	}
+	
+	public String getKey() {
 		return key;
 	}
 
@@ -105,7 +120,6 @@ public class Stream extends Model {
 		if (key == null) {
 			return null;
 		}
-
 		try {
 			return find.where().eq("key", key).findUnique();
 		} catch (Exception e) {
@@ -117,6 +131,7 @@ public class Stream extends Model {
 		this.owner = user;
 		this.source = source;
 		this.type = type;
+		createKey();
 		switch( this.type ) {
 		case DOUBLE:
 			this.dataPoints = this.dataPointsDouble;
@@ -135,12 +150,10 @@ public class Stream extends Model {
 
 	public Stream(User user) {
 		this(user, null, StreamType.UNDEFINED);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Stream() {
-		super();
-		// TODO Auto-generated constructor stub
+		this(null, null, StreamType.UNDEFINED);
 	}
 
 	/** Create a persisted stream */
@@ -179,55 +192,41 @@ public class Stream extends Model {
 	}
 
 	protected boolean post(double data, long time) {
-		if (type == StreamType.UNDEFINED) {
-			type = StreamType.DOUBLE;
-			this.dataPoints = this.dataPointsDouble;
-		}
-		if (type == StreamType.DOUBLE) {
-			DataPoint dp = new DataPointDouble(this, data, time).add();
-			lastUpdated = time;
-			update();
-			return true;
+		if(!this.frozen) {
+			if (type == StreamType.UNDEFINED) {
+				type = StreamType.DOUBLE;
+				this.dataPoints = this.dataPointsDouble;
+			}
+			if (type == StreamType.DOUBLE) {
+				DataPoint dp = new DataPointDouble(this, data, time).add();
+				lastUpdated = time;
+				update();
+				return true;
+			}
 		}
 		return false;
 	}
 
-//	protected boolean post(long data, long time) {
-//		if (type == StreamType.UNDEFINED) {
-//			type = StreamType.LONG;
-//		}
-//		if (type == StreamType.LONG) {
-//			DataPoint dp = new DataPointLong(this, data, time).add();
-//			lastUpdated = time;
-//			update();
-//			return true;
-//		}
-//		return false;
-//	}
-
 	public boolean post(String data, long time) {
-		if (type == StreamType.UNDEFINED) {
-			type = StreamType.STRING;
-			this.dataPoints = this.dataPointsString;
-		}
-		if (type == StreamType.STRING) {
-			DataPoint dp = new DataPointString(this, data, time).add();
-			lastUpdated = time;
-			update();
-			return true;
+		if(!this.frozen) {
+			if (type == StreamType.UNDEFINED) {
+				type = StreamType.STRING;
+				this.dataPoints = this.dataPointsString;
+			}
+			if (type == StreamType.STRING) {
+				DataPoint dp = new DataPointString(this, data, time).add();
+				lastUpdated = time;
+				update();
+				return true;
+			}
 		}
 		return false;
 	}
 
 	public static void delete(Long id) {
-		// TODO should enable cascading instead
-		// TODO To enable cascading the model should be reconstructed to
-		// have a OneToMany relationship from a stream to dataPoints;
-		// thus, dataPoints should be stored as a list in a stream instead
-		// and this should be the same to all other ManyToOne relationships
-		// clearStream(id);
 		find.ref(id).delete();
 	}
+	
 	public static void deleteBySource(Source source) {
 		List<Stream> list = find.where()
 		 .eq("source", source)
@@ -245,7 +244,6 @@ public class Stream extends Model {
 			stream.source = null;
 			stream.update();
 		}
-		//Ebean.update(list);
 	}
 
 	public static void clearStream(Long id) {
@@ -300,15 +298,12 @@ public class Stream extends Model {
 
 	private void deleteDataPoints() {
 		if (dataPoints != null) {
-			Ebean.delete(dataPoints);
+			if (type == StreamType.STRING) {
+				Ebean.delete(this.dataPointsString);
+			} else if (type == StreamType.DOUBLE) {
+				Ebean.delete(this.dataPointsDouble);
+			}
 		}
-		// List<Long> ids = new LinkedList<Long>();
-		// for(DataPoint element: list) {
-		// ids.add(element.id);
-		// }
-		// for(Long id: ids) {
-		// find.ref(id).delete();
-		// }
 	}
 
 	public StreamType getType() {
@@ -329,13 +324,79 @@ public class Stream extends Model {
 		super.update();
 	}
 
+	// @play.db.ebean.Transactional
 	public void delete() {
-		// /XXX: Can't delete if a device is sending updates to this stream!
-		// now I'm using ebean.trasaction on the action function...
-		this.file.linkedStream = null;
-		this.file.update();
-		clearStream(this.id);
-		super.delete();
+		Ebean.beginTransaction();
+		try {
+			// Detach parsers from streams
+			String s = "UPDATE parsers set stream_id = :target_stream_id where stream_id = :stream_id";
+			SqlUpdate update = Ebean.createSqlUpdate(s);
+			update.setParameter("stream_id", this.id);
+			update.setParameter("target_stream_id", null);
+			int modifiedCount = Ebean.execute(update);
+			String msg = "There were " + modifiedCount + "rows updated";
+			Logger.info("Deleting stream: Detaching some stream parsers: "
+					+ msg);
+			
+			//Detach file: No need; cascading delete instead.
+			//this.file.linkedStream = null;
+			//this.file.update();
+			deleteDataPoints();
+			//detach following users
+			this.followingUsers.clear();
+			this.saveManyToManyAssociations("followingUsers");
+			//delete stream
+			super.delete();
+			
+			//commit transaction
+			Ebean.commitTransaction();
+		} 
+//		catch(Exception e) {
+//			Logger.warn("Deleting stream failed!! " + e.getMessage() + e.getStackTrace()[0].toString());
+//		} 
+		finally {
+			Ebean.endTransaction();
+		}
+
+		/// probably a bit easier way
+//		// setFrozen(true);
+//		Logger.info("Deleting stream: Detaching some stream parsers: "
+//				+ this.streamparsers.size());
+//		//List<StreamParser> relatedParsers = StreamParser.find.where().eq("stream", this).findList();
+//		for (StreamParser sp : this.streamparsers) {
+//			sp.stream = null;
+//			sp.update();
+//		}
+//		this.file.linkedStream = null;
+//		this.file.update();
+//		// clearStream(this.id);
+//		deleteDataPoints();
+//		this.followingUsers.clear();
+//		this.saveManyToManyAssociations("followingUsers");
+//		super.delete();
 	}
 
+	public void setPublicAccess( Boolean pub ) {
+		this.publicAccess = pub;
+		this.update();
+	}
+	
+	public void setPublicSearch( Boolean pub ) {
+		this.publicSearch = pub;
+		this.update();
+	}
+	
+	public void setFrozen( Boolean frozen ) {
+		this.frozen = frozen;
+		this.update();
+	}
+
+	public List<StreamParser> getStreamParsers() {
+		return streamparsers;
+//		if(source != null) {
+//			return StreamParser.find.where().eq("source", source).eq("stream", this).orderBy("streamVfilePath asce").findList();
+//		}
+//		return null;
+	}
+	
 }

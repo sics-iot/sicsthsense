@@ -7,8 +7,8 @@
 @WIN_1W() = {7*24*60*60*1000}
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
-
-@if(stream != null && stream.hasData()) {
+@if(stream != null) {
+@if(stream.hasData()) {
   
 	<span id="streamconfig@{stream.id}" class="streamconfig form-inline">
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
@@ -70,3 +70,4 @@ Data stream
 </div>
 		&nbsp;No data
 	}
+}

@@ -57,11 +57,13 @@ create table streams (
   type                      varchar(1),
   public_access             boolean,
   public_search             boolean,
+  frozen                    boolean,
   history_size              bigint,
   last_updated              bigint,
   key                       varchar(255),
   owner_id                  bigint,
   source_id                 bigint,
+  version                   integer not null,
   constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
 ;
@@ -106,6 +108,12 @@ create table functions_streams (
   functions_id                   bigint not null,
   streams_id                     bigint not null,
   constraint pk_functions_streams primary key (functions_id, streams_id))
+;
+
+create table users_streams (
+  users_id                       bigint not null,
+  streams_id                     bigint not null,
+  constraint pk_users_streams primary key (users_id, streams_id))
 ;
 create sequence actuators_seq;
 
@@ -156,6 +164,10 @@ alter table functions_streams add constraint fk_functions_streams_function_01 fo
 
 alter table functions_streams add constraint fk_functions_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
 
+alter table users_streams add constraint fk_users_streams_users_01 foreign key (users_id) references users (id) on delete restrict on update restrict;
+
+alter table users_streams add constraint fk_users_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
+
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
@@ -175,6 +187,8 @@ drop table if exists operators;
 drop table if exists sources;
 
 drop table if exists streams;
+
+drop table if exists users_streams;
 
 drop table if exists parsers;
 

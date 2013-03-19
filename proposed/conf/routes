@@ -28,6 +28,8 @@ POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id
 # Streams
 GET        /user/:ownerName/$path<.*>				controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 #GET       /user/:ownerName/streams					controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /streams/delete/:id   						controllers.CtrlStream.delete(id: Long)
+GET        /streams/clearData/:id 					controllers.CtrlStream.clearStream(id: Long)
 GET        /streams/:id								    	controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:id			    						controllers.CtrlSource.post(id: Long)
 
