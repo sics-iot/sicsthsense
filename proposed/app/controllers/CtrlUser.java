@@ -67,6 +67,7 @@ public class CtrlUser extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result followStream(Long id, Boolean follow) {
+		Logger.info("Follow stream request: " + follow);
 		final User user = Secured.getCurrentUser();
 		// if(user == null) return notFound();
 		Stream stream = Stream.get(id);
@@ -75,7 +76,16 @@ public class CtrlUser extends Controller {
 		} else {
 			user.unfollowStream(stream);
 		}
-		return ok(follow.toString());
+		Logger.info("Follow stream result: " + user.isfollowingStream(stream));
+		return ok(Boolean.toString(user.isfollowingStream(stream)));
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result isFollowingStream(Long id) {
+		final User user = Secured.getCurrentUser();
+		if(user == null) return notFound();
+		Stream stream = Stream.get(id);
+		return ok(Boolean.toString(user.isfollowingStream(stream)));
 	}
 
 }

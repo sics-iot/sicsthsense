@@ -1,6 +1,14 @@
 var StreamPlots = {
+		clear : function(stream) {
+			var WIN_5M = 5*60*1000;
+			//StreamPlots.setWindow(stream, WIN_5M);
+			$("input:radio[name='stream']").filter("[value='"+WIN_5M+"']").attr('checked', true);
+			StreamPlots.setWindow(stream, WIN_5M);
+			StreamPlots.setup(stream);
+
+			StreamPlots.getStream(stream);
+		},
 	setup : function(stream) {
-		var previousPoint = null;	
 		var streamID = $('#'+stream.id).attr('stream_id');
 		var streamplot = '#streamplot' + streamID; // == '#'+stream.id
 		var overview = '#overview' + streamID;
@@ -79,6 +87,7 @@ var StreamPlots = {
 	},
 	
 	plotHoverHandler : function (event, pos, item) {
+		var previousPoint = null;	
 		var streamID = this.id;
 		var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
 		//$("#hoverdata").text(str);

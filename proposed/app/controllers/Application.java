@@ -57,7 +57,10 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlStream.clearByKey(),
           		controllers.routes.javascript.CtrlStream.setPublicAccess(),
           		controllers.routes.javascript.CtrlStream.setPublicSearch(),
-          		controllers.routes.javascript.CtrlUser.followStream()
+          		controllers.routes.javascript.CtrlStream.isPublicAccess(),
+          		controllers.routes.javascript.CtrlStream.isPublicSearch(),
+          		controllers.routes.javascript.CtrlUser.followStream(),
+          		controllers.routes.javascript.CtrlUser.isFollowingStream()
           )
       );
   }

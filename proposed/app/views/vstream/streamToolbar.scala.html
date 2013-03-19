@@ -2,6 +2,7 @@
 @import helper._
 	
 @if(own || shared || publicAccess) {
+		@**
 		<!-- display stream plot -->
 		<span class="dropdown-submenu">
 	    <a class="icon-btn icon-zoom-in" tabindex="-1" href="#" rel="tooltip" title="Display"></a>
@@ -10,31 +11,41 @@
 		  @vstream.includeStream(stream)
 	    </ul>
 	  </span>
-
+		
 	 @if(stream.lastUpdated > 0) {
 		<span class="sideinfo">[Last update: @Utils.timeStr(stream.lastUpdated)]</span>
 		} else {
 		<span class="sideinfo">[Never]</span>
 		}
-	
+	**@
 	<span class="rightControl">
 	
 	@vstream.followIcon(stream, "rlist_toolbar")
 	
 	@if(own) {
-		 <a href="@routes.CtrlStream.delete(stream.id)" class="icon-btn icon-trash delete" rel="tooltip" title="Delete"></a>
+		 <a class="icon-btn icon-trash deleteStreamButton" parent_id="@stream.id" rel="tooltip" title="Delete"></a>
+		 <a class="icon-btn icon-remove-sign clearStreamButton" parent_id="@stream.id" rel="tooltip" title="Clear"></a>
+		 @**
 		 @if(stream.hasData()) {
-	     <a href="@routes.CtrlStream.clear(stream.id)" class="icon-btn icon-remove-sign delete" rel="tooltip" title="Clear"></a>
+	     <a class="icon-btn icon-remove-sign delete" parent_id="@stream.id" rel="tooltip" title="Clear"></a>
 	   } else {
-	   	 <a href="#" class="icon-btn icon-remove-sign icon-white delete" rel="tooltip" title="Clear"></a>
+	   	 <a class="icon-btn icon-remove-sign icon-white delete" parent_id="@stream.id" rel="tooltip" title="Clear"></a>
 	   }
+	   **@
 	   
     <!-- 		 publicAccessIcon -->
  		@if(!stream.publicAccess) {
-		  <a class="icon-btn icon-globe icon-white set_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Share with the world!"></a>
+		  <a class="icon-btn icon-globe icon-white set_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Share with the world!" inactive_title="Protect from the world!"></a>
 		} else {
-		  <a class="icon-btn icon-globe remove_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Protect from the world!"></a>
-		} 
+		  <a class="icon-btn icon-globe remove_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Protect from the world!" inactive_title="Share with the world!"></a>
+		}
+		
+		<!-- 		 publicSearchIcon -->
+ 		@if(!stream.publicSearch) {
+		  <a class="icon-btn icon-eye-open icon-white set_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Make searchable to the world!" inactive_title="Hide from the world!"></a>
+		} else {
+		  <a class="icon-btn icon-eye-open remove_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Hide from the world!" inactive_title="Make searchable to the world!"></a>
+		}  
 	 }
 	 </span>
  }

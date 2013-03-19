@@ -23,6 +23,7 @@
 		<a name="@{stream.file.getPath()}"></a>
 		Data stream 
 		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
 	<div class="plot-container">
 		<div class="row-fluid">
@@ -40,7 +41,7 @@
 
 		// one global JavaScript object per stream
 		var streamplot@{stream.id} = new Object();
-		streamplot@{stream.id}.stram_id = '@{stream.id}';
+		streamplot@{stream.id}.stream_id = '@{stream.id}';
 		streamplot@{stream.id}.id = 'streamplot@{stream.id}';
 		streamplot@{stream.id}.uri = '@{routes.CtrlSource.getDataById(stream.id)}';
 		streamplot@{stream.id}.path = '@{stream.file.getPath()}'; // for parsing the returned JSON
@@ -66,9 +67,9 @@
 	</script>
 	} else {
 		<div id="streamtitle@{stream.id}" class="streamtitle">
-Data stream 
-<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
-</div>
+			Data stream 
+			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		</div>
 		&nbsp;No data
 	}
 }

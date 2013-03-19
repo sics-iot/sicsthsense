@@ -1,161 +1,225 @@
-// 	function followButton(event){
-// 		var $this_button=$(this);
-// 		var my_endpoint_id=$this_button.attr('parent_id');
-// 	  jsRoutes.controllers.CtrlEndPoint.follow(my_endpoint_id).ajax({
-// 	  	success: function() {
-// 	    	$this_button.toggleClass("icon-star unfollow_endpoint icon-star-empty follow_endpoint");    	
-// 	    	$('div.container-errormsg').html('<strong>Cool follow!</strong>');
-// 	    	event.stopImmediatePropagation();
-// 	    	event.stopPropagation();
-// 	    	event.preventDefault();
-// 	    	//$this_button.on("click", unfollowButton);
-// 	    	return false;
-// 	    },
-// 	    error: function() {
-// 	    	$('div.container-errormsg').html('<strong>Error follow!</strong>');
-// 	    }
-// 	  });
-// 	};
-	
-// 	function unfollowButton(event){
-// 		var $this_button=$(this);
-// 		var my_endpoint_id=$this_button.attr('parent_id');
-// 	  jsRoutes.controllers.CtrlEndPoint.unfollow(my_endpoint_id).ajax({
-// 	    success: function() {
-// 	    	$this_button.toggleClass("icon-star-empty follow_endpoint icon-star unfollow_endpoint");
-// 	    	$('div.container-errormsg').html('<strong>Cool unfollow!</strong>');
-// 	    	event.stopImmediatePropagation();
-// 	    	event.stopPropagation();	    	
-// 	    	event.preventDefault();
-// 	    	//$this_button.on("click", followButton);
-// 	    	return false;
-// 	    },
-// 	    error: function() {
-// 	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>');
-// 	    }
-// 	  });
-// 	};
-	
-	function toggleFollowEndpointButton(event){
+	function toggleFollowStreamButton(event){
 		var $this_button=$(this);
-		var my_endpoint_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('parent_id');
 		var current_tooltip_title=$this_button.attr('title');
 		var next_tooltip_title=$this_button.attr('inactive_title');
-	  jsRoutes.controllers.CtrlEndPoint.toggleFollow(my_endpoint_id).ajax({
-	    success: function(msg) {
-	    	$this_button.toggleClass("icon-star-empty follow_endpoint icon-star unfollow_endpoint");
-	    	$this_button.attr('title', next_tooltip_title);
-	    	$this_button.attr('inactive_title', current_tooltip_title);
-	    	//event.stopImmediatePropagation();
-	    	//event.stopPropagation();	    	
+		var follow = false;
+		if($this_button.hasClass('follow_stream')) {
+			follow = true;
+			console.debug("Current FollowStream button: " +follow);
+		} else {
+			follow = false;
+			console.debug("Current FollowStream button: " +follow);
+		}
+		jsRoutes.controllers.CtrlUser.followStream(my_stream_id,follow).ajax({
+			dataType : "text",
+			success: function(fmsg) {
+	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+				console.debug("FollowStream result: " + my_stream_id + fmsg);
+	    	if(fmsg=="true") {
+					console.debug("FollowStream result: " + my_stream_id + fmsg);
+
+	    		$this_button.removeClass("icon-star-empty follow_stream");
+	    		$this_button.addClass("icon-star unfollow_stream");
+	    	} else if(fmsg=="false") {
+					console.debug("FollowStream result: " + my_stream_id + fmsg);
+
+	    		$this_button.removeClass("icon-star unfollow_stream");
+	    		$this_button.addClass("icon-star-empty follow_stream");
+	    	} 
 	    },
 	    error: function(emsg) {
-	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>').text(emsg);
-	    	jsRoutes.controllers.CtrlEndPoint.isFollowing(my_endpoint_id).ajax({
+	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+				console.debug("Error: Follow stream! " + my_stream_id + emsg);
+	    	jsRoutes.controllers.CtrlUser.isFollowingStream(my_stream_id).ajax({
+	    		dataType : "text",
 	  	    success: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg).fadeIn(1000).fadeOut(1000);
-	  	    	if(fmsg=="1") {
-	  	    		$this_button.removeClass("icon-star-empty follow_endpoint");
-	  	    		$this_button.addClass("icon-star unfollow_endpoint");
-	  	    	} else if(fmsg=="0") {
-	  	    		$this_button.removeClass("icon-star unfollow_endpoint");
-	  	    		$this_button.addClass("icon-star-empty follow_endpoint");
+	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+	  				console.debug("Error: Reparing Error of followStream! " + my_stream_id + fmsg);
+	  	    	if(fmsg=="true") {
+	  	    		$this_button.removeClass("icon-star-empty follow_stream");
+	  	    		$this_button.addClass("icon-star unfollow_stream");
+	  	    	} else if(fmsg=="false") {
+	  	    		$this_button.removeClass("icon-star unfollow_stream");
+	  	    		$this_button.addClass("icon-star-empty follow_stream");
 	  	    	} 
 	  	    },
 	  	    error: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
+	  	    	//$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
+	  	    	console.debug("Error: isFollowingStream! " + my_stream_id + fmsg);
 	  	    }
 	  	  });
 	    }
 	  });
+		$('.unfollow_stream').on("click", toggleFollowStreamButton);
+		$('.follow_stream').on("click", toggleFollowStreamButton);
 	  return false;
 	};
-	$('.unfollow_endpoint').on("click", toggleFollowEndpointButton);
-	$('.follow_endpoint').on("click", toggleFollowEndpointButton);
+	$('.unfollow_stream').on("click", toggleFollowStreamButton);
+	$('.follow_stream').on("click", toggleFollowStreamButton);
 
-	function toggleFollowResourceButton(event){
-		var $this_button=$(this);
-		var my_resource_id=$this_button.attr('parent_id');
-		var current_tooltip_title=$this_button.attr('title');
-		var next_tooltip_title=$this_button.attr('inactive_title');
-	  jsRoutes.controllers.CtrlResource.toggleFollow(my_resource_id).ajax({
-	    success: function(msg) {
-	    	$this_button.toggleClass("icon-star-empty follow_resource icon-star unfollow_resource");  
-	    	$this_button.attr('title', next_tooltip_title);
-	    	$this_button.attr('inactive_title', current_tooltip_title);
-	    	//event.stopImmediatePropagation();
-	    	//event.stopPropagation();	    	
-	    },
-	    error: function(emsg) {
-	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
-	    	jsRoutes.controllers.CtrlResource.isFollowing(my_endpoint_id).ajax({
-	  	    success: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
-	  	    	if(fmsg=="1") {
-	  	    		$this_button.removeClass("icon-star-empty follow_resource");
-	  	    		$this_button.addClass("icon-star unfollow_resource");
-	  	    	} else if(fmsg=="0") {
-	  	    		$this_button.removeClass("icon-star unfollow_resource");
-	  	    		$this_button.addClass("icon-star-empty follow_resource");
-	  	    	} 
-	  	    },
-	  	    error: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
-	  	    }
-	  	  });
-	    }
-	  });
-	  return false;
-	};
-	$('.unfollow_resource').on("click", toggleFollowResourceButton);
-	$('.follow_resource').on("click", toggleFollowResourceButton);
-
-	function hideResourceList(event){
+	function hideStreamList(event){
 		$(this).toggleClass("icon-chevron-down icon-chevron-up");
 		//$(this).children().find('.icon-chevron-up').toggleClass("icon-chevron-down").toggleClass("icon-chevron-up");
-		$(this).parent().find('.resource_list').toggle();
+		$(this).parent().find('.stream_list').toggle();
 		return false;
 	};
-
-	$('.hide_resources').on("click", hideResourceList);
+	$('.hide_streams').on("click", hideStreamList);
 	
-	//@routes.CtrlResource.setPublicAccess(id)
-		function togglePublicAccessResourceButton(event){
+	//controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
+	function togglePublicAccessStreamButton(event){
 		var $this_button=$(this);
-		var my_resource_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('parent_id');
 		var current_tooltip_title=$this_button.attr('title');
 		var next_tooltip_title=$this_button.attr('inactive_title');
-	  jsRoutes.controllers.CtrlResource.togglePublicAccess(my_resource_id).ajax({
-	    success: function(msg) {
-	    	$this_button.toggleClass("icon-white set_public_access_resource remove_public_access_resource");
-	    	$this_button.attr('title', next_tooltip_title);
-	    	$this_button.attr('inactive_title', current_tooltip_title);
+		var pub = false;
+		if($this_button.hasClass('set_public_access_stream')) {
+			pub = true;
+		}
+	  jsRoutes.controllers.CtrlStream.setPublicAccess(my_stream_id, pub).ajax({
+	  	dataType : "text",
+	    success: function(fmsg) {
+	    	if(fmsg=="true") {
+	    		$this_button.removeClass("icon-white set_public_access_stream");
+	    		$this_button.addClass("remove_public_access_stream");
+	    	} else if(fmsg=="false") {
+	    		$this_button.removeClass("remove_public_access_stream");
+	    		$this_button.addClass("icon-white set_public_access_stream");
+	    	} 
+//	    	$this_button.attr('title', next_tooltip_title);
+//	    	$this_button.attr('inactive_title', current_tooltip_title);
 	    	//event.stopImmediatePropagation();
 	    	//event.stopPropagation();	    	
 	    },
 	    error: function(emsg) {
-	    	$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
-	    	jsRoutes.controllers.CtrlResource.isPublicAccess(my_endpoint_id).ajax({
+				console.debug("Error: PublicAccess stream! " + my_stream_id + emsg);
+	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    	jsRoutes.controllers.CtrlStream.isPublicAccess(my_endpoint_id).ajax({
+	    		dataType : "text",
 	  	    success: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
-	  	    	if(fmsg=="1") {
-	  	    		$this_button.removeClass("icon-white set_public_access_resource");
-	  	    		$this_button.addClass("remove_public_access_resource");
-	  	    	} else if(fmsg=="0") {
-	  	    		$this_button.removeClass("remove_public_access_resource");
-	  	    		$this_button.addClass("icon-white set_public_access_resource");
+	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+	  				console.debug("PublicAccess: Reparing Error! " + my_stream_id + fmsg);
+	  	    	if(fmsg=="true") {
+	  	    		$this_button.removeClass("icon-white set_public_access_stream");
+	  	    		$this_button.addClass("remove_public_access_stream");
+	  	    	} else if(fmsg=="false") {
+	  	    		$this_button.removeClass("remove_public_access_stream");
+	  	    		$this_button.addClass("icon-white set_public_access_stream");
 	  	    	} 
 	  	    },
 	  	    error: function(fmsg) {
-	  	    	$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
+	  				console.debug("PublicAccess: Still: Error! " + my_stream_id + fmsg);
+	  	    	//$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
 	  	    }
 	  	  });
 	    }
 	  });
+		$('.set_public_access_stream').on("click", togglePublicAccessStreamButton);
+		$('.remove_public_access_stream').on("click", togglePublicAccessStreamButton);
 	  return false;
 	};
-	$('.set_public_access_resource').on("click", togglePublicAccessResourceButton);
-	$('.remove_public_access_resource').on("click", togglePublicAccessResourceButton);
+	$('.set_public_access_stream').on("click", togglePublicAccessStreamButton);
+	$('.remove_public_access_stream').on("click", togglePublicAccessStreamButton);
+	
+	//controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
+	function togglePublicSearchStreamButton(event){
+		var $this_button=$(this);
+		var my_stream_id=$this_button.attr('parent_id');
+		var current_tooltip_title=$this_button.attr('title');
+		var next_tooltip_title=$this_button.attr('inactive_title');
+		var pub = false;
+		if($this_button.hasClass('set_public_search_stream')) {
+			pub = true;
+		} else {
+			pub = false;
+		}
+	  jsRoutes.controllers.CtrlStream.setPublicSearch(my_stream_id, pub).ajax({
+	  	dataType : "text",
+	    success: function(fmsg) {
+	    	if(fmsg=="true") {
+	    		$this_button.removeClass("icon-white set_public_search_stream");
+	    		$this_button.addClass("remove_public_search_stream");
+	    	} else if(fmsg=="false") {
+	    		$this_button.removeClass("remove_public_search_stream");
+	    		$this_button.addClass("icon-white set_public_search_stream");
+	    	}
+	    	//event.stopImmediatePropagation();
+	    	//event.stopPropagation();	    	
+	    },
+	    error: function(emsg) {
+				console.debug("Error: PublicSearch stream! " + my_stream_id + emsg);
+	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    	jsRoutes.controllers.CtrlStream.isPublicSearch(my_endpoint_id).ajax({
+	    		dataType : "text",
+	  	    success: function(fmsg) {
+	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
+	  				console.debug("PublicSearch: Reparing Error! " + my_stream_id + fmsg);
+	  	    	if(fmsg=="true") {
+	  	    		$this_button.removeClass("icon-white set_public_search_stream");
+	  	    		$this_button.addClass("remove_public_search_stream");
+	  	    	} else if(fmsg=="false") {
+	  	    		$this_button.removeClass("remove_public_search_stream");
+	  	    		$this_button.addClass("icon-white set_public_search_stream");
+	  	    	} 
+	  	    },
+	  	    error: function(fmsg) {
+	  				console.debug("PublicSearch: Still: Error! " + my_stream_id + fmsg);
+	  	    	//$('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
+	  	    }
+	  	  });
+	    }
+	  });
+		$('.set_public_search_stream').on("click", togglePublicSearchStreamButton);
+		$('.remove_public_search_stream').on("click", togglePublicSearchStreamButton);
+	  return false;
+	};
+	$('.set_public_search_stream').on("click", togglePublicSearchStreamButton);
+	$('.remove_public_search_stream').on("click", togglePublicSearchStreamButton);
+	
+//controllers.CtrlStream.clear(stream.id)
+	function clearStreamButton(event){
+		var $this_button=$(this);
+		var my_stream_id=$this_button.attr('parent_id');
+
+	  jsRoutes.controllers.CtrlStream.clear(my_stream_id).ajax({
+	  	dataType : "text",
+	    success: function(msg) {
+	    	//clear plot
+				console.debug("ClearStream! Trying to reinit plot: " + my_stream_id);
+	    	var plot = window['streamplot'+my_stream_id];
+	    	StreamPlots.clear(plot);
+	    },
+	    error: function(emsg) {
+				console.debug("Error: ClearStream! " + my_stream_id + emsg);
+	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    }
+	  });
+		$('.clearStreamButton').on("click", clearStreamButton);
+	  return false;
+	};
+	$('.clearStreamButton').on("click", clearStreamButton);
+	
+//controllers.CtrlStream.delete(stream.id)
+	function deleteStreamButton(event){
+		var $this_button=$(this);
+		var my_stream_id=$this_button.attr('parent_id');
+
+	  jsRoutes.controllers.CtrlStream.delete(my_stream_id).ajax({
+	  	dataType : "text",
+	    success: function(msg) {
+	    	//remove all DOM elements related to the deleted stream
+	    	$("[id^='stream'][id$='"+my_stream_id+"']").remove();
+	    	$("[stream_id='"+my_stream_id+"']").remove();
+	    },
+	    error: function(emsg) {
+				console.debug("Error: DeleteStream! " + my_stream_id + emsg);
+	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+	    }
+	  });
+		$('.deleteStreamButton').on("click", deleteStreamButton);
+	  return false;
+	};
+	$('.deleteStreamButton').on("click", deleteStreamButton);
 	
   // -- renumber fields
 

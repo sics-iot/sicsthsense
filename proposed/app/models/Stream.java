@@ -81,7 +81,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<DataPointDouble> dataPointsDouble;
 
-	@OneToMany(mappedBy = "stream")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
 
   @ManyToMany(mappedBy = "followedStreams")
@@ -181,6 +181,10 @@ public class Stream extends Model implements Comparable<Stream> {
 
 	public boolean canRead(User user) {
 		return (publicAccess || owner.equals(user)); // || isShare(user);
+	}
+	
+	public boolean canWrite(User user) {
+		return (owner.equals(user));
 	}
 
 	public boolean canRead(String key) {
@@ -302,13 +306,11 @@ public class Stream extends Model implements Comparable<Stream> {
 	}
 
 	private void deleteDataPoints() {
-		if (dataPoints != null) {
-			if (type == StreamType.STRING) {
+			if (type == StreamType.STRING && dataPointsString.size() > 0) {
 				Ebean.delete(this.dataPointsString);
-			} else if (type == StreamType.DOUBLE) {
+			} else if (type == StreamType.DOUBLE && dataPointsDouble.size() > 0) {
 				Ebean.delete(this.dataPointsDouble);
 			}
-		}
 	}
 
 	public StreamType getType() {
@@ -333,19 +335,23 @@ public class Stream extends Model implements Comparable<Stream> {
 	public void delete() {
 		Ebean.beginTransaction();
 		try {
-			// Detach parsers from streams
-			String s = "UPDATE parsers set stream_id = :target_stream_id where stream_id = :stream_id";
-			SqlUpdate update = Ebean.createSqlUpdate(s);
-			update.setParameter("stream_id", this.id);
-			update.setParameter("target_stream_id", null);
-			int modifiedCount = Ebean.execute(update);
-			String msg = "There were " + modifiedCount + "rows updated";
-			Logger.info("Deleting stream: Detaching some stream parsers: "
-					+ msg);
+			
+			//(StreamParsers will be deleted with cascading deletes; instead.)
+			
+			// Detach parsers from streams. 
+//			String s = "UPDATE parsers set stream_id = :target_stream_id where stream_id = :stream_id";
+//			SqlUpdate update = Ebean.createSqlUpdate(s);
+//			update.setParameter("stream_id", this.id);
+//			update.setParameter("target_stream_id", null);
+//			int modifiedCount = Ebean.execute(update);
+//			String msg = "There were " + modifiedCount + "rows updated";
+//			Logger.info("Deleting stream: Detaching some stream parsers: "
+//					+ msg);
 			
 			//Detach file: No need; cascading delete instead.
 			//this.file.linkedStream = null;
 			//this.file.update();
+			
 			deleteDataPoints();
 			//detach following users
 			this.followingUsers.clear();

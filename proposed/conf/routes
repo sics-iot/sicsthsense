@@ -27,6 +27,7 @@ POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id
 
 # Streams
 GET        /user/followStream/:id/:follow				controllers.CtrlUser.followStream(id: Long, follow: Boolean)
+GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStream(id: Long)
 
 GET        /user/:ownerName/$path<.*>						controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 #GET       /user/:ownerName/streams							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
@@ -34,6 +35,8 @@ GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
 GET        /streams/clearData/:id 							controllers.CtrlStream.clear(id: Long)
 GET        /streams/publicAccess/:id/:pub 			controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
 GET        /streams/publicSearch/:id/:pub 			controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
+GET        /streams/publicAccess/:id						controllers.CtrlStream.isPublicAccess(id: Long)
+GET        /streams/publicSearch/:id						controllers.CtrlStream.isPublicSearch(id: Long)
 GET        /streams/:id								    			controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST       /streams/:id			    								controllers.CtrlSource.post(id: Long)
 DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)

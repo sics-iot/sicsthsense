@@ -126,7 +126,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 
   public void followStream(Stream stream) {
-    if(stream != null && stream.id > 0L) {
+    if(stream != null && stream.id > 0L && !followedStreams.contains(stream)) {
       followedStreams.add(stream);
     }
     this.saveManyToManyAssociations("followedStreams");

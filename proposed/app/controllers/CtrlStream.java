@@ -77,6 +77,15 @@ public class CtrlStream extends Controller {
 		return unauthorized();
 	}
 
+//	@Security.Authenticated(Secured.class)
+	public static Result isPublicAccess(Long id) {
+		Stream stream = Stream.get(id);
+		if(stream == null) {
+			return notFound();
+		}
+		return ok(Boolean.toString(stream.publicAccess));
+	}
+
 	@Security.Authenticated(Secured.class)
 	public static Result setPublicSearch(Long id, Boolean pub) {
 		final User user = Secured.getCurrentUser();
@@ -85,6 +94,15 @@ public class CtrlStream extends Controller {
 			return ok(Boolean.toString(stream.setPublicSearch(pub)));
 		}
 		return unauthorized();
+	}
+	
+//@Security.Authenticated(Secured.class)
+	public static Result isPublicSearch(Long id) {
+		Stream stream = Stream.get(id);
+		if(stream == null) {
+			return notFound();
+		}
+		return ok(Boolean.toString(stream.publicSearch));
 	}
 
 	public static Result getByKey(String key) {
