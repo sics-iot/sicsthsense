@@ -1,8 +1,10 @@
 var StreamPlots = {
 		clear : function(stream) {
 			var WIN_5M = 5*60*1000;
+			var streamID = $('#'+stream.id).attr('stream_id');
 			//StreamPlots.setWindow(stream, WIN_5M);
-			$("input:radio[name='stream']").filter("[value='"+WIN_5M+"']").attr('checked', true);
+			$("input:radio[name$='"+streamID+"']").filter("[value='"+WIN_5M+"']").attr('checked', true);
+		//	$("input:radio[name$='stream']").filter("[value='"+WIN_5M+"']").attr('checked', true);
 			StreamPlots.setWindow(stream, WIN_5M);
 			StreamPlots.setup(stream);
 
@@ -131,7 +133,7 @@ var StreamPlots = {
 				//console.debug(data);
 				var time = data["time"].reverse();
 				var data = data["data"].reverse();
-				
+			
 				for (var i=0; i< time.length; i++){
 					
 					stream.points.push(new Array(parseInt(time[i]) + StreamPlots.timezone, data[i]));
@@ -145,21 +147,37 @@ var StreamPlots = {
 	
 					while (stream.points[0][0] < stream.points[stream.points.length-1][0] - stream.window) {
 						// remove old plot points
-						console.debug('shifted: '+stream.points.shift());
+						console.debug('shifted: '+stream.points.shift());						
 					}
 				}
 
+				var xaxis = stream.plot.getAxes().xaxis,
+						overview_xaxis = stream.overview.getAxes().xaxis;
+        var opts = xaxis.options,
+        		overview_opts = overview_xaxis.options,
+            min = stream.points[0][0],
+            max = stream.points[stream.points.length-1][0];
+        if (min > max) {
+            // make sure min < max
+            var tmp = min;
+            min = max;
+            max = tmp;
+        }
+        opts.min = min;
+        opts.max = max;
+        overview_opts.min = min;
+        overview_opts.max = max;
 				stream.plot.setData([stream.points]);
 				stream.plot.setupGrid();
-    			stream.plot.draw();
-    			stream.overview.setData([stream.points]);
+    		stream.plot.draw();
+    		stream.overview.setData([stream.points]);
 				stream.overview.setupGrid();
-    			stream.overview.draw();
+    		stream.overview.draw();
 				$('#'+stream.id).css('background-color', '');
 			}});
 	},
 
-	timezone: -(new Date()).getTimezoneOffset()*60, // in ms, distance to UTC (so negative)
+	timezone: -(new Date()).getTimezoneOffset()*60*1000, // in ms, distance to UTC (so negative)
 	
 	options: {
 		series: {
@@ -173,7 +191,7 @@ var StreamPlots = {
 			tickLength: 5,
 			minTickSize: [1, "second"],
 			//ticks: 6,
-			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60,
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000,
 			zoomRange: [this.minTickSize, this.max],
 			panRange: [null, this.max]
 		},
@@ -210,7 +228,7 @@ var StreamPlots = {
 			mode: "time",
 			timeformat: "%y-%m-%d",
 			//minTickSize: [1, "second"],
-			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60,
+			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000,
 			ticks: 3
 		},
 		yaxis: {
