@@ -158,6 +158,7 @@ public class CtrlSource extends Controller {
 					//Stream newstream = new Stream();
 					//newstream.create(currentUser);
 				}
+				currentUser.sortStreamList(); // reorder streams
 
 				if(submitted != null && submitted.id != null) {
 					return redirect(routes.CtrlSource.getById(submitted.id));

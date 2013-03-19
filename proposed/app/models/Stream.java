@@ -408,13 +408,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	}
 	
 	public int compareTo(Stream other) {
-		if (file==null) {
-			Logger.error("File null!");
-		}
-		if (file.path==null) {
-			Logger.error("File path null!");
-		}
-		Logger.info("paths: "+file.path+" "+other.file.path);
-		return file.path.compareTo(other.file.path);
+		//Logger.info("paths: "+file.getPath()+" "+other.file.getPath());
+		return file.getPath().compareTo(other.file.getPath());
 	}
 }

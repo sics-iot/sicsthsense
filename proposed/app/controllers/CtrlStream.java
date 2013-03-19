@@ -27,10 +27,11 @@ public class CtrlStream extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
-		final User user = Secured.getCurrentUser();
+		final User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
-		if (canWrite(user, stream)) {
+		if (canWrite(currentUser, stream)) {
 			stream.delete();
+			currentUser.sortStreamList(); // reorder streams
 			return ok();
 		}
 		return unauthorized();
@@ -99,11 +100,6 @@ public class CtrlStream extends Controller {
 			return notFound();
 		return post(stream.owner, stream);
 	}
-
-	// public static Result postByUserKey(String ownerToken, String path) {
-	// User owner = User.getByToken(ownerToken);
-	// return post(owner, path);
-	// }
 
 	@Security.Authenticated(Secured.class)
 	public static Result post(Stream stream) {
