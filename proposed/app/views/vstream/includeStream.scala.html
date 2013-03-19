@@ -8,6 +8,7 @@
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
 @if(stream != null) {
+<div id="streamblock@{stream.id}" >
 @if(stream.hasData()) {
   
 	<span id="streamconfig@{stream.id}" class="streamconfig form-inline">
@@ -69,7 +70,9 @@
 		<div id="streamtitle@{stream.id}" class="streamtitle">
 			Data stream 
 			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
 		&nbsp;No data
 	}
+	</div>
 }

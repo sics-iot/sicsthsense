@@ -14,7 +14,7 @@
 		<div id="vfileTree">
 				@if(streams.length > 0) {
 					<ul>
-					@Html(FileSystem.listHTMLFileSystem(streams(0).owner))
+					@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
 					</ul>
 				} else {
 					<li><a>No streams exist</a></li>

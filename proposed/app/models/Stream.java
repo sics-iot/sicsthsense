@@ -84,7 +84,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
 	public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
 
-  @ManyToMany(mappedBy = "followedStreams")
+  @ManyToMany(cascade = CascadeType.ALL, mappedBy = "followedStreams")
   public List<User> followingUsers = new ArrayList<User>();
 
 	public Long getHistorySize() {
@@ -353,9 +353,9 @@ public class Stream extends Model implements Comparable<Stream> {
 			//this.file.update();
 			
 			deleteDataPoints();
-			//detach following users
-			this.followingUsers.clear();
-			this.saveManyToManyAssociations("followingUsers");
+			//detach following users //Cascading delete instead (Will only delete the relation)
+			//this.followingUsers.clear();
+			//this.saveManyToManyAssociations("followingUsers");
 			//delete stream
 			super.delete();
 			

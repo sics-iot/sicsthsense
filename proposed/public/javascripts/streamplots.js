@@ -6,9 +6,12 @@ var StreamPlots = {
 			$("input:radio[name$='"+streamID+"']").filter("[value='"+WIN_5M+"']").attr('checked', true);
 		//	$("input:radio[name$='stream']").filter("[value='"+WIN_5M+"']").attr('checked', true);
 			StreamPlots.setWindow(stream, WIN_5M);
-			StreamPlots.setup(stream);
+			//StreamPlots.setup(stream);
 
-			StreamPlots.getStream(stream);
+			//StreamPlots.getStream(stream);
+			stream.plot.setData([stream.points]);
+			stream.plot.setupGrid();
+  		stream.plot.draw();
 		},
 	setup : function(stream) {
 		var streamID = $('#'+stream.id).attr('stream_id');

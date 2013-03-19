@@ -208,8 +208,8 @@
 	  	dataType : "text",
 	    success: function(msg) {
 	    	//remove all DOM elements related to the deleted stream
-	    	$("[id^='stream'][id$='"+my_stream_id+"']").remove();
-	    	$("[stream_id='"+my_stream_id+"']").remove();
+	    	//$("[id^='stream'][id$='"+my_stream_id+"']").remove();
+	    	$("#streamblock"+my_stream_id).remove();
 	    },
 	    error: function(emsg) {
 				console.debug("Error: DeleteStream! " + my_stream_id + emsg);
