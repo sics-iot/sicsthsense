@@ -249,10 +249,15 @@ public class Stream extends Model {
 	public static void clearStream(Long id) {
 		Stream stream = (Stream) get(id);
 		if (stream != null) {
-			stream.lastUpdated = 0L;
-			stream.update();
-			stream.deleteDataPoints();
+			stream.clearStream();
 		}
+	}
+	
+	@play.db.ebean.Transactional
+	public void clearStream() {		
+		this.lastUpdated = 0L;
+		this.deleteDataPoints();
+		this.update();
 	}
 
 	public List<? extends DataPoint> getDataPoints() {
@@ -376,19 +381,22 @@ public class Stream extends Model {
 //		super.delete();
 	}
 
-	public void setPublicAccess( Boolean pub ) {
+	public boolean setPublicAccess( Boolean pub ) {
 		this.publicAccess = pub;
 		this.update();
+		return pub;
 	}
 	
-	public void setPublicSearch( Boolean pub ) {
+	public boolean setPublicSearch( Boolean pub ) {
 		this.publicSearch = pub;
 		this.update();
+		return pub;
 	}
 	
-	public void setFrozen( Boolean frozen ) {
+	public boolean setFrozen( Boolean frozen ) {
 		this.frozen = frozen;
 		this.update();
+		return frozen;
 	}
 
 	public List<StreamParser> getStreamParsers() {

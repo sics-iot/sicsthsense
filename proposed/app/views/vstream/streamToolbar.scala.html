@@ -24,7 +24,7 @@
 	@if(own) {
 		 <a href="@routes.CtrlStream.delete(stream.id)" class="icon-btn icon-trash delete" rel="tooltip" title="Delete"></a>
 		 @if(stream.hasData()) {
-	     <a href="@routes.CtrlStream.clearStream(stream.id)" class="icon-btn icon-remove-sign delete" rel="tooltip" title="Clear"></a>
+	     <a href="@routes.CtrlStream.clear(stream.id)" class="icon-btn icon-remove-sign delete" rel="tooltip" title="Clear"></a>
 	   } else {
 	   	 <a href="#" class="icon-btn icon-remove-sign icon-white delete" rel="tooltip" title="Clear"></a>
 	   }

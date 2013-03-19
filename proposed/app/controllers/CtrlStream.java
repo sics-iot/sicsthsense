@@ -16,35 +16,10 @@ import models.*;
 
 public class CtrlStream extends Controller {
 
-//	@Security.Authenticated(Secured.class)
-//	public static Result post(String path) {
-//			User currentUser = Secured.getCurrentUser();
-//			return post(currentUser, path);
-//	}
-	
-//	public static Result postByUserKey(String ownerToken, String path) {
-//		User owner = User.getByToken(ownerToken);
-//		return post(owner, path);
-//	}
+	private static boolean canWrite(User user, Stream stream) {
+		return (stream != null && user != null && stream.owner.equals(user));
+	}
 
-//	private static Result post(User currentUser, String path) {
-//		try {	
-//			JsonNode jsonBody = request().body().asJson();
-//			String textBody = request().body().asText();
-//			String strBody = (jsonBody != null) ? jsonBody.toString() : textBody;
-//			Logger.info("[Streams] post received from: " + " URI "
-//					+ request().uri() + ", content type: "
-//					+ request().getHeader("Content-Type") + ", payload: " + strBody);
-//			if (!parseResponse(currentUser, jsonBody, textBody, path))
-//				return badRequest("Bad request: Can't parse!");
-//		} catch (Exception e) {
-//			Logger.info("[Streams] Exception " + e.getMessage());
-//			Logger.info("[Streams] User null" + Boolean.toString(currentUser == null));
-//			return badRequest("Bad request: Error!");
-//		}
-//		return ok("ok");
-//}
-	
 	@Security.Authenticated(Secured.class)
 	public static Result getById(String id) {
 		return TODO;
@@ -53,38 +28,91 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
 		final User user = Secured.getCurrentUser();
-    //if(user == null) return notFound();
-		Stream stream = Stream.get(id);	
-		Stream.delete(id);
-		return ok();
+		Stream stream = Stream.get(id);
+		if (canWrite(user, stream)) {
+			stream.delete();
+			return ok();
+		}
+		return unauthorized();
 	}
 	
+	public static Result deleteByKey(String key) {
+		final Stream stream = Stream.getByKey(key);
+		if (stream == null) {
+			return notFound();
+		} 
+		stream.delete();
+		return ok();
+	}
+
 	@Security.Authenticated(Secured.class)
-	public static Result clearStream(Long id) {
-		Stream.delete(id);
-		return ok();
+	public static Result clear(Long id) {
+		final User user = Secured.getCurrentUser();
+		// if(user == null) return notFound();
+		Stream stream = Stream.get(id);
+		if (canWrite(user, stream)) {
+			stream.clearStream();
+			return ok();
+		}
+		return unauthorized();
 	}
 	
+	public static Result clearByKey(String key) {
+		final Stream stream = Stream.getByKey(key);
+		if (stream == null) {
+			return notFound();
+		} 
+		stream.clearStream();
+		return ok();
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result setPublicAccess(Long id, Boolean pub) {
+		final User user = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if (canWrite(user, stream)) {
+			return ok(Boolean.toString(stream.setPublicAccess(pub)));
+		}
+		return unauthorized();
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result setPublicSearch(Long id, Boolean pub) {
+		final User user = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if (canWrite(user, stream)) {
+			return ok(Boolean.toString(stream.setPublicSearch(pub)));
+		}
+		return unauthorized();
+	}
+
 	public static Result getByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
-		if (stream == null) return notFound();
+		if (stream == null)
+			return notFound();
 		return getData(stream.owner, stream, -1L, -1L, -1L);
 	}
 
 	public static Result postByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
-		if (stream == null) return notFound();
+		if (stream == null)
+			return notFound();
 		return post(stream.owner, stream);
 	}
-	
+
+	// public static Result postByUserKey(String ownerToken, String path) {
+	// User owner = User.getByToken(ownerToken);
+	// return post(owner, path);
+	// }
+
 	@Security.Authenticated(Secured.class)
 	public static Result post(Stream stream) {
 		final User user = Secured.getCurrentUser();
 		return post(user, stream);
 	}
-	
+
 	private static Result post(User user, Stream stream) {
-		if(stream != null && stream.owner.equals(user)) {
+		if (canWrite(user, stream)) {
 			String strBody = request().body().asText();
 			long currentTime = Utils.currentTime();
 			if (!stream.post(strBody, currentTime)) {
@@ -95,70 +123,24 @@ public class CtrlStream extends Controller {
 		}
 		return unauthorized();
 	}
-//	private static Stream getOrAddByPath(User currentUser, String path) {
-//		if (currentUser == null)
-//			return null;
-//		Vfile f = FileSystem.readFile(currentUser, path);
-//		if (f == null) {
-//			Stream stream = (Stream)Stream.create(new Stream(currentUser));
-//			f = FileSystem.addFile(currentUser, path);
-//			f.setLink(stream);
-//			Logger.info("[Streams] Creating stream at: " + currentUser.getUserName() + path);
-//		}
-//		Stream stream = f.getLink();
-//		if (stream != null) {
-//				return stream;
-//			}
-//		return null;
-//	}
-//
-//	private static boolean parseResponse(User currentUser, JsonNode jsonBody, String textBody, String path) {
-//		if (jsonBody != null) {
-//			if (!parseJsonResponse(currentUser, jsonBody, path))
-//				return false;
-//		} else {
-//			if (textBody != null) {
-//				Stream stream = getOrAddByPath(currentUser, path);
-//				Logger.info("[Posting now] " + textBody + " at " + Utils.currentTime() + " to: " + path);
-//				return stream.post(Double.parseDouble(textBody), Utils.currentTime());
-//			} else {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
-//
-//	private static boolean parseJsonResponse(User currentUser, JsonNode jsonNode, String path) {
-//		if (jsonNode.isValueNode()) {
-//			Stream stream = getOrAddByPath(currentUser, path);
-//			return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
-//		} else {
-//			Iterator<String> it = jsonNode.getFieldNames();
-//			while (it.hasNext()) {
-//				String field = it.next();
-//				if (!parseJsonResponse(currentUser, jsonNode.get(field),	Utils.concatPath(path, field)))
-//					return false;
-//			}
-//		}
-//		return true;
-//	}
-	
-	public static Result getData(String ownerName, String path, Long tail, Long last, Long since) {
-			final User user = Secured.getCurrentUser();
-			final User owner = User.getByUserName(ownerName);
-	    //if(user == null) return notFound();
-	    return getData(user, owner, path, tail, last, since);
-	 }
-	
+
+	public static Result getData(String ownerName, String path, Long tail,
+			Long last, Long since) {
+		final User user = Secured.getCurrentUser();
+		final User owner = User.getByUserName(ownerName);
+		// if(user == null) return notFound();
+		return getData(user, owner, path, tail, last, since);
+	}
+
 	public static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
-    //if(user == null) return notFound();
-		Stream stream = Stream.get(id);	
-    return getData(user, stream, tail, last, since);
- }
-	
-	//@Security.Authenticated(Secured.class)
-	private static Result getData(User currentUser, User owner, String path, Long tail, Long last, Long since){
+		Stream stream = Stream.get(id);
+		return getData(user, stream, tail, last, since);
+	}
+
+	// @Security.Authenticated(Secured.class)
+	private static Result getData(User currentUser, User owner, String path,
+			Long tail, Long last, Long since) {
 		Vfile f = FileSystem.readFile(owner, path);
 		if (f == null) {
 			return notFound();
@@ -168,42 +150,42 @@ public class CtrlStream extends Controller {
 			return notFound();
 		}
 		return getData(currentUser, stream, tail, last, since);
-		
 	}
 
-	private static Result getData(User currentUser, Stream stream, Long tail, Long last, Long since){
+	private static Result getData(User currentUser, Stream stream, Long tail,
+			Long last, Long since) {
 		if (stream == null) {
 			return notFound();
 		}
-		
-		if(!stream.canRead(currentUser))
+
+		if (!stream.canRead(currentUser))
 			return unauthorized("Private stream!");
-		
-    List<? extends DataPoint> dataSet = null;
-    if(tail<0 && last <0 && since <0){
-    	tail=1L;
-    }
-    if(tail >= 0) {
-    	dataSet = stream.getDataPointsTail(tail);
-    } else if(last >= 0) {
-      dataSet = stream.getDataPointsLast(last);
-    } else if(since >= 0) {
-    	dataSet = stream.getDataPointsSince(since);
-    } else {
-    	throw new RuntimeException("This cannot happen!");
-    }
-    
-    ObjectNode result = Json.newObject();
-    ArrayNode time= result.putArray("time");
-    ArrayNode data= result.putArray("data");
-    
-    for(DataPoint dataPoint: dataSet) {
-    	time.add(dataPoint.timestamp);
-	    if (stream.getType() == Stream.StreamType.DOUBLE) {
-	    	data.add((Double)dataPoint.getData());
+
+		List<? extends DataPoint> dataSet = null;
+		if (tail < 0 && last < 0 && since < 0) {
+			tail = 1L;
+		}
+		if (tail >= 0) {
+			dataSet = stream.getDataPointsTail(tail);
+		} else if (last >= 0) {
+			dataSet = stream.getDataPointsLast(last);
+		} else if (since >= 0) {
+			dataSet = stream.getDataPointsSince(since);
+		} else {
+			throw new RuntimeException("This cannot happen!");
+		}
+
+		ObjectNode result = Json.newObject();
+		ArrayNode time = result.putArray("time");
+		ArrayNode data = result.putArray("data");
+
+		for (DataPoint dataPoint : dataSet) {
+			time.add(dataPoint.timestamp);
+			if (stream.getType() == Stream.StreamType.DOUBLE) {
+				data.add((Double) dataPoint.getData());
 			}
-    }
-    
-    return ok(result);
+		}
+
+		return ok(result);
 	}
 }

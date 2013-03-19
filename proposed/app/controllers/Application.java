@@ -50,7 +50,14 @@ public class Application extends Controller {
       		play.Routes.javascriptRouter("jsRoutes",
           		controllers.routes.javascript.Application.home(),
           		controllers.routes.javascript.CtrlSource.deleteParser(),
-          		controllers.routes.javascript.CtrlSource.addParser()
+          		controllers.routes.javascript.CtrlSource.addParser(),
+          		controllers.routes.javascript.CtrlStream.delete(),
+          		controllers.routes.javascript.CtrlStream.clear(),
+          		controllers.routes.javascript.CtrlStream.deleteByKey(),
+          		controllers.routes.javascript.CtrlStream.clearByKey(),
+          		controllers.routes.javascript.CtrlStream.setPublicAccess(),
+          		controllers.routes.javascript.CtrlStream.setPublicSearch(),
+          		controllers.routes.javascript.CtrlUser.followStream()
           )
       );
   }
