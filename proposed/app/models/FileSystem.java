@@ -40,6 +40,9 @@ public class FileSystem {
 		int prevdepth=0;
 		String[] prevdirs={};
 		List<Vfile> files = Vfile.find.where().eq("owner",user).orderBy("path asc").findList();
+	
+		// testing: failed due to File.path==null :?
+		//user.sortStreamList();
 
 		for (Vfile f: files) {
 			String[] dirs = f.path.split("/");

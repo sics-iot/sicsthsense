@@ -158,6 +158,7 @@ public class CtrlSource extends Controller {
 					//Stream newstream = new Stream();
 					//newstream.create(currentUser);
 				}
+
 				if(submitted != null && submitted.id != null) {
 					return redirect(routes.CtrlSource.getById(submitted.id));
 				}
@@ -237,6 +238,7 @@ public class CtrlSource extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
+		User currentUser = Secured.getCurrentUser();
 		// check permission?
 		Source.delete(id);
 		return redirect(routes.CtrlSource.manage());

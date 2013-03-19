@@ -20,6 +20,7 @@
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1Y" id="streamwindow@{stream.id}-7"><label for="streamwindow@{stream.id}-7">1y</label>
 	</span>
 	<div id="streamtitle@{stream.id}" class="streamtitle">
+		<a name="@{stream.file.getPath()}"></a>
 		Data stream 
 		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 	</div>

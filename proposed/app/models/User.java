@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import play.Logger;
 import play.db.ebean.*;
 import play.data.format.*;
 import play.data.validation.*;
@@ -71,19 +72,9 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		this.lastName = lastName;
 		this.location = location;
 	}
-
-	public void updateUser(User user) {
-		this.userName = user.userName.toLowerCase();
-		this.firstName = user.firstName;
-		this.lastName = user.lastName;
-		this.location = user.location;
-		update();
-	}
-	
 	public User() {
 		this.creationDate = new Date();
 	}
-
 
 	public String getEmail() { return email; }
 	public String getToken() { return token; }
@@ -93,6 +84,14 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String getLocation() { return location; }
 	public Long getId() { return new Long(id); }
 	public boolean exists() { return exists(id); }
+
+	public void updateUser(User user) {
+		this.userName = user.userName.toLowerCase();
+		this.firstName = user.firstName;
+		this.lastName = user.lastName;
+		this.location = user.location;
+		update();
+	}
 
 	public Date updateLastLogin() {
 		this.lastLogin = new Date();
@@ -147,6 +146,11 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
   public List<Stream> followedStreams() {
   	return followedStreams;
   }
+
+	public void sortStreamList() {
+		Logger.info("Sorting StreamList");
+		Collections.sort(streamList);
+	}
   
 	public static User create(User user) {		
 		user.generateToken();

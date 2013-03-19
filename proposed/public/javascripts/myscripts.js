@@ -289,7 +289,10 @@
 
 //-----------jsTree
 $("#vfileTree").bind("select_node.jstree", function(event, data) {
-    alert($(data.args[0]).text());
+	var path = '/' + $(this).jstree('get_path', data.rslt.obj, false).join('/');
+	//alert(path);
+    //alert($(data.args[0]).text());
+		window.location.hash=path;
 });  
 $("#vfileTree").jstree();
 $("#vfileTree").load($(this).jstree());

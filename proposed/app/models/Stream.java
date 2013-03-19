@@ -16,7 +16,7 @@ import play.db.ebean.*;
 
 @Entity
 @Table(name = "streams")
-public class Stream extends Model {
+public class Stream extends Model implements Comparable<Stream> {
 	/**
 	 * 
 	 */
@@ -407,4 +407,14 @@ public class Stream extends Model {
 //		return null;
 	}
 	
+	public int compareTo(Stream other) {
+		if (file==null) {
+			Logger.error("File null!");
+		}
+		if (file.path==null) {
+			Logger.error("File path null!");
+		}
+		Logger.info("paths: "+file.path+" "+other.file.path);
+		return file.path.compareTo(other.file.path);
+	}
 }

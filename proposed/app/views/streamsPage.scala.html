@@ -8,36 +8,33 @@
     ================================================== -->
 	<div class="row">
 		<div class="span2 bs-docs-sidebar">
-		<br \> <br \> <br \>
+		<br \><br \><br \>
 
-			<a>Streams tree</a>
+		<a>Streams tree</a>
 		<div id="vfileTree">
 				@if(streams.length > 0) {
-  			<ul>
+					<ul>
 					@Html(FileSystem.listHTMLFileSystem(streams(0).owner))
-  			</ul>
-
-					} else {
-				<li><a>No streams exist</a></li>
+					</ul>
+				} else {
+					<li><a>No streams exist</a></li>
 				}
 		</div>
   </div>
 
   <div class="span9">
 		<br \>
-
- 	<!--Body content-->
-
-	<!-- Stream listing and visualizing -->
-	@if(streams.length > 0) {
-		<h1>Your streams</h1>
-		@for(stream <- streams) {					
-			<br />
-			@vstream.includeStream(stream)
-			<br />
+		<!--Body content-->
+		<!-- Stream listing and visualizing -->
+		@if(streams.length > 0) {
+			<h1>Your streams</h1>
+			@for(stream <- streams) {					
+				<br />
+				@vstream.includeStream(stream)
+				<br />
+			}
 		}
-	}
-	<br /> <br />
+		<br /> <br />
 	
     </div>
   </div>
