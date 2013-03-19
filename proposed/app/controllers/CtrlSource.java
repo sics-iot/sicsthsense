@@ -44,7 +44,10 @@ public class CtrlSource extends Controller {
 			BufferedReader serverResponse;
 			
 			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
-			// get data
+				if (!submitted.pollingUrl.startsWith("http") ) {//fudge URL, should check HTTP
+					submitted.pollingUrl = "http://"+submitted.pollingUrl;
+				}
+				// get data
 				HttpURLConnection connection = submitted.probe();
 				String contentType = connection.getContentType();
 				Logger.warn("Probed and found contentType: "+contentType);

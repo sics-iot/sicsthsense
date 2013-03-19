@@ -156,7 +156,16 @@ public class StreamParser extends Model {
 				Matcher matcher = regexPattern.matcher(textBody);
 				if (textBody != null && matcher.find()) {
 					String result = matcher.group(1);
-					return stream.post(Double.parseDouble(result), Utils.currentTime());
+					try {
+						double number = Double.parseDouble(result);
+						return stream.post(number, Utils.currentTime());
+					} catch (NumberFormatException e) {
+						Logger.warn("StreamParser: Regex failed to find Number!");
+						// naughty rogue value
+						return stream.post(-1, Utils.currentTime());
+					} catch (Exception e) {
+						Logger.error("StreamParser: Regex number conversion failed!");
+					}
 				}
 			} else {
 				return stream.post(Double.parseDouble(textBody), Utils.currentTime());
