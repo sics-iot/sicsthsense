@@ -8,7 +8,7 @@ Should take these parameters
 					<li><a href="#" onClick="$('#sourcelist').toggle();"><u>Sources</u></a>
 					<ul id="sourcelist">
 						@for(source<- sources) {
-							<li><a href="@routes.CtrlSource.getById(source.id)"></i>@source.label (id: @source.id)</a></li>
+							<li><a href="@routes.CtrlSource.getById(source.id)"></i>@source.label</a></li>
 					 	} 
 					</ul>
 					<br />

@@ -40,6 +40,8 @@ public class Stream extends Model implements Comparable<Stream> {
 	public Long id;
 
 	public StreamType type = StreamType.UNDEFINED;
+	public Location location;
+	public String description;
 
 	public boolean publicAccess = false;
 	public boolean publicSearch = false;

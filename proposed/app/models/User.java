@@ -122,7 +122,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 	
 	public boolean equals(User user) {
-		return token.equals(user.token) && this.id == user.id;
+		return user!=null && token.equals(user.token) && this.id == user.id;
 	}
 
   public void followStream(Stream stream) {

@@ -50,6 +50,7 @@ public class Source extends Operator {
   public Long lastPolled = 0L;
 	public String pollingUrl = null;
 	public String pollingAuthenticationKey = null;
+	public String description; // dont use!
 
 	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
