@@ -47,6 +47,7 @@ create table sources (
   last_polled               bigint,
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
+  description               varchar(255),
   key                       varchar(255),
   constraint uq_sources_1 unique (owner_id,label),
   constraint pk_sources primary key (id))
@@ -55,6 +56,7 @@ create table sources (
 create table streams (
   id                        bigint not null,
   type                      varchar(1),
+  description               varchar(255),
   public_access             boolean,
   public_search             boolean,
   frozen                    boolean,

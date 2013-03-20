@@ -128,6 +128,7 @@ public class StreamParser extends Model {
 	 * inputType overrides the content-type. returns: true if could post
 	 */
 	public boolean parseResponse(WS.Response response) {
+		Logger.info("StreamParser: parseResponse() "+stream.file.getPath());
 		try {
 			if ("application/json".equalsIgnoreCase(inputType)
 					|| "application/json".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
@@ -178,39 +179,32 @@ public class StreamParser extends Model {
 	 * parses requests as JSON inputParser is used as the path to the nested json
 	 * node i.e. inputParser could be: room1/sensors/temp/value
 	 */
-	private boolean parseJsonResponse(JsonNode jsonNode) {
+	private boolean parseJsonResponse(JsonNode root) {
 		// TODO check concat path against inputParser, get the goal and stop
 		// TODO (linear time) form a list of nested path elements from the gui, and
-		// get the specefic nodes one by one...
-		// String path = "";
-		// Iterator<String> it = jsonNode.getFieldNames();
-		// while (it.hasNext()) {
-		// String field = it.next();
-		// path += field;
-		// jsonNode = jsonNode.get(field);
-		//
-		// if (jsonNode != null && jsonNode.isValueNode() &&
-		// path.equalsIgnoreCase(inputParser)) {
-		// Stream stream = vfile.getLink();
-		// return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
-		// } else {
-		// path += ".";
-		// }
-		// }
-		// return false;
-		if( stream != null ) {
-			String pathParser = "([\\d\\w\\s-]+)+\\\\?$";
-			Pattern pathPattern = Pattern.compile(pathParser);
-			Matcher matcher = pathPattern.matcher(inputParser);
-			int i = 0;
-			while (i < matcher.groupCount() && matcher.find() && jsonNode != null) {
-				String field = matcher.group(++i);
-				jsonNode = jsonNode.path(field);
-				if (jsonNode != null && jsonNode.isValueNode()) {
-					return stream.post(jsonNode.getDoubleValue(), Utils.currentTime());
-				}
-			}
+		String[] levels = inputParser.split("/");
+		JsonNode node = root;  
+		for (int i=1; i<levels.length; i++) {
+			Logger.info(levels[i]);
+			node = node.get(levels[i]);
+			if (node==null) { return false; }
 		}
+
+		if (node.isValueNode()) { // it is a simple primative
+			Logger.info("posting: "+node.getDoubleValue()+" "+Utils.currentTime());
+			return stream.post(node.getDoubleValue(), Utils.currentTime());
+
+		} else if (node.get("value") != null) { // it may be value:X
+			double value = node.get("value").getDoubleValue();
+			long timestamp = Utils.currentTime(); // should be Source timestamp
+
+			if (node.get("time") != null) { // it may have  time:Y
+				timestamp = node.get("time").getLongValue();
+			}
+			Logger.info("posting: "+value);
+			return stream.post(value, timestamp);
+		}
+
 		return false;
 	}
 

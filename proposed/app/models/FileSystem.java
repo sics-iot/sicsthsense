@@ -41,8 +41,9 @@ public class FileSystem {
 		String[] prevdirs={};
 		List<Vfile> files = Vfile.find.where().eq("owner",user).orderBy("path asc").findList();
 	
-		// testing: failed due to File.path==null :?
-		//user.sortStreamList();
+		for (Vfile f: files) {
+			Logger.warn(f.path);
+		}
 
 		for (Vfile f: files) {
 			String[] dirs = f.path.split("/");
@@ -52,7 +53,7 @@ public class FileSystem {
 			for (int i=1; (i<dirs.length && i<prevdirs.length); i++) { // count shared parents
 				if (dirs[i].equals(prevdirs[i])) { sharedAncestors++; } else {break;}
 			}
-			//Logger.info("Path: "+ f.path+"\tDepth: "+thisdepth+" Prevdepth: "+prevdepth+" shared: "+sharedAncestors);
+			Logger.info("Path: "+ f.path+"\tDepth: "+thisdepth+" Prevdepth: "+prevdepth+" shared: "+sharedAncestors);
 			if (prevdepth>sharedAncestors) { // we have lists to terminate
 				for (int i=prevdepth; i>sharedAncestors; i--) { sb.append("</ul></li>\n"); }
 			}
