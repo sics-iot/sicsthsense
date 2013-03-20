@@ -191,9 +191,9 @@ public class Source extends Operator {
 
 	public boolean poll() {
 		// perform a poll() if it is time
-		long currentTime = System.currentTimeMillis();
-		//Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
-		if ( (lastPolled+pollingPeriod) > currentTime) { return false; }
+		long currentTime = Utils.currentTime();
+		Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
+		if ( (lastPolled+(pollingPeriod*1000)) > currentTime) { return false; }
 		//Logger.info("Poll() happening!");
 
 		asynchPoll();
