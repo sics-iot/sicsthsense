@@ -166,7 +166,7 @@ public class Source extends Operator {
       if(pollingUrl.indexOf('?') != -1) {
     	  arguments = pollingUrl.substring(pollingUrl.indexOf('?')+1, pollingUrl.length());
       }
-      Logger.info("[Stream] polling, URL: " + pollingUrl + " args: "+arguments);
+      //Logger.info("[Stream] polling, URL: " + pollingUrl + " args: "+arguments);
       WSRequestHolder request = WS.url(pollingUrl);
       Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
       Matcher matcher = pattern.matcher(arguments);
