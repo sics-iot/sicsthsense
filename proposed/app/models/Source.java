@@ -107,7 +107,7 @@ public class Source extends Operator {
 
 	public void updateSource(Source source) {
 		this.label = source.label;
-		this.key = source.getKey();
+		//this.key = source.getKey();
 		this.pollingPeriod = source.pollingPeriod;
 		this.lastPolled = source.lastPolled;
 		this.pollingUrl = source.pollingUrl;

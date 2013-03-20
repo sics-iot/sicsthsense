@@ -136,10 +136,12 @@ public class CtrlSource extends Controller {
 		  return badRequest("Bad request");
 		} else {
 			SkeletonSource skeleton = theForm.get();
+			if(skeleton.streamParserWrapers !=null && skeleton.streamParserWrapers.get(0) !=null) {
 			Logger.info("Adding parser: " 
 					+ "inputParser: " + skeleton.streamParserWrapers.get(0).inputParser 
 					+"vfilePath: " + skeleton.streamParserWrapers.get(0).vfilePath 
 					+"inputType: " + skeleton.streamParserWrapers.get(0).inputType);
+			}
 			User currentUser = Secured.getCurrentUser();
 			if (currentUser == null) { Logger.error("[CtrlSource.add] currentUser is null!"); }
 
@@ -153,10 +155,10 @@ public class CtrlSource extends Controller {
 				submitted = Source.create(submitted);
 				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 				for (StreamParser sp : spList) {
-					sp.id=null;
-					StreamParser.create(sp);
-					//Stream newstream = new Stream();
-					//newstream.create(currentUser);
+					if(sp!=null){
+						sp.id=null;
+						StreamParser.create(sp);
+					}
 				}
 				currentUser.sortStreamList(); // reorder streams
 
@@ -217,6 +219,7 @@ public class CtrlSource extends Controller {
 				return badRequest("Source does not exist: " + id);
 			}
 			Source submitted = skeleton.getSource(currentUser);
+			Logger.info("Submitted source url: " + submitted.pollingUrl);
 			List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 			try {
 				source.updateSource(submitted);
