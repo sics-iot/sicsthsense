@@ -122,6 +122,14 @@ public class FileSystem {
 		}
 	}
 
+	public static boolean isEmptyDir(User user, String path) {
+		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
+		if (f == null || f.type != Vfile.Filetype.DIR) { return false; } 
+		List<Vfile> children = Vfile.find.where().eq("owner",user).startsWith("path",path).findList();
+		if (children.size()>1) { return false; }
+		return true; // has children
+	}
+
 	public static boolean isFile(User user, String path) {
 		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f != null && f.type == Vfile.Filetype.FILE) {

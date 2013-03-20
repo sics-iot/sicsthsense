@@ -22,8 +22,11 @@
 	</span>
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		<a name="@{stream.file.getPath()}"></a>
-		Data stream 
+		Stream 
 		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		@if(stream.source != null) {
+			(<a href="/sources/@{stream.source.id}">@{stream.source.label}</a>)
+		}
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
 	<div class="plot-container">

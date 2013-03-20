@@ -11,15 +11,15 @@
 		<br \><br \><br \>
 
 		<a>Streams tree</a>
-		<div id="vfileTree">
 				@if(streams.length > 0) {
-					<ul>
-					@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
-					</ul>
+					<div id="vfileTree">
+						<ul>
+						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
+						</ul>
+					</div>
 				} else {
-					<li><a>No streams exist</a></li>
+					<li>(Empty)</li>
 				}
-		</div>
   </div>
 
   <div class="span9">
@@ -33,6 +33,9 @@
 				@vstream.includeStream(stream)
 				<br />
 			}
+		} else {
+			<br /> <br />
+			No streams defined! Add some Source's to your dashboard through the <a href="/manage">Manage page</a>.
 		}
 		<br /> <br />
 	
