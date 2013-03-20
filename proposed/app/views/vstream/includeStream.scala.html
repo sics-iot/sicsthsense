@@ -29,8 +29,8 @@
 		}
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
-<div>
-	Key:<i class="">@stream.getKey()</i>
+<div style="background-color='#333'; border 1px solid black;">
+	Key: <i>@stream.getKey()</i>
 </div>
 	<div class="plot-container">
 		<div class="row-fluid">
@@ -78,6 +78,9 @@
 			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
+		<div>
+		Key: <i>@stream.getKey()</i>
+	</div>	
 		&nbsp;No data
 	}
 	</div>
