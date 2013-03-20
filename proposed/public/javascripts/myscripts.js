@@ -272,11 +272,10 @@
  			$(this).attr('delete','true');
  			$(this).parents('.parser').toggleClass('overlay');
   		console.debug("Parser " + parserId + " request delete false");
- 		} 
+ 		} else if(parserId <= 0 || typeof parserId === 'undefined'){
  		//delete form field only
- 		if(parserId <= 0 || typeof parserId === 'undefined'){
 			var streamParserWrapers = $(this).parents('.parsers');
-			$(this).parents('.parser').remove();
+			$(this).parent().remove();
 			renumberParsers();
 		  $('.removeParser').on("click", removeParser);
  		}
@@ -315,7 +314,7 @@
   //insert streamParser form field
   function insertParser(e) {
 		var template = $('.parsers_template');
-		template.before('<div class="twipsies well parser" new="true">' + template.html() + '</div>');
+		template.before('<div new="true">' + template.html() + '</div>');
 		renumberParsers();
 		//bind button functionality
 	  $('.removeParser').on("click", removeParser);

@@ -9,7 +9,6 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
 @streamParserGroupLabels(className: String = "") = {
 <div class="row-fluid @className controls controls-row">
-<label class="hidden">ID</label>
 <label class="span4">Stream path</label>
 <label class="span3">Parser (Regex or JSON path)</label>
 <label class="span3">MIME type</label>
@@ -17,7 +16,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 }
 
 @streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = false, deleteParser: Boolean = false) = {
-<div class="row-fluid well parser @className controls controls-row" parserId="@{field("parserId").value}">
+<div class="row-fluid parser controls controls-row @className" parserId="@{field("parserId").value}">
 <input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
 <input class="span4" type="text" id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" placeholder="Stream path" @if(!modifyStreamPath){ readonly="readonly" } else { placeholder="Stream path"}>
 <input class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="Input parser">
@@ -27,7 +26,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 		<option value="application/json" @if(field("inputType").value.toString.contains("json")){selected="selected"}>application/json</option>
     <option value="text/plain" @if(field("inputType").value.toString.contains("text")){ selected="selected" }>text/plain</option>
   </select>
-	<a href="#" class="removeParser icon-trash pull-right" parserId="@{field("parserId").value}" @if(deleteParser){delete="false"}></a>
+	<i class="removeParser btn-icon icon-trash pull-right" delete="false" @if(deleteParser){parserId="@{field("parserId").value}"}else{parserId="-1"}></i>
 </div>
 }
 
@@ -35,7 +34,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 
     <!-- Docs nav
     ================================================== -->
-    <div class="row">
+    <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
 			 
 			@manage.navigationMenu(sources) 
@@ -44,8 +43,6 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 			**@
       </div>
       <div class="span9">
-				<br \>
-
  	      <!--Body content-->
 	      <!-- TODO: handle errors-->
 	      @if(myForm.hasErrors) {
@@ -54,49 +51,28 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      </div>
 	      }
   <h1>Configure '@myForm("label").value'</h1>
-
 	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form") {
 	      <fieldset>
 		      <legend>Source parameters</legend>
-
-				Post key (secret): <pre>@myForm("key").value</pre>
-
-				<br />
-    
-		@inputText(myForm("id"), '_label -> "", 'readonly -> "readonly", '_class -> "hidden", 'size -> 0, 'type -> "hidden")
-		<div class="row-fluid">
-      <div class="span4">
-	      @inputText(
-			    myForm("label"),
-		      '_label -> "Label:",
- 					'_class -> "form-horizontal"
-	      )
-</div>
-		<div class="span7">
-	      @inputText(
-					myForm("pollingUrl"),
-		      '_label -> "Polling URL:",
- 					'_class -> "form-horizontal"
-	      )
-</div>
-<div class="span1">
-	      @inputText(
-			    myForm("pollingPeriod"),
-		      '_label -> "Polling period:",
- 					'_class -> "form-horizontal"
-	      )
-</div>
-				@*
-	      @inputText(
-		      myForm("pollingAuthenticationKey"),
-		      '_label -> "Authentication key",
-		      '_help -> "Enter authentication details if required by polled source",
- 					'_class -> "form-horizontal"
-		      )
-				*@
+					<div class="row-fluid controls controls-row">
+						<label class="span3">Label</label>
+						<label class="span5">Source URL</label>
+						<label class="span2">Poll period</label>
+					</div>
+					<div class="row-fluid controls controls-row">
+						<input type="hidden" id="myForm("id").id" name="@myForm("id").name" value="@myForm("id").value" readonly="readonly" size="0">
+						<input class="span3" type="text" id="@myForm("label").id" name="@myForm("label").name" value="@myForm("label").value" placeholder="Source label">
+						<input class="span5" type="text" id="@myForm("pollingUrl").id" name="myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="URL to poll from">
+						<input class="span2" type="text" id="@myForm("pollingPeriod").id" name="@myForm("pollingPeriod").name" value="@myForm("pollingPeriod").value" placeholder="Polling period">
+					</div>
+					<div class="row-fluid controls controls-row">
+						<label class="span10">Post key (keep secret!): </label>
+					</div>
+					<div class="row-fluid controls controls-row">
+						<input class="span10" type="text" id="@myForm("key").id" name="@myForm("key").name" value="@myForm("key").value" readonly="readonly">
+					</div>
 	      </fieldset>
 
-				<br />
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers" sourceId="@myForm("id").value">
@@ -108,12 +84,9 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 			      @**
 			      * Keep an hidden block that will be used as template for Javascript copy code
 			      **@
-
-			      @streamParserGroup(
-				      myForm("streamParserWrapers[x]"),
-				      className = "parsers_template",
-							modifyStreamPath = true
-			      )
+						<div class="parsers_template">
+			      	@streamParserGroup( myForm("streamParserWrapers[x]"), className = "", modifyStreamPath=true, deleteParser=false )
+			      </div>
 		      </div>
 	      </fieldset>
 	      <div class="actions">				      
@@ -124,16 +97,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
   			<br />
 				<a href="@routes.CtrlSource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete source</a>
   }
-  <br />
-@**
-*	@helper.form(action = routes.CtrlSource.delete(myForm("id").value.toLong), 'id -> "delete_source_form") {
-*		<input type="submit" class="btn btn-danger" name="delete" value="Delete source">
-*	}
-**@
-	      <!-- end modify source-->
-  <br /> <br />
-  <br /> <br />
-
-    </div>
+	<!-- end modify source-->
   </div>
+</div>
 }
