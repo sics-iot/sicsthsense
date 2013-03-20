@@ -56,6 +56,8 @@ GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 # Sources API
 POST    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 #GET		/api/sources/:key										controllers.CtrlSource.getByKey(key: String)
+GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
+
 POST    /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
 GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
 
