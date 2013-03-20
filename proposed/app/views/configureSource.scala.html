@@ -15,7 +15,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 </div>
 }
 
-@streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = false, deleteParser: Boolean = false) = {
+@streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = true, deleteParser: Boolean = false) = {
 <div class="row-fluid parser controls controls-row @className" parserId="@{field("parserId").value}">
 <input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
 <input class="span4" type="text" id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" placeholder="Stream path" @if(!modifyStreamPath){ readonly="readonly" } else { placeholder="Stream path"}>
