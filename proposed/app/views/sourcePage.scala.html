@@ -7,25 +7,27 @@
 Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 }
 
-@streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = false) = {
-<div class="twipsies well parser @className" parserId="@{field("parserId").value}">
-	<a class="removeParser icon-trash pull-right" parserId="@{field("parserId").value}" delete='true'></a>
-	@**
-		@inputText(field("parserId"),   '_label -> "Parser Id", 'readonly -> "readonly", 'class -> "form-horizontal")	
-	**@
-	<div class="clearfix input-small form-horizontal hidden">
-    <div class="input">
-    	<input type="hidden" id="@{field("parserId").id}" name="@{field("parserId").name}" value="@field("parserId").value">
-    </div>
-	</div>
+@streamParserGroupLabels(className: String = "") = {
+<div class="row-fluid @className controls controls-row">
+<label class="hidden">ID</label>
+<label class="span4">Stream path</label>
+<label class="span3">Parser (Regex or JSON path)</label>
+<label class="span3">MIME type</label>
+</div>
+}
 
-	@if(modifyStreamPath){
-		@inputText(field("vfilePath"), '_label -> "Stream path", 'class -> "form-horizontal")
-	} else {
-		@inputText(field("vfilePath"),  '_label -> "Stream path", 'readonly -> "readonly", 'class -> "form-horizontal")
-	}
-	@inputText(field("inputParser"),'_label -> "Input parser", 'class -> "form-horizontal")
-	@inputText(field("inputType"),  '_label -> "Content type", '_value -> "application/json", 'class -> "form-horizontal")
+@streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = false, deleteParser: Boolean = false) = {
+<div class="row-fluid well parser @className controls controls-row" parserId="@{field("parserId").value}">
+<input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
+<input class="span4" type="text" id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" placeholder="Stream path" @if(!modifyStreamPath){ readonly="readonly" } else { placeholder="Stream path"}>
+<input class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="Input parser">
+@*<input type="text" id="@field("inputType").id" name="@field("inputType").name" value="@field("inputType").value" placeholder="Input type">*@
+  <select class="span3" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
+  	<option value=""></option>
+		<option value="application/json" @if(field("inputType").value.toString.contains("json")){selected="selected"}>application/json</option>
+    <option value="text/plain" @if(field("inputType").value.toString.contains("text")){ selected="selected" }>text/plain</option>
+  </select>
+	<a href="#" class="removeParser icon-trash pull-right" parserId="@{field("parserId").value}" @if(deleteParser){delete="false"}></a>
 </div>
 }
 
@@ -53,35 +55,43 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      }
   <h1>Configure '@myForm("label").value'</h1>
 
-	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form", 'class -> "form-horizontal") {
+	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form") {
 	      <fieldset>
 		      <legend>Source parameters</legend>
 
 				Post key (secret): <pre>@myForm("key").value</pre>
 
 				<br />
-      	@inputText(myForm("id"), '_label -> "Id", 'readonly -> "readonly", 'class -> "form-horizontal")
+    
+		@inputText(myForm("id"), '_label -> "", 'readonly -> "readonly", '_class -> "hidden", 'size -> 0, 'type -> "hidden")
+		<div class="row-fluid">
+      <div class="span4">
 	      @inputText(
 			    myForm("label"),
 		      '_label -> "Label:",
- 					'class -> "form-horizontal"
+ 					'_class -> "form-horizontal"
 	      )
+</div>
+		<div class="span7">
 	      @inputText(
 					myForm("pollingUrl"),
 		      '_label -> "Polling URL:",
- 					'class -> "form-horizontal"
+ 					'_class -> "form-horizontal"
 	      )
+</div>
+<div class="span1">
 	      @inputText(
 			    myForm("pollingPeriod"),
 		      '_label -> "Polling period:",
- 					'class -> "form-horizontal"
+ 					'_class -> "form-horizontal"
 	      )
+</div>
 				@*
 	      @inputText(
 		      myForm("pollingAuthenticationKey"),
 		      '_label -> "Authentication key",
 		      '_help -> "Enter authentication details if required by polled source",
- 					'class -> "form-horizontal"
+ 					'_class -> "form-horizontal"
 		      )
 				*@
 	      </fieldset>
@@ -90,9 +100,9 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers" sourceId="@myForm("id").value">
-
+						@streamParserGroupLabels()
 			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
-			        @streamParserGroup(spw)
+			        @streamParserGroup(spw, className="", modifyStreamPath=false, deleteParser=true)
 			      }
 
 			      @**

@@ -236,7 +236,12 @@
 		console.debug("renumberParsers");
 		$('.parser').each(function(i) {
 			console.debug("renumbering parser " + i + $(this).attr('class'));
-			$(this).children().find('input').each(function(j) {
+			$(this).find('input').each(function(j) {
+				console.debug("renumbering field " + $(this).attr('name'));
+				$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+				console.debug("to " + $(this).attr('name'));
+			});
+			$(this).find('select').each(function(j) {
 				console.debug("renumbering field " + $(this).attr('name'));
 				$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
 				console.debug("to " + $(this).attr('name'));

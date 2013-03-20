@@ -7,25 +7,27 @@
 Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 }
 
-@streamParserGroup(field: Field, className: String = "parser") = {
-<div class="twipsies well @className">
-	<a class="removeParser btn btn-danger pull-right">Remove this parser</a>
-	@inputText(
-		field("vfilePath"),
-		'_label -> "Stream path",
-		'_class -> "input-small"
-	)
+@streamParserGroupLabels(className: String = "") = {
+<div class="row-fluid @className controls controls-row">
+<label class="hidden">ID</label>
+<label class="span4">Stream path</label>
+<label class="span3">Parser (Regex or JSON path)</label>
+<label class="span3">MIME type</label>
+</div>
+}
 
-	@inputText(
-		field("inputParser"),
-		'_label -> "Input parser"
-	)
-
-	@inputText(
-		field("inputType"),
-		'_label -> "Content type",
-		'_value -> "application/json"
-	)
+@streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = false, deleteParser: Boolean = false) = {
+<div class="row-fluid well parser @className controls controls-row" parserId="@{field("parserId").value}">
+<input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
+<input class="span4" type="text" id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" placeholder="Stream path" @if(!modifyStreamPath){ readonly="readonly" } else { placeholder="Stream path"}>
+<input class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="Input parser">
+@*<input type="text" id="@field("inputType").id" name="@field("inputType").name" value="@field("inputType").value" placeholder="Input type">*@
+  <select class="span3" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
+  	<option value=""></option>
+		<option value="application/json" @if(field("inputType").value.toString.contains("json")){selected="selected"}>application/json</option>
+    <option value="text/plain" @if(field("inputType").value.toString.contains("text")){ selected="selected" }>text/plain</option>
+  </select>
+	<a href="#" class="removeParser icon-trash pull-right" parserId="@{field("parserId").value}" @if(deleteParser){delete="false"}></a>
 </div>
 }
 
@@ -86,7 +88,7 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers">
-
+						@streamParserGroupLabels()
 			      @repeat(myForm("streamParserWrapers"), min = 1) { spw =>
 			        @streamParserGroup(spw)
 			      }
