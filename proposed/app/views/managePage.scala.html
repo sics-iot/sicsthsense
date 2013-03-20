@@ -27,17 +27,20 @@ Should take these parameters, for the side navigation menu
 	      @inputText(
 			    myForm("label"),
 		      '_label -> "Label",
-		      '_help -> "Label to name this source"
+		      '_help -> "Label to name this source",
+					'value -> "NewSource"
 	      )
 	      @inputText(
 			    myForm("pollingUrl"),
 		      '_label -> "URL",
-		      '_help -> "URL to poll for data (leave blank for POST'd data)"
+		      '_help -> "URL to poll for data",
+					'placeholder -> "leave blank for POST'd data"
 	      )
 	      @inputText(
 			    myForm("pollingPeriod"),
 		      '_label -> "Period",
-		      '_help -> "Polling period"
+		      '_help -> "Polling period [seconds]",
+					'value -> "100"
 	      )
 				@*
 	      @inputText(
@@ -47,7 +50,7 @@ Should take these parameters, for the side navigation menu
 		      )
 				*@
  				<div class="actions">
-		      <input type="submit" class="btn primary" value="Add">
+		      <input type="submit" class="btn btn-primary" value="Add">
 	      </div>
 	      </fieldset>
 
