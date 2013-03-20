@@ -20,7 +20,8 @@ public class Application extends Controller {
 	static private Form<Source> sourceForm = Form.form(Source.class);
   
   public static Result home() {
-    return ok(homePage.render());
+  	User currentUser = Secured.getCurrentUser();
+    return ok(homePage.render(currentUser.streamList));
   }
   
   public static Result search() {
@@ -38,6 +39,7 @@ public class Application extends Controller {
     return ok(attachFunctionPage.render(currentUser.sourceList));
   }
 
+	// deprecated
   public static Result manage() {
   	User currentUser = Secured.getCurrentUser();
     return ok(managePage.render(currentUser.sourceList, sourceForm));

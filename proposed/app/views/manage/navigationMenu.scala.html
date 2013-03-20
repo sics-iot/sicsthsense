@@ -4,8 +4,8 @@ Should take these parameters
 @(sources : List[Source], extStreams : List[Stream], operators : List[Operator]) 
 **@				
 				<br /> <br /> <br /> 
+				<h1>Sources</h1>
         <ul class="nav nav-list bs-docs-sidenav">
-					<li><a href="#" onClick="$('#sourcelist').toggle();"><u>Sources</u></a>
 					<ul id="sourcelist">
 						@for(source<- sources) {
 							<li><a href="@routes.CtrlSource.getById(source.id)"></i>@source.label</a></li>
@@ -13,9 +13,11 @@ Should take these parameters
 					</ul>
 					<br />
 					</li>
+					<!--
 					<li><a href="#"><u>External Streams</u></a>
 					<ul id="extStreams">
 						<li><a href="#"></i>Add friend's streams</a></li>
 					</ul>
 					</li>
+					-->
         </ul>

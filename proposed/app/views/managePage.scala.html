@@ -12,7 +12,6 @@ Should take these parameters, for the side navigation menu
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-			@manage.navigationMenu(sources) 
 			@** should pass theses parameters(sources, extStreams) **@
     </div>
 
@@ -53,19 +52,9 @@ Should take these parameters, for the side navigation menu
 	      </fieldset>
 
   }
-  <br /> <br /> <br /> 
-<!-- Stream listing and visualizing -->
-	@if(sources.length > 0) {
-		<h1>Your source's streams</h1>
-		@for(source <- sources) {
-			@for(streamparser <- source.streamParsers) {
-				@vstream.includeStream(streamparser.stream)
-				<br />
-			}
-		}
-	}
+  <br /> 
+			@manage.navigationMenu(sources) 
 
-	<br /> <br />
   <br /> <br /> <br /> 
     </div>
   </div>
