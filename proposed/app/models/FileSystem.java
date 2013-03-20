@@ -57,7 +57,7 @@ public class FileSystem {
 			prevdirs = dirs;
 			prevdepth = thisdepth;
 			if (f.isDir()) {
-				sb.append("<li class='jstree-open'><a>"+ dirs[dirs.length-1] +"</a>\n<ul>\n"); // give node name
+				sb.append("<li class='jstree-open'><a><b>"+ dirs[dirs.length-1] +"</b></a>\n<ul>\n"); // give node name
 			} else { 
 				prevdepth--; // if we were file, this doesnt count
 				sb.append("<li><a a='#'>"+ dirs[dirs.length-1] +"</a></li>\n"); // give node name

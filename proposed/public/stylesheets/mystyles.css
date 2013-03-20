@@ -120,9 +120,9 @@ dd {
 		display:none;
 }
 
-/*
-li.jstree-open > a { padding-top: 8px; }
-li.jstree-closed > a { padding-top: 8px; }
-*/
+
+li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
+li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
+
 li.jstree-leaf > a .jstree-icon { display: none; }
 
