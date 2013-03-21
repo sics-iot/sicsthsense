@@ -24,7 +24,7 @@
 		<a name="@{stream.file.getPath()}"></a>
 		Stream 
 		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
-		@if(stream.source != null) {
+		@if(stream.source != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="/sources/@{stream.source.id}">@{stream.source.label}</a>)
 		}
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
