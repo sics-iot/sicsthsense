@@ -296,11 +296,12 @@ public class CtrlSource extends Controller {
 		if (source != null) {
 			try {
 				// XXX: asText() does not work unless ContentType is "text/plain"
-				String strBody = request().body().asText();
-				Logger.info("[Streams] post received from: " + " URI "
+				String strBody = request().body().asText() + request().body().asJson().toString();
+				Logger.info("[Sources] post received from: " + " URI "
 						+ request().uri() + ", content type: "
 						+ request().getHeader("Content-Type") + ", payload: " + strBody);
 				if (!source.parseAndPost(request())) {
+					Logger.info("[Sources] Can't parse!");
 					return badRequest("Bad request: Can't parse!");
 				}
 			} catch (Exception e) {
