@@ -1,0 +1,25 @@
+@(stream: Stream)
+
+@if(stream != null) {
+<div id="streamblock@{stream.id}" >
+@if(stream.hasData()) {
+  
+	<div id="streamtitle@{stream.id}" class="streamtitle">
+		<a name="@{stream.file.getPath()}"></a>
+		Stream 
+		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
+	</div>
+	} else {
+		<div id="streamtitle@{stream.id}" class="streamtitle">
+			Data stream 
+			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
+		</div>
+		<div>
+		Key: <i>@stream.getKey()</i>
+	</div>	
+		&nbsp;No data
+	}
+	</div>
+}

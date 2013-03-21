@@ -426,4 +426,11 @@ public class Stream extends Model implements Comparable<Stream> {
 		//Logger.info("paths: "+file.getPath()+" "+other.file.getPath());
 		return file.getPath().compareTo(other.file.getPath());
 	}
+
+	public static List<Stream> availableStreams(User currentUser) {
+		List<Stream> available = find.where().eq("publicSearch", true).findList();
+		List<Stream> mine = find.where().eq("owner", currentUser).findList();
+		available.addAll(mine);
+		return available;
+	}
 }

@@ -26,7 +26,8 @@ public class Application extends Controller {
   
   public static Result search() {
   	User currentUser = Secured.getCurrentUser();
-    return TODO;
+		List<Stream> availableStreams = Stream.availableStreams(currentUser);
+    return ok(searchPage.render(availableStreams));
   }
   
   public static Result streams() {
