@@ -225,7 +225,7 @@ public class Source extends Operator {
 			for (StreamParser sp : streamParsers) {
 				//Logger.info("handing request to stream parser");
 				if (sp != null) {
-					// Liam: not sure what to do here, breaking build...
+					Logger.info("New request: " + req.body().asText());
 					result |= sp.parseRequest(req);
 				}
 			}
