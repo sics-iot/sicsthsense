@@ -182,6 +182,7 @@ public class StreamParser extends Model {
 	private boolean parseJsonResponse(JsonNode root) {
 		// TODO check concat path against inputParser, get the goal and stop
 		// TODO (linear time) form a list of nested path elements from the gui, and
+		if (root==null) { return false; }
 		String[] levels = inputParser.split("/");
 		JsonNode node = root;  
 		for (int i=1; i<levels.length; i++) {
