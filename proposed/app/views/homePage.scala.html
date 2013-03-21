@@ -10,16 +10,6 @@
 		<div class="span2 bs-docs-sidebar">
 		<br \><br \><br \>
 
-		<a>Streams tree</a>
-				@if(streams.length > 0) {
-					<div id="vfileTree">
-						<ul>
-						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
-						</ul>
-					</div>
-				} else {
-					<li>(Empty)</li>
-				}
   </div>
 
   <div class="span9">
@@ -27,7 +17,7 @@
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
 		@if(streams.length > 0) {
-			<h1>Your streams</h1>
+			<h1>Followed streams</h1>
 			@for(stream <- streams) {					
 				<br />
 				@vstream.includeStream(stream)
@@ -35,7 +25,10 @@
 			}
 		} else {
 			<br /> <br />
-			No streams defined! Add some Source's to your dashboard through the <a href="/manage">Sources page</a>.
+			No streams Followed! 
+			<br />
+			<br />
+			Add some Source's to your dashboard through the <a href="/manage">Sources page</a> and follow them in the <a href="/streams">Streams</a> page. Alternatively Search for public Streams in the toolbar at the top of the page.
 		}
 		<br /> <br />
 	

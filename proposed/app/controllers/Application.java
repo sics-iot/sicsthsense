@@ -21,7 +21,7 @@ public class Application extends Controller {
   
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(homePage.render(currentUser.streamList));
+    return ok(homePage.render(currentUser.followedStreams));
   }
   
   public static Result search() {
