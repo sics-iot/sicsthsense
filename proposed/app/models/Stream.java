@@ -389,6 +389,13 @@ public class Stream extends Model implements Comparable<Stream> {
 //		super.delete();
 	}
 
+	public String showKey(User user){
+		if(this.owner.equals(user)){
+			return this.key;
+		}
+		return null;
+	}
+	
 	public boolean setPublicAccess( Boolean pub ) {
 		this.publicAccess = pub;
 		this.update();

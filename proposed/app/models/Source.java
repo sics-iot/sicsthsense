@@ -207,6 +207,13 @@ public class Source extends Operator {
 	public Boolean checkKey(String token) {
 		return key.equals(this.key);
 	}
+	
+	public String showKey(User user){
+		if(this.owner.equals(user)){
+			return this.key;
+		}
+		return null;
+	}
 
 	public void setPeriod(Long period) {
 		this.pollingPeriod = period;
