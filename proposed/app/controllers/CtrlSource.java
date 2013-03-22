@@ -270,10 +270,12 @@ public class CtrlSource extends Controller {
 		return post(source.owner, source.id);
 	}
 
-	public static Result postByLabel(String user, String label) {
+	@Security.Authenticated(Secured.class)
+	private static Result postByLabel(String user, String label) {
 		User owner = User.getByUserName(user);
 		Source source = Source.getByUserLabel(owner, label);
-		return post(owner, source.id);
+		//return post(owner, source.id);
+		return TODO;
 	}
 		
 	private static Result post(User user, Long id) {
@@ -316,14 +318,15 @@ public class CtrlSource extends Controller {
 		return notFound();
 	}
 
-	public static Result getByLabel(String user, String label) {
+	@Security.Authenticated(Secured.class)
+	private static Result getByLabel(String user, String label) {
 		User owner = User.getByUserName(user);
 		Source source = Source.getByUserLabel(owner, label);
 		if (source== null) {
 			Logger.warn("Source not found!");
 			return notFound();
 		}
-			return ok("ok");
+			return TODO;
 	}
 
 	@Security.Authenticated(Secured.class)

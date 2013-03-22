@@ -54,7 +54,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
   Posting to Sics<sup>th</sup>Sense is also useful, for delay-sensitive notification, or for data collection from devices with no public URL (e.g. a smartphone).
   To do so, just post at the following URL:
   <pre>
-  http://sense.sics.se/api/sources/[key]</pre>
+  http://sense.sics.se:8080/api/sources/[key]</pre>
 	Where <i>key</i> is a unique authorising key given by the system.
   Non-existing devices and resources you post to will be created on-the-fly.
 
@@ -64,14 +64,12 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
   
   You can fetch data from Sics<sup>th</sup>Sense's database through a <code>GET</code> at the following URI:
   <pre>
-  http://sense.sics.se/api/streams/[key]</pre>
+  http://sense.sics.se:8080/api/streams/[key]</pre>
   
 	Where <i>key</i> is a unique authorising key given by the system.
 
-	<!--
   URI arguments allow to specify which subset of the dataset you want to get. Use <code>?tail=n</code> to get the <code>n</code> most recent samples. Use <code>?last=t</code>
   to get samples posted during the last <code>t</code> seconds. Use <code>?since=t</code> to get the samples posted since (including) absolute UNIX time <code>t</code> (in seconds).
-	-->
 
 	<!--
 	<br /> <br />

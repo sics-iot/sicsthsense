@@ -58,8 +58,9 @@ POST    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 #GET		/api/sources/:key										controllers.CtrlSource.getByKey(key: String)
 #GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 
-POST    /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
-GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
+## This was providing a way to post without the key !! (bug)
+#POST    	/api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
+#GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
 
 # Streams, API
 GET     /api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
