@@ -21,14 +21,14 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Id
 	public Long id;
 
-	@Column(length = 256, unique = true, nullable = false)
-	@Constraints.MaxLength(256)
+	@Column(length = 255, unique = true, nullable = false)
+	@Constraints.MaxLength(255)
 	@Formats.NonEmpty
 	@Constraints.Email
 	public String email;
 
-	@Column(length = 256, unique = true, nullable = false)
-	@Constraints.MaxLength(256)
+	@Column(length = 255, unique = true, nullable = false)
+	@Constraints.MaxLength(255)
 	@Constraints.Required
 	@Formats.NonEmpty
 	public String userName;

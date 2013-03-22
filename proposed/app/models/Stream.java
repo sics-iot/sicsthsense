@@ -62,6 +62,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	private int version;
 	
 	/** Secret key for authentication */
+	@Column(name="secret_key") //key is a reserved keyword in mysql
 	private String key;
 	
 	@ManyToOne

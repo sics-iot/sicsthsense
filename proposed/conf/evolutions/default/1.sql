@@ -48,7 +48,7 @@ create table sources (
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
   description               varchar(255),
-  key                       varchar(255),
+  secret_key                varchar(255),
   constraint uq_sources_1 unique (owner_id,label),
   constraint pk_sources primary key (id))
 ;
@@ -62,7 +62,7 @@ create table streams (
   frozen                    boolean,
   history_size              bigint,
   last_updated              bigint,
-  key                       varchar(255),
+  secret_key                varchar(255),
   owner_id                  bigint,
   source_id                 bigint,
   version                   integer not null,
@@ -81,8 +81,8 @@ create table parsers (
 
 create table users (
   id                        bigint not null,
-  email                     varchar(256) not null,
-  user_name                 varchar(256) not null,
+  email                     varchar(255) not null,
+  user_name                 varchar(255) not null,
   first_name                varchar(255),
   last_name                 varchar(255),
   location                  varchar(255),

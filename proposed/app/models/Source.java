@@ -59,6 +59,7 @@ public class Source extends Operator {
 	public List<Stream> streams = new ArrayList<Stream>();
 
 	/** Secret key for authenticating posts coming from outside */
+	@Column(name="secret_key") //key is a reserved keyword in mysql
 	public String key;
 
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
