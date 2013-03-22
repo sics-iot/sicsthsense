@@ -338,7 +338,7 @@ public class CtrlSource extends Controller {
 		return ok(sourcePage.render(currentUser.sourceList, myForm));
 	}
 
-	public static Result getData(String ownerName, String path, Long tail,
+	private static Result getData(String ownerName, String path, Long tail,
 			Long last, Long since) {
 		final User user = Secured.getCurrentUser();
 		final User owner = User.getByUserName(ownerName);
@@ -346,7 +346,7 @@ public class CtrlSource extends Controller {
 		return getData(user, owner, path, tail, last, since);
 	}
 
-	public static Result getDataById(Long id, Long tail, Long last, Long since) {
+	private static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
 		// if(user == null) return notFound();
 		Stream stream = Stream.get(id);
@@ -357,7 +357,7 @@ public class CtrlSource extends Controller {
 		return getData(user, stream, tail, last, since);
 	}
 
-	public static Result getDataByUserKey(String user_token, String path,
+	private static Result getDataByUserKey(String user_token, String path,
 			Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
 		final User owner = User.getByToken(user_token);

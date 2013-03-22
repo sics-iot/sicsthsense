@@ -105,11 +105,12 @@ public class CtrlStream extends Controller {
 		return ok(Boolean.toString(stream.publicSearch));
 	}
 
-	public static Result getByKey(String key) {
+	public static Result getByKey(String key, Long tail,
+			Long last, Long since) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null)
 			return notFound();
-		return getData(stream.owner, stream, -1L, -1L, -1L);
+		return getData(stream.owner, stream, tail, last, since);
 	}
 
 	public static Result postByKey(String key) {
@@ -120,8 +121,12 @@ public class CtrlStream extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
-	public static Result post(Stream stream) {
+	public static Result post(Long id) {
 		final User user = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if(stream == null) {
+			return notFound();
+		}
 		return post(user, stream);
 	}
 
@@ -138,6 +143,7 @@ public class CtrlStream extends Controller {
 		return unauthorized();
 	}
 
+	@Security.Authenticated(Secured.class)
 	public static Result getData(String ownerName, String path, Long tail,
 			Long last, Long since) {
 		final User user = Secured.getCurrentUser();
@@ -146,6 +152,7 @@ public class CtrlStream extends Controller {
 		return getData(user, owner, path, tail, last, since);
 	}
 
+	@Security.Authenticated(Secured.class)
 	public static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
@@ -166,6 +173,7 @@ public class CtrlStream extends Controller {
 		return getData(currentUser, stream, tail, last, since);
 	}
 
+	//tail: number of points, last: point during last {seconds}, since: Unix timestamp
 	private static Result getData(User currentUser, Stream stream, Long tail,
 			Long last, Long since) {
 		if (stream == null) {
@@ -182,7 +190,7 @@ public class CtrlStream extends Controller {
 		if (tail >= 0) {
 			dataSet = stream.getDataPointsTail(tail);
 		} else if (last >= 0) {
-			dataSet = stream.getDataPointsLast(last);
+			dataSet = stream.getDataPointsLast(last*1000);
 		} else if (since >= 0) {
 			dataSet = stream.getDataPointsSince(since);
 		} else {

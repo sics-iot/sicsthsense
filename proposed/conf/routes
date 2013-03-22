@@ -26,20 +26,20 @@ GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(i
 POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
 
 # Streams
+## TODO move all functions that read streams to CtrlStream
+
 GET        /user/followStream/:id/:follow				controllers.CtrlUser.followStream(id: Long, follow: Boolean)
 GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStream(id: Long)
-
-GET        /user/:ownerName/$path<.*>						controllers.CtrlSource.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-#GET       /user/:ownerName/streams							controllers.CtrlSource.getData(ownerName: String, path: String ?= "", tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
 GET        /streams/clearData/:id 							controllers.CtrlStream.clear(id: Long)
 GET        /streams/publicAccess/:id/:pub 			controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
 GET        /streams/publicSearch/:id/:pub 			controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
 GET        /streams/publicAccess/:id						controllers.CtrlStream.isPublicAccess(id: Long)
 GET        /streams/publicSearch/:id						controllers.CtrlStream.isPublicSearch(id: Long)
-GET        /streams/:id								    			controllers.CtrlSource.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-POST       /streams/:id			    								controllers.CtrlSource.post(id: Long)
+GET        /streams/:id								    			controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
+POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
 # Sources
 GET			/sources/add												controllers.CtrlSource.add()
@@ -50,13 +50,13 @@ POST		/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
 GET			/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
 POST		/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
 POST		/sources/addParser									controllers.CtrlSource.addParser(sourceId: Long, inputParser: String, inputType: String, streamPath: String)
-
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
+POST    /sources/:id			    							controllers.CtrlSource.post(id: Long)
 
 # Sources API
 POST    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 #GET		/api/sources/:key										controllers.CtrlSource.getByKey(key: String)
-GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
+#GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 
 POST    /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
 GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
@@ -65,7 +65,7 @@ GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: Str
 GET     /api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
 GET     /api/streams/clearData/:key					controllers.CtrlStream.clearByKey(key: String)
 POST		/api/streams/:key							    	controllers.CtrlStream.postByKey(key: String)
-GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String)
+GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 #Function 
 POST		/attachFunction/attach							controllers.CtrlFunction.attach()
