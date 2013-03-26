@@ -4,14 +4,14 @@
 # --- !Ups
 
 create table actuators (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   owner_id                  bigint,
   input_parser              varchar(255),
   constraint pk_actuators primary key (id))
 ;
 
 create table data_point_double (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   stream_id                 bigint,
   timestamp                 bigint,
   data                      double,
@@ -20,7 +20,7 @@ create table data_point_double (
 ;
 
 create table data_point_string (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   stream_id                 bigint,
   timestamp                 bigint,
   data                      varchar(160),
@@ -29,18 +29,18 @@ create table data_point_string (
 ;
 
 create table functions (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   owner_id                  bigint,
   constraint pk_functions primary key (id))
 ;
 
 create table operators (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   constraint pk_operators primary key (id))
 ;
 
 create table sources (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   owner_id                  bigint,
   label                     varchar(255),
   polling_period            bigint,
@@ -54,12 +54,12 @@ create table sources (
 ;
 
 create table streams (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   type                      varchar(1),
   description               varchar(255),
-  public_access             boolean,
-  public_search             boolean,
-  frozen                    boolean,
+  public_access             tinyint(1) default 0,
+  public_search             tinyint(1) default 0,
+  frozen                    tinyint(1) default 0,
   history_size              bigint,
   last_updated              bigint,
   secret_key                varchar(255),
@@ -71,7 +71,7 @@ create table streams (
 ;
 
 create table parsers (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   source_id                 bigint,
   stream_id                 bigint,
   input_parser              varchar(255),
@@ -80,14 +80,14 @@ create table parsers (
 ;
 
 create table users (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   email                     varchar(255) not null,
   user_name                 varchar(255) not null,
   first_name                varchar(255),
   last_name                 varchar(255),
   location                  varchar(255),
-  creation_date             timestamp not null,
-  last_login                timestamp,
+  creation_date             datetime not null,
+  last_login                datetime,
   token                     varchar(255),
   constraint uq_users_email unique (email),
   constraint uq_users_user_name unique (user_name),
@@ -95,7 +95,7 @@ create table users (
 ;
 
 create table vfiles (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   path                      varchar(255) not null,
   owner_id                  bigint,
   type                      varchar(1) not null,
@@ -117,26 +117,6 @@ create table users_streams (
   streams_id                     bigint not null,
   constraint pk_users_streams primary key (users_id, streams_id))
 ;
-create sequence actuators_seq;
-
-create sequence data_point_double_seq;
-
-create sequence data_point_string_seq;
-
-create sequence functions_seq;
-
-create sequence operators_seq;
-
-create sequence sources_seq;
-
-create sequence streams_seq;
-
-create sequence parsers_seq;
-
-create sequence users_seq;
-
-create sequence vfiles_seq;
-
 alter table actuators add constraint fk_actuators_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_actuators_owner_1 on actuators (owner_id);
 alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
@@ -162,7 +142,7 @@ create index ix_vfiles_linkedStream_11 on vfiles (linked_stream_id);
 
 
 
-alter table functions_streams add constraint fk_functions_streams_function_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;
+alter table functions_streams add constraint fk_functions_streams_functions_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;
 
 alter table functions_streams add constraint fk_functions_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
 
@@ -172,51 +152,31 @@ alter table users_streams add constraint fk_users_streams_streams_02 foreign key
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+SET FOREIGN_KEY_CHECKS=0;
 
-drop table if exists actuators;
+drop table actuators;
 
-drop table if exists data_point_double;
+drop table data_point_double;
 
-drop table if exists data_point_string;
+drop table data_point_string;
 
-drop table if exists functions;
+drop table functions;
 
-drop table if exists functions_streams;
+drop table functions_streams;
 
-drop table if exists operators;
+drop table operators;
 
-drop table if exists sources;
+drop table sources;
 
-drop table if exists streams;
+drop table streams;
 
-drop table if exists users_streams;
+drop table users_streams;
 
-drop table if exists parsers;
+drop table parsers;
 
-drop table if exists users;
+drop table users;
 
-drop table if exists vfiles;
+drop table vfiles;
 
-SET REFERENTIAL_INTEGRITY TRUE;
-
-drop sequence if exists actuators_seq;
-
-drop sequence if exists data_point_double_seq;
-
-drop sequence if exists data_point_string_seq;
-
-drop sequence if exists functions_seq;
-
-drop sequence if exists operators_seq;
-
-drop sequence if exists sources_seq;
-
-drop sequence if exists streams_seq;
-
-drop sequence if exists parsers_seq;
-
-drop sequence if exists users_seq;
-
-drop sequence if exists vfiles_seq;
+SET FOREIGN_KEY_CHECKS=1;
 

@@ -179,8 +179,9 @@ public class Source extends Operator {
 						String textBody = response.getBody();
 						//Logger.info("Incoming data: " + response.getHeader("Content-type") + textBody);
 						//Stream parsers should handle data parsing and response type checking..
+						Long currentTime = Utils.currentTime();
 						for (StreamParser sp: streamParsers) {
-							sp.parseResponse(response);
+							sp.parseResponse(response, currentTime);
 						}
 						return true;
           }
@@ -222,12 +223,13 @@ public class Source extends Operator {
 
 	public boolean parseAndPost(Request req) {
 		boolean result = false;
+		Long currentTime = Utils.currentTime();
 		if (streamParsers != null) {
 			for (StreamParser sp : streamParsers) {
 				//Logger.info("handing request to stream parser");
 				if (sp != null) {
-					Logger.info("New request: " + req.body().asText());
-					result |= sp.parseRequest(req);
+					//Logger.info("New request: " + req.body().asText());
+					result |= sp.parseRequest(req, currentTime);
 				}
 			}
 		}

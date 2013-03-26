@@ -16,33 +16,9 @@
 <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/openid.css")" />
 <!-- script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script -->
 <script src="@routes.Assets.at("javascripts/flot-master/jquery.js")" type="text/javascript"></script>	
-
 <script src="@routes.Application.javascriptRoutes()" type="text/javascript" ></script>
- @**
-<style type="text/css">  
-.socials {  
-padding: 10px;  
-}  
-</style>
-**@
 </head>
 <body>
-
-@**
-<div id="fb-root"></div>
-	<script>
-		(function(d, s, id) {
-			var js, fjs = d.getElementsByTagName(s)[0];
-			if (d.getElementById(id))
-				return;
-			js = d.createElement(s);
-			js.id = id;
-			js.src = "http://connect.facebook.net/en_GB/all.js#xfbml=1";
-			fjs.parentNode.insertBefore(js, fjs);
-		}(document, 'script', 'facebook-jssdk'));
-	</script>
-**@
-
 	<!--navigation bar-->
 	<div class="navbar navbar-static-top navbar-inverse">
 		<div class="navbar-inner">
@@ -52,7 +28,8 @@ padding: 10px;
 				<ul class="nav">
 					<li>
 					<a class="brand" href="@routes.Application.home()">
-						<span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></a></li></span>
+						<span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></a></span>
+					</li>
 					@if(session != null && Secured.getUsername(session) != null) {
 					<li><a href="@routes.CtrlSource.manage()">Sources</a></li>
 					<li><a href="@routes.Application.streams()">Streams</a></li>
@@ -63,17 +40,19 @@ padding: 10px;
 				</ul>
 				
 				<!-- search bar -->
-				<form action="search" class="navbar-search pull-left">
-					<input type="text" class="search-query" placeholder="Search">
+				<form action="@routes.Application.search()" class="navbar-search form-search pull-left">
+					<div class="input-append">
+						<input type="text" class="search-query" placeholder="Search">
+			    	    <button type="submit" class="btn btn-inverse"><i class="icon-search icon-white"></i></button>
+					</div>
 				</form>
 				
 				<!-- User menu -->
 				 @if(session != null && Secured.getUsername(session) != null) {
 		    <ul class="nav pull-right ">		   
 			    <li class="dropdown">
-				    <a href="#" class="dropdown-toggle" 
-				    data-toggle="dropdown">
-				    <i class="icon-user icon-white"> </i>@Secured.getUsername(session)
+				    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+				    <i class="icon-user icon-white"> </i> @Secured.getUsername(session)
 				    	<b class="caret"></b>
 				    </a>
 				    <ul class="dropdown-menu">
@@ -84,35 +63,6 @@ padding: 10px;
 			    </li>
 		    </ul>
      		}
-     		
-				@**
-     		<!-- Social menu -->
-				<ul class="nav pull-right">
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> Social <b class="caret"></b>
-					</a>
-						<ul class="dropdown-menu">
-							<li class="socials">
-								<!-- Place this tag where you want the +1 button to render --> <g:plusone
-									annotation="inline" width="150"></g:plusone>
-							</li>
-							<li class="socials"><a href="https://twitter.com/share"
-								class="twitter-share-button">Tweet</a> <script>
-									!function(d, s, id) {
-										var js, fjs = d.getElementsByTagName(s)[0];
-										if (!d.getElementById(id)) {
-											js = d.createElement(s);
-											js.id = id;
-											js.src = "//platform.twitter.com/widgets.js";
-											fjs.parentNode.insertBefore(js, fjs);
-										}
-									}(document, "script", "twitter-wjs");
-								</script></li>
-								<li class="socials"><div class="fb-like" data-send="false"
-									data-width="150" data-show-faces="true"></div></li>
-						</ul></li>
-				</ul>
-				**@
 				<ul class="nav pull-right">
 					<li><a href="@routes.Public.about()">API</a></li>
 				</ul> 
@@ -150,15 +100,7 @@ padding: 10px;
 			openid.init('openid_identifier');
 		});
 	</script>
-	<script type="text/javascript">  
-  (function() {  
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;  
-    po.src = 'https://apis.google.com/js/plusone.js';  
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);  
-  })();  
-</script>
-
-<script src="@routes.Assets.at("javascripts/myscripts.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/myscripts.js")" type="text/javascript"></script>
  
 </body>
 </html>

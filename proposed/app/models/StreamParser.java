@@ -105,17 +105,17 @@ public class StreamParser extends Model {
 		return false;
 	}
 
-	public boolean parseRequest(Request request) {
+	public boolean parseRequest(Request request, Long currentTime) {
 		try {
 			if ("application/json".equalsIgnoreCase(inputType)
 					|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type")) ) {
 				JsonNode jsonBody = request.body().asJson();
 				//Logger.info("[StreamParser] as json");
-				return parseJsonResponse(jsonBody);
+				return parseJsonResponse(jsonBody, currentTime);
 			} else {
 				String textBody = request.body().asText(); //request.body().asRaw().toString();
 				//Logger.info("[StreamParser] as text");
-				return parseTextResponse(textBody);
+				return parseTextResponse(textBody, currentTime);
 			}
 		} catch (Exception e) {
 			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
@@ -127,16 +127,16 @@ public class StreamParser extends Model {
 	 * parseResponse(Request req) chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post
 	 */
-	public boolean parseResponse(WS.Response response) {
+	public boolean parseResponse(WS.Response response, Long currentTime) {
 		Logger.info("StreamParser: parseResponse() "+stream.file.getPath());
 		try {
 			if ("application/json".equalsIgnoreCase(inputType)
 					|| "application/json".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
 				JsonNode jsonBody = response.asJson();
-				return parseJsonResponse(jsonBody);
+				return parseJsonResponse(jsonBody, currentTime);
 			} else {
 				String textBody = response.getBody();
-				return parseTextResponse(textBody);
+				return parseTextResponse(textBody, currentTime);
 			}
 		} catch (Exception e) {
 			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
@@ -150,7 +150,7 @@ public class StreamParser extends Model {
  * @param textBody
  * @return true if could post
  */
-	private boolean parseTextResponse(String textBody) {
+	private boolean parseTextResponse(String textBody, Long currentTime) {
 		if( stream != null ) {
 			if (inputParser != null && !inputParser.equalsIgnoreCase("") ) {
 				regexPattern = Pattern.compile(inputParser);
@@ -159,17 +159,17 @@ public class StreamParser extends Model {
 					String result = matcher.group(1);
 					try {
 						double number = Double.parseDouble(result);
-						return stream.post(number, Utils.currentTime());
+						return stream.post(number, currentTime);
 					} catch (NumberFormatException e) {
 						Logger.warn("StreamParser: Regex failed to find Number!");
 						// naughty rogue value
-						return stream.post(-1, Utils.currentTime());
+						return stream.post(-1, currentTime);
 					} catch (Exception e) {
 						Logger.error("StreamParser: Regex number conversion failed!");
 					}
 				}
 			} else {
-				return stream.post(Double.parseDouble(textBody), Utils.currentTime());
+				return stream.post(Double.parseDouble(textBody), currentTime);
 			}
 		}
 		return false;
@@ -179,7 +179,7 @@ public class StreamParser extends Model {
 	 * parses requests as JSON inputParser is used as the path to the nested json
 	 * node i.e. inputParser could be: room1/sensors/temp/value
 	 */
-	private boolean parseJsonResponse(JsonNode root) {
+	private boolean parseJsonResponse(JsonNode root, Long currentTime) {
 		// TODO check concat path against inputParser, get the goal and stop
 		// TODO (linear time) form a list of nested path elements from the gui, and
 		if (root==null) { return false; }
@@ -197,13 +197,13 @@ public class StreamParser extends Model {
 
 		} else if (node.get("value") != null) { // it may be value:X
 			double value = node.get("value").getDoubleValue();
-			long timestamp = Utils.currentTime(); // should be Source timestamp
+			// should be Source timestamp
 
 			if (node.get("time") != null) { // it may have  time:Y
-				timestamp = node.get("time").getLongValue();
+				currentTime = node.get("time").getLongValue();
 			}
 			Logger.info("posting: "+value);
-			return stream.post(value, timestamp);
+			return stream.post(value, currentTime);
 		}
 
 		return false;
