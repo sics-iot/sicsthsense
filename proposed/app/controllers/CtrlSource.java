@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -44,7 +45,7 @@ public class CtrlSource extends Controller {
 			BufferedReader serverResponse;
 			
 			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
-				if (!submitted.pollingUrl.startsWith("http") ) {//fudge URL, should check HTTP
+				if (!submitted.pollingUrl.startsWith("http://") || !submitted.pollingUrl.startsWith("coap://") ) {//fudge URL, should check HTTP
 					submitted.pollingUrl = "http://"+submitted.pollingUrl;
 				}
 				// get data
@@ -63,16 +64,18 @@ public class CtrlSource extends Controller {
 				if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
 					Logger.info("json file!");
 					return parseJson(returnBuffer.toString(), submitted);
-				} else if (contentType.matches("text/html.*")) {
+				} else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
 					Logger.info("html file!");
 					return parseHTML(returnBuffer.toString(), submitted);
+//				}  else if (contentType.matches("text/csv.*")) {
+//					Logger.info("csv file!");
+//					return parseCSV(returnBuffer.toString(), submitted);
 				} else {
 					Logger.warn("Unknown content type!");
 				}	
 			}
 			SkeletonSource skeleton = new SkeletonSource(submitted);
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
-
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 		}
 	}
@@ -87,7 +90,8 @@ public class CtrlSource extends Controller {
 			JsonNode n = node.get(field);
 			if (n.isValueNode()) {
 				Logger.info("value node: "+parents+"/"+field);
-				skeleton.addStreamParser("/"+skeleton.label+parents+"/"+field, parents+"/"+field, "application/json");
+				//TODO: try to guess time format instead of defaulting to "unix"!
+				skeleton.addStreamParser("/"+skeleton.label+parents+"/"+field, parents+"/"+field, "application/json", "unix");
 			} else {
 				String fullNodeName = parents+"/"+field;
 				Logger.info("Node: "+fullNodeName);
@@ -114,18 +118,28 @@ public class CtrlSource extends Controller {
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 	}
 
-	@Security.Authenticated(Secured.class)
-	public static Result parseHTML(String data, Source submitted) {
+	//@Security.Authenticated(Secured.class)
+	private static Result parseHTML(String data, Source submitted) {
 			Logger.info("Adding single default Regex StreamPaser to HTML input");
 			User currentUser = Secured.getCurrentUser();
 			SkeletonSource skeleton = new SkeletonSource(submitted);
-
-			skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","Enter Regex","text/html");
+			//TODO: try to guess time format instead of defaulting to "yy-mm-dd kk:mm:ss"!
+			skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","(.*)","text/html", "yy-mm-dd kk:mm:ss");
 	
 			Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
-
 	}
+	
+//	private static Result parseCSV(String data, Source submitted) {
+//		Logger.info("Adding CSV StreamPasers");
+//		User currentUser = Secured.getCurrentUser();
+//		SkeletonSource skeleton = new SkeletonSource(submitted);
+//
+//		skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","Enter Regex","text/html");
+//
+//		Form<SkeletonSource> skeletonSourceFormNew = skeletonSourceForm.fill(skeleton);
+//	  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
+//	}
 
 	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
@@ -255,9 +269,9 @@ public class CtrlSource extends Controller {
 	}
 	
 	@Security.Authenticated(Secured.class)
-	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath) {
+	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath, String timeformat) {
 		Source source = Source.get(sourceId, Secured.getCurrentUser());
-		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath);
+		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath, timeformat);
 		parser = StreamParser.create(parser);
 		if(parser != null) {
 			return ok("true");

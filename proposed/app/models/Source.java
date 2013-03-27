@@ -123,11 +123,11 @@ public class Source extends Operator {
 	public HttpURLConnection probe() {
 		Logger.warn("probe(): "+pollingUrl);
 		HttpURLConnection connection = null;  
-		PrintWriter outWriter = null;  
+		//PrintWriter outWriter = null;  
 		BufferedReader serverResponse = null;  
-		StringBuffer returnBuffer = new StringBuffer();  
-		String line;  
-		User currentUser = Secured.getCurrentUser();
+		//StringBuffer returnBuffer = new StringBuffer();  
+		//String line;  
+		//User currentUser = Secured.getCurrentUser();
 
 		try { 
 			connection = ( HttpURLConnection ) new URL( pollingUrl ).openConnection();  
@@ -146,7 +146,7 @@ public class Source extends Operator {
 			return connection;
 
 		} catch (MalformedURLException mue) {  
-			Logger.error(mue.toString() + " Stack trace:\n" + mue.getStackTrace()[0].toString() );  
+			Logger.error(mue.toString() + pollingUrl + " Stack trace:\n" + mue.getStackTrace()[0].toString() );  
 		  //return badRequest("Malformed URL");
 		} catch (IOException ioe) {  
 			Logger.error(ioe.toString() + " Stack trace:\n" + ioe.getStackTrace()[0].toString() );
@@ -187,7 +187,7 @@ public class Source extends Operator {
           }
         }
       );
-      lastPolled = System.currentTimeMillis();
+      lastPolled = Utils.currentTime();
       update();
     }
 
@@ -202,7 +202,7 @@ public class Source extends Operator {
 		asynchPoll();
 
 		this.lastPolled = currentTime;
-		save();
+		update();
 		return true;
 	}
 	

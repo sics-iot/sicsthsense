@@ -26,15 +26,15 @@
 	be either sent as an integer or float.
 	</p>
 
-  <pre>{
-	"name": "New device",
-	"sensors": {
-		"light": 4.3,
-		"temperature": 15,
-		"humidity": 45
-	}
-}
-</pre>
+  <pre>
+  {
+    "name": "New device",
+    "sensors": {
+      "light": 4.3,
+      "temperature": 15,
+      "humidity": 45
+    }
+  }</pre>
 
 Other data formats can be easily parsed by specifying a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> to capture relevant numbers from an external webpage. XPath support will be added shortly.
 
@@ -52,19 +52,59 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
   <h1>Posting data</h1>
   
   Posting to Sics<sup>th</sup>Sense is also useful, for delay-sensitive notification, or for data collection from devices with no public URL (e.g. a smartphone).
-  To do so, just post at the following URL:
-  <pre>
-  http://sense.sics.se:8080/api/sources/[key]</pre>
-	Where <i>key</i> is a unique authorising key given by the system.
-  Non-existing devices and resources you post to will be created on-the-fly.
-
+  You have to ways to post to SiscthSense:
+	<ul>
+		<li> Posting primitive data to the destination stream directly.
+			<ul> Possible formats:
+				<li> Numbers in plain text (integer or float). </li>
+				<li> A JSON object in one of the following formats:
+					<ul> 
+						<li>Only a value with an arbitrary name. 
+								In this case the time for post request will be cosidered the timestamp for this point:
+							  <pre> { 
+   "temperature": 25
+ }</pre>
+						</li>
+						<li>A time\value pair with the specefic field names:
+							  <pre> {
+   "time": 1364404284,
+   "value": 25
+ }</pre>
+						</li>
+					</ul>
+				</li>
+				In this case you need to create a stream for which the system will provide a <code>key</code>, then you can post to the URL:
+				<pre> http://sense.sics.se:8080/api/streams/<em>[key]</em></pre>
+			</ul>
+		</li>
+		<li> Posting complex data that needs to be parsed before feeding multiple streams
+			<ul>
+				<li> Complex text which should be parsed using a REGEX to extract the goal values. 
+					<ul>
+						<li> The REGEX contains two matching groups for extracting the value and the timestamp.
+							<br />
+							By default, the first match is the value, while the second match is the timestamp.
+							Otherwise, you should use named groups <em>e.g. </em><code>(?&lt;<strong>time</strong>&gt;\d+)/(?&lt;<strong>value</strong>&gt;\d+)</code>
+						</li>
+						<li> The REGEX contains only one matching group, which will be considered the stream value.	</li>
+					</ul>
+				</li>
+				<li> Complex JSON objects from which you need to select a specefic node. </li>
+				<li> Posting with a specefic time format (<em>i.e.</em> Wed Mar 27, 18:00:12 CET 2013). 
+				See <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">this.</a></li>
+			</ul>
+			In this case you need to create a source and define the needed stream parsers.
+			After creating the source, the system will provide a <code>key</code> that should be used for posting to the URL:
+			<pre> http://sense.sics.se:8080/api/sources/<em>[key]</em></pre>
+		</li>
+	</ul>
+	<em>PS</em> It is not possible to post to non-existing sources or streams.	
 
 	<br /> <br />
   <h1>Getting data</h1>
   
   You can fetch data from Sics<sup>th</sup>Sense's database through a <code>GET</code> at the following URI:
-  <pre>
-  http://sense.sics.se:8080/api/streams/[key]</pre>
+  <pre> http://sense.sics.se:8080/api/streams/[key]</pre>
   
 	Where <i>key</i> is a unique authorising key given by the system.
 

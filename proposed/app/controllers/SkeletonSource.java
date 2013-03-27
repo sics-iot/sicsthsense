@@ -124,8 +124,8 @@ public class SkeletonSource {
 		streamParserWrapers.add(spw);
 	}
 
-	public void addStreamParser(String vfilePath, String inputParser, String inputType) {
-		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType));
+	public void addStreamParser(String vfilePath, String inputParser, String inputType, String timeformat) {
+		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType, timeformat));
 	}
 
 
@@ -142,16 +142,19 @@ public class SkeletonSource {
 		 * handled as text
 		 */
 		public String inputType;
+		
+		public String timeformat;
 
-		public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType) {
+		public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType, String timeformat) {
 			this.parserId  = id;
 			this.vfilePath = vfilePath;
 			this.inputType = inputType;
 			this.inputParser = inputParser;
+			this.timeformat = timeformat;
 		}
 		
-		public StreamParserWraper(String vfilePath, String inputParser, String inputType) {
-			this(null, vfilePath, inputParser, inputType);
+		public StreamParserWraper(String vfilePath, String inputParser, String inputType, String timeformat) {
+			this(null, vfilePath, inputParser, inputType, timeformat);
 		}
 		
 		public StreamParserWraper(StreamParser sp) {
@@ -160,6 +163,7 @@ public class SkeletonSource {
 				this.inputType   = sp.inputType;
 				this.inputParser = sp.inputParser;
 				this.parserId = sp.id;
+				this.timeformat = sp.timeformat;
 			} catch (Exception e) {
 				Logger.error("Error creating StreamParserWraper from StreamParser: " + e.getMessage() + "Stack trace:\n" + e.getStackTrace()[0].toString());
 			}
@@ -171,7 +175,7 @@ public class SkeletonSource {
 		public StreamParser getStreamParser(Source source) {
 			StreamParser sp = new StreamParser(source,
 					this.inputParser, this.inputType,
-					this.vfilePath);
+					this.vfilePath, this.timeformat);
 			sp.id = this.parserId;
 			return sp;
 		}

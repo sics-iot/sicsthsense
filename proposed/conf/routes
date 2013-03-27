@@ -49,7 +49,7 @@ GET			/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
 POST		/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
 GET			/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
 POST		/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
-POST		/sources/addParser									controllers.CtrlSource.addParser(sourceId: Long, inputParser: String, inputType: String, streamPath: String)
+POST		/sources/addParser									controllers.CtrlSource.addParser(sourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String)
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 POST    /sources/:id			    							controllers.CtrlSource.post(id: Long)
 
