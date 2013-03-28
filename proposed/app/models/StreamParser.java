@@ -55,7 +55,7 @@ public class StreamParser extends Model {
 	@Transient
 	public String streamVfilePath;
 	
-	/** RegEx, Xpath, JSON path */
+	/** RegEx, Xpath, JSON path, CSV separator */
 	public String inputParser;
 
 	/**
@@ -65,12 +65,31 @@ public class StreamParser extends Model {
 	 */
 	public String inputType = null;
 
-	// Format of the posted time string to be parsed to UNIX time = 
-	//	"Thu Sep 28 20:29:30 JST 2000";
-	//	"EEE MMM dd kk:mm:ss z yyyy"; 
-	// or "" or "unix" for unix timestamp
+	/** Format of the posted time string to be parsed to UNIX time = 
+	*	"Thu Sep 28 20:29:30 JST 2000";
+	*	"EEE MMM dd kk:mm:ss z yyyy"; 
+	* or "" or "unix" for unix timestamp 
+	*/
 	public String timeformat = null;
-	    
+	
+	/**
+	 * The number of the field containing the value of datapoint (mainly used in parsing CSV ^ RegEx)
+	 * Starts from 1
+	 */
+	int dataGroup = 1;
+	
+	/**
+	 * The number of the field containing the value of datapoint (mainly used in parsing CSV & RegEx)
+	 * Starts from 1
+	 */
+	int timeGroup = 2;
+	
+	/**
+	 * How many points to match?
+	 * values <= 0 mean parsing all possible matches
+	 */
+	int numberOfPoints=1;
+	
 	@Transient
 	public Pattern regexPattern;
 
@@ -89,12 +108,7 @@ public class StreamParser extends Model {
 		this.timeformat = timeformat;
 		Vfile f = FileSystem.readFile(source.owner, path);
 		this.stream = (f != null) ? f.linkedStream : null;
-		//getOrCreateStreamFile(path).linkedStream;
 	}
-	
-//	public StreamParser(Source source, String inputParser, String inputType, String path) {
-//		this(source, inputParser, inputType, path, "");
-//	}
 	
 	public StreamParser(Source source, String inputParser, String inputType, Stream stream, String timeformat) {
 		super();
@@ -107,11 +121,6 @@ public class StreamParser extends Model {
 			this.streamVfilePath = stream.file.path;
 		}
 	}
-	
-//	public StreamParser(Source source, String inputParser, String inputType, Stream stream) {
-//		this(source, inputParser, inputType, stream, "");
-//	}
-
 
 	public boolean setInputParser(String inputParser) {
 		this.inputParser = inputParser;
@@ -154,7 +163,11 @@ public class StreamParser extends Model {
 					|| "application/json".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
 				JsonNode jsonBody = response.asJson();
 				return parseJsonResponse(jsonBody, currentTime);
-			} else {
+			} else if("text/csv".equalsIgnoreCase(inputType)
+					|| "text/csv".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
+				String textBody = response.getBody();
+				return parseCSVdata(textBody, currentTime);
+			}	else {
 				String textBody = response.getBody();
 				return parseTextResponse(textBody, currentTime);
 			}
@@ -171,6 +184,7 @@ public class StreamParser extends Model {
  * @return true if could post
  */
 	private boolean parseTextResponse(String textBody, Long currentTime) {
+		boolean success = false;
 		try {
 			double number = 0.0;
 			String value = "", time = "";
@@ -178,36 +192,18 @@ public class StreamParser extends Model {
 					&& !inputParser.equalsIgnoreCase("")) {
 				regexPattern = Pattern.compile(inputParser);
 				Matcher matcher = regexPattern.matcher(textBody);
-				if (textBody != null && matcher.find()) {
-					
-					// if(matcher.groupCount()>1)
-					// for (int i = 1; i <= matcher.groupCount(); i += 2) {
-					// value = matcher.group(i);
-					// number = Double.parseDouble(value);
-					// if (matcher.groupCount() > i) {
-					// time = matcher.group(i + 1);
-					// if(timeformat != null && !"".equalsIgnoreCase(timeformat) &&
-					// !"unix".equalsIgnoreCase(timeformat)){
-					// //inputParser REGEX should match the whole date/time string! It is
-					// not enough to provide the time format only!
-					// currentTime = parseDateTime(time);
-					// } else {
-					// currentTime = Long.parseLong(time);
-					// }
-					// }
-					// }
-					
+				for(int i=0; (i < numberOfPoints || numberOfPoints < 1) && textBody != null && matcher.find(); i++) {					
 					//try to match value from the group called :value: otherwise, use the first matching group
 					value = matcher.group("value");					
 					if (value == null) {
-						value = matcher.group(1);
+						value = matcher.group(dataGroup);
 					}
 					number = Double.parseDouble(value);
 
 					//try to match time from the group called :time: otherwise, use the second matching group
 					time = matcher.group("time");
 					if (time == null) {
-						time = matcher.group(2);
+						time = matcher.group(timeGroup);
 					}
 					//if there is a match for time, parse it; otherwise, use the system time (provided in the parameter currentTime)
 					if (time != null) {
@@ -221,10 +217,11 @@ public class StreamParser extends Model {
 						}
 					}
 				}
+				success |= stream.post(number, currentTime);
 			} else {
 				number = Double.parseDouble(textBody);
+				success |= stream.post(number, currentTime);
 			}
-			return stream.post(number, currentTime);
 		} catch (NumberFormatException e) {
 			Logger.warn("StreamParser: Regex failed to parse a number!");
 			// naughty rogue value
@@ -232,7 +229,7 @@ public class StreamParser extends Model {
 		} catch (Exception e) {
 			Logger.error("StreamParser: Regex failed!");
 		}
-		return false;
+		return success;
 	}
 
 	private Long parseDateTime(String input) {
@@ -241,21 +238,44 @@ public class StreamParser extends Model {
     try {
 			result =  df.parse(input).getTime();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
 			Logger.info("[StreamParser] Exception timeformat: " + timeformat + "input: " + input);
-
 		}
 		return result;  
 	}
-	
-//	private boolean parseCSVdata(String data, String seperator, String timeformat, int dataIndex, int timeIndex) {
-//		String [] fields = data.split(seperator);
-//		Long time = parseDateTime(fields[timeIndex]);
-//		Double value = Double.parseDouble(fields[dataIndex]);
-//		return false;
-//	}
+
+	private boolean parseCSVdata(String data, Long currentTime) {
+		boolean success = false;
+		String time = null;
+		int timeIndex = timeGroup - 1;
+		int dataIndex = dataGroup - 1;
+		String [] separators = inputParser.split("_SEP_");
+		String fieldSeparator = separators[0];
+		String lineSeparator = (separators.length > 1) ? separators[1] : "" ;
+		String [] lines = data.split(lineSeparator);
+		String [] fields;
+		for(int i=0; (i < numberOfPoints || numberOfPoints < 1) && i < lines.length; i++) {
+			fields = lines[i].split(fieldSeparator);
+			if (timeIndex > -1 && timeIndex < fields.length) {
+				time = fields[timeIndex];
+			}
+			// if there is a match for time, parse it; otherwise, use the system time
+			// (provided in the parameter currentTime)
+			if (time != null) {
+				if (timeformat != null && !"".equalsIgnoreCase(timeformat)
+						&& !"unix".equalsIgnoreCase(timeformat)) {
+					// inputParser REGEX should match the whole date/time string! It is
+					// not enough to provide the time format only!
+					currentTime = parseDateTime(time);
+				} else {
+					currentTime = Long.parseLong(time);
+				}
+			}
+			Double number = Double.parseDouble(fields[dataIndex]);
+			success |= stream.post(number, currentTime);
+		}
+		return success;
+	}
 	
 	/*
 	 * parses requests as JSON inputParser is used as the path to the nested json
@@ -273,7 +293,7 @@ public class StreamParser extends Model {
 			if (node==null) { return false; }
 		}
 
-		if (node.isValueNode()) { // it is a simple primative
+		if (node.isValueNode()) { // it is a simple primitive
 			Logger.info("posting: "+node.getDoubleValue()+" "+Utils.currentTime());
 			return stream.post(node.getDoubleValue(), Utils.currentTime());
 
