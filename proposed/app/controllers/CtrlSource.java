@@ -180,15 +180,15 @@ public class CtrlSource extends Controller {
 					return redirect(routes.CtrlSource.getById(submitted.id));
 				}
 			}
-			return redirect(routes.CtrlSource.manage());
+			return redirect(routes.CtrlSource.sources());
 		}
 	}
 
 	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
-	public static Result manage() {		
+	public static Result sources() {		
   	User currentUser = Secured.getCurrentUser();
-    return ok(managePage.render(currentUser.sourceList, sourceForm));
+    return ok(sourcesPage.render(currentUser.sourceList, sourceForm));
 	}
 	//
 //DynamicForm requestData = Form.form().bindFromRequest();
@@ -259,7 +259,7 @@ public class CtrlSource extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		// check permission?
 		Source.delete(id);
-		return redirect(routes.CtrlSource.manage());
+		return redirect(routes.CtrlSource.sources());
 	}
 	
 	@Security.Authenticated(Secured.class)

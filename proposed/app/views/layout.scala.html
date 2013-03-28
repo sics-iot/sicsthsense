@@ -31,7 +31,7 @@
 						<span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></a></span>
 					</li>
 					@if(session != null && Secured.getUsername(session) != null) {
-					<li><a href="@routes.CtrlSource.manage()">Sources</a></li>
+					<li><a href="@routes.CtrlSource.sources()" >Sources</a></li>
 					<li><a href="@routes.Application.streams()">Streams</a></li>
 					@**<li><a href="@routes.CtrlUser.get()">Account</a></li>*@
 					} else {

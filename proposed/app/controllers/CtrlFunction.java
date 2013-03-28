@@ -32,7 +32,7 @@ public class CtrlFunction extends Controller {
 			Function operator = theForm.get();
 			User currentUser = Secured.getCurrentUser();
 			Function.create(currentUser,theForm.field("output").value(),theForm.field("inputStream1").value(),theForm.field("inputStream2").value());
-		  return redirect(routes.CtrlSource.manage());
+		  return redirect(routes.CtrlSource.sources());
 		}
 	}
 
@@ -59,7 +59,7 @@ public class CtrlFunction extends Controller {
 			} catch (Exception e) {
 				return badRequest("Bad request");
 			}
-		  return redirect(routes.CtrlSource.manage());
+		  return redirect(routes.CtrlSource.sources());
 		}    
   }
 	

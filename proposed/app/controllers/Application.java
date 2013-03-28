@@ -40,11 +40,12 @@ public class Application extends Controller {
     return ok(attachFunctionPage.render(currentUser.sourceList));
   }
 
+	/*
 	// deprecated
-  public static Result manage() {
+  public static Result sources() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(managePage.render(currentUser.sourceList, sourceForm));
-  }
+    return ok(sourcesPage.render(currentUser.sourceList, sourceForm));
+  }*/
   
   // -- Javascript routing
   public static Result javascriptRoutes() {
