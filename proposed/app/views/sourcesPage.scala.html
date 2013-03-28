@@ -13,6 +13,7 @@ Should take these parameters, for the side navigation menu
     <div class="row">
       <div class="span2 bs-docs-sidebar">
 			@** should pass theses parameters(sources, extStreams) **@
+			@manage.navigationMenu(sources) 
     </div>
 
     <div class="span9">
@@ -40,6 +41,7 @@ Should take these parameters, for the side navigation menu
 			    myForm("pollingPeriod"),
 		      '_label -> "Period",
 		      '_help -> "Polling period [seconds]",
+					'placeholder -> "leave blank for 120s",
 					'_value -> "100"
 	      )
 				@*
@@ -55,7 +57,6 @@ Should take these parameters, for the side navigation menu
 	      </fieldset>
 
   }
-			@manage.navigationMenu(sources) 
   		<br />
     </div>
   </div>

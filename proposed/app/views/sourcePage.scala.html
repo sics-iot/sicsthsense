@@ -10,8 +10,8 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 @streamParserGroupLabels(className: String = "") = {
 <div class="row-fluid @className controls controls-row">
 <label class="span3">Stream path</label>
-<label class="span3">Parser (Regex or JSON path)</label>
-<label class="span3">Date\Time format</label>
+<label class="span3">Parser (Regex/JSON path)</label>
+<label class="span3">Date/Time format</label>
 <label class="span2">MIME type</label>
 </div>
 }
@@ -91,9 +91,13 @@ Add a new stream parser <small><a href="@routes.CtrlSource.add()"></a></small>
 			      </div>
 		      </div>
 	      </fieldset>
+
+				<br />
+
 	      <div class="actions">				      
-					<a class="addParser btn btn-success">Add another stream parser</a>
-		      <input type="submit" class="btn btn-primary" name="update" id="updateSource" value="Update">
+					<a class="addParser btn btn-success">Add another stream parser</a> &nbsp;
+		      <input type="submit" class="btn btn-primary" name="update" id="updateSource" value="Update"> &nbsp;
+
 		      <a href="@routes.CtrlSource.sources()" class="btn">Cancel</a>
 	      </div>
   			<br />

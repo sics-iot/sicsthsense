@@ -45,7 +45,7 @@ public class CtrlSource extends Controller {
 			BufferedReader serverResponse;
 			
 			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
-				if (!submitted.pollingUrl.startsWith("http://") || !submitted.pollingUrl.startsWith("coap://") ) {//fudge URL, should check HTTP
+				if (!submitted.pollingUrl.startsWith("http") && !submitted.pollingUrl.startsWith("coap://") ) {//fudge URL, should check HTTP
 					submitted.pollingUrl = "http://"+submitted.pollingUrl;
 				}
 				// get data
@@ -144,7 +144,13 @@ public class CtrlSource extends Controller {
 	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
 	public static Result add() {		
-		Form<SkeletonSource> theForm = skeletonSourceForm.bindFromRequest();
+		Form<SkeletonSource> theForm;
+		// error check
+		try {
+			theForm = skeletonSourceForm.bindFromRequest();
+		} catch (Exception e) {
+		  return badRequest("Bad parsing of form");
+		}
 		// validate form
 		if (theForm.hasErrors()) {
 		  return badRequest("Bad request");
