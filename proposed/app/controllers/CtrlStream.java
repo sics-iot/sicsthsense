@@ -21,8 +21,8 @@ public class CtrlStream extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
-	public static Result getById(String id) {
-		return TODO;
+	public static Result getById(Long id) {
+		return ok();
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -201,13 +201,14 @@ public class CtrlStream extends Controller {
 		ArrayNode time = result.putArray("time");
 		ArrayNode data = result.putArray("data");
 
-		for (DataPoint dataPoint : dataSet) {
-			time.add(dataPoint.timestamp);
-			if (stream.getType() == Stream.StreamType.DOUBLE) {
-				data.add((Double) dataPoint.getData());
+		if (dataSet!= null) {
+			for (DataPoint dataPoint : dataSet) {
+				time.add(dataPoint.timestamp);
+				if (stream.getType() == Stream.StreamType.DOUBLE) {
+					data.add((Double) dataPoint.getData());
+				}
 			}
 		}
-
 		return ok(result);
 	}
 }

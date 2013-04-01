@@ -1,5 +1,6 @@
 package models;
 
+import java.lang.Math;
 import javax.persistence.*;
 import models.*;
 import play.Logger;
@@ -20,10 +21,16 @@ public class Location {
 	private double radius; // not used
 
 	public Location() {
-		lat=0;
-		lon=0;
-		angle=0;
-		azimuth=0;
+		this.lat=0;
+		this.lon=0;
+		this.angle=0;
+		this.azimuth=0;
+	}
+	public Location(double lat, double lon) {
+		this.lat=lat;
+		this.lon=lon;
+		this.angle=0;
+		this.azimuth=0;
 	}
 
 	public double getLat() {return lat;}
@@ -35,20 +42,21 @@ public class Location {
 		this.lat = lat;
 		this.lon = lon;
 		// angle & azimuth!
+		// ...
 	}
 	
-	public void setPolar(double angle, double azimuth) {
+	public void setSphere(double angle, double azimuth) {
 		this.angle = angle;
 		this.azimuth = azimuth;
 		// lat & lon!
+		// ...
 	}
 
 	public double distanceToLatLon(double lat, double lon) {
-		return 0.0;
-	}
-
-	public double distanceToPolar(double angle, double azimuth) {
-		return 0.0;
+		// should account for wrapping
+		double latDelta = this.lat - lat;
+		double lonDelta = this.lon - lon;
+		return Math.sqrt( Math.pow(latDelta,2) + Math.pow(lonDelta,2));
 	}
 
 }

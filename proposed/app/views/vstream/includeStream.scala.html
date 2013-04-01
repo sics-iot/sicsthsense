@@ -21,8 +21,11 @@
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1Y" id="streamwindow@{stream.id}-7"><label for="streamwindow@{stream.id}-7">1y</label>
 	</span>
 	<div id="streamtitle@{stream.id}" class="streamtitle">
-		<a name="@{stream.file.getPath()}"></a>
-		Stream 
+		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
+			<a name="@{stream.file.getPath()}"></a> Stream
+		} else { 
+			Unnamed Stream
+		}
 		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 		@if(stream.source != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="/sources/@{stream.source.id}">@{stream.source.label}</a>)
@@ -81,7 +84,8 @@
 		<div>
 		Key: <i>@stream.showKey(Secured.getCurrentUser())</i>
 	</div>	
-		&nbsp;No data
+	<br />
+		&nbsp;No data currently available.
 	}
 	</div>
 }

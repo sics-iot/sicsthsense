@@ -4,6 +4,7 @@ Should take these parameters
 @(sources : List[Source], extStreams : List[Stream], operators : List[Operator]) 
 **@				
 				<br /> <br /> <br /> 
+				@if(sources.length > 0) {
 				<h4>Sources</h4>
         <ul class="nav nav-list bs-docs-sidenav">
 					<ul id="sourcelist">
@@ -21,3 +22,4 @@ Should take these parameters
 					</li>
 					-->
         </ul>
+				}

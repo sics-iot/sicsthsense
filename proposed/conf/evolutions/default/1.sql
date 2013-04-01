@@ -77,6 +77,9 @@ create table parsers (
   input_parser              varchar(255),
   input_type                varchar(255),
   timeformat                varchar(255),
+  data_group                integer,
+  time_group                integer,
+  number_of_points          integer,
   constraint pk_parsers primary key (id))
 ;
 

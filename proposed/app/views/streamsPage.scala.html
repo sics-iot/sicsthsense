@@ -10,15 +10,14 @@
 		<div class="span2 bs-docs-sidebar">
 		<br \><br \><br \>
 
-		<h4>Streams</h4>
 				@if(streams.length > 0) {
+				<h4>Streams</h4>
 					<div id="vfileTree">
 						<ul>
 						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
 						</ul>
 					</div>
 				} else {
-					<li>(Empty)</li>
 				}
   </div>
 
