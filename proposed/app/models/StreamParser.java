@@ -194,17 +194,28 @@ public class StreamParser extends Model {
 				Matcher matcher = regexPattern.matcher(textBody);
 				for(int i=0; (i < numberOfPoints || numberOfPoints < 1) && textBody != null && matcher.find(); i++) {					
 					//try to match value from the group called :value: otherwise, use the first matching group
-					value = matcher.group("value");					
-					if (value == null) {
-						value = matcher.group(dataGroup);
+					try {
+						value = matcher.group("value");
+					} catch (IllegalArgumentException iae) {
+						try {
+							value = matcher.group(dataGroup);
+						} catch (IndexOutOfBoundsException iob) {
+							value = matcher.group(1);
+						}
 					}
 					number = Double.parseDouble(value);
 
 					//try to match time from the group called :time: otherwise, use the second matching group
-					time = matcher.group("time");
-					if (time == null) {
-						time = matcher.group(timeGroup);
+					try {
+						time = matcher.group("time");
+					} catch (IllegalArgumentException iae) {
+						try {
+							time = matcher.group(timeGroup);
+						} catch (IndexOutOfBoundsException iob) {
+							time = null;
+						}
 					}
+
 					//if there is a match for time, parse it; otherwise, use the system time (provided in the parameter currentTime)
 					if (time != null) {
 						if (timeformat != null && !"".equalsIgnoreCase(timeformat)
@@ -223,11 +234,11 @@ public class StreamParser extends Model {
 				success |= stream.post(number, currentTime);
 			}
 		} catch (NumberFormatException e) {
-			Logger.warn("StreamParser: Regex failed to parse a number!");
+			Logger.warn("StreamParser: Regex failed to parse a number!" + e);
 			// naughty rogue value
 			//return stream.post(-1, currentTime);
 		} catch (Exception e) {
-			Logger.error("StreamParser: Regex failed!");
+			Logger.error("StreamParser: Regex failed!" + e.getMessage());
 		}
 		return success;
 	}

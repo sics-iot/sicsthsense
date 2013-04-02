@@ -50,6 +50,12 @@ public class DataPointDouble extends DataPoint {
   	return data;
   }
   
+  @Override
+	public String toString() {
+  	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
+		return streamName + data + "@" + timestamp + " ";
+	}
+	
   public static List<? extends DataPoint> getByStream(Stream stream) {
 		return find.where().eq("stream", stream).orderBy("timestamp desc")
 				.findList();

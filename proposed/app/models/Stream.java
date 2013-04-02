@@ -206,6 +206,7 @@ public class Stream extends Model implements Comparable<Stream> {
 			}
 			if (type == StreamType.DOUBLE) {
 				DataPoint dp = new DataPointDouble(this, data, time).add();
+				Logger.info("Adding new point: " + dp);
 				lastUpdated = time;
 				update();
 				return true;
@@ -272,8 +273,8 @@ public class Stream extends Model implements Comparable<Stream> {
 	}
 
 	public List<? extends DataPoint> getDataPointsTail(long tail) {
-		if (tail == 0) {
-			tail++;
+		if (tail <= 0) {
+			tail=1L;
 			//return new ArrayList<? extends DataPoint>(); // TODO should this be return new
 																					// ArrayList<? extends DataPoint>(0) ??
 		}
@@ -301,6 +302,7 @@ public class Stream extends Model implements Comparable<Stream> {
 			set = DataPointDouble.find.where().eq("stream", this).ge("timestamp", since)
 					.orderBy("timestamp desc").findList();
 		}
+		//Logger.info(this.id + " : Points since: " + since + set.toString());
 		return set;
 	}
 
