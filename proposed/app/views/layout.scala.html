@@ -19,16 +19,24 @@
 <script src="@routes.Application.javascriptRoutes()" type="text/javascript" ></script>
 </head>
 <body>
+
 	<!--navigation bar-->
-	<div class="navbar navbar-static-top navbar-inverse">
+	<div class="navbar navbar-inverse navbar-static-top">
 		<div class="navbar-inner">
 			<div class="container">
-
+			 <header id="header">
+  			 <div class="container">
+					 <h1>Sics<sup>th</sup>Sense</h1>
+    				<!-- p class="lead">A cloud platform for IoT</p -->
+  			 </div>
+			 </header>
 				<!--navigation bar links-->
+			 <div class="nav-collapse collapse">
 				<ul class="nav">
 					<li>
-					<a class="brand" href="@routes.Application.home()">
-						<span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></a></span>
+					<a href="@routes.Application.home()">Home
+						<!-- span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></span -->
+					</a>
 					</li>
 					@if(session != null && Secured.getUsername(session) != null) {
 					<li><a href="@routes.CtrlSource.sources()" >Sources</a></li>
@@ -64,9 +72,11 @@
 		    </ul>
      		}
 				<ul class="nav pull-right">
+					<li><a href="@routes.Application.explore()">Explore</a></li>
 					<li><a href="@routes.Public.about()">API</a></li>
-				</ul> 
-			</div>
+				</ul>
+			</div> 
+		 </div>
 		</div>
 	</div><!--navigation bar end-->
 

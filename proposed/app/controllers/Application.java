@@ -30,6 +30,12 @@ public class Application extends Controller {
     return ok(searchPage.render(availableStreams));
   }
   
+  public static Result explore() {
+  	User currentUser = Secured.getCurrentUser();
+		List<Stream> availableStreams = Stream.availableStreams(currentUser);
+    return ok(searchPage.render(availableStreams));
+  }
+  
   public static Result streams() {
   	User currentUser = Secured.getCurrentUser();
     return ok(streamsPage.render(currentUser.streamList));

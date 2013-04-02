@@ -1,7 +1,20 @@
-pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
+#oldapi pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
   border: 1px solid #ddd; border-radius: 3px; padding: .2em; }
-  
-#container { max-width: 800px; margin: 16px auto; padding: 0; }
+
+#header {
+position: relative;
+color: #eee;
+padding: auto;
+margin: auto;
+text-align: center;
+font-size: 40pt;
+text-shadow: 4px 4px 4px #000;
+font-family: georgia, palatino, pala, serif;
+font-weight: bold;
+font-style: italic;
+}
+
+container { max-width: 800px; margin: 16px auto; padding: 0; }
 .inputL { height: 2em; padding: 0; width: 89%; }
 .buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 10%;}
 .buttonG { border: 1px solid #888; background-color: #eee; border-radius: 6px; }
@@ -125,4 +138,6 @@ li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;
 li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
 
 li.jstree-leaf > a .jstree-icon { display: none; }
+
+
 

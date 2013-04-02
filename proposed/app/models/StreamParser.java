@@ -273,8 +273,7 @@ public class StreamParser extends Model {
 			// if there is a match for time, parse it; otherwise, use the system time
 			// (provided in the parameter currentTime)
 			if (time != null) {
-				if (timeformat != null && !"".equalsIgnoreCase(timeformat)
-						&& !"unix".equalsIgnoreCase(timeformat)) {
+				if(timeformat != null && !"".equalsIgnoreCase(timeformat.trim()) && !"unix".equalsIgnoreCase(timeformat.trim())){
 					// inputParser REGEX should match the whole date/time string! It is
 					// not enough to provide the time format only!
 					currentTime = parseDateTime(time);
@@ -313,13 +312,13 @@ public class StreamParser extends Model {
 			// should be Source timestamp
 
 			if (node.get("time") != null) { // it may have  time:Y
-				if(timeformat != null && !"".equalsIgnoreCase(timeformat) && !"unix".equalsIgnoreCase(timeformat)){
+				if(timeformat != null && !"".equalsIgnoreCase(timeformat.trim()) && !"unix".equalsIgnoreCase(timeformat.trim())){
 					currentTime = parseDateTime(node.get("time").getTextValue());
 				} else {
 					currentTime = node.get("time").getLongValue();
 				}
 			}
-			Logger.info("posting: "+value);
+			Logger.info("posting: "+node.getDoubleValue()+" "+Utils.currentTime());
 			return stream.post(value, currentTime);
 		}
 
