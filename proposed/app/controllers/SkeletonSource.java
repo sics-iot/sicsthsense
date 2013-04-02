@@ -124,10 +124,13 @@ public class SkeletonSource {
 		streamParserWrapers.add(spw);
 	}
 
-	public void addStreamParser(String vfilePath, String inputParser, String inputType, String timeformat) {
-		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType, timeformat));
+	public void addStreamParser(String vfilePath, String inputParser, String inputType, String timeformat,int dataGroup, int timeGroup, int numberOfPoints) {
+		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType, timeformat, dataGroup, timeGroup, numberOfPoints));
 	}
-
+	
+	public void addStreamParser(String vfilePath, String inputParser, String inputType, String timeformat) {
+		streamParserWrapers.add(new StreamParserWraper(vfilePath,inputParser,inputType, timeformat, 1,2,1));
+	}
 
 	public static class StreamParserWraper {
 		public Long parserId;
@@ -144,17 +147,38 @@ public class SkeletonSource {
 		public String inputType;
 		
 		public String timeformat;
+		
+		/**
+		 * The number of the field containing the value of datapoint (mainly used in parsing CSV ^ RegEx)
+		 * Starts from 1
+		 */
+		int dataGroup = 1;
+		
+		/**
+		 * The number of the field containing the value of datapoint (mainly used in parsing CSV & RegEx)
+		 * Starts from 1
+		 */
+		int timeGroup = 2;
+		
+		/**
+		 * How many points to match?
+		 * values <= 0 mean parsing all possible matches
+		 */
+		int numberOfPoints=1;
 
-		public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType, String timeformat) {
+		public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
 			this.parserId  = id;
 			this.vfilePath = vfilePath;
 			this.inputType = inputType;
 			this.inputParser = inputParser;
 			this.timeformat = timeformat;
+			this.dataGroup = dataGroup;
+			this.timeGroup = timeGroup;
+			this.numberOfPoints = numberOfPoints;
 		}
 		
-		public StreamParserWraper(String vfilePath, String inputParser, String inputType, String timeformat) {
-			this(null, vfilePath, inputParser, inputType, timeformat);
+		public StreamParserWraper(String vfilePath, String inputParser, String inputType, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+			this(null, vfilePath, inputParser, inputType, timeformat, dataGroup, timeGroup, numberOfPoints);
 		}
 		
 		public StreamParserWraper(StreamParser sp) {
@@ -164,6 +188,9 @@ public class SkeletonSource {
 				this.inputParser = sp.inputParser;
 				this.parserId = sp.id;
 				this.timeformat = sp.timeformat;
+				this.dataGroup = sp.dataGroup;
+				this.timeGroup = sp.timeGroup;
+				this.numberOfPoints = sp.numberOfPoints;
 			} catch (Exception e) {
 				Logger.error("Error creating StreamParserWraper from StreamParser: " + e.getMessage() + "Stack trace:\n" + e.getStackTrace()[0].toString());
 			}
@@ -175,7 +202,7 @@ public class SkeletonSource {
 		public StreamParser getStreamParser(Source source) {
 			StreamParser sp = new StreamParser(source,
 					this.inputParser, this.inputType,
-					this.vfilePath, this.timeformat);
+					this.vfilePath, this.timeformat, this.dataGroup, this.timeGroup, this.numberOfPoints);
 			sp.id = this.parserId;
 			return sp;
 		}

@@ -76,19 +76,19 @@ public class StreamParser extends Model {
 	 * The number of the field containing the value of datapoint (mainly used in parsing CSV ^ RegEx)
 	 * Starts from 1
 	 */
-	int dataGroup = 1;
+	public int dataGroup = 1;
 	
 	/**
 	 * The number of the field containing the value of datapoint (mainly used in parsing CSV & RegEx)
 	 * Starts from 1
 	 */
-	int timeGroup = 2;
+	public int timeGroup = 2;
 	
 	/**
 	 * How many points to match?
 	 * values <= 0 mean parsing all possible matches
 	 */
-	int numberOfPoints=1;
+	public int numberOfPoints=1;
 	
 	@Transient
 	public Pattern regexPattern;
@@ -99,24 +99,30 @@ public class StreamParser extends Model {
 		super();
 	}
 
-	public StreamParser(Source source, String inputParser, String inputType, String path, String timeformat) {
+	public StreamParser(Source source, String inputParser, String inputType, String path, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
 		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
 		this.streamVfilePath = path;
 		this.timeformat = timeformat;
+		this.dataGroup = dataGroup;
+		this.timeGroup = timeGroup;
+		this.numberOfPoints = numberOfPoints;
 		Vfile f = FileSystem.readFile(source.owner, path);
 		this.stream = (f != null) ? f.linkedStream : null;
 	}
 	
-	public StreamParser(Source source, String inputParser, String inputType, Stream stream, String timeformat) {
+	public StreamParser(Source source, String inputParser, String inputType, Stream stream, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
 		super();
 		setInputParser(inputParser);
 		this.inputType = inputType;
 		this.source = source;
 		this.stream = stream;
 		this.timeformat = timeformat;
+		this.dataGroup = dataGroup;
+		this.timeGroup = timeGroup;
+		this.numberOfPoints = numberOfPoints;
 		if(stream != null && stream.file != null) {
 			this.streamVfilePath = stream.file.path;
 		}

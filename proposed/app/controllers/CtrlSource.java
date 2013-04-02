@@ -274,10 +274,21 @@ public class CtrlSource extends Controller {
 		return ok("true");
 	}
 	
+//	@Security.Authenticated(Secured.class)
+//	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath, String timeformat) {
+//		Source source = Source.get(sourceId, Secured.getCurrentUser());
+//		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath, timeformat);
+//		parser = StreamParser.create(parser);
+//		if(parser != null) {
+//			return ok("true");
+//		}
+//		return ok("false");
+//	}
+	
 	@Security.Authenticated(Secured.class)
-	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath, String timeformat) {
+	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
 		Source source = Source.get(sourceId, Secured.getCurrentUser());
-		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath, timeformat);
+		StreamParser parser = new StreamParser(source, inputParser, inputType, streamPath, timeformat, dataGroup, timeGroup, numberOfPoints);
 		parser = StreamParser.create(parser);
 		if(parser != null) {
 			return ok("true");
