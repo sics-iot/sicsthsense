@@ -62,6 +62,9 @@ public class Source extends Operator {
 	@Column(name="secret_key") //key is a reserved keyword in mysql
 	public String key;
 
+	//should we make a permission management system as in Stream? 
+	//public boolean publicAccess=false;
+
 	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
 			Long.class, Source.class);
 	
@@ -105,7 +108,19 @@ public class Source extends Operator {
 	public String getKey() {
 		return key;
 	}
+	
+	public boolean canRead(User user) {
+		return (owner.equals(user)); // || isShare(user) || publicAccess;
+	}
 
+	public String getUrl() {
+		return this.pollingUrl;
+	}
+	
+	public boolean hasUrl() {
+		return (Utils.isValidURL(this.pollingUrl));
+	}
+	
 	public void updateSource(Source source) {
 		this.label = source.label;
 		//this.key = source.getKey();

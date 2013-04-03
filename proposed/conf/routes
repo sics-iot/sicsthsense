@@ -56,17 +56,28 @@ POST		/sources/addParser									controllers.CtrlSource.addParser(sourceId: Long
 GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
 POST    /sources/:id			    							controllers.CtrlSource.post(id: Long)
 
+# Proxy
+GET					/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
+POST				/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
+PUT					/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
+DELETE			/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
+# Proxy, API
+GET					/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
+POST				/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
+PUT					/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
+DELETE			/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
+
 # Sources API
 POST    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 #GET		/api/sources/:key										controllers.CtrlSource.getByKey(key: String)
 #GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
 
 ## This was providing a way to post without the key !! (bug)
-#POST    	/api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
-#GET			/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
+#POST   /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
+#GET		/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
 
 # Streams, API
-GET     /api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
+GET    	/api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
 GET     /api/streams/clearData/:key					controllers.CtrlStream.clearByKey(key: String)
 POST		/api/streams/:key							    	controllers.CtrlStream.postByKey(key: String)
 GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)

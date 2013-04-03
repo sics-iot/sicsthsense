@@ -45,7 +45,10 @@ public class CtrlSource extends Controller {
 			BufferedReader serverResponse;
 			
 			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
-				if (!submitted.pollingUrl.startsWith("http") && !submitted.pollingUrl.startsWith("coap://") ) {//fudge URL, should check HTTP
+			//fudge URL, should check HTTP
+				if (!submitted.pollingUrl.startsWith("http://") 
+						&& !submitted.pollingUrl.startsWith("https://") 
+						&& !submitted.pollingUrl.startsWith("coap://") ) {
 					submitted.pollingUrl = "http://"+submitted.pollingUrl;
 				}
 				// get data
@@ -118,8 +121,8 @@ public class CtrlSource extends Controller {
 		  return ok(views.html.configureSource.render(currentUser.sourceList, skeletonSourceFormNew));
 	}
 
-	//@Security.Authenticated(Secured.class)
-	private static Result parseHTML(String data, Source submitted) {
+	@Security.Authenticated(Secured.class)
+	public static Result parseHTML(String data, Source submitted) {
 			Logger.info("Adding single default Regex StreamPaser to HTML input");
 			User currentUser = Secured.getCurrentUser();
 			SkeletonSource skeleton = new SkeletonSource(submitted);

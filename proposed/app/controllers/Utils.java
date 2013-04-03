@@ -1,6 +1,11 @@
 package controllers;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 public class Utils {
+		
 	public static long currentTime() {
 		return System.currentTimeMillis();
 	}
@@ -35,4 +40,18 @@ public class Utils {
     long years = days / 365;
     return years + (years == 1 ? " year" : " years");
   }
+
+	public static boolean isValidURL(String surl) {
+		URL url = null;
+		try {
+			url = new URL(surl);
+			url.toURI();
+		} catch (MalformedURLException e) {
+			return false;
+		} catch (URISyntaxException e) {
+			return false;
+		}	
+		return true;
+	}
+
 }
