@@ -40,7 +40,7 @@
 					</a>
 					</li>
 					@if(session != null && Secured.getUsername(session) != null) {
-					<li><a href="@routes.CtrlSource.sources()" >Sources</a></li>
+					<li><a href="@routes.CtrlSource.sources()" >Resources</a></li>
 					<li><a href="@routes.Application.streams()">Streams</a></li>
 					@**<li><a href="@routes.CtrlUser.get()">Account</a></li>*@
 					} else {
