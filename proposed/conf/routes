@@ -33,7 +33,9 @@ GET        /user/followStream/:id/:follow				controllers.CtrlUser.followStream(i
 GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStream(id: Long)
 GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
-GET		   	 /streams/view/:id										controllers.CtrlStream.getById(id: Long)
+#GET		   	 /streams/view/:id										controllers.CtrlStream.getById(id: Long)
+GET		   	 /streams/view/:id										controllers.Application.viewStream(id: Long)
+POST       /streams/modify/:id									controllers.CtrlStream.modify(id: Long)
 GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
 GET        /streams/clearData/:id 							controllers.CtrlStream.clear(id: Long)
 GET        /streams/publicAccess/:id/:pub 			controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)

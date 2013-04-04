@@ -2,8 +2,10 @@ package controllers;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.ParseException;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -12,9 +14,15 @@ import org.codehaus.jackson.node.ObjectNode;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
+import play.data.Form;
+import play.data.DynamicForm;
+import play.data.format.*;
 import models.*;
+import views.html.*;
 
 public class CtrlStream extends Controller {
+
+	static private Form<Stream> streamForm = Form.form(Stream.class);
 
 	private static boolean canWrite(User user, Stream stream) {
 		return (stream != null && user != null && stream.owner.equals(user));
@@ -22,7 +30,43 @@ public class CtrlStream extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result getById(Long id) {
-		return ok();
+		User currentUser = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if (stream== null) {
+			return badRequest("Stream does not exist: " + id);
+		}
+		streamForm = streamForm.fill(stream);
+		return ok(streamPage.render(currentUser.streamList, stream, streamForm));
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result modify(Long id) {
+		
+		Form<Stream> theForm = streamForm.bindFromRequest();
+
+		if (theForm.hasErrors()) {
+			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
+		} else {
+			Stream submitted = theForm.get();
+			User currentUser = Secured.getCurrentUser();
+			Stream stream = Stream.get(id);
+			if (stream  == null) {
+				return badRequest("Stream does not exist: " + id);
+			}
+
+			// probably not the correct way to do it
+			if (submitted.latitude != 0.0) {
+				//String lon = streamForm.field("longtitude").value();
+				//String lat = streamForm.field("latitude").value();
+				//Logger.error("form latlon: "+lat+","+lon);
+				//Location location = new Location(lon,lat);
+				//submitted.location.setLatLon(lat,lon);
+			} else {
+				Logger.error("location not set");
+			}
+			stream.updateStream(submitted);
+		}
+		return redirect(routes.Application.viewStream(id));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -36,7 +80,7 @@ public class CtrlStream extends Controller {
 		}
 		return unauthorized();
 	}
-	
+
 	public static Result deleteByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null) {

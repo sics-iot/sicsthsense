@@ -10,15 +10,18 @@ import play.data.validation.*;
 
 import com.avaje.ebean.*;
 
-public class Location {
+public class Location extends Model {
 
+	@Id
+	public Long id;
 	private double lat;
 	private double lon;
 	private double elevation; // not used
-
 	private double angle;
 	private double azimuth;
 	private double radius; // not used
+
+	public static Model.Finder<Long, Location> find = new Model.Finder<Long, Location>(Long.class, Location.class);
 
 	public Location() {
 		this.lat=0;
@@ -32,6 +35,9 @@ public class Location {
 		this.angle=0;
 		this.azimuth=0;
 	}
+	public Location(String lat, String lon) {
+		this(Double.parseDouble(lat),Double.parseDouble(lon));
+	}
 
 	public double getLat() {return lat;}
 	public double getLon() {return lon;}
@@ -43,6 +49,9 @@ public class Location {
 		this.lon = lon;
 		// angle & azimuth!
 		// ...
+	}
+	public void setLatLon(String lat, String lon) {
+		setLatLon(Double.parseDouble(lat),Double.parseDouble(lon));
 	}
 	
 	public void setSphere(double angle, double azimuth) {
@@ -58,5 +67,8 @@ public class Location {
 		double lonDelta = this.lon - lon;
 		return Math.sqrt( Math.pow(latDelta,2) + Math.pow(lonDelta,2));
 	}
-
+	
+	public String toString() {
+		return String.valueOf(lat)+","+String.valueOf(lon);
+	}
 }

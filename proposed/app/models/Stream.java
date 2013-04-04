@@ -40,7 +40,8 @@ public class Stream extends Model implements Comparable<Stream> {
 	public Long id;
 
 	public StreamType type = StreamType.UNDEFINED;
-	public Location location;
+	public double latitude;
+	public double longtitude;
 	public String description;
 
 	public boolean publicAccess = false;
@@ -90,51 +91,15 @@ public class Stream extends Model implements Comparable<Stream> {
   @ManyToMany(cascade = CascadeType.ALL, mappedBy = "followedStreams")
   public List<User> followingUsers = new ArrayList<User>();
 
-	public Long getHistorySize() {
-		return historySize;
-	}
-
-	public void setHistorySize(long historySize) {
-		if (historySize <= 0)
-			historySize = 1;
-		this.historySize = historySize;
-	}
-
-	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
-			Long.class, Stream.class);
-	
-	/** Call to create, or update an access key */
-	protected String createKey() {
-		key = UUID.randomUUID().toString();
-		return key;
-	}
-
-	public String updateKey() {
-		key = createKey();
-		update();
-		return key;
-	}
-	
-	public String getKey() {
-		return key;
-	}
-
-	public static Stream findByKey(String key) {
-		if (key == null) {
-			return null;
-		}
-		try {
-			return find.where().eq("key", key).findUnique();
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
 	public Stream(User user, Source source, StreamType type) {
-		this.owner = user;
+		this.owner =  user;
 		this.source = source;
-		this.type = type;
+		this.type =   type;
+		this.latitude   = 0.0;
+		this.longtitude = 0.0;
+
 		createKey();
+
 		switch( this.type ) {
 		case DOUBLE:
 			this.dataPoints = this.dataPointsDouble;
@@ -157,6 +122,47 @@ public class Stream extends Model implements Comparable<Stream> {
 
 	public Stream() {
 		this(null, null, StreamType.UNDEFINED);
+	}
+
+	public void updateStream(Stream modified) {
+		this.description = modified.description;
+		this.longtitude  = modified.longtitude;
+		this.latitude    = modified.latitude;
+		update();
+	}
+
+	public Long getHistorySize() {
+		return historySize;
+	}
+
+	public void setHistorySize(long historySize) {
+		if (historySize <= 0)
+			historySize = 1;
+		this.historySize = historySize;
+	}
+	/*
+	public void setLocation(Location location) {
+		this.location=location;
+	}
+
+	public void setLocation(double lon, double lat) {
+		setLocation(new Location(lon,lat));
+	}*/
+	
+	/** Call to create, or update an access key */
+	protected String createKey() {
+		key = UUID.randomUUID().toString();
+		return key;
+	}
+
+	public String updateKey() {
+		key = createKey();
+		update();
+		return key;
+	}
+	
+	public String getKey() {
+		return key;
 	}
 
 	/** Create a persisted stream */
@@ -229,6 +235,20 @@ public class Stream extends Model implements Comparable<Stream> {
 			}
 		}
 		return false;
+	}
+
+	public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(
+			Long.class, Stream.class);
+
+	public static Stream findByKey(String key) {
+		if (key == null) {
+			return null;
+		}
+		try {
+			return find.where().eq("key", key).findUnique();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public static void delete(Long id) {

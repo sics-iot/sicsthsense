@@ -210,7 +210,7 @@ public class Source extends Operator {
 		// perform a poll() if it is time
 		if (pollingUrl==null || pollingUrl.equals("")) {return false;}
 		long currentTime = Utils.currentTime();
-		Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
+		//Logger.info("time: "+currentTime+" last polled "+lastPolled+" period: "+pollingPeriod);
 		if ( (lastPolled+(pollingPeriod*1000)) > currentTime) { return false; }
 		//Logger.info("Poll() happening!");
 

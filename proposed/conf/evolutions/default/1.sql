@@ -56,6 +56,8 @@ create table sources (
 create table streams (
   id                        bigint auto_increment not null,
   type                      varchar(1),
+  latitude                  double,
+  longtitude                double,
   description               varchar(255),
   public_access             tinyint(1) default 0,
   public_search             tinyint(1) default 0,

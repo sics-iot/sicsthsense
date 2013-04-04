@@ -18,6 +18,7 @@ import models.*;
 public class Application extends Controller {
 
 	static private Form<Source> sourceForm = Form.form(Source.class);
+	static private Form<Stream> streamForm = Form.form(Stream.class);
   
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
@@ -39,6 +40,18 @@ public class Application extends Controller {
   public static Result streams() {
   	User currentUser = Secured.getCurrentUser();
     return ok(streamsPage.render(currentUser.streamList));
+  }
+
+	// Liam: this exists to do interesting things with Location...
+  public static Result viewStream(Long id) {
+  	User currentUser = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		Form<Stream> form = streamForm.fill(stream);
+		/*
+		if (true) {
+			form.field("latitude") = Form.Field();
+		}*/
+    return ok(streamPage.render(currentUser.streamList,stream,form));
   }
   
   public static Result attachFunction() {

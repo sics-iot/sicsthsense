@@ -22,11 +22,11 @@
 	</span>
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
-			<a name="@{stream.file.getPath()}"></a> Stream
+		<a name="">@{stream.file.getPath()}</a> Stream
 		} else { 
 			Unnamed Stream
 		}
-		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		<a href="/stream/@{stream.id}" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 		@if(stream.source != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="/sources/@{stream.source.id}">@{stream.source.label}</a>)
 		}
@@ -78,7 +78,7 @@
 	} else {
 		<div id="streamtitle@{stream.id}" class="streamtitle">
 			Stream 
-			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			<a href="/streams/@{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
 		<div>
