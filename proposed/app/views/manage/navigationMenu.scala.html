@@ -1,15 +1,15 @@
-@(sources : List[Source])
+@(resources : List[Resource])
 @** 
 Should take these parameters
-@(sources : List[Source], extStreams : List[Stream], operators : List[Operator]) 
+@(resources : List[Resource], extStreams : List[Stream], operators : List[Operator]) 
 **@				
 				<br /> <br /> <br /> 
-				@if(sources.length > 0) {
-				<h4>Sources</h4>
+				@if(resources.length > 0) {
+				<h4>Resources</h4>
         <ul class="nav nav-list bs-docs-sidenav">
 					<ul id="sourcelist">
-						@for(source<- sources) {
-							<li><a href="@routes.CtrlSource.getById(source.id)"></i>@source.label</a></li>
+						@for(resource<- resources) {
+							<li><a href="@routes.CtrlResource.getById(resource.id)"></i>@resource.label</a></li>
 					 	} 
 					</ul>
 					<br />

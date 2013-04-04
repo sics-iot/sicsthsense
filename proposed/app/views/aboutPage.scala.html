@@ -11,7 +11,7 @@
   
 	<p>
 	The first step is to create an account. You can then add your data sources
-	and start collecting their data.  <i>Sources</i> provide a definition of how
+	and start collecting their data.  <i>Resources</i> provide a definition of how
 	some data is accessed, and then <i>streams</i> of data points are populated
 	from this source (e.g. poll or post).  
 	</p>
@@ -95,10 +95,10 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 			</ul>
 			In this case you need to create a source and define the needed stream parsers.
 			After creating the source, the system will provide a <code>key</code> that should be used for posting to the URL:
-			<pre> http://sense.sics.se:8080/api/sources/<em>[key]</em></pre>
+			<pre> http://sense.sics.se:8080/api/resources/<em>[key]</em></pre>
 		</li>
 	</ul>
-	<em>PS</em> It is not possible to post to non-existing sources or streams.	
+	<em>PS</em> It is not possible to post to non-existing resources or streams.	
 
 	<br /> <br />
   <h1>Getting data</h1>
@@ -123,13 +123,13 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 
 
 	<br /> <br />
-  <h1>Inspecting Users, Sources and Streams</h1>
+  <h1>Inspecting Users, Resources and Streams</h1>
   
   You can access a subset of the data on users, devices and resources, in Json format.
   Simply get the following URIs:
   <pre>
   GET        http://sense.sics.se/users/[user]
-  GET        http://sense.sics.se/sources/[key]
+  GET        http://sense.sics.se/resources/[key]
   GET        http://sense.sics.se/streams/[key]</pre>
 	-->
 	<br /> <br />

@@ -22,12 +22,24 @@
 <body>
 
 	<!--navigation bar-->
-	<div class="navbar navbar-inverse navbar-static-top">
+	<div class="navbar navbar-inverse navbar-static-top" style="margin:0px; padding: 0px;">
 		<div class="navbar-inner">
 			<div class="container">
 			 <header id="header">
+
+			 <div style="position: absolute; right: 0; top: 0;">
+				<form action="@routes.Application.search()" class="navbar-search form-search pull-left">
+					<div class="input-append">
+						<input type="text" class="search-query" placeholder="Search">
+							<button type="submit" class="btn btn-inverse"><i class="icon-search icon-white"></i></button>
+					</div>
+				</form>
+			</div>
+
   			 <div class="container">
-					 <h1>Sics<sup>th</sup>Sense</h1>
+				<!-- search bar -->
+
+					 <h1>Sics<sup>th</sup>Sense</h1> 
     				<!-- p class="lead">A cloud platform for IoT</p -->
   			 </div>
 			 </header>
@@ -40,7 +52,7 @@
 					</a>
 					</li>
 					@if(session != null && Secured.getUsername(session) != null) {
-					<li><a href="@routes.CtrlSource.sources()" >Resources</a></li>
+					<li><a href="@routes.CtrlResource.resources()" >Resources</a></li>
 					<li><a href="@routes.Application.streams()">Streams</a></li>
 					@**<li><a href="@routes.CtrlUser.get()">Account</a></li>*@
 					} else {
@@ -48,13 +60,6 @@
 					}
 				</ul>
 				
-				<!-- search bar -->
-				<form action="@routes.Application.search()" class="navbar-search form-search pull-left">
-					<div class="input-append">
-						<input type="text" class="search-query" placeholder="Search">
-			    	    <button type="submit" class="btn btn-inverse"><i class="icon-search icon-white"></i></button>
-					</div>
-				</form>
 				
 				<!-- User menu -->
 				 @if(session != null && Secured.getUsername(session) != null) {

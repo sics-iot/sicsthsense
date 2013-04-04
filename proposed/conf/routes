@@ -10,7 +10,7 @@ GET        /                                     controllers.Application.home()
 GET        /search                               controllers.Application.search()
 GET        /streams                              controllers.Application.streams()
 GET        /explore                              controllers.Application.explore()
-GET        /sources															 controllers.CtrlSource.sources()
+GET        /resources													 	controllers.CtrlResource.resources()
 GET        /attachFunction											 controllers.Application.attachFunction()
 GET        /API                                  controllers.Public.about()
 
@@ -46,17 +46,17 @@ GET        /streams/:id								    			controllers.CtrlStream.getDataById(id: Lon
 DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
 #POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
-# Sources
-GET			/sources/add												controllers.CtrlSource.add()
-GET			/sources/initialise									controllers.CtrlSource.initialise()
-POST		/sources/modify/:id									controllers.CtrlSource.modify(id: Long)
-GET			/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
-POST		/sources/delete/:id									controllers.CtrlSource.delete(id: Long)
-GET			/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
-POST		/sources/deleteParser/:id						controllers.CtrlSource.deleteParser(id: Long)
-POST		/sources/addParser									controllers.CtrlSource.addParser(sourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String, dataGroup: Integer ?= 1, timeGroup: Integer ?= 2, numberOfPoints: Integer ?= 1)
-GET			/sources/:id												controllers.CtrlSource.getById(id: Long)
-POST    /sources/:id			    							controllers.CtrlSource.post(id: Long)
+# Resources
+GET			/resources/add												controllers.CtrlResource.add()
+GET			/resources/initialise									controllers.CtrlResource.initialise()
+POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
+GET			/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
+POST		/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
+GET			/resources/deleteParser/:id						controllers.CtrlResource.deleteParser(id: Long)
+POST		/resources/deleteParser/:id						controllers.CtrlResource.deleteParser(id: Long)
+POST		/resources/addParser									controllers.CtrlResource.addParser(resourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String, dataGroup: Integer ?= 1, timeGroup: Integer ?= 2, numberOfPoints: Integer ?= 1)
+GET			/resources/:id												controllers.CtrlResource.getById(id: Long)
+POST    /resources/:id			    							controllers.CtrlResource.post(id: Long)
 
 # Proxy
 GET					/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
@@ -69,14 +69,14 @@ POST				/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, argu
 PUT					/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
 DELETE			/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
 
-# Sources API
-POST    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
-#GET		/api/sources/:key										controllers.CtrlSource.getByKey(key: String)
-#GET    /api/sources/:key										controllers.CtrlSource.postByKey(key: String)
+# Resources API
+POST    /api/resources/:key										controllers.CtrlResource.postByKey(key: String)
+#GET		/api/resources/:key										controllers.CtrlResource.getByKey(key: String)
+#GET    /api/resources/:key										controllers.CtrlResource.postByKey(key: String)
 
 ## This was providing a way to post without the key !! (bug)
-#POST   /api/label/:user/:label							controllers.CtrlSource.postByLabel(user: String, label: String)
-#GET		/api/label/:user/:label							controllers.CtrlSource.getByLabel( user: String, label: String)
+#POST   /api/label/:user/:label							controllers.CtrlResource.postByLabel(user: String, label: String)
+#GET		/api/label/:user/:label							controllers.CtrlResource.getByLabel( user: String, label: String)
 
 # Streams, API
 GET    	/api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
@@ -90,6 +90,6 @@ POST		/attachFunction/attach							controllers.CtrlFunction.attach()
 # Javascript Routes
 GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()
 
-# Map static resources from the /public folder to the /assets URL path
+# Map static reresources from the /public folder to the /assets URL path
 GET        /assets/*file                		controllers.Assets.at(path="/public", file)
 

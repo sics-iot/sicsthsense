@@ -17,7 +17,7 @@ import models.*;
 @Security.Authenticated(Secured.class)
 public class Application extends Controller {
 
-	static private Form<Source> sourceForm = Form.form(Source.class);
+	static private Form<Resource> resourceForm = Form.form(Resource.class);
 	static private Form<Stream> streamForm = Form.form(Stream.class);
   
   public static Result home() {
@@ -56,14 +56,14 @@ public class Application extends Controller {
   
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(attachFunctionPage.render(currentUser.sourceList));
+    return ok(attachFunctionPage.render(currentUser.resourceList));
   }
 
 	/*
 	// deprecated
-  public static Result sources() {
+  public static Result resources() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(sourcesPage.render(currentUser.sourceList, sourceForm));
+    return ok(resourcesPage.render(currentUser.resourceList, resourceForm));
   }*/
   
   // -- Javascript routing
@@ -72,8 +72,8 @@ public class Application extends Controller {
       return ok(
       		play.Routes.javascriptRouter("jsRoutes",
           		controllers.routes.javascript.Application.home(),
-          		controllers.routes.javascript.CtrlSource.deleteParser(),
-          		controllers.routes.javascript.CtrlSource.addParser(),
+          		controllers.routes.javascript.CtrlResource.deleteParser(),
+          		controllers.routes.javascript.CtrlResource.addParser(),
           		controllers.routes.javascript.CtrlStream.delete(),
           		controllers.routes.javascript.CtrlStream.clear(),
           		controllers.routes.javascript.CtrlStream.deleteByKey(),

@@ -1,28 +1,28 @@
-@(sources : List[Source], myForm : Form[Source])
+@(resources : List[Resource], myForm : Form[Resource])
 @** 
 Should take these parameters, for the side navigation menu
-(sources : List[Source], extStreams : List[Stream]) 
+(resources : List[Resource], extStreams : List[Stream]) 
 **@	
-@** needs user sources, external streams? available operators? **@
+@** needs user resources, external streams? available operators? **@
 @import helper._
 
-@layout("Sources", session) {
+@layout("Resources", session) {
 
     <!-- Docs nav
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-			@** should pass theses parameters(sources, extStreams) **@
-			@manage.navigationMenu(sources) 
+			@** should pass theses parameters(resources, extStreams) **@
+			@manage.navigationMenu(resources) 
     </div>
 
     <div class="span9">
 		<br \>
 		<!--Body content-->
 
-	<!-- Small add resource form -->
+	<!-- Small add reresource form -->
 	<h1>Add new resource</h1>   
-	@helper.form(action = routes.CtrlSource.initialise()) {
+	@helper.form(action = routes.CtrlResource.initialise()) {
 	
 	<fieldset>
 		      <legend>Parameters for the resource:</legend>
@@ -39,11 +39,11 @@ Should take these parameters, for the side navigation menu
 					</div>
 @** 
 	      <fieldset>
-		      <legend>Parameters for the source:</legend>
+		      <legend>Parameters for the resource:</legend>
 	      @inputText(
 			    myForm("label"),
 		      '_label -> "Label",
-		      '_help -> "Required name of this source",
+		      '_help -> "Required name of this resource",
 					'value -> "NewSource"
 	      )
 	      @inputText(
@@ -64,7 +64,7 @@ Should take these parameters, for the side navigation menu
 	      @inputText(
 		      myForm("pollingAuthenticationKey"),
 		      '_label -> "Authentication key",
-		      '_help -> "Only enter authentication details if required by polled source"
+		      '_help -> "Only enter authentication details if required by polled resource"
 		      )
 				*@
  				<div class="actions">

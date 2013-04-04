@@ -28,10 +28,10 @@ import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
 @Entity
-@Table(name = "sources", uniqueConstraints = { 
+@Table(name = "resources", uniqueConstraints = { 
 	@UniqueConstraint(columnNames = {"owner_id", "label" }) 
 	})
-public class Source extends Operator {
+public class Resource extends Operator {
 
 	@Id
   public Long id;
@@ -45,17 +45,17 @@ public class Source extends Operator {
 	 */
   private static final long serialVersionUID = 7683451697925144957L;
 	@Required
-  public String label = "NewSource";
+  public String label = "NewResource";
   public Long pollingPeriod = 0L;
   public Long lastPolled = 0L;
 	public String pollingUrl = null;
 	public String pollingAuthenticationKey = null;
 	public String description; // dont use!
 
-	@OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 
-	@OneToMany(mappedBy = "source")
+	@OneToMany(mappedBy = "resource")
 	public List<Stream> streams = new ArrayList<Stream>();
 
 	/** Secret key for authenticating posts coming from outside */
@@ -65,10 +65,10 @@ public class Source extends Operator {
 	//should we make a permission management system as in Stream? 
 	//public boolean publicAccess=false;
 
-	public static Model.Finder<Long, Source> find = new Model.Finder<Long, Source>(
-			Long.class, Source.class);
+	public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(
+			Long.class, Resource.class);
 	
-	public Source(User owner, String label, Long pollingPeriod,
+	public Resource(User owner, String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
 		super();
 		this.label = label;
@@ -79,17 +79,17 @@ public class Source extends Operator {
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
 	}
 
-	public Source(String label, Long pollingPeriod,
+	public Resource(String label, Long pollingPeriod,
 			 String pollingUrl, String pollingAuthenticationKey) {
 		this(null, label, pollingPeriod, pollingUrl, pollingAuthenticationKey);
 	}
 
-	public Source(User user) {
+	public Resource(User user) {
 		this.owner = user;
 		this.lastPolled=0L;
 	}
 
-	public Source() {
+	public Resource() {
 		super();
 		this.lastPolled=0L;
 	}
@@ -121,13 +121,13 @@ public class Source extends Operator {
 		return (Utils.isValidURL(this.pollingUrl));
 	}
 	
-	public void updateSource(Source source) {
-		this.label = source.label;
-		//this.key = source.getKey();
-		this.pollingPeriod = source.pollingPeriod;
-		this.lastPolled = source.lastPolled;
-		this.pollingUrl = source.pollingUrl;
-		this.pollingAuthenticationKey = source.pollingAuthenticationKey;
+	public void updateResource(Resource resource) {
+		this.label = resource.label;
+		//this.key = resource.getKey();
+		this.pollingPeriod = resource.pollingPeriod;
+		this.lastPolled = resource.lastPolled;
+		this.pollingUrl = resource.pollingUrl;
+		this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 		if(key == null || "".equalsIgnoreCase(key)) {
 			updateKey();
 		}
@@ -251,57 +251,57 @@ public class Source extends Operator {
 		return result;
 	}
 
-	public static Source get(Long id, String key) {
-		Source source = find.byId(id);
-		if (source != null && source.checkKey(key))
-			return source;
+	public static Resource get(Long id, String key) {
+		Resource resource = find.byId(id);
+		if (resource != null && resource.checkKey(key))
+			return resource;
 		return null;
 	}
 
-	public static Source get(Long id, User user) {
-		Source source = find.byId(id);
-		if ( source != null && source.owner.equals(user) )
-			return source;
+	public static Resource get(Long id, User user) {
+		Resource resource = find.byId(id);
+		if ( resource != null && resource.owner.equals(user) )
+			return resource;
 		return null;
 	}
 
-	public static Source getByKey(String key) {
-		Source source = find.where().eq("key",key).findUnique();
-		return source;	
+	public static Resource getByKey(String key) {
+		Resource resource = find.where().eq("key",key).findUnique();
+		return resource;	
 	}
 
-	public static Source getByUserLabel(User user, String label) {
-		Source source = find.where().eq("owner",user).eq("label",label).findUnique();
-		return source;
+	public static Resource getByUserLabel(User user, String label) {
+		Resource resource = find.where().eq("owner",user).eq("label",label).findUnique();
+		return resource;
 	}
 
-	public static Source create(User user) {
+	public static Resource create(User user) {
 		if (user != null) {
-			Source source = new Source(user);
-			source.save();
-			return source;
+			Resource resource = new Resource(user);
+			resource.save();
+			return resource;
 		}
 		return null;
 	}
 	
-	public static Source create(Source source) {
-		if (source.owner != null) {
-			if(getByUserLabel(source.owner, source.label) != null) {
-				source.label = source.label + new Random(new Date().getTime()).nextInt(10) + "_at_" + (new Date().toString());
+	public static Resource create(Resource resource) {
+		if (resource.owner != null) {
+			if(getByUserLabel(resource.owner, resource.label) != null) {
+				resource.label = resource.label + new Random(new Date().getTime()).nextInt(10) + "_at_" + (new Date().toString());
 			}
-			source.save();
-			source.updateKey();
-			return source;
+			resource.save();
+			resource.updateKey();
+			return resource;
 		}
 		return null;
 	}
 
 	public static void delete(Long id) {
-		Source source = find.ref(id);
-		source.pollingPeriod = 0L;
+		Resource resource = find.ref(id);
+		resource.pollingPeriod = 0L;
 		//remove references
-		Stream.dattachSource(source);
-		source.delete();
+		Stream.dattachResource(resource);
+		resource.delete();
 	}
 
 }

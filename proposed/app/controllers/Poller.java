@@ -25,12 +25,12 @@ public class Poller extends Controller {
   
   public static void pollAll() {
 		//Logger.info("Poller pollAll()");
-    List<Source> withPolling = Source.find.where()
+    List<Resource> withPolling = Resource.find.where()
         .gt("pollingPeriod", 0)
         .findList();
-    for(Source source: withPolling) {
-			//Logger.info("Poller poll a source");
-      source.poll();
+    for(Resource resource: withPolling) {
+			//Logger.info("Poller poll a resource");
+      resource.poll();
     }      
   }
   
@@ -49,7 +49,7 @@ public class Poller extends Controller {
       Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
       Matcher matcher = pattern.matcher(arguments);
       Map<String, String> queryParameters = new HashMap<String, String>();
-      Logger.info("[Sources] polling: " + resource.fullPath() + ", URL: " + url);
+      Logger.info("[Resources] polling: " + resource.fullPath() + ", URL: " + url);
       WSRequestHolder request = WS.url(url);
       while (matcher.find()) {
     	  request.setQueryParameter(matcher.group(1), matcher.group(2));
@@ -71,7 +71,7 @@ public class Poller extends Controller {
         			strBody = textBody.length() + " bytes";
         			break;
         	}
-            Logger.info("[Sources] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
+            Logger.info("[Resources] polling response for: " + resource.fullPath() + ", content type: " + response.getHeader("Content-Type") + ", payload: " + strBody);
             parseResponse(endPoint, jsonBody, textBody, resource);
             return true;
           }
@@ -83,7 +83,7 @@ public class Poller extends Controller {
   }
   public static void insertSample(EndPoint endPoint, String path, float data) {
     String fullPath = Utils.concatPath(endPoint.fullPath(), path);
-    Logger.info("[Sources] new sample for: " + fullPath + ", data: " + data);
+    Logger.info("[Resources] new sample for: " + fullPath + ", data: " + data);
     Resource resource = endPoint.getOrCreateResource(path);
     resource.post(data, Utils.currentTime());
   }
@@ -130,10 +130,10 @@ public class Poller extends Controller {
       String textBody = request().body().asText();
       String strBody = (jsonBody != null) ? jsonBody.toString() : textBody;
       Resource resource = endPoint.getOrCreateResource(path);
-      Logger.info("[Sources] post received from: " + Utils.concatPath(userName, endPointName, path) + ", URI " + request().uri() + ", content type: " + request().getHeader("Content-Type") + ", payload: " + strBody);
+      Logger.info("[Resources] post received from: " + Utils.concatPath(userName, endPointName, path) + ", URI " + request().uri() + ", content type: " + request().getHeader("Content-Type") + ", payload: " + strBody);
       if(!parseResponse(endPoint, jsonBody, textBody, resource)) return badRequest("Bad request: Can't parse!");
     } catch (Exception e) {
-    	Logger.info("[Sources] Exception " + e.getMessage());
+    	Logger.info("[Resources] Exception " + e.getMessage());
       return badRequest("Bad request: Error!");
     }
     return ok("ok");

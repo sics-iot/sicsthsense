@@ -32,7 +32,7 @@ public class CtrlFunction extends Controller {
 			Function operator = theForm.get();
 			User currentUser = Secured.getCurrentUser();
 			Function.create(currentUser,theForm.field("output").value(),theForm.field("inputStream1").value(),theForm.field("inputStream2").value());
-		  return redirect(routes.CtrlSource.sources());
+		  return redirect(routes.CtrlResource.resources());
 		}
 	}
 
@@ -45,7 +45,7 @@ public class CtrlFunction extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result modify(Long id) {
 		/*
-		 * TODO: Create source from Form or update existing Create a parser from an
+		 * TODO: Create resource from Form or update existing Create a parser from an
 		 * embedded form and associate the parser with the new source
 		 */
 		Form<Function> theForm = functionForm.bindFromRequest();
@@ -55,11 +55,11 @@ public class CtrlFunction extends Controller {
 			User currentUser = Secured.getCurrentUser();
 			Function submitted = theForm.get();
 			try {
-				//Source.get(id, currentUser).updateSource(submitted);
+				//Resource.get(id, currentUser).updateResource(submitted);
 			} catch (Exception e) {
 				return badRequest("Bad request");
 			}
-		  return redirect(routes.CtrlSource.sources());
+		  return redirect(routes.CtrlResource.resources());
 		}    
   }
 	

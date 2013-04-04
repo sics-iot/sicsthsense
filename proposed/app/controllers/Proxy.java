@@ -36,9 +36,9 @@ public class Proxy extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result forwardById(Long id, String arguments) {
 		User currentUser = Secured.getCurrentUser();
-		Source source = Source.get(id, currentUser);
-		if (source == null) {
-			return badRequest("Source does not exist: " + id);
+		Resource resource = Resource.get(id, currentUser);
+		if (resource == null) {
+			return badRequest("Resource does not exist: " + id);
 		}
 		Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
 		Matcher matcher = pattern.matcher(arguments);
@@ -46,13 +46,13 @@ public class Proxy extends Controller {
 		while (matcher.find()) {
 			queryParameters.put(matcher.group(1), matcher.group(2));
 		}
-		return forward(source, queryParameters);
+		return forward(resource, queryParameters);
 	}
 
 	public static Result forwardByKey(String key, String arguments) {
-		Source source = Source.getByKey(key);
-		if (source == null) {
-			return badRequest("Source does not exist: " + key);
+		Resource resource = Resource.getByKey(key);
+		if (resource == null) {
+			return badRequest("Resource does not exist: " + key);
 		}
 		Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
 		Matcher matcher = pattern.matcher(arguments);
@@ -60,16 +60,16 @@ public class Proxy extends Controller {
 		while (matcher.find()) {
 			queryParameters.put(matcher.group(1), matcher.group(2));
 		}
-		return forward(source, queryParameters);
+		return forward(resource, queryParameters);
 	}
 
-	private static Result forward(final Source source,
+	private static Result forward(final Resource resource,
 			final Map<String, String> queryParameters) {
 		final String method = request().method();
 		final String body = request().body().asText();
 		final Map<String, String[]> headers = request().headers();
 
-		final String url = source.getUrl();
+		final String url = resource.getUrl();
 		return async(Akka.future(new Callable<Result>() {
 			public Result call() {
 				Logger.info("[Proxy] forwarding method: " + method + ", to: " + url

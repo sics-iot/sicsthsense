@@ -1,40 +1,40 @@
-@(sources: List[Source], myForm: Form[SkeletonSource])
+@(resources: List[Resource], myForm: Form[SkeletonResource])
 
 @import helper._
 @import helper.twitterBootstrap._
 
-@interactWithSource(sourceId: Long, sourceUrl: String) = {  
-	@if(Utils.isValidURL(sourceUrl)) {
-	<div class="row-fluid interact controls controls-row" sourceId="@sourceId">
+@interactWithResource(resourceId: Long, resourceUrl: String) = {  
+	@if(Utils.isValidURL(resourceUrl)) {
+	<div class="row-fluid interact controls controls-row" resourceId="@resourceId">
 	<fieldset>
-  <legend>Interact with source</legend>
-	 <form id="proxy@sourceId" action="@routes.Proxy.forwardById(sourceId, "")">
-	 	 <select class="span2" id="method@sourceId" name="method" >
+  <legend>Interact with reresource</legend>
+	 <form id="proxy@resourceId" action="@routes.Proxy.forwardById(resourceId, "")">
+	 	 <select class="span2" id="method@resourceId" name="method" >
    		<option value="GET" selected="selected">GET</option>
     	<option value="POST">POST</option>
     	<option value="PUT">PUT</option>
     	<option value="DELETE">DELETE</option>
 		 </select>
-		 <input class="span4" type="text" id="arguments@sourceId" name="arguments" placeholder="arguments" />
-     <input class="span4" type="text" id="body@sourceId" name="body" placeholder="body" />
-     <input class="span1 btn btn-primary" type="submit" name="send" id="send@sourceId" value="Send">
-   	 <img class="span1" id="ajax_wait@sourceId" src="@routes.Assets.at("images/ajax_wait.gif")" height="20" align="top" style="display: none"></img>
+		 <input class="span4" type="text" id="arguments@resourceId" name="arguments" placeholder="arguments" />
+     <input class="span4" type="text" id="body@resourceId" name="body" placeholder="body" />
+     <input class="span1 btn btn-primary" type="submit" name="send" id="send@resourceId" value="Send">
+   	 <img class="span1" id="ajax_wait@resourceId" src="@routes.Assets.at("images/ajax_wait.gif")" height="20" align="top" style="display: none"></img>
 	 </form>
 	</fieldset>
-	<div id="response@sourceId" style="display: none">
-		<div class="span2"><a id="hide@sourceId" href="#" class="icon-remove btn-icon"></a>&nbsp
-		<span id="response1@sourceId"></span></div>
-	  <textarea class="span10" id="response2@sourceId" name="response2@sourceId" wrap="soft"></textarea>
+	<div id="response@resourceId" style="display: none">
+		<div class="span2"><a id="hide@resourceId" href="#" class="icon-remove btn-icon"></a>&nbsp
+		<span id="response1@resourceId"></span></div>
+	  <textarea class="span10" id="response2@resourceId" name="response2@resourceId" wrap="soft"></textarea>
 	</div>
 		</div>    
 
      <script type="text/javascript">
-	  $('#proxy@sourceId').submit(function() {
-	    var method = $("select#method@sourceId").val();
-	    var arguments = $("input#arguments@sourceId").val();
-	    var url = "@routes.Proxy.forwardById(sourceId, "")" + arguments;
-	    var body = $("input#body@sourceId").val();
-	    $("#ajax_wait@sourceId").show(); //css("visibility","visible");
+	  $('#proxy@resourceId').submit(function() {
+	    var method = $("select#method@resourceId").val();
+	    var arguments = $("input#arguments@resourceId").val();
+	    var url = "@routes.Proxy.forwardById(resourceId, "")" + arguments;
+	    var body = $("input#body@resourceId").val();
+	    $("#ajax_wait@resourceId").show(); //css("visibility","visible");
 	    $.ajax({
 	    	  url: url,
 	    	  context: document.body,
@@ -43,24 +43,24 @@
 	    	  data: body,
 	    	  contentType: "text/plain",
     	    error: function(x, t, m) {
-    	    	$("#response1@sourceId").html("Error");
-    	    	$("#response2@sourceId").text(m);
-            $("#response@sourceId").show();
-    	    	$("#ajax_wait@sourceId").hide();//.css("visibility","hidden");
+    	    	$("#response1@resourceId").html("Error");
+    	    	$("#response2@resourceId").text(m);
+            $("#response@resourceId").show();
+    	    	$("#ajax_wait@resourceId").hide();//.css("visibility","hidden");
     	    },
     	    success: function(response) {
-    	    	$("#response1@sourceId").html("Response");
-            $("#response2@sourceId").text(response);
-            $("#response@sourceId").show();
-            $("#ajax_wait@sourceId").hide();//.css("visibility","hidden");
+    	    	$("#response1@resourceId").html("Response");
+            $("#response2@resourceId").text(response);
+            $("#response@resourceId").show();
+            $("#ajax_wait@resourceId").hide();//.css("visibility","hidden");
            }
 	    	});
 	    			    
 	    return false;
 	  });
 	  
-	  $('#hide@sourceId').click(function() {
-		  $("#response@sourceId").hide();              
+	  $('#hide@resourceId').click(function() {
+		  $("#response@resourceId").hide();              
 	      return false;
 	    });
 	  
@@ -100,9 +100,9 @@
     <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
 			 
-			@manage.navigationMenu(sources) 
+			@manage.navigationMenu(resources) 
 			@**
-			should pass theses parameters(sources, extStreams)
+			should pass theses parameters(resources, extStreams)
 			**@
       </div>
       <div class="span9">
@@ -116,19 +116,19 @@
 	      
   <h1>Configure '@myForm("label").value'</h1>
 
-	@interactWithSource(myForm("id").value.toLong, myForm("pollingUrl").value)
+	@interactWithResource(myForm("id").value.toLong, myForm("pollingUrl").value)
 
-	@helper.form(action = routes.CtrlSource.modify(myForm("id").value.toLong), 'id -> "modify_source_form") {
+	@helper.form(action = routes.CtrlResource.modify(myForm("id").value.toLong), 'id -> "modify_resource_form") {
 	      <fieldset>
-		      <legend>Source parameters</legend>
+		      <legend>Reresource parameters</legend>
 					<div class="row-fluid controls controls-row">
 						<label class="span3">Label</label>
-						<label class="span5">Source URL</label>
+						<label class="span5">Reresource URL</label>
 						<label class="span2">Poll period (s)</label>
 					</div>
 					<div class="row-fluid controls controls-row">
 						<input type="hidden" id="myForm("id").id" name="@myForm("id").name" value="@myForm("id").value" readonly="readonly" size="0">
-						<input class="span3" type="text" required id="@myForm("label").id" name="@myForm("label").name" value="@myForm("label").value" placeholder="Source label">
+						<input class="span3" type="text" required id="@myForm("label").id" name="@myForm("label").name" value="@myForm("label").value" placeholder="Reresource label">
 						<input class="span7" type="url" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="leave blank for POST">
 						<input class="span2" type="number" id="@myForm("pollingPeriod").id" name="@myForm("pollingPeriod").name" value="@myForm("pollingPeriod").value" placeholder="120">
 					</div>
@@ -142,7 +142,7 @@
 
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
-		      <div id="parsers" sourceId="@myForm("id").value">
+		      <div id="parsers" resourceId="@myForm("id").value">
 						@streamParserGroupLabels()
 			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
 			        @streamParserGroup(spw, className="", modifyStreamPath=false, deleteParser=true)
@@ -161,14 +161,14 @@
 
 	      <div class="actions">				      
 					<a class="addParser btn btn-success">Add another stream parser</a> &nbsp;
-		      <input type="submit" class="btn btn-primary" name="update" id="updateSource" value="Update"> &nbsp;
+		      <input type="submit" class="btn btn-primary" name="update" id="updateResource" value="Update"> &nbsp;
 
-		      <a href="@routes.CtrlSource.sources()" class="btn">Cancel</a>
+		      <a href="@routes.CtrlResource.resources()" class="btn">Cancel</a>
 	      </div>
   			<br />
-				<a href="@routes.CtrlSource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete source</a>
+				<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete resource</a>
   }
-	<!-- end modify source-->
+	<!-- end modify resource-->
   </div>
 </div>
 }

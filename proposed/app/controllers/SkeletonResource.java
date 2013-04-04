@@ -6,7 +6,7 @@ import models.*;
 import play.Logger;
 import play.data.validation.Constraints;
 
-public class SkeletonSource {
+public class SkeletonResource {
 	public Long id;
 	public String label = null;
 	public String key = null;
@@ -15,7 +15,7 @@ public class SkeletonSource {
 	public String pollingAuthenticationKey = null;
 	public List<StreamParserWraper> streamParserWrapers;
 
-	public SkeletonSource(String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+	public SkeletonResource(String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
 		this.label = label;
 		this.key = key;
 		this.pollingPeriod = pollingPeriod;
@@ -24,43 +24,43 @@ public class SkeletonSource {
 		this.streamParserWrapers = streamParserWrapers;
 	}
 
-	public SkeletonSource(Source source, List<StreamParserWraper> streamParserWrapers) {
-		if (source != null) {
-			this.id = source.id;
-			this.key = source.getKey();
-			this.label = source.label;
-			this.pollingPeriod = source.pollingPeriod;
-			this.pollingUrl = source.pollingUrl;
-			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
+	public SkeletonResource(Resource resource, List<StreamParserWraper> streamParserWrapers) {
+		if (resource != null) {
+			this.id = resource.id;
+			this.key = resource.getKey();
+			this.label = resource.label;
+			this.pollingPeriod = resource.pollingPeriod;
+			this.pollingUrl = resource.pollingUrl;
+			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = streamParserWrapers;
 	}
 
-	public SkeletonSource(Source source) {
-		if (source != null) {
-			this.id = source.id;
-			this.label = source.label;
-			this.key = source.getKey();
-			this.pollingPeriod = source.pollingPeriod;
-			this.pollingUrl = source.pollingUrl;
-			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
-			if (source.streamParsers != null) {
-				streamParserWrapers = new ArrayList<StreamParserWraper>(source.streamParsers.size()+1);
-				for (StreamParser sp : source.streamParsers) {
+	public SkeletonResource(Resource resource) {
+		if (resource != null) {
+			this.id = resource.id;
+			this.label = resource.label;
+			this.key = resource.getKey();
+			this.pollingPeriod = resource.pollingPeriod;
+			this.pollingUrl = resource.pollingUrl;
+			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+			if (resource.streamParsers != null) {
+				streamParserWrapers = new ArrayList<StreamParserWraper>(resource.streamParsers.size()+1);
+				for (StreamParser sp : resource.streamParsers) {
 					streamParserWrapers.add(new StreamParserWraper(sp));
 				}
 			}
 		}
 	}
 	
-	public SkeletonSource(Source source, StreamParserWraper... spws) {
-		if(source != null) {
-			this.id = source.id;
-			this.key = source.getKey();
-			this.label = source.label;
-			this.pollingPeriod = source.pollingPeriod;
-			this.pollingUrl = source.pollingUrl;
-			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
+	public SkeletonResource(Resource resource, StreamParserWraper... spws) {
+		if(resource != null) {
+			this.id = resource.id;
+			this.key = resource.getKey();
+			this.label = resource.label;
+			this.pollingPeriod = resource.pollingPeriod;
+			this.pollingUrl = resource.pollingUrl;
+			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length+1);
 		for (StreamParserWraper spw : spws) {
@@ -68,7 +68,7 @@ public class SkeletonSource {
 		}
 	}
 
-	public SkeletonSource(Long id, String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
+	public SkeletonResource(Long id, String label, String key, Long pollingPeriod, String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
 		this.id = id;
 		this.label = label;
 		this.key = key;
@@ -81,25 +81,25 @@ public class SkeletonSource {
 		}
 	}
 	
-	public SkeletonSource() {
+	public SkeletonResource() {
 	}
 
 
-	public Source getSource(User user) {
-		Source src = new Source(user, label,
+	public Resource getResource(User user) {
+		Resource src = new Resource(user, label,
 				pollingPeriod, pollingUrl,
 				pollingAuthenticationKey);
 		src.id = id;
 		return src;
 	}
 
-	public List<StreamParser> getStreamParsers(Source source) {
+	public List<StreamParser> getStreamParsers(Resource resource) {
 		if (streamParserWrapers == null) { return null; }
 		List<StreamParser> list = new ArrayList<StreamParser>();
 
 		for (int i = 0; i < streamParserWrapers.size(); i++) {
 			if (streamParserWrapers.get(i).vfilePath != null) {
-				StreamParser sp = streamParserWrapers.get(i).getStreamParser(source);
+				StreamParser sp = streamParserWrapers.get(i).getStreamParser(resource);
 				list.add(sp);
 			} else {
 				Logger.warn("Got a null vfilePath");
@@ -108,14 +108,14 @@ public class SkeletonSource {
 		return list;
 	}
 
-	public boolean FillFromSource(Source source) {
-		if(source != null) {
-			this.id = source.id;
-			this.key = source.key;
-			this.label = source.label;
-			this.pollingPeriod = source.pollingPeriod;
-			this.pollingUrl = source.pollingUrl;
-			this.pollingAuthenticationKey = source.pollingAuthenticationKey;
+	public boolean FillFromResource(Resource resource) {
+		if(resource != null) {
+			this.id = resource.id;
+			this.key = resource.key;
+			this.label = resource.label;
+			this.pollingPeriod = resource.pollingPeriod;
+			this.pollingUrl = resource.pollingUrl;
+			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 			return true;
 		}
 		return false;
@@ -199,8 +199,8 @@ public class SkeletonSource {
 		public StreamParserWraper() {
 		}
 
-		public StreamParser getStreamParser(Source source) {
-			StreamParser sp = new StreamParser(source,
+		public StreamParser getStreamParser(Resource resource) {
+			StreamParser sp = new StreamParser(resource,
 					this.inputParser, this.inputType,
 					this.vfilePath, this.timeformat, this.dataGroup, this.timeGroup, this.numberOfPoints);
 			sp.id = this.parserId;

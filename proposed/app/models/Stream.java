@@ -70,7 +70,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	public User owner;
 
 	@ManyToOne
-	public Source source;
+	public Resource resource;
 
 	//should this be a field in the table? (i.e. not mappedBy)?
 	@OneToOne(cascade = CascadeType.ALL, mappedBy="linkedStream")
@@ -91,9 +91,9 @@ public class Stream extends Model implements Comparable<Stream> {
   @ManyToMany(cascade = CascadeType.ALL, mappedBy = "followedStreams")
   public List<User> followingUsers = new ArrayList<User>();
 
-	public Stream(User user, Source source, StreamType type) {
+	public Stream(User user, Resource resource, StreamType type) {
 		this.owner =  user;
-		this.source = source;
+		this.resource = resource;
 		this.type =   type;
 		this.latitude   = 0.0;
 		this.longtitude = 0.0;
@@ -112,8 +112,8 @@ public class Stream extends Model implements Comparable<Stream> {
 		}
 	}
 	
-	public Stream(User user, Source source) {
-		this(user, source, StreamType.UNDEFINED);
+	public Stream(User user, Resource resource) {
+		this(user, resource, StreamType.UNDEFINED);
 	}
 
 	public Stream(User user) {
@@ -255,21 +255,21 @@ public class Stream extends Model implements Comparable<Stream> {
 		find.ref(id).delete();
 	}
 	
-	public static void deleteBySource(Source source) {
+	public static void deleteByResource(Resource resource) {
 		List<Stream> list = find.where()
-		 .eq("source", source)
+		 .eq("resource", resource)
 		 .findList();
 		for (Stream stream : list) {
 			stream.delete();
 		}
 	}
 	
-	public static void dattachSource(Source source) {
+	public static void dattachResource(Resource resource) {
 		List<Stream> list = find.where()
-		 .eq("source", source)
+		 .eq("resource", resource)
 		 .findList();
 		for (Stream stream : list) {
-			stream.source = null;
+			stream.resource = null;
 			stream.update();
 		}
 	}
@@ -439,8 +439,8 @@ public class Stream extends Model implements Comparable<Stream> {
 
 	public List<StreamParser> getStreamParsers() {
 		return streamparsers;
-//		if(source != null) {
-//			return StreamParser.find.where().eq("source", source).eq("stream", this).orderBy("streamVfilePath asce").findList();
+//		if(resource != null) {
+//			return StreamParser.find.where().eq("resource", resource).eq("stream", this).orderBy("streamVfilePath asce").findList();
 //		}
 //		return null;
 	}

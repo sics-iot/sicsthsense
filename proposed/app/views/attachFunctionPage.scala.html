@@ -1,4 +1,4 @@
-@(sources: List[Source])
+@(resources: List[Resource])
 @** needs user sources, external streams? available operators?
  available operators for this user!
  **@
@@ -11,8 +11,8 @@
     ================================================== -->
     <div class="row">
       <div class="span2 bs-docs-sidebar">
-			@manage.navigationMenu(sources)
-			@** should pass theses parameters(sources, extStreams) **@
+			@manage.navigationMenu(resources)
+			@** should pass theses parameters(resources, extStreams) **@
       </div>
       <div class="span9">
 			<br \>
@@ -22,8 +22,8 @@
    @helper.form(action = routes.CtrlFunction.attach()) {
     <dl>
 			Input Stream: <select name=="inputStream1">
-				@for(source <- sources) {
-					@for(streamparser <- source.streamParsers) {
+				@for(resource <- resources) {
+					@for(streamparser <- resource.streamParsers) {
 						<option value="@streamparser.stream.id">@streamparser.stream.id</option>
 					}
 				}

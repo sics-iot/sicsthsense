@@ -42,7 +42,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public Date lastLogin;
 	
 	@OneToMany(mappedBy = "owner")
-	public List<Source> sourceList = new ArrayList<Source>();
+	public List<Resource> resourceList = new ArrayList<Resource>();
 	@OneToMany(mappedBy = "owner")
 	public List<Stream> streamList = new ArrayList<Stream>();
 	@OneToMany(mappedBy = "owner")
