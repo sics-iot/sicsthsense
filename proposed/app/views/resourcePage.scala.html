@@ -10,6 +10,8 @@
 		Configure '@myForm("label").value'
 	}
 }
+@keyUrl = { @sicsthSenseURL()@{routes.CtrlResource.postByKey(myForm("key").value)} }
+
 @resourceFormAction = @{
 	if(addNewResource) {
 		routes.CtrlResource.add()	
@@ -162,7 +164,8 @@
 						<label class="span12"><a href="/API">Post key</a> (keep secret!): </label>
 					</div>
 					<div class="row-fluid controls controls-row">
-						<input class="span12" type="text" id="@myForm("key").id" name="@myForm("key").name" value="@myForm("key").value" readonly="readonly">
+						<!--input class="span12" type="text" id="@myForm("key").id" name="@myForm("key").name" value="@myForm("key").value" readonly="readonly"-->
+						<input class="span12" type="text" id="@{myForm("key").id}KeyURL" name="KeyURL" value="@keyUrl" readonly="readonly">
 					</div>
 	      </fieldset>
 			} else {

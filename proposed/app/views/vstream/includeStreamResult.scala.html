@@ -1,24 +1,19 @@
 @(stream: Stream)
 
 @if(stream != null) {
-<div id="streamblock@{stream.id}" >
-@if(stream.hasData()) {
-  
-	<div id="streamtitle@{stream.id}" class="streamtitle">
-		<a name="@{stream.file.getPath()}"></a>
-		Stream 
-		<a herf="" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
-		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
-	</div>
-	} else {
-		<div id="streamtitle@{stream.id}" class="streamtitle">
-			Data stream 
+<div id="streamblock@{stream.id}" class="row-fluid">
+		<div id="streamtitle@{stream.id}" class="streamtitle span12">
+			<span class="span6">Stream 
 			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			</span>
+			<span class="span6">
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
+			</span>
 		</div>
-		<div>
-		Key: <i>@stream.getKey()</i>
-	</div>	
+<div >
+	<input class="span10" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+</div>
+	@if(!stream.hasData()) {
 		&nbsp;No data
 	}
 	</div>

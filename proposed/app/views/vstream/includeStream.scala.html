@@ -29,8 +29,8 @@
 		}
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
-<div style="background-color='#333'; border 1px solid black;">
-	Key: <input class="span4" type="text" id="key" name="key" value="@stream.showKey(Secured.getCurrentUser())" readonly="readonly">
+<div class="row-fluid">
+	<input class="span12" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 </div>
 	<div class="plot-container">
 		<div class="row-fluid">
@@ -78,9 +78,9 @@
 			<a href="/streams/view/@{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
-		<div>
-	Key: <input class="span4" type="text" id="key" name="key" value="@stream.showKey(Secured.getCurrentUser())" readonly="readonly">
-	</div>	
+<div class="row-fluid">
+	<input class="span12" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+</div>	
 	<br />
 		&nbsp;No data currently available.
 	}
