@@ -103,8 +103,9 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		//save();
 		return token;
 	}
+	//don't remove strange chars from username
 	public void verify() {
-		userName = userName.replaceAll("[^\\w.-]", "");
+//		userName = userName.replaceAll("[^\\w.-]", "");
 	}
 
 	public void save() {
