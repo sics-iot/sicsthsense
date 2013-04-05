@@ -46,7 +46,7 @@ public class CtrlFunction extends Controller {
 	public static Result modify(Long id) {
 		/*
 		 * TODO: Create resource from Form or update existing Create a parser from an
-		 * embedded form and associate the parser with the new source
+		 * embedded form and associate the parser with the new resource
 		 */
 		Form<Function> theForm = functionForm.bindFromRequest();
 		if (theForm.hasErrors()) {

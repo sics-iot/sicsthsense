@@ -41,6 +41,24 @@ public class Login extends Controller {
 				});
 		return async(promised);
 	}
+	public static Result authenticatePassword(String username, String password) {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put("email", "http://axschema.org/contact/email");
+		attributes.put("firstName", "http://axschema.org/namePerson/first");
+		attributes.put("lastName", "http://axschema.org/namePerson/last");
+		Promise<Result> promised = null;
+		/*
+		promised = OpenID.redirectURL(openid_identifier,
+				routes.Login.openIDCallback().absoluteURL(request()), attributes).map(
+				new Function<String, Result>() {
+					public Result apply(String url) {
+						return redirect(url);
+					}
+				});
+		return async(promised);
+		*/
+		return ok("Logged in with username/password");
+	}
 
 	public static Result openIDCallback() {
 		UserInfo userInfo = OpenID.verifiedId().get();

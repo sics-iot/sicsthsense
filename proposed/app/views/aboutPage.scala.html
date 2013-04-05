@@ -10,18 +10,18 @@
   <h1>Getting started</h1>
   
 	<p>
-	The first step is to create an account. You can then add your data sources
+	The first step is to create an account. You can then add your data resources
 	and start collecting their data.  <i>Resources</i> provide a definition of how
 	some data is accessed, and then <i>streams</i> of data points are populated
-	from this source (e.g. poll or post).  
+	from this resource (e.g. poll or post).  
 	</p>
 
 	<p>
-	When adding a source, Sics<sup>th</sup>Sense can attempt to guess the
-	correct way to parse the data by probing the data source URL. Json responses
+	When adding a resource, Sics<sup>th</sup>Sense can attempt to guess the
+	correct way to parse the data by probing the data resource URL. Json responses
 	are  parseable through simply specifying the path of any Json
 	elements to save and plot. For example, the <i>light</i> and <i>humidity</i>
-	of the following source would be stored by specifying the parsers
+	of the following resource would be stored by specifying the parsers
 	"<i>/resources/light</i>" and "<i>/resources/humidity</i>".  The values can
 	be either sent as an integer or float.
 	</p>
@@ -42,9 +42,9 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 	<br /> <br />
   <h1>Polling data</h1>
   
-	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data source (e.g. device or webpage).
+	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
 	This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
-  After creating your source, just discover or add new streams manually, with a corresponding polling interval.
+  After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
   The data will soon appear in graphs, and be available through our RESTful API.
 
 
@@ -93,8 +93,8 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 				<li> Posting with a specefic time format (<em>i.e.</em> Wed Mar 27, 18:00:12 CET 2013). 
 				See <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">this.</a></li>
 			</ul>
-			In this case you need to create a source and define the needed stream parsers.
-			After creating the source, the system will provide a <code>key</code> that should be used for posting to the URL:
+			In this case you need to create a resource and define the needed stream parsers.
+			After creating the resource, the system will provide a <code>key</code> that should be used for posting to the URL:
 			<pre> http://sense.sics.se:8080/api/resources/<em>[key]</em></pre>
 		</li>
 	</ul>

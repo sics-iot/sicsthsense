@@ -22,7 +22,7 @@ public class Actuator extends Operator {
 	@ManyToOne
 	public User owner;
 
-	// @OneToMany(mappedBy="source", cascade=CascadeType.ALL)
+	// @OneToMany(mappedBy="resource", cascade=CascadeType.ALL)
 	// public List<Stream> outputStreams;
 
 	/** HTML, JSON, RegEx */
