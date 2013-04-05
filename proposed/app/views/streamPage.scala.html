@@ -38,7 +38,7 @@
 						'rows -> 3,
 						'_label -> "Description"
 					)
-					<br /> <br />
+					<br /> 
 
 					<fieldset>
 
@@ -82,16 +82,20 @@
       function initialize() {
         var mapOptions = {
           center: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-          zoom: 8,
+					@if(stream.latitude==0 && stream.longtitude==0) {
+						zoom: 1,
+					} else {
+						zoom: 7,
+					}
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map-canvas"),
             mapOptions);
-      marker = new google.maps.Marker({
-      	position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-    		draggable:true,
-   			animation:false,
-      	map: map
+				marker = new google.maps.Marker({
+					position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
+					draggable:true,
+					animation:false,
+					map: map
       });
 			google.maps.event.addListener(marker, 'dragend', function(event) {
         document.getElementById("latitude").value = this.getPosition().lat(); 

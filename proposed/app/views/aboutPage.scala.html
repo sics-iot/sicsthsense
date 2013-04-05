@@ -60,12 +60,12 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 				<li> A JSON object in one of the following formats:
 					<ul> 
 						<li>Only a value with an arbitrary name. 
-								In this case the time for post request will be cosidered the timestamp for this point:
+								In this case the time for post request will be considered the timestamp for this point:
 							  <pre> { 
    "temperature": 25
  }</pre>
 						</li>
-						<li>A time\value pair with the specefic field names:
+						<li>A time\value pair with the specific field names:
 							  <pre> {
    "time": 1364404284,
    "value": 25
@@ -89,8 +89,8 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 						<li> The REGEX contains only one matching group, which will be considered the stream value.	</li>
 					</ul>
 				</li>
-				<li> Complex JSON objects from which you need to select a specefic node. </li>
-				<li> Posting with a specefic time format (<em>i.e.</em> Wed Mar 27, 18:00:12 CET 2013). 
+				<li> Complex JSON objects from which you need to select a specific node. </li>
+				<li> Posting with a specific time format (<em>e.g.</em> Wed Mar 27, 18:00:12 CET 2013). 
 				See <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">this.</a></li>
 			</ul>
 			In this case you need to create a resource and define the needed stream parsers.
