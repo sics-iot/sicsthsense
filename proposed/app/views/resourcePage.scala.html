@@ -39,7 +39,9 @@
 		 </select>
 		 <input class="span4" type="text" id="arguments@resourceId" name="arguments" placeholder="arguments" />
      <input class="span4" type="text" id="body@resourceId" name="body" placeholder="body" />
-     <input class="span1 btn btn-primary" type="submit" name="send" id="send@resourceId" value="Send">
+		 <input class="span1 btn btn-primary" type="submit" name="send" id="send@resourceId" value="Send">
+		 <br />
+		 <br />
    	 <img class="span1" id="ajax_wait@resourceId" src="@routes.Assets.at("images/ajax_wait.gif")" height="20" align="top" style="display: none"></img>
 	 </form>
 	</fieldset>
@@ -143,7 +145,7 @@
 	
 	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
-		      <legend>Reresource parameters</legend>
+		      <legend>Resource parameters</legend>
 					<div class="row-fluid controls controls-row">
 						<label class="span3">Label</label>
 						<label class="span5">Reresource URL</label>
@@ -182,7 +184,7 @@
 			      	@streamParserGroup( myForm("streamParserWrapers[x]"), className = "", modifyStreamPath=true, deleteParser=false )
 			      </div>
 		      </div>
-					<a class="addParser btn btn-success">Add new input parser</a> &nbsp;
+					<span style="float: right;"><a class="addParser btn btn-success">Add new input parser</a></span>
 
 	      </fieldset>
 
@@ -200,6 +202,8 @@
 	     @if(!addNewResource) {
   			<br />
 				<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete resource</a>
+				<br /> <br /> <br />
+				<br /> <br /> <br />
 			}
   }
 	<!-- end modify resource-->

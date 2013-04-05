@@ -75,7 +75,7 @@
 	} else {
 		<div id="streamtitle@{stream.id}" class="streamtitle">
 			Stream 
-			<a href="/streams/@{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			<a href="/streams/view/@{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
 		<div>
