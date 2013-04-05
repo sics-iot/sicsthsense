@@ -177,10 +177,12 @@ public class CtrlResource extends Controller {
 				submitted.id = null;
 				submitted = Resource.create(submitted);
 				List<StreamParser> spList = skeleton.getStreamParsers(submitted);
-				for (StreamParser sp : spList) {
-					if(sp!=null){
-						sp.id=null;
-						StreamParser.create(sp);
+				if (spList != null) {
+					for (StreamParser sp : spList) {
+						if(sp!=null){
+							sp.id=null;
+							StreamParser.create(sp);
+						}
 					}
 				}
 				currentUser.sortStreamList(); // reorder streams
