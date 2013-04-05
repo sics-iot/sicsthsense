@@ -322,39 +322,39 @@
   $('.addParser').on("click", insertParser);
   
   function updateResource(e) {
-  	$('.parsers_template').remove();
-  	for (var i=0; i<streamParsersToDelete.length; i++) { 
-  		deleteParser(streamParsersToDelete[i]);
-  		console.debug("Remove DOM: " + $('[parserId="'+streamParsersToDelete[i]+'"]').attr('id'));
-  		$('[parserId="'+streamParsersToDelete[i]+'"]').remove();
-  	}
-  	streamParsersToDelete = new Array();
-		renumberParsers();
-//		var newParsers = $(this).parents('.parsers').children().find('[new="true"]');
-//		var resourceId = $(this).parents('.parsers').attr("resourceId");
-//  	if(resourceId > 0) {
-//			for (var i=0; i<newParsers.length; i++) {
-//				
-//				inputParser = $(newParsers[i])
-//				, inputType, streamPath
-//	  		createParser(resourceId, inputParser, inputType, streamPath);
-//	  	}
-//  	}
-		
+//  	var $resource_form = $('#resource_form');
+//  	if (!$resource_form[0].checkValidity()) {
+//  	  // If the form is invalid, submit it. The form won't actually submit;
+//  	  // this will just cause the browser to display the native HTML5 error messages.
+//  		console.debug("form invalid!");
+//  	  //$resource_form.submit();
+//  	} else {
+	  	$('.parsers_template').remove();
+	  	for (var i=0; i<streamParsersToDelete.length; i++) { 
+	  		deleteParser(streamParsersToDelete[i]);
+	  		console.debug("Remove DOM: " + $('[parserId="'+streamParsersToDelete[i]+'"]').attr('id'));
+	  		$('[parserId="'+streamParsersToDelete[i]+'"]').remove();
+	  	}
+	  	streamParsersToDelete = new Array();
+			renumberParsers();
+//  	}		
   };
   $('#updateResource').on("click", updateResource);
-  //$('#modify_resource_form').submit(updateResource);
-  
-  $('#addResource').on("click", function(e) {
-  	$('.parsers_template').remove();
-		renumberParsers();
-		console.debug("Adding new resource.");
+
+  $('#addResource').on("click", function(e) {  	
+	  	$('.parsers_template').remove();
+			renumberParsers();
+			console.debug("Adding new resource.");
   });
-//  $('#add_resource_form').submit(function() {
+  
+//  function add_resource_form_handler(e) {	
 //  	$('.parsers_template').remove();
 //		renumberParsers();
-//  });
-
+//		console.debug("Adding new resource.");
+//  }
+//  var add_resource_form = document.getElementById("add_resource_form");
+//  add_resource_form.addEventListener("submit", add_resource_form_handler, false);
+  
 //-----------jsTree
 $("#vfileTree").bind("select_node.jstree", function(event, data) {
 	var path = '/' + $(this).jstree('get_path', data.rslt.obj, false).join('/');
