@@ -30,7 +30,7 @@
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
 <div style="background-color='#333'; border 1px solid black;">
-	Key: <i>@stream.showKey(Secured.getCurrentUser())</i>
+	Key: <input class="span4" type="text" id="key" name="key" value="@stream.showKey(Secured.getCurrentUser())" readonly="readonly">
 </div>
 	<div class="plot-container">
 		<div class="row-fluid">
@@ -79,7 +79,7 @@
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 		</div>
 		<div>
-		Key: <i>@stream.showKey(Secured.getCurrentUser())</i>
+	Key: <input class="span4" type="text" id="key" name="key" value="@stream.showKey(Secured.getCurrentUser())" readonly="readonly">
 	</div>	
 	<br />
 		&nbsp;No data currently available.
