@@ -299,10 +299,10 @@
   $('.removeParser').on("click", removeParser);
 
   //send the create request to server
-//	public static Result addParser(Long sourceId, String inputParser, String inputType, String streamPath) {
+//	public static Result addParser(Long resourceId, String inputParser, String inputType, String streamPath) {
 
-  function createParser(sourceId, inputParser, inputType, streamPath) {
-  	jsRoutes.controllers.CtrlSource.addParser(sourceId, inputParser, inputType, streamPath).ajax({
+  function createParser(resourceId, inputParser, inputType, streamPath) {
+  	jsRoutes.controllers.CtrlSource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
 	  		console.debug("Parser " + parserId + " add: " + msg);
 	    },
@@ -331,13 +331,13 @@
   	streamParsersToDelete = new Array();
 		renumberParsers();
 //		var newParsers = $(this).parents('.parsers').children().find('[new="true"]');
-//		var sourceId = $(this).parents('.parsers').attr("sourceId");
-//  	if(sourceId > 0) {
+//		var resourceId = $(this).parents('.parsers').attr("resourceId");
+//  	if(resourceId > 0) {
 //			for (var i=0; i<newParsers.length; i++) {
 //				
 //				inputParser = $(newParsers[i])
 //				, inputType, streamPath
-//	  		createParser(sourceId, inputParser, inputType, streamPath);
+//	  		createParser(resourceId, inputParser, inputType, streamPath);
 //	  	}
 //  	}
 		

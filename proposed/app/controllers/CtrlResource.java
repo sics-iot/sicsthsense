@@ -79,7 +79,7 @@ public class CtrlResource extends Controller {
 			}
 			SkeletonResource skeleton = new SkeletonResource(submitted);
 			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.configureResource.render(currentUser.resourceList, skeletonResourceFormNew));
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class CtrlResource extends Controller {
 			}
 	
 			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.configureResource.render(currentUser.resourceList, skeletonResourceFormNew));
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -130,7 +130,7 @@ public class CtrlResource extends Controller {
 			skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","(.*)","text/html", "yy-mm-dd kk:mm:ss");
 	
 			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.configureResource.render(currentUser.resourceList, skeletonResourceFormNew));
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 	}
 	
 //	private static Result parseCSV(String data, Resource submitted) {
@@ -141,7 +141,7 @@ public class CtrlResource extends Controller {
 //		skeleton.addStreamParser("/"+skeleton.label+"/"+"regex1","Enter Regex","text/html");
 //
 //		Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-//	  return ok(views.html.configureResource.render(currentUser.sourceList, skeletonResourceFormNew));
+//	  return ok(views.html.resourcePage.render(currentUser.sourceList, skeletonResourceFormNew, true));
 //	}
 
 	// create the source and corresponding StreamParser objects
@@ -171,7 +171,7 @@ public class CtrlResource extends Controller {
 			//Logger.warn("Submit type: "+ skeletonResourceForm.get("poll") );
 
 			if (false) { // if repoll() source
-				return ok(views.html.configureResource.render(currentUser.resourceList, skeletonResourceForm));
+				return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceForm, true));
 			} else {
 				Resource submitted = skeleton.getResource(currentUser);
 				submitted.id = null;
@@ -372,7 +372,7 @@ public class CtrlResource extends Controller {
 		}
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
-		return ok(resourcePage.render(currentUser.resourceList, myForm));
+		return ok(resourcePage.render(currentUser.resourceList, myForm, false));
 	}
 
 	private static Result getData(String ownerName, String path, Long tail,

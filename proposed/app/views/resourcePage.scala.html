@@ -1,7 +1,29 @@
-@(resources: List[Resource], myForm: Form[SkeletonResource])
+@(resources: List[Resource], myForm: Form[SkeletonResource], addNewResource: Boolean)
 
 @import helper._
 @import helper.twitterBootstrap._
+
+@title = {
+	if(addNewResource) {
+		Add a new resource <small><a href="@routes.CtrlResource.add()"></a></small>
+	} else {
+		Configure '@myForm("label").value'
+	}
+}
+@resourceFormAction = @{
+	if(addNewResource) {
+		routes.CtrlResource.add()	
+	} else {
+		routes.CtrlResource.modify(myForm("id").value.toLong)
+	}
+}
+@resourceFormId = @{
+	if(addNewResource) {
+		"add_resource_form"	
+	} else {
+		"modify_resource_form"
+	}
+}
 
 @interactWithResource(resourceId: Long, resourceUrl: String) = {  
 	@if(Utils.isValidURL(resourceUrl)) {
@@ -80,7 +102,7 @@
 @streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = true, deleteParser: Boolean = false) = {
 <div class="row-fluid parser controls controls-row @className" parserId="@{field("parserId").value}">
 <input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
-<input class="span3" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" placeholder="Stream path" @if(!modifyStreamPath){ readonly="readonly" } else { placeholder="Stream path"}>
+<input class="span3" type="text" maxlength="254"  id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
 <input class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="Input parser">
 <input class="span3" type="text" id="@field("timeformat").id" name="@field("timeformat").name" value="@field("timeformat").value" placeholder="EEE MMM dd kk:mm:ss z yyyy">
   <select class="span2" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
@@ -114,11 +136,12 @@
 	      </div>
 	      }
 	      
-  <h1>Configure '@myForm("label").value'</h1>
-
-	@interactWithResource(myForm("id").value.toLong, myForm("pollingUrl").value)
-
-	@helper.form(action = routes.CtrlResource.modify(myForm("id").value.toLong), 'id -> "modify_resource_form") {
+  <h1>@title</h1>
+	@if(!addNewResource) {
+		@interactWithResource(myForm("id").value.toLong, myForm("pollingUrl").value)
+	}
+	
+	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
 		      <legend>Reresource parameters</legend>
 					<div class="row-fluid controls controls-row">
@@ -132,6 +155,7 @@
 						<input class="span7" type="url" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="leave blank for POST">
 						<input class="span2" type="number" id="@myForm("pollingPeriod").id" name="@myForm("pollingPeriod").name" value="@myForm("pollingPeriod").value" placeholder="120">
 					</div>
+			@if(!addNewResource) {
 					<div class="row-fluid controls controls-row">
 						<label class="span12"><a href="/API">Post key</a> (keep secret!): </label>
 					</div>
@@ -139,7 +163,10 @@
 						<input class="span12" type="text" id="@myForm("key").id" name="@myForm("key").name" value="@myForm("key").value" readonly="readonly">
 					</div>
 	      </fieldset>
-
+			} else {
+				</fieldset>
+		    <input type="submit" name="poll" class="btn btn-primary" value="Poll URL">
+			}
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers" resourceId="@myForm("id").value">
@@ -155,18 +182,25 @@
 			      	@streamParserGroup( myForm("streamParserWrapers[x]"), className = "", modifyStreamPath=true, deleteParser=false )
 			      </div>
 		      </div>
+					<a class="addParser btn btn-success">Add new input parser</a> &nbsp;
+
 	      </fieldset>
 
 				<br />
 
 	      <div class="actions">				      
-					<a class="addParser btn btn-success">Add another stream parser</a> &nbsp;
-		      <input type="submit" class="btn btn-primary" name="update" id="updateResource" value="Update"> &nbsp;
+				@if(!addNewResource) {
+		      <input type="submit" name="update" class="btn btn-primary" id="updateResource" value="Update"> &nbsp;
+				} else {
+		      <input type="submit" name="add" class="btn btn-primary" id="addResource" value="Add Resource"> &nbsp;
+				}
 
 		      <a href="@routes.CtrlResource.resources()" class="btn">Cancel</a>
 	      </div>
+	     @if(!addNewResource) {
   			<br />
 				<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete resource</a>
+			}
   }
 	<!-- end modify resource-->
   </div>
