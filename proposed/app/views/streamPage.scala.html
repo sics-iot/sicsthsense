@@ -32,41 +32,24 @@
 					@vstream.includeStream(stream)
 					<br />
 
-					@textarea(
-						myForm("description"),
-						'rows -> 3,
-						'_label -> "Description"
-					)
-					<br /> 
+			<div class="row-fluid">
+			<label class="span2"><h4>Description</h4></label>
+			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Fill in stream description">@myForm("description").value</textarea>
+			</div>
 
 					<fieldset>
 
 		      <legend>Location</legend>
-					<div id="map-canvas" style="width: 600px; height: 300px"></div>
+					<div id="map-canvas" style="width: 600px; height: 300px; float: center;"></div>
 					<br />
-
-					@if(stream.latitude==0 && stream.longtitude==0) {
-						<dl class=" " id="latitude_field">
-								<dt> <label for="latitude">Latitude</label></dt>
-								<dd> <input type="text" id="latitude" name="latitude" value="" placeholder="" > </dd> 
-						</dl>
-						<dl class=" " id="longtitude_field">
-								<dt> <label for="longtitude">Longtitude</label></dt>
-								<dd> <input type="text" id="longtitude" name="longtitude" value="" placeholder=""> </dd> 
-						</dl>
-					} else {
-						@inputText(
-							myForm("latitude"),
-							'_label -> "Latitude"
-						)
-						@inputText(
-							myForm("longtitude"),
-							'_label -> "Longtitude",
-							'value  -> "L"
-						)
-					}
+			<div class="row-fluid">
+			<label>Latitude</label>
+			<input class="span4" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0">
+			<label>Longtitude</label>
+			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0">
+			</div>
 					</fieldset>
-					<br /> <br />
+					<br />
 					<div class="actions">
 						<input type="submit" class="btn btn-primary" value="Update">
 					</div>
@@ -97,8 +80,8 @@
 					map: map
       });
 			google.maps.event.addListener(marker, 'dragend', function(event) {
-        document.getElementById("latitude").value = this.getPosition().lat(); 
-        document.getElementById("longtitude").value = this.getPosition().lng();
+        document.getElementById("@myForm("latitude").id").value = this.getPosition().lat(); 
+        document.getElementById("@myForm("longtitude").id").value = this.getPosition().lng();
 			});
 }
       google.maps.event.addDomListener(window, 'load', initialize);

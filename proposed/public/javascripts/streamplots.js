@@ -232,7 +232,7 @@ var StreamPlots = {
 			timeformat: "%y-%m-%d",
 			//minTickSize: [1, "second"],
 			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000,
-			ticks: 3
+			ticks: 1
 		},
 		yaxis: {
 		},
