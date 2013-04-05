@@ -74,7 +74,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 					</ul>
 				</li>
 				In this case you need to create a stream for which the system will provide a <code>key</code>, then you can post to the URL:
-				<pre> http://sense.sics.se:8080/api/streams/<em>[key]</em></pre>
+			<pre> @sicsthSenseURL()@{routes.CtrlStream.postByKey("[key]")}</pre>
 			</ul>
 		</li>
 		<li> Posting complex data that needs to be parsed before feeding multiple streams
@@ -95,7 +95,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 			</ul>
 			In this case you need to create a resource and define the needed stream parsers.
 			After creating the resource, the system will provide a <code>key</code> that should be used for posting to the URL:
-			<pre> http://sense.sics.se:8080/api/resources/<em>[key]</em></pre>
+			<pre> @sicsthSenseURL()@{routes.CtrlResource.postByKey("[key]")}</pre>
 		</li>
 	</ul>
 	<em>PS</em> It is not possible to post to non-existing resources or streams.	
@@ -104,24 +104,23 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
   <h1>Getting data</h1>
   
   You can fetch data from Sics<sup>th</sup>Sense's database through a <code>GET</code> at the following URI:
-  <pre> http://sense.sics.se:8080/api/streams/[key]</pre>
+	<pre> @sicsthSenseURL()@{routes.CtrlResource.postByKey("[key]")}</pre>
   
 	Where <i>key</i> is a unique authorising key given by the system.
 
   URI arguments allow to specify which subset of the dataset you want to get. Use <code>?tail=n</code> to get the <code>n</code> most recent samples. Use <code>?last=t</code>
   to get samples posted during the last <code>t</code> seconds. Use <code>?since=t</code> to get the samples posted since (including) absolute UNIX time <code>t</code> (in seconds).
 
-	<!--
+	
 	<br /> <br />
-  <h1>Interacting with devices</h1>
+  <h1>Interacting with resources</h1>
   
-  Sics<sup>th</sup>Sense can act as a RESTful proxy towards any public device. This allows to share your devices without making their actual URI public.
-  Just <code>GET</code>, <code>POST</code>, <code>PUT</code> or <code>DELETE</code> to: 
+  Sics<sup>th</sup>Sense can act as a RESTful proxy towards resources. This allows to share your resources without making their actual URI public.
+  Just <code>GET</code>, <code>POST</code>, <code>PUT</code> or <code>DELETE</code> with <code>optional arguments</code> to: 
   
-  <pre>
-  http://sense.sics.se/proxy/[user]/[device]/[path]</pre>
+  <pre> @sicsthSenseURL()@{routes.Proxy.forwardByKey("[key]","optional arguments")}</pre>
 
-
+<!--
 	<br /> <br />
   <h1>Inspecting Users, Resources and Streams</h1>
   
