@@ -4,7 +4,7 @@
 @import helper.twitterBootstrap._
 
 @title = {
-	if(addNewResource) {
+	@if(addNewResource) {
 		Add a new resource <small><a href="@routes.CtrlResource.add()"></a></small>
 	} else {
 		Configure '@myForm("label").value'
