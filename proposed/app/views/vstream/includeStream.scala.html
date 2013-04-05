@@ -23,7 +23,7 @@
 		} else { 
 			Unnamed Stream
 		}
-		<a href="/stream/@{stream.id}" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+		<a href="/streams/view/@{stream.id}" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 		@if(stream.resource != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="/resources/@{stream.resource.id}">@{stream.resource.label}</a>)
 		}
