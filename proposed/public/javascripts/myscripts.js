@@ -287,7 +287,7 @@
   
   //send the delete request to server
   function deleteParser(parserId) {
-  	jsRoutes.controllers.CtrlSource.deleteParser(parserId).ajax({
+  	jsRoutes.controllers.CtrlResource.deleteParser(parserId).ajax({
 	    success: function(msg) {
 	  		console.debug("Parser " + parserId + " deleted: " + msg);
 	    },
@@ -302,7 +302,7 @@
 //	public static Result addParser(Long resourceId, String inputParser, String inputType, String streamPath) {
 
   function createParser(resourceId, inputParser, inputType, streamPath) {
-  	jsRoutes.controllers.CtrlSource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
+  	jsRoutes.controllers.CtrlResource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
 	  		console.debug("Parser " + parserId + " add: " + msg);
 	    },
@@ -321,7 +321,7 @@
   };
   $('.addParser').on("click", insertParser);
   
-  function updateSource(e) {
+  function updateResource(e) {
   	$('.parsers_template').remove();
   	for (var i=0; i<streamParsersToDelete.length; i++) { 
   		deleteParser(streamParsersToDelete[i]);
@@ -342,15 +342,15 @@
 //  	}
 		
   };
-  $('#updateSource').on("click", updateSource);
-  //$('#modify_source_form').submit(updateSource);
+  $('#updateResource').on("click", updateResource);
+  //$('#modify_resource_form').submit(updateResource);
   
-  $('#addSource').on("click", function(e) {
+  $('#addResource').on("click", function(e) {
   	$('.parsers_template').remove();
 		renumberParsers();
-		console.debug("Adding new source.");
+		console.debug("Adding new resource.");
   });
-//  $('#add_source_form').submit(function() {
+//  $('#add_resource_form').submit(function() {
 //  	$('.parsers_template').remove();
 //		renumberParsers();
 //  });
