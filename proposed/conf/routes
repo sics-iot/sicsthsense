@@ -8,7 +8,7 @@ GET        /authenticatePassword                 controllers.Login.authenticateP
 GET        /openIDCallback                       controllers.Login.openIDCallback()
 GET        /logout                               controllers.Login.logout()
 GET        /                                     controllers.Application.home()
-GET        /search                               controllers.Application.search()
+GET        /search														controllers.Application.search()
 GET        /streams                              controllers.Application.streams()
 GET        /explore                              controllers.Application.explore()
 GET        /resources													 	controllers.CtrlResource.resources()

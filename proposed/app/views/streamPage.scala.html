@@ -3,11 +3,18 @@
 @import helper._
 @layout("Streams", session) {
 
+<!--
+		<ul class="breadcrumb">
+  <li><a href="#">Streams</a> <span class="divider">&gt;</span></li>
+  <li class="active">@stream.file.getPath()</li>
+	</ul>
+	-->
+
     <!-- Docs nav
     ================================================== -->
 	<div class="row">
 		<div class="span2 bs-docs-sidebar">
-		<br \><br \><br \>
+		<br \> <br \> <br \>
 
 				@if(streams.length > 0) {
 				<h4>Streams</h4>
@@ -20,8 +27,7 @@
 				}
   </div>
 
-  <div class="span9">
-		<br \>
+	<div class="span9">
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
 		<h1>Stream '@stream.file.getPath()'</h1>
@@ -40,7 +46,7 @@
 					<fieldset>
 
 		      <legend>Location</legend>
-					<div id="map-canvas" style="width: 600px; height: 300px; float: center;"></div>
+					<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
 					<br />
 			<div class="row-fluid">
 			<label>Latitude</label>

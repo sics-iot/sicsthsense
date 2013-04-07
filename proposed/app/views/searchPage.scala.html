@@ -10,7 +10,7 @@
 		<div class="span2 bs-docs-sidebar">
 		<br \><br \><br \>
 
-		<a>Streams tree</a>
+		<h4>Streams</h4>
 				@if(streams.length > 0) {
 					<div id="vfileTree">
 						<ul>
@@ -27,7 +27,7 @@
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
 		@if(streams.length > 0) {
-			<h1>Available Streams</h1>
+			<h1>Matching Streams</h1>
 			@for(stream <- streams) {					
 				<br />
 				@vstream.includeStreamResult(stream)
@@ -35,7 +35,7 @@
 			}
 		} else {
 			<br /> <br />
-			No streams available! Add some Source's to your dashboard through the <a href="/resources">Resources page</a>.
+			No streams available! View/add your own through the <a href="/resources">Resources page</a>.
 		}
 		<br /> <br />
 	
