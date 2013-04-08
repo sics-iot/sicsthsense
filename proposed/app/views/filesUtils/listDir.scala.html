@@ -1,0 +1,32 @@
+@(vfiles : List[Vfile])
+
+	@if(vfiles.length > 0) {
+		@for(vfile <- vfiles) {
+			@if(vfile != null) {					
+  	  <tr>
+    	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
+				@if(vfile.getType() == Vfile.Filetype.FILE) { 
+					@if(vfile.getLink() != null) {
+					<td><i class="icon-file">&nbsp&nbsp</i><a href="@routes.Application.viewStream(vfile.getLink().id)">@vfile.getName()</a></td>
+					<td>@vstream.streamToolbar(vfile.getLink(), vfile.getLink().canWrite(Secured.getCurrentUser()), false, vfile.getLink().publicAccess)</td>
+					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
+					} else {
+					<td><i class="icon-file">&nbsp&nbsp</i>@vfile.getName()</td>
+					<td>No stream attached...</td>
+					<td>-</td>
+					}
+				} else {
+					<td><i class="icon-folder-close">&nbsp&nbsp</i><a class="folder-list-button" data-folderpath="@vfile.getPath()/" href="#">@vfile.getName()</a></td>
+					<td><!--[Folder tools]--></td>
+					<td>-</td>
+				}
+    	</tr>
+    	}
+    }
+	} else {
+		<tr> 
+      	<td>No files available! Start generating files and streams</td>
+      	<td><a href="@routes.CtrlResource.resources()">Resources page</a></td>
+				<td></td>
+ 	 </tr>
+	}
