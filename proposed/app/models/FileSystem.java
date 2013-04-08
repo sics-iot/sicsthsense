@@ -33,7 +33,17 @@ public class FileSystem {
 		return Vfile.find.where().eq("owner",user).orderBy("path").findList();
 	}
 
-
+	/** LS into a dir */
+	public static List<Vfile> lsDir(User user, String path) {
+		return Vfile.find.where(
+				Expr.and(
+						Expr.eq("owner",user), Expr.and( 
+								Expr.startsWith("path", path), Expr.not( Expr.like("path", path+"%/%") ) 
+								) ) )
+								.orderBy("type")
+								.findList();
+	}
+	
 	public static String listHTMLFileSystem(User user) {
 		StringBuffer sb = new StringBuffer();
 		String ancestors = "";

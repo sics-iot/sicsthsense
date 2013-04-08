@@ -3,6 +3,7 @@ package controllers;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Date;
 
 public class Utils {
 		
@@ -41,6 +42,10 @@ public class Utils {
     return years + (years == 1 ? " year" : " years");
   }
 
+  public static String dateFormatter(long time) {
+    return new Date(time).toString();
+  }
+  
 	public static boolean isValidURL(String surl) {
 		URL url = null;
 		try {

@@ -14,6 +14,10 @@ GET        /explore                              controllers.Application.explore
 GET        /resources													 	controllers.CtrlResource.resources()
 GET        /attachFunction											 controllers.Application.attachFunction()
 GET        /API                                  controllers.Public.about()
+GET        /files                              controllers.Application.files()
+
+# Files
+GET        /files/lsdir                    controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
 
 # Accounts
 GET        /account                              controllers.CtrlUser.get()

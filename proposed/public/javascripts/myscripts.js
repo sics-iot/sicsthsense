@@ -365,4 +365,18 @@ $("#vfileTree").bind("select_node.jstree", function(event, data) {
 $("#vfileTree").jstree();
 $("#vfileTree").load($(this).jstree());
 
+$('.folder-list-button').on("click", function(e) {  	
+	var path = $(this).attr('data-folderpath');
+	console.debug("Browsing: " + path);
+	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
+    success: function(msg) {
+    	$('#fileTableBody').html(msg);
+    },
+    error: function(msg) {
+    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+    }
+  });	
+});
+
+
 

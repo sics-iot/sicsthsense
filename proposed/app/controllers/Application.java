@@ -44,6 +44,11 @@ public class Application extends Controller {
     return ok(streamsPage.render(currentUser.streamList));
   }
 
+  public static Result files() {
+  	User currentUser = Secured.getCurrentUser();
+    return ok(filesPage.render(FileSystem.lsDir(currentUser,"/")));
+  }
+  
 	// Liam: this exists to do interesting things with Location...
   public static Result viewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
@@ -85,7 +90,8 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlStream.isPublicAccess(),
           		controllers.routes.javascript.CtrlStream.isPublicSearch(),
           		controllers.routes.javascript.CtrlUser.followStream(),
-          		controllers.routes.javascript.CtrlUser.isFollowingStream()
+          		controllers.routes.javascript.CtrlUser.isFollowingStream(),
+          		controllers.routes.javascript.CtrlFile.lsDir()
           )
       );
   }

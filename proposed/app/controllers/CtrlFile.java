@@ -15,6 +15,7 @@ import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
 import models.*;
+import views.html.*;
 
 public class CtrlFile extends Controller {
 
@@ -29,6 +30,20 @@ public class CtrlFile extends Controller {
 		
 		
 		return TODO; 
+	}
+	/** Generates a path listing
+	 * @param path: the folder to explore
+	 * @param full: whether to generate the full html page or only the table body
+	 * @returns: an html page representing the result
+	 * */
+	@Security.Authenticated(Secured.class)
+	public static Result lsDir(String path, Boolean full) {
+		User currentUser = Secured.getCurrentUser();
+		List<Vfile> vfiles = FileSystem.lsDir(currentUser, path);
+		if(full) {
+	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path)));
+		}
+    return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
 	}
 	
 	private static void parsePath(Vfile vfile) {
