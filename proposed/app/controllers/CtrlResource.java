@@ -30,6 +30,8 @@ public class CtrlResource extends Controller {
 
 	static private Form<SkeletonResource> skeletonResourceForm = Form.form(SkeletonResource.class);
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
+	//static private Form<ResourceLogView> logViewForm = Form.form(ResourceLogView.class);
+
 
 	// poll the source data and fill the stream definition form
 	// with default sensible parameters for the user to confirm
@@ -332,22 +334,34 @@ public class CtrlResource extends Controller {
 	@BodyParser.Of(BodyParser.TolerantText.class)
 	private static Result postByResource(Resource resource) {
 		if (resource != null) {
+			ResourcePostLog resourcePostLog = null;
 			try {
+				Long requestTime = Utils.currentTime();
+				//Log request
+				resourcePostLog = new ResourcePostLog(resource, request(), requestTime);
+				resourcePostLog = ResourcePostLog.create( resourcePostLog );
+
 				// XXX: asText() does not work unless ContentType is "text/plain"
 				String strBody = request().body().asText();
 				String jsonBodyString = (request().body().asJson()!=null) ? request().body().asJson().toString() : "" ;
 				Logger.info("[Resources] post received from: " + " URI "
 						+ request().uri() + ", content type: "
 						+ request().getHeader("Content-Type") + ", payload: " + strBody + jsonBodyString);
-				if (!resource.parseAndPost(request())) {
+				Boolean parsedSuccessfully = resource.parseAndPost(request(), requestTime);
+				resourcePostLog.updateParsedSuccessfully( parsedSuccessfully );
+				if (!parsedSuccessfully) {
 					Logger.info("[Resources] Can't parse!");
 					return badRequest("Bad request: Can't parse!");
 				}
 			} catch (Exception e) {
-				Logger.error("[Streams] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
+				String msg = "[CtrlResource] Exception while receiving a post in Resource: " + resource.label + "Owner " + resource.owner.userName + "\n" + e.getMessage() + e.getStackTrace()[0].toString();
+				Logger.error(msg);
+				if(resourcePostLog != null) {
+					resourcePostLog.updateMessages(msg); 
+				}
 //				Logger.info("[Streams] User null"
 //						+ Boolean.toString(currentUser == null));
-				return badRequest("Bad request: Error!");
+				return badRequest("Bad request: Error!" + msg);
 			}
 			return ok("ok");
 		}
@@ -377,6 +391,32 @@ public class CtrlResource extends Controller {
 		return ok(resourcePage.render(currentUser.resourceList, myForm, false));
 	}
 
+	@Security.Authenticated(Secured.class)
+	public static Result viewPostLogById(Long id) {
+		User currentUser = Secured.getCurrentUser();
+		Resource resource = Resource.get(id, currentUser);
+		if (resource == null) {
+			return badRequest("Resource does not exist: " + id);
+		}
+		ResourcePostLog rpl = ResourcePostLog.getByResource(resource);
+		if(rpl == null) {
+			return notFound();
+		}
+		String requestBody = "" + rpl.request.body().asText();
+		JsonNode jn = rpl.request.body().asJson();
+		if(jn != null) {
+			requestBody += jn.toString();
+		}
+		//String requestHeader = "" + rpl.request.headers().keySet() + rpl.request.headers().values().toArray(String[] )
+		String method = rpl.request.method();
+		String host = rpl.request.host();
+		String uri = rpl.request.uri();
+		String headers = CONTENT_TYPE + " " + rpl.request.getHeader(CONTENT_TYPE) + " " + CONTENT_ENCODING + rpl.request.getHeader(CONTENT_ENCODING);
+		String timestamp = new Date(rpl.creationTimestamp).toString();
+		//rpl.message
+		return ok();
+	}
+	
 	private static Result getData(String ownerName, String path, Long tail,
 			Long last, Long since) {
 		final User user = Secured.getCurrentUser();

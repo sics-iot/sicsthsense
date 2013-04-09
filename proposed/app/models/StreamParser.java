@@ -140,47 +140,40 @@ public class StreamParser extends Model {
 		return false;
 	}
 
-	public boolean parseRequest(Request request, Long currentTime) {
-		try {
-			if ("application/json".equalsIgnoreCase(inputType)
-					|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type")) ) {
-				JsonNode jsonBody = request.body().asJson();
-				//Logger.info("[StreamParser] as json");
-				return parseJsonResponse(jsonBody, currentTime);
-			} else {
-				String textBody = request.body().asText(); //request.body().asRaw().toString();
-				//Logger.info("[StreamParser] as text");
-				return parseTextResponse(textBody, currentTime);
-			}
-		} catch (Exception e) {
-			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
+	public boolean parseRequest(Request request, Long currentTime) throws Exception {
+		Logger.info("StreamParser: parseResponse(): post: "+stream.file.getPath());
+		if ("application/json".equalsIgnoreCase(inputType)
+				|| "application/json".equalsIgnoreCase(request
+						.getHeader("Content-Type"))) {
+			JsonNode jsonBody = request.body().asJson();
+			// Logger.info("[StreamParser] as json");
+			return parseJsonResponse(jsonBody, currentTime);
+		} else {
+			String textBody = request.body().asText(); // request.body().asRaw().toString();
+			// Logger.info("[StreamParser] as text");
+			return parseTextResponse(textBody, currentTime);
 		}
-		return false;
 	}
 
 	/**
-	 * parseResponse(Request req) chooses the parser based on content-type.
+	 * parseResponse chooses the parser based on content-type.
 	 * inputType overrides the content-type. returns: true if could post
 	 */
-	public boolean parseResponse(WS.Response response, Long currentTime) {
-		Logger.info("StreamParser: parseResponse() "+stream.file.getPath());
-		try {
-			if ("application/json".equalsIgnoreCase(inputType)
-					|| "application/json".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
-				JsonNode jsonBody = response.asJson();
-				return parseJsonResponse(jsonBody, currentTime);
-			} else if("text/csv".equalsIgnoreCase(inputType)
-					|| "text/csv".equalsIgnoreCase(response.getHeader("Content-Type")) ) {
-				String textBody = response.getBody();
-				return parseCSVdata(textBody, currentTime);
-			}	else {
-				String textBody = response.getBody();
-				return parseTextResponse(textBody, currentTime);
-			}
-		} catch (Exception e) {
-			Logger.info("[StreamParser] Exception " + e.getMessage() + e.getStackTrace()[0].toString());
+	public boolean parseResponse(WS.Response response, Long currentTime) throws Exception {
+		Logger.info("StreamParser: parseResponse(): poll: "+stream.file.getPath());
+		if ("application/json".equalsIgnoreCase(inputType)
+				|| "application/json".equalsIgnoreCase(response
+						.getHeader("Content-Type"))) {
+			JsonNode jsonBody = response.asJson();
+			return parseJsonResponse(jsonBody, currentTime);
+		} else if ("text/csv".equalsIgnoreCase(inputType)
+				|| "text/csv".equalsIgnoreCase(response.getHeader("Content-Type"))) {
+			String textBody = response.getBody();
+			return parseCSVdata(textBody, currentTime);
+		} else {
+			String textBody = response.getBody();
+			return parseTextResponse(textBody, currentTime);
 		}
-		return false;
 	}
 
 /**
@@ -189,9 +182,9 @@ public class StreamParser extends Model {
  * @param textBody
  * @return true if could post
  */
-	private boolean parseTextResponse(String textBody, Long currentTime) {
+	private boolean parseTextResponse(String textBody, Long currentTime) throws NumberFormatException, Exception {
 		boolean success = false;
-		try {
+//		try {
 			double number = 0.0;
 			String value = "", time = "";
 			if (stream != null && inputParser != null
@@ -239,13 +232,13 @@ public class StreamParser extends Model {
 				number = Double.parseDouble(textBody);
 				success |= stream.post(number, currentTime);
 			}
-		} catch (NumberFormatException e) {
-			Logger.warn("StreamParser: Regex failed to parse a number!" + e);
-			// naughty rogue value
-			//return stream.post(-1, currentTime);
-		} catch (Exception e) {
-			Logger.error("StreamParser: Regex failed!" + e.getMessage());
-		}
+//		} catch (NumberFormatException e) {
+//			Logger.warn("StreamParser: Regex failed to parse a number!" + e);
+//			// naughty rogue value
+//			//return stream.post(-1, currentTime);
+//		} catch (Exception e) {
+//			Logger.error("StreamParser: Regex failed!" + e.getMessage());
+//		}
 		return success;
 	}
 

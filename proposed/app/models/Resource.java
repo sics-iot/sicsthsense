@@ -62,6 +62,12 @@ public class Resource extends Operator {
 	@Column(name="secret_key") //key is a reserved keyword in mysql
 	public String key;
 
+//	@OneToOne(mappedBy = "resource", cascade = CascadeType.ALL)
+//	public ResourcePollLog pollLog = new ResourcePollLog();
+//	
+//	@OneToOne(mappedBy = "resource", cascade = CascadeType.ALL)
+//	public ResourcePostLog postLog = new ResourcePostLog();
+	
 	//should we make a permission management system as in Stream? 
 	//public boolean publicAccess=false;
 
@@ -175,36 +181,59 @@ public class Resource extends Operator {
 
 	// register asychronous polling of data
 	public void asynchPoll() {
-      String arguments = "";
-			String path = "";
-      Map<String, String> queryParameters = new HashMap<String, String>();
+		final Resource thisResource = this;
+		lastPolled = Utils.currentTime();
+		String arguments = "";
+		String path = "";
+		Map<String, String> queryParameters = new HashMap<String, String>();
 
-      if(pollingUrl.indexOf('?') != -1) {
-    	  arguments = pollingUrl.substring(pollingUrl.indexOf('?')+1, pollingUrl.length());
-      }
-      //Logger.info("[Stream] polling, URL: " + pollingUrl + " args: "+arguments);
-      WSRequestHolder request = WS.url(pollingUrl);
-      Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
-      Matcher matcher = pattern.matcher(arguments);
-      while (matcher.find()) { request.setQueryParameter(matcher.group(1), matcher.group(2)); } 
+		if (pollingUrl.indexOf('?') != -1) {
+			arguments = pollingUrl.substring(pollingUrl.indexOf('?') + 1,
+					pollingUrl.length());
+		}
+		// Logger.info("[Stream] polling, URL: " + pollingUrl +
+		// " args: "+arguments);
+		WSRequestHolder request = WS.url(pollingUrl);
+		Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
+		Matcher matcher = pattern.matcher(arguments);
+		while (matcher.find()) {
+			request.setQueryParameter(matcher.group(1), matcher.group(2));
+		}
+		
+		final WSRequestHolder thisRequest = request;
+		
+		// flash("ResourcePollLogId", resourcePollLog.id.toString());
 
-      request.get().map(
-        new F.Function<WS.Response, Boolean>() {
-          public Boolean apply(WS.Response response) {
-						String textBody = response.getBody();
-						//Logger.info("Incoming data: " + response.getHeader("Content-type") + textBody);
-						//Stream parsers should handle data parsing and response type checking..
-						Long currentTime = Utils.currentTime();
-						for (StreamParser sp: streamParsers) {
-							sp.parseResponse(response, currentTime);
-						}
-						return true;
-          }
-        }
-      );
-      lastPolled = Utils.currentTime();
-      update();
-    }
+		request.get().map(new F.Function<WS.Response, Boolean>() {
+			public Boolean apply(WS.Response response) {
+				String textBody = response.getBody();
+				// Log request
+				// Logger.info("Incoming data: " + response.getHeader("Content-type") +
+				// textBody);
+				// Stream parsers should handle data parsing and response type
+				// checking..
+				Long currentTime = Utils.currentTime();
+				ResourcePollLog resourcePollLog = ResourcePollLog
+						.create(new ResourcePollLog(thisResource, thisRequest, response,
+								thisResource.lastPolled, currentTime));
+				boolean parsedSuccessfully = false; 
+				String msgs = "";
+				for (StreamParser sp : streamParsers) {
+					try {
+						parsedSuccessfully |= sp.parseResponse(response, currentTime);
+					} catch (Exception e) {
+						msgs += e.getMessage() + e.getStackTrace()[0].toString() + e.toString() + "\n";
+					}
+				}
+				resourcePollLog.updateParsedSuccessfully(parsedSuccessfully);
+				if(!msgs.equalsIgnoreCase("")) {
+					resourcePollLog.updateMessages(msgs);
+				}
+				return true;
+			}
+		});
+		update();
+	}
 
 	public boolean poll() {
 		// perform a poll() if it is time
@@ -236,9 +265,8 @@ public class Resource extends Operator {
 		this.pollingPeriod = period;
 	}
 
-	public boolean parseAndPost(Request req) {
+	public boolean parseAndPost(Request req, Long currentTime) throws Exception {
 		boolean result = false;
-		Long currentTime = Utils.currentTime();
 		if (streamParsers != null) {
 			for (StreamParser sp : streamParsers) {
 				//Logger.info("handing request to stream parser");
@@ -296,12 +324,24 @@ public class Resource extends Operator {
 		return null;
 	}
 
+	public void delete() {
+		this.pollingPeriod = 0L;
+		//remove references
+		Stream.dattachResource(this);
+		ResourcePollLog rpl = ResourcePollLog.getByResource(this);
+		if(rpl != null) {
+			rpl.delete();
+		}
+		ResourcePostLog rps = ResourcePostLog.getByResource(this);
+		if(rps != null) {
+			rps.delete();
+		}
+		super.delete();
+	}
+	
 	public static void delete(Long id) {
 		Resource resource = find.ref(id);
-		resource.pollingPeriod = 0L;
-		//remove references
-		Stream.dattachResource(resource);
-		resource.delete();
+		if(resource != null) resource.delete();
 	}
 
 }

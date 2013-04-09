@@ -8,7 +8,8 @@ import java.util.Date;
 public class Utils {
 		
 	public static long currentTime() {
-		return System.currentTimeMillis();
+		//return System.currentTimeMillis();
+		return new Date().getTime();
 	}
 	
 	public static String concatPath(String ... paths) {

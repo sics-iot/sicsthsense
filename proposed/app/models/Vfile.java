@@ -98,8 +98,19 @@ public class Vfile extends Model {
 	}
 	
 	public String getName() {
+		if(path == null) {
+			return null;
+		}
 		String [] subPaths = path.split("/");
 		return subPaths[ subPaths.length-1 ];
+	}
+	
+	public String getParentPath() {
+		if(path == null) {
+			return null;
+		}
+		int i = path.lastIndexOf("/"+getName());
+		return path.substring(0, i);
 	}
 	
 	public void setLink(Stream linkedStream) {
