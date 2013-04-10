@@ -334,12 +334,12 @@ public class CtrlResource extends Controller {
 	@BodyParser.Of(BodyParser.TolerantText.class)
 	private static Result postByResource(Resource resource) {
 		if (resource != null) {
-			ResourcePostLog resourcePostLog = null;
+			ResourceLog resourceLog = null;
 			try {
 				Long requestTime = Utils.currentTime();
 				//Log request
-				resourcePostLog = new ResourcePostLog(resource, request(), requestTime);
-				resourcePostLog = ResourcePostLog.create( resourcePostLog );
+				resourceLog = new ResourceLog(resource, request(), requestTime);
+				resourceLog = ResourceLog.createOrUpdate( resourceLog );
 
 				// XXX: asText() does not work unless ContentType is "text/plain"
 				String strBody = request().body().asText();
@@ -348,7 +348,7 @@ public class CtrlResource extends Controller {
 						+ request().uri() + ", content type: "
 						+ request().getHeader("Content-Type") + ", payload: " + strBody + jsonBodyString);
 				Boolean parsedSuccessfully = resource.parseAndPost(request(), requestTime);
-				resourcePostLog.updateParsedSuccessfully( parsedSuccessfully );
+				resourceLog.updateParsedSuccessfully( parsedSuccessfully );
 				if (!parsedSuccessfully) {
 					Logger.info("[Resources] Can't parse!");
 					return badRequest("Bad request: Can't parse!");
@@ -356,8 +356,8 @@ public class CtrlResource extends Controller {
 			} catch (Exception e) {
 				String msg = "[CtrlResource] Exception while receiving a post in Resource: " + resource.label + "Owner " + resource.owner.userName + "\n" + e.getMessage() + e.getStackTrace()[0].toString();
 				Logger.error(msg);
-				if(resourcePostLog != null) {
-					resourcePostLog.updateMessages(msg); 
+				if(resourceLog != null) {
+					resourceLog.updateMessages(msg); 
 				}
 //				Logger.info("[Streams] User null"
 //						+ Boolean.toString(currentUser == null));
@@ -389,32 +389,6 @@ public class CtrlResource extends Controller {
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
 		return ok(resourcePage.render(currentUser.resourceList, myForm, false));
-	}
-
-	@Security.Authenticated(Secured.class)
-	public static Result viewPostLogById(Long id) {
-		User currentUser = Secured.getCurrentUser();
-		Resource resource = Resource.get(id, currentUser);
-		if (resource == null) {
-			return badRequest("Resource does not exist: " + id);
-		}
-		ResourcePostLog rpl = ResourcePostLog.getByResource(resource);
-		if(rpl == null) {
-			return notFound();
-		}
-		String requestBody = "" + rpl.request.body().asText();
-		JsonNode jn = rpl.request.body().asJson();
-		if(jn != null) {
-			requestBody += jn.toString();
-		}
-		//String requestHeader = "" + rpl.request.headers().keySet() + rpl.request.headers().values().toArray(String[] )
-		String method = rpl.request.method();
-		String host = rpl.request.host();
-		String uri = rpl.request.uri();
-		String headers = CONTENT_TYPE + " " + rpl.request.getHeader(CONTENT_TYPE) + " " + CONTENT_ENCODING + rpl.request.getHeader(CONTENT_ENCODING);
-		String timestamp = new Date(rpl.creationTimestamp).toString();
-		//rpl.message
-		return ok();
 	}
 	
 	private static Result getData(String ownerName, String path, Long tail,

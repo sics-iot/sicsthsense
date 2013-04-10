@@ -1,0 +1,356 @@
+package models;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
+
+import play.*;
+import play.db.ebean.Model;
+import play.libs.WS;
+import play.mvc.Http.HeaderNames;
+import play.mvc.Http.Request;
+
+import org.codehaus.jackson.JsonNode;
+
+import com.avaje.ebean.Ebean;
+
+import controllers.Utils;
+
+@Entity
+@Table(name = "resource_log", uniqueConstraints = { @UniqueConstraint(columnNames = {
+		"resource_id", "is_poll" }) })
+public class ResourceLog extends Model {
+	private static final int MAX_LENGTH=1024;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5437709421347005124L;
+
+	@Id
+	public Long id;
+
+	@ManyToOne
+	@Column(nullable = false)
+	public Resource resource;
+
+	public Long creationTimestamp;
+
+	public Long responseTimestamp;
+
+	public Boolean parsedSuccessfully = false;
+
+	public boolean isPoll = false;
+
+	@Column(length = MAX_LENGTH)
+	public String body = "";
+
+	public String method = "";
+
+	@Column(name = "host_name")
+	public String host = "";
+
+	public String uri = "";
+
+	@Column(length = MAX_LENGTH)
+	public String headers = "";
+
+	@Column(length = MAX_LENGTH)
+	public String message = "";
+
+	@Version
+	// for concurrency protection
+	private int version;
+
+	@Transient
+	public String timestamp = "";
+
+	// Poll roundtrip time
+	@Transient
+	public String responseTime = "";
+
+	public static Model.Finder<Long, ResourceLog> find = new Model.Finder<Long, ResourceLog>(
+			Long.class, ResourceLog.class);
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void appendMessage(String message) {
+		this.message += message;
+	}
+
+	public ResourceLog(Long id, Resource resource, Long creationTimestamp,
+			Long responseTimestamp, Boolean parsedSuccessfully, Boolean isPoll,
+			String body, String method, String host, String uri, String headers,
+			String message) {
+		super();
+		this.id = id;
+		this.resource = resource;
+		this.parsedSuccessfully = parsedSuccessfully;
+		this.isPoll = isPoll;
+		this.body = body;
+		this.method = method;
+		this.host = host;
+		this.uri = uri;
+		this.headers = headers;
+		this.message = message;
+		setCreationTimestamp(creationTimestamp);
+		setResponseTimestamp(responseTimestamp);
+	}
+
+	public ResourceLog() {
+	}
+
+	public ResourceLog(Resource resource, Request request, Long creationTimestamp) {
+		try {
+			this.resource = resource;
+			this.isPoll = false;
+			if (request != null) {
+				body = "" + request.body().asText();
+				try {
+					JsonNode jn = request.body().asJson();
+					if (jn != null) {
+						body += jn.toString();
+					}
+				} catch (Exception e) {
+
+				}
+				// String requestHeader = "" + rpl.request.headers().keySet() +
+				// rpl.request.headers().values().toArray(String[] )
+				method = request.method();
+				host = request.host();
+				uri = request.uri();
+				headers = HeaderNames.CONTENT_TYPE + " "
+						+ request.getHeader(HeaderNames.CONTENT_TYPE) + " "
+						+ HeaderNames.CONTENT_ENCODING
+						+ request.getHeader(HeaderNames.CONTENT_ENCODING);
+			}
+			setCreationTimestamp(creationTimestamp);
+			// String parsed = (parsedSuccessfully) ? "Could be parsed\n"
+			// : "Failed all parsers\n";
+			// message = parsed + message;
+			// message = "Never polled!";
+		} catch (Exception e) {
+			Logger.error(e.getMessage() + e.getStackTrace()[0].toString()
+					+ e.toString());
+		}
+	}
+
+	public ResourceLog(Resource resource, WS.Response response,
+			Long creationTimestamp, Long responseTimestamp) {
+		try {
+			this.resource = resource;
+			this.isPoll = true;
+			if (response != null) {
+				body += response.getBody() + "";
+//				try {
+//					JsonNode jn = response.asJson();
+//					if (jn != null) {
+//						body += jn.toString();
+//					}
+//				} catch (Exception e) {
+//
+//				}
+				// String requestHeader = "" + rpl.request.headers().keySet() +
+				// rpl.request.headers().values().toArray(String[] )
+				method = "";
+				host = "";
+				uri = response.getUri().toString();
+				headers = "Status " + response.getStatusText() + "\n"
+						+ HeaderNames.CONTENT_TYPE + " "
+						+ response.getHeader(HeaderNames.CONTENT_TYPE) + "\n";
+			}
+			setCreationTimestamp(creationTimestamp);
+			setResponseTimestamp(responseTimestamp);
+			// this.parsedSuccessfully = parsedSuccessfully;
+			// String parsed = (parsedSuccessfully) ? "Could be parsed\n"
+			// : "Failed all parsers\n";
+			// message = parsed + message;
+			// message = "Never polled!";
+			// timestamp = new Date().toString();
+		} catch (Exception e) {
+			Logger.error(e.getMessage() + e.getStackTrace()[0].toString()
+					+ e.toString());
+		}
+	}
+
+	public void setCreationTimestamp(Long creationTimestamp) {
+		this.creationTimestamp = (creationTimestamp == null || creationTimestamp <= 0) ? controllers.Utils
+				.currentTime() : creationTimestamp;
+		this.timestamp = new Date(creationTimestamp).toString();
+	}
+	
+	public void setResponseTimestamp(Long responseTimestamp) {
+		this.responseTimestamp = (responseTimestamp == null || responseTimestamp <= 0) ? controllers.Utils
+				.currentTime() : responseTimestamp;
+		this.responseTime = controllers.Utils.timeStr(responseTimestamp
+				- creationTimestamp);
+	}
+	
+	public String getTimestamp() {
+		setCreationTimestamp(this.creationTimestamp);
+		return timestamp;
+	}
+
+	public String getResponseTime() {
+		setResponseTimestamp(this.responseTimestamp);
+		return responseTime;
+	}
+	
+	public void updateParsedSuccessfully(Boolean parsedSuccessfully) {
+		this.parsedSuccessfully = parsedSuccessfully;
+		if (id != null) {
+			this.update();
+		}
+	}
+
+	public void updateMessages(String msg) {
+		this.message = msg;
+		if (id != null) {
+			this.update();
+		}
+	}
+
+	public boolean updateResourceLog(ResourceLog rl) {
+		this.resource = rl.resource;
+		this.creationTimestamp = rl.creationTimestamp;
+		this.responseTimestamp = rl.responseTimestamp;
+		this.parsedSuccessfully = rl.parsedSuccessfully;
+		this.isPoll = rl.isPoll;
+		this.body = rl.body;
+		this.method = rl.method;
+		this.host = rl.host;
+		this.uri = rl.uri;
+		this.headers = rl.headers;
+		this.message = rl.message;
+		this.timestamp = rl.timestamp;
+		this.responseTime = rl.responseTime;
+		if (id != null) {
+			this.update();
+			return true;
+		}
+		return false;
+	}
+
+	public static ResourceLog createOrUpdate(ResourceLog resourceLog) {
+		try {
+			if (resourceLog.resource != null) {
+				if (resourceLog.creationTimestamp == null
+						|| resourceLog.creationTimestamp == 0L) {
+					resourceLog.creationTimestamp = Utils.currentTime();
+				}
+				ResourceLog rplCopy = getByResource(resourceLog.resource,
+						resourceLog.isPoll);
+				if (rplCopy != null) {
+					rplCopy.updateResourceLog(resourceLog);
+					Logger.warn("[ResourceLog] updating existing for " + resourceLog.resource.label + resourceLog.resource.id);
+					return rplCopy;
+				} else {
+					resourceLog.save();
+					Logger.warn("[ResourceLog] creating new for " + resourceLog.resource.label + resourceLog.resource.id);
+					return resourceLog;
+				}
+
+			} else {
+				Logger.warn("[ResourceLog] resource null");
+			}
+		} catch (Exception e) {
+			Logger.error(e.getMessage() + e.getStackTrace()[0].toString()
+					+ e.toString());
+		}
+		return null;
+	}
+
+	public static ResourceLog getByResource(Resource resource, boolean isPoll) {
+		if (resource == null) {
+			Logger.warn("[ResourcePostLog] Could not find one for resource: Null");
+			return null;
+		}
+		ResourceLog rpl = find.where().eq("resource_id", resource.id)
+				.eq("is_poll", isPoll).findUnique();
+		if (rpl == null) {
+			Logger.warn("[ResourceLog] Could not find a "
+					+ ((isPoll) ? "poll" : "post") + " log for resource: "
+					+ resource.id.toString() + resource.label);
+		}
+
+		return rpl;
+	}
+
+	public static ResourceLog getById(Long id) {
+		return find.byId(id);
+	}
+
+	public static void delete(Long id) {
+		find.ref(id).delete();
+	}
+
+	public static void deleteByResource(Resource resource) {
+		Ebean.delete(find.where().eq("resource_id", resource.id).findList());
+	}
+	
+	//trim strings longer than maximum length
+	public void verify() {		
+		body=body.trim();
+		if(body.length() > MAX_LENGTH) {
+			body=body.substring(0, MAX_LENGTH-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+		headers=headers.trim();
+		if(headers.length() > MAX_LENGTH) {
+			headers=headers.substring(0, MAX_LENGTH-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+		message=message.trim();
+		if(message.length() > MAX_LENGTH) {
+			message=message.substring(0, MAX_LENGTH-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+		uri=uri.trim();
+		if(uri.length() > 255) {
+			uri=uri.substring(0,255-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+		host=host.trim();
+		if(host.length() > 255) {
+			host=host.substring(0, 255-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+		method=method.trim();
+		if(method.length() > 255) {
+			body=body.substring(0, 255-2)+"";
+			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+		}
+		
+//		trimString(body);
+//		trimString();
+//		trimString(host);
+//		trimString(uri);
+//		trimString(headers);
+//		trimString(message);
+	}
+	
+	
+	public void save() {
+		verify();
+		super.save();
+	}
+
+	public void update() {
+		verify();
+		super.update();
+	}
+	
+}

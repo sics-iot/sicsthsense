@@ -19,15 +19,14 @@
 <script src="@routes.Assets.at("javascripts/flot-master/jquery.js")" type="text/javascript"></script>	
 <script src="@routes.Application.javascriptRoutes()" type="text/javascript" ></script>
 </head>
-<body>
+<body style="padding: 90px;">
 
 	<!--navigation bar-->
-	<div class="navbar navbar-inverse navbar-static-top" style="margin:0px; padding: 0px;">
+	<div class="navbar navbar-inverse navbar-fixed-top" style="margin:0px; padding: 0px;">
 		<div class="navbar-inner">
 			<div class="container">
 			 <header id="header">
-
-			 <div style="position: absolute; right: 0; top: 0;">
+			 <div class="nav-collapse collapse" style="position: absolute; right: 0; top: 0;">
 				<form action="/search" class="navbar-search form-search pull-left">
 					<div class="input-append">
 						<input type="text" name="q" class="search-query" placeholder="Search">
@@ -35,14 +34,16 @@
 					</div>
 				</form>
 			</div>
+			<p class="navbar-text"><a style="color: white; text-decoration: none;" href="/"><h1>Sics<sup>th</sup>Sense</h1></a></p>
+			</header>
 
-  			 <div class="container">
-				<!-- search bar -->
+ <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</a>
 
-				<a style="color: white; text-decoration: none;" href="/"><h1>Sics<sup>th</sup>Sense</h1></a>
-    				<!-- p class="lead">A cloud platform for IoT</p -->
-  			 </div>
-			 </header>
 				<!--navigation bar links-->
 			 <div class="nav-collapse collapse">
 				<ul class="nav">

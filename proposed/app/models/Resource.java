@@ -62,15 +62,6 @@ public class Resource extends Operator {
 	@Column(name="secret_key") //key is a reserved keyword in mysql
 	public String key;
 
-//	@OneToOne(mappedBy = "resource", cascade = CascadeType.ALL)
-//	public ResourcePollLog pollLog = new ResourcePollLog();
-//	
-//	@OneToOne(mappedBy = "resource", cascade = CascadeType.ALL)
-//	public ResourcePostLog postLog = new ResourcePostLog();
-	
-	//should we make a permission management system as in Stream? 
-	//public boolean publicAccess=false;
-
 	public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(
 			Long.class, Resource.class);
 	
@@ -191,8 +182,8 @@ public class Resource extends Operator {
 			arguments = pollingUrl.substring(pollingUrl.indexOf('?') + 1,
 					pollingUrl.length());
 		}
-		// Logger.info("[Stream] polling, URL: " + pollingUrl +
-		// " args: "+arguments);
+		 Logger.info("[Stream] polling, URL: " + pollingUrl +
+		 " args: "+arguments);
 		WSRequestHolder request = WS.url(pollingUrl);
 		Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
 		Matcher matcher = pattern.matcher(arguments);
@@ -202,20 +193,16 @@ public class Resource extends Operator {
 		
 		final WSRequestHolder thisRequest = request;
 		
-		// flash("ResourcePollLogId", resourcePollLog.id.toString());
-
 		request.get().map(new F.Function<WS.Response, Boolean>() {
 			public Boolean apply(WS.Response response) {
-				String textBody = response.getBody();
 				// Log request
-				// Logger.info("Incoming data: " + response.getHeader("Content-type") +
-				// textBody);
+//				String textBody = response.getBody();
+//				Logger.info("Incoming data: " + response.getHeader("Content-type")
+//						+ textBody);
 				// Stream parsers should handle data parsing and response type
 				// checking..
 				Long currentTime = Utils.currentTime();
-				ResourcePollLog resourcePollLog = ResourcePollLog
-						.create(new ResourcePollLog(thisResource, thisRequest, response,
-								thisResource.lastPolled, currentTime));
+				
 				boolean parsedSuccessfully = false; 
 				String msgs = "";
 				for (StreamParser sp : streamParsers) {
@@ -223,11 +210,20 @@ public class Resource extends Operator {
 						parsedSuccessfully |= sp.parseResponse(response, currentTime);
 					} catch (Exception e) {
 						msgs += e.getMessage() + e.getStackTrace()[0].toString() + e.toString() + "\n";
+						Logger.error("Exception: " + thisResource.label + ": asynchPoll(): " + msgs);
 					}
 				}
-				resourcePollLog.updateParsedSuccessfully(parsedSuccessfully);
+				 Logger.info("[asynchPoll] before resourceLog");
+				ResourceLog resourceLog = new ResourceLog(thisResource, response,
+						thisResource.lastPolled, currentTime);
+				 Logger.info("[asynchPoll] after resourceLog");
+
+				resourceLog = ResourceLog.createOrUpdate(resourceLog);
+				 Logger.info("[asynchPoll] after resourceLog create");
+
+				resourceLog.updateParsedSuccessfully(parsedSuccessfully);
 				if(!msgs.equalsIgnoreCase("")) {
-					resourcePollLog.updateMessages(msgs);
+					resourceLog.updateMessages(msgs);
 				}
 				return true;
 			}
@@ -328,14 +324,7 @@ public class Resource extends Operator {
 		this.pollingPeriod = 0L;
 		//remove references
 		Stream.dattachResource(this);
-		ResourcePollLog rpl = ResourcePollLog.getByResource(this);
-		if(rpl != null) {
-			rpl.delete();
-		}
-		ResourcePostLog rps = ResourcePostLog.getByResource(this);
-		if(rps != null) {
-			rps.delete();
-		}
+		ResourceLog.deleteByResource(this);
 		super.delete();
 	}
 	

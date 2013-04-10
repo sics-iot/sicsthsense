@@ -53,6 +53,24 @@ create table resources (
   constraint pk_resources primary key (id))
 ;
 
+create table resource_log (
+  id                        bigint auto_increment not null,
+  resource_id               bigint,
+  creation_timestamp        bigint,
+  response_timestamp        bigint,
+  parsed_successfully       tinyint(1) default 0,
+  is_poll                   tinyint(1) default 0,
+  body                      varchar(1024),
+  method                    varchar(255),
+  host_name                 varchar(255),
+  uri                       varchar(255),
+  headers                   varchar(1024),
+  message                   varchar(1024),
+  version                   integer not null,
+  constraint uq_resource_log_1 unique (resource_id,is_poll),
+  constraint pk_resource_log primary key (id))
+;
+
 create table streams (
   id                        bigint auto_increment not null,
   type                      varchar(1),
@@ -133,18 +151,20 @@ alter table functions add constraint fk_functions_owner_4 foreign key (owner_id)
 create index ix_functions_owner_4 on functions (owner_id);
 alter table resources add constraint fk_resources_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_resources_owner_5 on resources (owner_id);
-alter table streams add constraint fk_streams_owner_6 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_streams_owner_6 on streams (owner_id);
-alter table streams add constraint fk_streams_resource_7 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_streams_resource_7 on streams (resource_id);
-alter table parsers add constraint fk_parsers_resource_8 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_parsers_resource_8 on parsers (resource_id);
-alter table parsers add constraint fk_parsers_stream_9 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_parsers_stream_9 on parsers (stream_id);
-alter table vfiles add constraint fk_vfiles_owner_10 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_vfiles_owner_10 on vfiles (owner_id);
-alter table vfiles add constraint fk_vfiles_linkedStream_11 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_vfiles_linkedStream_11 on vfiles (linked_stream_id);
+alter table resource_log add constraint fk_resource_log_resource_6 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_resource_log_resource_6 on resource_log (resource_id);
+alter table streams add constraint fk_streams_owner_7 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_streams_owner_7 on streams (owner_id);
+alter table streams add constraint fk_streams_resource_8 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_streams_resource_8 on streams (resource_id);
+alter table parsers add constraint fk_parsers_resource_9 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_parsers_resource_9 on parsers (resource_id);
+alter table parsers add constraint fk_parsers_stream_10 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_parsers_stream_10 on parsers (stream_id);
+alter table vfiles add constraint fk_vfiles_owner_11 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_vfiles_owner_11 on vfiles (owner_id);
+alter table vfiles add constraint fk_vfiles_linkedStream_12 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_vfiles_linkedStream_12 on vfiles (linked_stream_id);
 
 
 
@@ -173,6 +193,8 @@ drop table functions_streams;
 drop table operators;
 
 drop table resources;
+
+drop table resource_log;
 
 drop table streams;
 

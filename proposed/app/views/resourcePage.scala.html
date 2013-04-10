@@ -205,11 +205,13 @@
 	     @if(!addNewResource) {
   			<br />
 				<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger">Delete resource</a>
-				<br /> <br /> <br />
-				<br /> <br /> <br />
+				<br /><br />
+				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), false),"Log of last post")
+				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), true),"Log of last poll")
 			}
   }
 	<!-- end modify resource-->
   </div>
 </div>
+
 }
