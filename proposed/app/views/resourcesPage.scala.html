@@ -2,7 +2,7 @@
 @import helper._
 
 @tbField(field: Field, label: String, className: String="", typeName: String ="text", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false, value: String=null) = {
-	@if(form != null && field != "") {
+	@if(field != null) {
 	@if(label != null && label != "") { 
 		<div class="control-group">
 			<label class="control-label" for="@field.id">@label</label>
