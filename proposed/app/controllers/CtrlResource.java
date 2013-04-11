@@ -147,6 +147,7 @@ public class CtrlResource extends Controller {
 //	}
 
 	// create the source and corresponding StreamParser objects
+	@Deprecated
 	@Security.Authenticated(Secured.class)
 	public static Result add() {		
 		Form<SkeletonResource> theForm;

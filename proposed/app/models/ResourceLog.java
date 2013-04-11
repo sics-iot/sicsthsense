@@ -27,8 +27,8 @@ import controllers.Utils;
 @Table(name = "resource_log", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"resource_id", "is_poll" }) })
 public class ResourceLog extends Model {
-	private static final int MAX_LENGTH = 1024, 
-			BODY_MAX_LENGTH = 4 * 1024;
+	private static final int MAX_LENGTH = 4 * 1024, 
+			BODY_MAX_LENGTH = 8 * 1024;
 	/**
 	 * 
 	 */
