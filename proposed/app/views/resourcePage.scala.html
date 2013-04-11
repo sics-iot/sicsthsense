@@ -67,7 +67,7 @@
 	    	  timeout: @Proxy.REQUEST_TIMEOUT,
 	    	  type: method,
 	    	  data: body,
-	    	  contentType: "text/plain",
+	    	  contentType: "text/html",
     	    error: function(x, t, m) {
     	    	$("#response1@resourceId").html("Error");
     	    	$("#response2@resourceId").text(m);
@@ -175,6 +175,7 @@
 	      <fieldset>
 		      <legend>Stream Parsers</legend>
 		      <div id="parsers" resourceId="@myForm("id").value">
+						
 						@streamParserGroupLabels()
 			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
 			        @streamParserGroup(spw, className="", modifyStreamPath=addNewResource, deleteParser={!addNewResource})

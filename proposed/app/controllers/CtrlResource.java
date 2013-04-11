@@ -197,6 +197,39 @@ public class CtrlResource extends Controller {
 		}
 	}
 
+	@Security.Authenticated(Secured.class)
+	public static Result addSimple() {
+		Form<Resource> theForm;
+		// error check
+		try {
+			theForm = resourceForm.bindFromRequest();
+		} catch (Exception e) {
+			return badRequest("Bad parsing of form");
+		}
+		// validate form
+		if (theForm.hasErrors()) {
+			return badRequest("Bad request");
+		} else {
+			Resource submitted = theForm.get();
+			if (submitted != null) {
+				User currentUser = Secured.getCurrentUser();
+				if (currentUser == null) {
+					Logger.error("[CtrlResource.add] currentUser is null!");
+				}
+				submitted.id = null;
+				submitted.owner = currentUser;
+				submitted.pollingPeriod = 0L;
+				submitted = Resource.create(submitted);
+				Logger.info("Adding a new resource: " + "Label: " + submitted.label
+						+ " URL: " + submitted.pollingUrl);
+				// if(submitted != null && submitted.id != null) {
+				// return redirect(routes.CtrlResource.getById(submitted.id));
+				// }
+			}
+		}
+		return redirect(routes.CtrlResource.resources());
+	}
+	
 	// create the source and corresponding StreamParser objects
 	@Security.Authenticated(Secured.class)
 	public static Result resources() {		

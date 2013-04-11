@@ -60,7 +60,7 @@ create table resource_log (
   response_timestamp        bigint,
   parsed_successfully       tinyint(1) default 0,
   is_poll                   tinyint(1) default 0,
-  body                      varchar(1024),
+  body                      varchar(4096),
   method                    varchar(255),
   host_name                 varchar(255),
   uri                       varchar(255),

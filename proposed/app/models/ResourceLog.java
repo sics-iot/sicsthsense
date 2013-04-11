@@ -27,7 +27,8 @@ import controllers.Utils;
 @Table(name = "resource_log", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"resource_id", "is_poll" }) })
 public class ResourceLog extends Model {
-	private static final int MAX_LENGTH=1024;
+	private static final int MAX_LENGTH = 1024, 
+			BODY_MAX_LENGTH = 4 * 1024;
 	/**
 	 * 
 	 */
@@ -48,7 +49,7 @@ public class ResourceLog extends Model {
 
 	public boolean isPoll = false;
 
-	@Column(length = MAX_LENGTH)
+	@Column(length = BODY_MAX_LENGTH)
 	public String body = "";
 
 	public String method = "";
@@ -128,9 +129,11 @@ public class ResourceLog extends Model {
 				host = request.host();
 				uri = request.uri();
 				headers = HeaderNames.CONTENT_TYPE + " "
-						+ request.getHeader(HeaderNames.CONTENT_TYPE) + " "
-						+ HeaderNames.CONTENT_ENCODING
-						+ request.getHeader(HeaderNames.CONTENT_ENCODING);
+						+ request.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
+						+ HeaderNames.CONTENT_ENCODING + " "
+						+ request.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
+						+ HeaderNames.CONTENT_LENGTH + " "
+						+ request.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
 			}
 			setCreationTimestamp(creationTimestamp);
 			// String parsed = (parsedSuccessfully) ? "Could be parsed\n"
@@ -150,14 +153,14 @@ public class ResourceLog extends Model {
 			this.isPoll = true;
 			if (response != null) {
 				body += response.getBody() + "";
-//				try {
-//					JsonNode jn = response.asJson();
-//					if (jn != null) {
-//						body += jn.toString();
-//					}
-//				} catch (Exception e) {
-//
-//				}
+				// try {
+				// JsonNode jn = response.asJson();
+				// if (jn != null) {
+				// body += jn.toString();
+				// }
+				// } catch (Exception e) {
+				//
+				// }
 				// String requestHeader = "" + rpl.request.headers().keySet() +
 				// rpl.request.headers().values().toArray(String[] )
 				method = "";
@@ -165,7 +168,11 @@ public class ResourceLog extends Model {
 				uri = response.getUri().toString();
 				headers = "Status " + response.getStatusText() + "\n"
 						+ HeaderNames.CONTENT_TYPE + " "
-						+ response.getHeader(HeaderNames.CONTENT_TYPE) + "\n";
+						+ response.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
+						+ HeaderNames.CONTENT_ENCODING + " "
+						+ response.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
+						+ HeaderNames.CONTENT_LENGTH + " "
+						+ response.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
 			}
 			setCreationTimestamp(creationTimestamp);
 			setResponseTimestamp(responseTimestamp);
@@ -186,14 +193,14 @@ public class ResourceLog extends Model {
 				.currentTime() : creationTimestamp;
 		this.timestamp = new Date(creationTimestamp).toString();
 	}
-	
+
 	public void setResponseTimestamp(Long responseTimestamp) {
 		this.responseTimestamp = (responseTimestamp == null || responseTimestamp <= 0) ? controllers.Utils
 				.currentTime() : responseTimestamp;
 		this.responseTime = controllers.Utils.timeStr(responseTimestamp
 				- creationTimestamp);
 	}
-	
+
 	public String getTimestamp() {
 		setCreationTimestamp(this.creationTimestamp);
 		return timestamp;
@@ -203,7 +210,7 @@ public class ResourceLog extends Model {
 		setResponseTimestamp(this.responseTimestamp);
 		return responseTime;
 	}
-	
+
 	public void updateParsedSuccessfully(Boolean parsedSuccessfully) {
 		this.parsedSuccessfully = parsedSuccessfully;
 		if (id != null) {
@@ -250,11 +257,13 @@ public class ResourceLog extends Model {
 						resourceLog.isPoll);
 				if (rplCopy != null) {
 					rplCopy.updateResourceLog(resourceLog);
-					Logger.warn("[ResourceLog] updating existing for " + resourceLog.resource.label + resourceLog.resource.id);
+					Logger.warn("[ResourceLog] updating existing for "
+							+ resourceLog.resource.label + resourceLog.resource.id);
 					return rplCopy;
 				} else {
 					resourceLog.save();
-					Logger.warn("[ResourceLog] creating new for " + resourceLog.resource.label + resourceLog.resource.id);
+					Logger.warn("[ResourceLog] creating new for "
+							+ resourceLog.resource.label + resourceLog.resource.id);
 					return resourceLog;
 				}
 
@@ -295,54 +304,59 @@ public class ResourceLog extends Model {
 	public static void deleteByResource(Resource resource) {
 		Ebean.delete(find.where().eq("resource_id", resource.id).findList());
 	}
-	
-	//trim strings longer than maximum length
-	public void verify() {		
-		body=body.trim();
-		if(body.length() > MAX_LENGTH) {
-			body=body.substring(0, MAX_LENGTH-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+	// trim strings longer than maximum length
+	public void verify() {
+		body = body.trim();
+		if (body.length() > BODY_MAX_LENGTH) {
+			body = body.substring(0, BODY_MAX_LENGTH - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-		headers=headers.trim();
-		if(headers.length() > MAX_LENGTH) {
-			headers=headers.substring(0, MAX_LENGTH-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+		headers = headers.trim();
+		if (headers.length() > MAX_LENGTH) {
+			headers = headers.substring(0, MAX_LENGTH - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-		message=message.trim();
-		if(message.length() > MAX_LENGTH) {
-			message=message.substring(0, MAX_LENGTH-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+		message = message.trim();
+		if (message.length() > MAX_LENGTH) {
+			message = message.substring(0, MAX_LENGTH - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-		uri=uri.trim();
-		if(uri.length() > 255) {
-			uri=uri.substring(0,255-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+		uri = uri.trim();
+		if (uri.length() > 255) {
+			uri = uri.substring(0, 255 - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-		host=host.trim();
-		if(host.length() > 255) {
-			host=host.substring(0, 255-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+		host = host.trim();
+		if (host.length() > 255) {
+			host = host.substring(0, 255 - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-		method=method.trim();
-		if(method.length() > 255) {
-			body=body.substring(0, 255-2)+"";
-			//Logger.warn("[ResourceLog] trimming body: " + resource.label + " " + body);
+
+		method = method.trim();
+		if (method.length() > 255) {
+			body = body.substring(0, 255 - 2) + "";
+			// Logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
+			// body);
 		}
-		
-//		trimString(body);
-//		trimString();
-//		trimString(host);
-//		trimString(uri);
-//		trimString(headers);
-//		trimString(message);
+
+		// trimString(body);
+		// trimString();
+		// trimString(host);
+		// trimString(uri);
+		// trimString(headers);
+		// trimString(message);
 	}
-	
-	
+
 	public void save() {
 		verify();
 		super.save();
@@ -352,5 +366,5 @@ public class ResourceLog extends Model {
 		verify();
 		super.update();
 	}
-	
+
 }

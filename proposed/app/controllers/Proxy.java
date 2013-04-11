@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.Inflater;
 
 import play.*;
 
@@ -23,6 +24,7 @@ import play.libs.F.Promise;
 import play.libs.WS.Response;
 import play.libs.WS.WSRequestHolder;
 import play.mvc.*;
+import play.mvc.Http.HeaderNames;
 import play.mvc.Http.RequestBody;
 import play.data.*;
 
@@ -84,14 +86,15 @@ public class Proxy extends Controller {
 					}
 					for (String name : headers.keySet()) {
 						/*
-						 * Don't accept gzip, not supported yet by play 2.0.4 requests
+						 * Don't accept gzip, not supported yet by play 2.1 requests
 						 */
-						if (name.equals("ACCEPT-ENCODING"))
-						 request = request.setHeader(name, "");
+						if (name.equalsIgnoreCase(ACCEPT_ENCODING)) {
+							 request = request.setHeader(name, "");
+						}
 						/*
 						 * Forge host
 						 */
-						else if (!name.equals("HOST"))
+						else if (!name.equalsIgnoreCase( HeaderNames.HOST ))
 							request = request.setHeader(name, headers.get(name)[0]);
 					}
 					if (method.equals("GET")) {
@@ -105,10 +108,19 @@ public class Proxy extends Controller {
 					}
 					Response response = Akka.asPromise(promise.getWrappedPromise()).get(
 							REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
-					String encoding = response.getHeader("Content-encoding");
+					String encoding = response.getHeader(HeaderNames.CONTENT_ENCODING);
+					String contentType = response.getHeader(HeaderNames.CONTENT_TYPE);
+					int contentLength = response.getBody().length();
 					Logger.info("[Proxy] got response for: " + method + ", to: " + url
-							+ ", encoding: " + encoding + ", body: "
-							+ response.getBody().length() + " bytes");
+							+ ", encoding: " + encoding + ", content-type: " + contentType +", body length: "
+							+ contentLength + " bytes");
+//					String body="GZIP does not work!";
+//					if(encoding != null && encoding.contains("gzip")) {
+//						String charSet = ( contentType.indexOf("charset=")!=-1 && contentType.indexOf("charset=") + 8 < contentType.length() ) ? contentType.substring( contentType.indexOf("charset=")+8 ).toUpperCase() : "UTF-8";
+//						body = gzipDeflator(response.getBody().getBytes(), contentLength, charSet);
+//					} else {
+//						body = response.getBody();
+//					}
 					String body = response.getBody();
 					return status(response.getStatus(), body);
 				} catch (Exception e) {
@@ -118,4 +130,24 @@ public class Proxy extends Controller {
 			}
 		}));
 	}
+	
+	//trying gzip deflating ... --> incorrect header check
+//	private static String gzipDeflator(byte [] input, int compressedDataLength, String charset) throws java.io.UnsupportedEncodingException, java.util.zip.DataFormatException {
+//		String outputString=null; 
+////		try {		 
+//			 // Decompress the bytes
+//	     Inflater decompresser = new Inflater();
+//	     decompresser.setInput(input, 0, compressedDataLength);
+//	     byte[] result = new byte[10*compressedDataLength];
+//	     int resultLength = decompresser.inflate(result);
+//	     decompresser.end();
+//	     // Decode the bytes into a String
+//	     outputString = new String(result, 0, resultLength, charset); //charset "UTF-8"
+////	 } catch(java.io.UnsupportedEncodingException e) {
+////			Logger.info("[Proxy gzipDeflator UnsupportedEncodingException] failed: " + e.getMessage());
+////	 } catch (java.util.zip.DataFormatException e) {
+////			Logger.info("[Proxy gzipDeflator DataFormatException] failed: " + e.getMessage());
+////	 }
+//		 return outputString;
+//	}
 }

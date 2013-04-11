@@ -52,7 +52,9 @@ DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
 #POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
 # Resources
-GET			/resources/add												controllers.CtrlResource.add()
+GET			/resources/add												controllers.CtrlResource.addSimple()
+#deprecated
+GET			/resources/addLegacy												controllers.CtrlResource.add()
 GET			/resources/initialise									controllers.CtrlResource.initialise()
 POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
 GET			/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
