@@ -1,33 +1,44 @@
-@(user: User, userForm: Form[User])
+@(user: User, userForm: Form[User]=null, newPassword: String="")
 
 @import helper._
 
 @displayUser(user: User) = {
-@if(userForm != null) {
-<span class="logged"><a href="@routes.CtrlUser.get()">[Cancel]</a></span>
-} else {
-<span class="logged"><a href="@routes.CtrlUser.edit()">[Edit]</a></span>
-}
-
    @forms.form(routes.CtrlUser.submit()) {
-	    <dt>Email</dt>
-	    <dd>@user.getEmail()</dd>
-	    <dt>SecretToken</dt>
-	    <dd>@user.getToken()</dd>
+   	  <legend>Welcome @user.userName!</legend>
+   	  @forms.input(userForm!=null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
+   	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(),"", true)
 	    @forms.input(userForm!=null, "text", "userName", "User name", user.userName)
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
 	    @forms.input(userForm!=null, "text", "location", "Location", user.location)
-	    @if(userForm!=null) { @forms.submit(userForm!=null, "Update") }
+	    @if(userForm!=null) { 
+	    <div class="controls controls-row">
+	     @forms.input(userForm!=null, "submit", "update", "", "Update","btn btn-primary")
+	   	 <a class="btn btn-danger" href="@routes.CtrlUser.resetToken(true)">Reset secret token!</a>
+	   	 <a class="btn" href="@routes.CtrlUser.get()">Cancel</a>
+			</div>
+	    } else { 
+	    <div class="controls controls-row">
+	   	 <a class="btn" href="@routes.CtrlUser.edit()">Edit</a>
+			</div>
+	    }
   }
   
 }
 
 @layout("Account", session) {
+		
+		@if(newPassword!=null && newPassword!="") {
+			@forms.input(userForm!=null, "text", "newPassword", "New Password", newPassword,"", true)
+		}
+		<br />
   @displayUser(user)
 	<br />
 	<br />
-		@helper.form(action = routes.Login.resetPassword()) {
-		<input type="submit" class="span2 btn btn-primary" value="Reset Password">
+		@helper.form(action = routes.CtrlUser.resetPassword(true)) {
+		   	  <legend>For local access:</legend>   	     	  
+
+			<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
+		
 		}
 }

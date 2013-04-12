@@ -6,7 +6,7 @@ import java.lang.StringBuffer;
 import javax.persistence.*;
 
 import models.*;
-import index.*;
+//import index.*;
 
 import com.github.cleverage.elasticsearch.Index;
 import com.github.cleverage.elasticsearch.IndexQuery;
@@ -165,14 +165,23 @@ public class FileSystem {
 		}
 	}
 
-	public static void deleteFile(User user, String path) {
-		Vfile f = readFile(user,path);
-		if (f!=null) {
+	@Transactional
+	public static boolean deleteFile(User user, String path) {
+		Vfile f = readFile(user, path);
+		if (f != null) {
+			if (f.isDir()) {
+				// loop throw all files and delete those with paths starting with this
+				// path...
+				List<Vfile> flist = Vfile.find.where().eq("owner", user)
+						.istartsWith("path", path+"/").findList();
+				Ebean.delete(flist);
+			}
 			f.delete();
+			return true;
 		} else {
-			Logger.warn("Vfile path to delete does not exist:: "+path);
+			Logger.warn("Vfile path to delete does not exist:: " + path);
 		}
+		return false;
 	}
-	
 
 }

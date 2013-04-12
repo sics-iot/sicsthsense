@@ -31,6 +31,7 @@ public class CtrlFile extends Controller {
 		
 		return TODO; 
 	}
+	
 	/** Generates a path listing
 	 * @param path: the folder to explore
 	 * @param full: whether to generate the full html page or only the table body
@@ -44,6 +45,22 @@ public class CtrlFile extends Controller {
 	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path)));
 		}
     return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result delete(String path) {
+		User currentUser = Secured.getCurrentUser();
+		boolean success = FileSystem.deleteFile(currentUser, path);
+    if(success) return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+    else return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result move(String path, String newPath) {
+		User currentUser = Secured.getCurrentUser();
+		boolean success = false;//FileSystem.moveFile(currentUser, path, newPath);
+    if(success) return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+    else return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
 	}
 	
 	private static void parsePath(Vfile vfile) {

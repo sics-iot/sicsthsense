@@ -48,24 +48,21 @@ public class Login extends Controller {
 //			return ok("Not online for OpenID verification, consider username/password authentication");
 //		}
 	}
+	
   public static Result signup() {
     return ok(registerPage.render(null));
   }
+  
 	public static Result authenticatePassword(String username, String password) {
 		// check database
 		User user = User.getByUserName(username);
 		if (user==null) {
-			return ok("User doesnt exist!");
+			return notFound("User doesnt exist!");
 		}
 		if (!user.password.equals(User.hash(password))) {
-			return ok("Password incorrect:" +user.password+" != "+User.hash(password)+ " : "+password);
+			return notFound("Password incorrect:" +user.password+" != "+User.hash(password)+ " : "+password);
 		}
-
-		user.updateLastLogin();
-		Logger.info("ok");
-		//TODO encrypt some session parameters e.g. id
-		session("id", user.id.toString());
-		return redirect(routes.Application.home());
+		return doLogin(user, routes.Application.home());
 	}
 
 	// new user through the password system
@@ -88,21 +85,11 @@ public class Login extends Controller {
 		}
 		//validate username/pass
 		User user = new User(username,username,"","","");
-
 		user.setPassword(password);
 		//and register in database
-		user.save();
-		return ok(loginPage.render());
-	}
-
-	@Security.Authenticated(Secured.class)
-	public static Result resetPassword() {
-		//validate username/pass
-		User currentUser = Secured.getCurrentUser();
-		String newPassword = currentUser.resetPassword();
-		currentUser.save();
-		//and register in database
-		return ok("New password: "+newPassword);
+		//user.save(); --wrong.. does not create everything
+		User.create(user);
+		return doLogin(user, routes.CtrlUser.edit());
 	}
 
 	public static Result openIDCallback() {
@@ -117,15 +104,21 @@ public class Login extends Controller {
 			destination = routes.CtrlUser.edit();
 			Logger.info("created");
 		}
-		user.updateLastLogin();
-//		user.currentSessionToken = generateSessionToken(user);
-		Logger.info("ok");
-		//TODO encrypt some session parameters e.g. id
-		session("id", user.id.toString());
-		//session("login_time", Long.toString(user.lastLogin.getTime()));
-		return redirect(destination);
+		return doLogin(user, destination);
 	}
 
+	private static Result doLogin(User user, Call destination) {
+		user.updateLastLogin();
+		Logger.info("Logged in: " + user.email);
+		// TODO encrypt some session parameters e.g. id
+		// TODO user.currentSessionToken = generateSessionToken(user);
+		// session("login_time", Long.toString(user.lastLogin.getTime()));
+		session("id", user.id.toString());
+		if (user.getToken() == null)
+			return CtrlUser.resetToken(true);
+		return redirect(destination);
+	}
+	
 //	private static String loginApplicationSecret = "SecretKey";
 //	private static String generateSessionToken(User user) {
 //		String secret = user.getEmail() + Long.toString(user.lastLogin.getTime()) + Login.loginApplicationSecret;

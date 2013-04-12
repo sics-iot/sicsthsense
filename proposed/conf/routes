@@ -6,7 +6,6 @@
 GET        /authenticate                         controllers.Login.authenticate(openid_identifier: String)
 GET        /authenticatePassword                 controllers.Login.authenticatePassword(username: String, password: String)
 GET        /signup															controllers.Login.signup()
-GET        /resetPassword												controllers.Login.resetPassword()
 POST       /registerPassword										controllers.Login.registerPassword()
 GET        /openIDCallback                       controllers.Login.openIDCallback()
 GET        /logout                               controllers.Login.logout()
@@ -20,12 +19,17 @@ GET        /API                                  controllers.Public.about()
 GET        /files                              controllers.Application.files()
 
 # Files
-GET        /files/lsdir                    controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
+GET        /files/lsdir/$path<.*>                		controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
+GET        /files/delete/$path<.*>                  controllers.CtrlFile.delete(path: String)
+GET        /files/move/$path<.*>	                  controllers.CtrlFile.move(path: String, newPath: String)
+
 
 # Accounts
 GET        /account                              controllers.CtrlUser.get()
 GET        /account/edit                         controllers.CtrlUser.edit()
 GET        /account/submit                       controllers.CtrlUser.submit()
+GET        /account/resetToken                   controllers.CtrlUser.resetToken(confirmed: Boolean)
+GET        /account/resetPassword								 controllers.CtrlUser.resetPassword(confirmed: Boolean)
 
 # Dummy thing
 GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)

@@ -11,7 +11,7 @@
     	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
 				@if(vfile.getType() == Vfile.Filetype.FILE) { 
 					@if(vfile.getLink() != null) {
-					<td><i class="icon-file">&nbsp&nbsp</i><a href="@routes.Application.viewStream(vfile.getLink().id)">@vfile.getName()</a></td>
+					<td><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i>@vfile.getName()</a></td>
 					<td>@vstream.streamToolbar(vfile.getLink(), vfile.getLink().canWrite(Secured.getCurrentUser()), false, vfile.getLink().publicAccess)</td>
 					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
 					} else {

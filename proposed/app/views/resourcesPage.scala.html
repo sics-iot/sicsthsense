@@ -47,7 +47,7 @@
 			@for(resource<- resources) {
 			<li>
 				<Strong><a href="@routes.CtrlResource.getById(resource.id)">@resource.label&nbsp<i class="icon-wrench"></i></a></Strong>
-				<div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@resource.showKey(Secured.getCurrentUser())" readonly></div>
+				<div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@sicsthSenseURL()@{routes.CtrlResource.postByKey(resource.showKey(Secured.getCurrentUser()))}" readonly></div>
 				@if(resource.pollingUrl != "" && resource.pollingUrl != null) {
 				<div class="row-fluid"><span class="span1">URL</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.pollingUrl" readonly></div>
 				<div class="row-fluid"><span class="span1">Proxy</span>@interactWithResource(resource.id,resource.pollingUrl,showHeader=false)</div>
