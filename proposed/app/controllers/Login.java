@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import models.User;
-
 import play.*;
 
 import play.core.Router.Routes;
@@ -21,10 +20,13 @@ import play.libs.OpenID.UserInfo;
 import play.libs.WS.WSRequestHolder;
 import play.mvc.*;
 import play.mvc.Http.Context;
+import play.data.Form;
+import play.data.DynamicForm;
 
 import views.html.*;
 
 public class Login extends Controller {
+	static private Form<User> registerForm = Form.form(User.class);
 	
 	public static Result authenticate(String openid_identifier) {
 		Map<String, String> attributes = new HashMap<String, String>();
@@ -32,32 +34,70 @@ public class Login extends Controller {
 		attributes.put("firstName", "http://axschema.org/namePerson/first");
 		attributes.put("lastName", "http://axschema.org/namePerson/last");
 		Promise<Result> promised = null;
-		promised = OpenID.redirectURL(openid_identifier,
+//		try {
+			promised = OpenID.redirectURL(openid_identifier,
 				routes.Login.openIDCallback().absoluteURL(request()), attributes).map(
 				new Function<String, Result>() {
 					public Result apply(String url) {
 						return redirect(url);
 					}
 				});
-		return async(promised);
+			return async(promised);
+//		} catch (java.lang.Exception e) {
+//			return ok("Not online for OpenID verification, consider username/password authentication");
+//		}
 	}
+  public static Result signup() {
+    return ok(registerPage.render());
+  }
 	public static Result authenticatePassword(String username, String password) {
-		Map<String, String> attributes = new HashMap<String, String>();
-		attributes.put("email", "http://axschema.org/contact/email");
-		attributes.put("firstName", "http://axschema.org/namePerson/first");
-		attributes.put("lastName", "http://axschema.org/namePerson/last");
-		Promise<Result> promised = null;
-		/*
-		promised = OpenID.redirectURL(openid_identifier,
-				routes.Login.openIDCallback().absoluteURL(request()), attributes).map(
-				new Function<String, Result>() {
-					public Result apply(String url) {
-						return redirect(url);
-					}
-				});
-		return async(promised);
-		*/
-		return ok("Logged in with username/password");
+		// check database
+		User user = User.getByUserName(username);
+		if (user==null) {
+			return ok("User doesnt exist!");
+		}
+		if (!user.password.equals(User.hash(password))) {
+			return ok("Password incorrect:" +user.password+" != "+User.hash(password)+ " : "+password);
+		}
+
+		user.updateLastLogin();
+		Logger.info("ok");
+		//TODO encrypt some session parameters e.g. id
+		session("id", user.id.toString());
+		return redirect(routes.Application.home());
+	}
+
+	// new user through the password system
+	public static Result registerPassword() {
+		//DynamicForm dynamicForm = new DynamicForm();
+		//dynamicForm.bindFromRequest();
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String username = dynamicForm.field("username").value();
+		String password = dynamicForm.field("password").value();
+		if (username==null || password==null) {
+			return ok("Error: must specific username/password: "+username+" "+password);
+		}
+
+		if (User.getByUserName(username)!=null) {
+			return ok("Username already exists!");
+		}
+		//validate username/pass
+		User user = new User(username,username,"","","");
+
+		user.setPassword(password);
+		//and register in database
+		user.save();
+		return ok(loginPage.render());
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result resetPassword() {
+		//validate username/pass
+		User currentUser = Secured.getCurrentUser();
+		String newPassword = currentUser.resetPassword();
+		currentUser.save();
+		//and register in database
+		return ok("New password: "+newPassword);
 	}
 
 	public static Result openIDCallback() {

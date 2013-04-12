@@ -10,9 +10,9 @@
 }
 
    @forms.form(routes.CtrlUser.submit()) {
-	    <dt>Mail</dt>
+	    <dt>Email</dt>
 	    <dd>@user.getEmail()</dd>
-	    <dt>SecretToken (Should be hidden!)</dt>
+	    <dt>SecretToken</dt>
 	    <dd>@user.getToken()</dd>
 	    @forms.input(userForm!=null, "text", "userName", "User name", user.userName)
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
@@ -25,4 +25,9 @@
 
 @layout("Account", session) {
   @displayUser(user)
+	<br />
+	<br />
+		@helper.form(action = routes.Login.resetPassword()) {
+		<input type="submit" class="span2 btn btn-primary" value="Reset Password">
+		}
 }

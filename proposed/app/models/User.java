@@ -1,6 +1,9 @@
 package models;
 
 import java.util.*;
+import java.security.SecureRandom;
+import java.math.BigInteger;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.persistence.*;
 
@@ -32,6 +35,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.Required
 	@Formats.NonEmpty
 	public String userName;
+	public String password; // only for username/password login
 	public String firstName;
 	public String lastName;
 	public String location;
@@ -71,26 +75,39 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.location = location;
+		this.password = hash(new BigInteger(130,new SecureRandom()).toString(32));
 	}
 	public User() {
 		this.creationDate = new Date();
+		this.password = DigestUtils.md5Hex(new BigInteger(130,new SecureRandom()).toString(32));
 	}
 
-	public String getEmail() { return email; }
-	public String getToken() { return token; }
-	public String getUserName() { return userName; }
+	public String getEmail()     { return email; }
+	public void   setEmail(String email) { this.email=email; }
+	public String getToken()     { return token; }
+	public String getUserName()  { return userName; }
 	public String getFirstName() { return firstName; }
-	public String getLastName() { return lastName; }
-	public String getLocation() { return location; }
-	public Long getId() { return new Long(id); }
-	public boolean exists() { return exists(id); }
+	public String getLastName()  { return lastName; }
+	public String getLocation()  { return location; }
+	public Long   getId()        { return new Long(id); }
+	public boolean exists()      { return exists(id); }
 
 	public void updateUser(User user) {
 		this.userName = user.userName.toLowerCase();
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
 		this.location = user.location;
+		this.password = user.password;
 		update();
+	}
+
+	public void setPassword(String newPassword) {
+		this.password = DigestUtils.md5Hex(newPassword);
+	}
+	public String resetPassword() {
+		String newPassword = new BigInteger(130,new SecureRandom()).toString(32);
+		this.password = hash(newPassword);
+		return newPassword;
 	}
 
 	public Date updateLastLogin() {
@@ -151,6 +168,11 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public void sortStreamList() {
 		Logger.info("Sorting StreamList");
 		Collections.sort(streamList);
+	}
+
+	// perform the Password -> Hash transform
+	public static String hash(String toHash) {
+		return DigestUtils.md5Hex(toHash);
 	}
   
 	public static User create(User user) {		

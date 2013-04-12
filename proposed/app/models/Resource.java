@@ -8,6 +8,10 @@ import java.util.regex.Pattern;
 
 import javax.persistence.*;
 
+import com.github.cleverage.elasticsearch.Indexable;
+import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.IndexQuery;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -31,7 +35,7 @@ import play.data.validation.Constraints.Required;
 @Table(name = "resources", uniqueConstraints = { 
 	@UniqueConstraint(columnNames = {"owner_id", "label" }) 
 	})
-public class Resource extends Operator {
+public class Resource extends Operator implements Indexable {
 
 	@Id
   public Long id;
@@ -275,6 +279,31 @@ public class Resource extends Operator {
 		return result;
 	}
 
+	public void delete() {
+		this.pollingPeriod = 0L;
+		//remove references
+		Stream.dattachResource(this);
+		ResourceLog.deleteByResource(this);
+		super.delete();
+	}
+
+	/* toIndex() and fromIndex() are Indexable interface */
+	@Override
+	public Map toIndex() {
+			HashMap map = new HashMap();
+			map.put("label", label);
+			map.put("url", pollingUrl);
+			/*map.put("position", position);*/
+			return map;
+	}
+
+	@Override
+	public Indexable fromIndex(Map map) {
+		return null;
+	}
+
+
+
 	public static Resource get(Long id, String key) {
 		Resource resource = find.byId(id);
 		if (resource != null && resource.checkKey(key))
@@ -318,14 +347,6 @@ public class Resource extends Operator {
 			return resource;
 		}
 		return null;
-	}
-
-	public void delete() {
-		this.pollingPeriod = 0L;
-		//remove references
-		Stream.dattachResource(this);
-		ResourceLog.deleteByResource(this);
-		super.delete();
 	}
 	
 	public static void delete(Long id) {

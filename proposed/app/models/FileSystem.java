@@ -6,6 +6,13 @@ import java.lang.StringBuffer;
 import javax.persistence.*;
 
 import models.*;
+import index.*;
+
+import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.IndexQuery;
+import com.github.cleverage.elasticsearch.IndexResults;
+import com.github.cleverage.elasticsearch.Indexable;
+import com.github.cleverage.elasticsearch.annotations.IndexType;
 
 import org.codehaus.jackson.JsonNode;
 
@@ -73,6 +80,8 @@ public class FileSystem {
 				sb.append("<li><a a='#'>"+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
 			}
 		}
+
+
 		return sb.toString();
 	}
 

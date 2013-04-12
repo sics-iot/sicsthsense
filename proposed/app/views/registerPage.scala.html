@@ -1,0 +1,19 @@
+@import helper._
+
+@layout("Login", null) {
+
+		<br />
+    <!-- Simple OpenID Selector -->
+		<form action="/registerPassword" method="post">
+      <fieldset>
+				<legend><b>Register new user account</b></legend>
+				<dt>Email*</dt>
+				<dd><input type="text" name="username" value="" /></dd>
+
+				<dt>Password*</dt>
+				<dd><input type="password" name="password" value="" /></dd>
+			</fieldset>
+			<br />
+      <input type="submit" name="register" value="Register" />
+		</form>
+}
