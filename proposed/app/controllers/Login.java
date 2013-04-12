@@ -19,6 +19,7 @@ import play.libs.*;
 import play.libs.OpenID.UserInfo;
 import play.libs.WS.WSRequestHolder;
 import play.mvc.*;
+import play.mvc.Results.*;
 import play.mvc.Http.Context;
 import play.data.Form;
 import play.data.DynamicForm;
@@ -48,7 +49,7 @@ public class Login extends Controller {
 //		}
 	}
   public static Result signup() {
-    return ok(registerPage.render());
+    return ok(registerPage.render(null));
   }
 	public static Result authenticatePassword(String username, String password) {
 		// check database
@@ -74,12 +75,16 @@ public class Login extends Controller {
 		DynamicForm dynamicForm = Form.form().bindFromRequest();
 		String username = dynamicForm.field("username").value();
 		String password = dynamicForm.field("password").value();
+		String password2 = dynamicForm.field("password2").value();
 		if (username==null || password==null) {
-			return ok("Error: must specific username/password: "+username+" "+password);
+			return ok(registerPage.render("Error: must specify username/password!"));
+		}
+		if (!password.equals(password2)) {
+			return ok(registerPage.render("Error: Passwords didn't match!"));
 		}
 
 		if (User.getByUserName(username)!=null) {
-			return ok("Username already exists!");
+			return ok(registerPage.render("Username already exists!"));
 		}
 		//validate username/pass
 		User user = new User(username,username,"","","");
