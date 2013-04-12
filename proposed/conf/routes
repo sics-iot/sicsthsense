@@ -19,9 +19,15 @@ GET        /API                                  controllers.Public.about()
 GET        /files                              controllers.Application.files()
 
 # Files
-GET        /files/lsdir/$path<.*>                		controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
-GET        /files/delete/$path<.*>                  controllers.CtrlFile.delete(path: String)
-GET        /files/move/$path<.*>	                  controllers.CtrlFile.move(path: String, newPath: String)
+GET        /files/lsdir/$path<.*>                	controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
+GET        /files/delete/$path<.*>                 controllers.CtrlFile.delete(path: String)
+GET        /files/createDir/$path<.*>              controllers.CtrlFile.createDir(path: String)
+GET        /files/createFile/$path<.*>             controllers.CtrlFile.createFile(path: String)
+GET        /files/move						                 controllers.CtrlFile.move(path: String, newPath: String)
+
+#DELETE     /api/files/$path<.*>           			     controllers.CtrlFile.delete(path: String)
+#PUT        /api/dirs/$path<.*>           			       controllers.CtrlFile.createDir(path: String)
+#PUT        /api/files/$path<.*>           			     controllers.CtrlFile.createFile(path: String)
 
 
 # Accounts

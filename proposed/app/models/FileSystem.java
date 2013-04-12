@@ -183,5 +183,28 @@ public class FileSystem {
 		}
 		return false;
 	}
-
+	
+	@Transactional
+	public static boolean moveFile(User user, String path, String newPath) {
+		Vfile f = readFile(user, path);
+		if (f != null) {
+			if (f.isDir()) {
+				// loop throw all files and update those with paths starting with this
+				// path...
+				List<Vfile> flist = Vfile.find.where().eq("owner", user)
+						.istartsWith("path", path + "/").findList();
+				for (Vfile subfile : flist) {
+					subfile.path = newPath + subfile.path.substring(path.length());
+					subfile.update();
+				}
+			}
+			f.path = newPath;
+			f.update();
+			return true;
+		} else {
+			Logger.warn("Vfile path to delete does not exist:: " + path);
+		}
+		return false;
+	}
+	
 }

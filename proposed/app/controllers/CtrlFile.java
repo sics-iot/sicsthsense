@@ -51,16 +51,52 @@ public class CtrlFile extends Controller {
 	public static Result delete(String path) {
 		User currentUser = Secured.getCurrentUser();
 		boolean success = FileSystem.deleteFile(currentUser, path);
-    if(success) return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
-    else return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+		if (success)
+			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, path)));
+		else
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, path)));
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result move(String path, String newPath) {
 		User currentUser = Secured.getCurrentUser();
-		boolean success = false;//FileSystem.moveFile(currentUser, path, newPath);
-    if(success) return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
-    else return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path)));
+		boolean success = FileSystem.moveFile(currentUser, path, newPath);
+		if (success)
+			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, path)));
+		else
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, path)));
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result createDir(String path) {
+		User currentUser = Secured.getCurrentUser();
+		boolean success = (FileSystem.addDirectory(currentUser, path) != null);
+		if (success)
+			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, path)));
+		else
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, "/")));
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result createFile(String path) {
+		User currentUser = Secured.getCurrentUser();
+		boolean success = false;
+		Vfile f = null;
+		if (!FileSystem.fileExists(currentUser, path)) {
+			f = FileSystem.addFile(currentUser, path);
+			success = ( f != null );
+		}
+		if (success)
+			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+					currentUser, f.getParentPath())));
+		else
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/")));
 	}
 	
 	private static void parsePath(Vfile vfile) {
