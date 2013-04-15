@@ -28,14 +28,14 @@
 		<div class="navbar-inner">
 			<div class="container">
 			 <header id="header">
-			 <div class="nav-collapse collapse" style="position: absolute; right: 0; top: 0;">
+			 <!--div class="nav-collapse collapse" style="position: absolute; right: 0; top: 0;">
 				<form action="/search" class="navbar-search form-search pull-left">
 					<div class="input-append">
 						<input type="text" name="q" class="search-query" placeholder="Search">
 							<button type="submit" class="btn btn-inverse"><i class="icon-search icon-white"></i></button>
 					</div>
 				</form>
-			</div>
+			</div-->
 			<p class="navbar-text"><a style="color: white; text-decoration: none;" href="/"><h1>Sics<sup>th</sup>Sense</h1></a></p>
 			</header>
 
@@ -49,15 +49,12 @@
 				<!--navigation bar links-->
 			 <div class="nav-collapse collapse">
 				<ul class="nav">
-					<li>
-					<a href="@routes.Application.home()">Home
-						<!-- span style="font-family: Georgia,Serif; font-style: italic; text-shadow: 2px 2px 2px #000;"><Strong>Sics<sup>th</sup>Sense</Strong></span -->
-					</a>
-					</li>
+					<li><a href="@routes.Application.home()">Home</a></li>
+					<li><a href="@routes.Application.explore()">Search</a></li>
 					@if(session != null && Secured.getUsername(session) != null) {
 					<li><a href="@routes.CtrlResource.resources()" >Resources</a></li>
-					<li><a href="@routes.Application.streams()">Streams</a></li>
-					<li><a href="@routes.Application.files()">Files</a></li>
+					<!--li><a href="@routes.Application.streams()"></a></li-->
+					<li><a href="@routes.Application.files()">Streams</a></li>
 					@**<li><a href="@routes.CtrlUser.get()">Account</a></li>*@
 					} else {
 					<li><a href="@routes.Application.home()">Log in</a></li> 
@@ -82,7 +79,6 @@
 		    </ul>
      		}
 				<ul class="nav pull-right">
-					<li><a href="@routes.Application.explore()">Explore</a></li>
 					<li><a href="@routes.Public.about()">API</a></li>
 				</ul>
 			</div> 
@@ -96,7 +92,7 @@
   </div> <!-- /container-errormsg -->
 	
 	<!-- Page contents -->
-	<div class="container">@content</div> <!-- /container -->
+	<div id="mainContainer" class="container">@content</div> <!-- /container -->
 	
 	<!-- Scripts at the end, to make loading faster -->
 	<script src="@routes.Assets.at("javascripts/flot-master/jquery.flot.js")" type="text/javascript"></script>	

@@ -32,12 +32,12 @@
 				<br />
 				@helper.form(action = routes.CtrlStream.modify(stream.id)) {
 
-					<legend>Parameters for the stream</legend>
+					<legend>View</legend>
 					@vstream.includeStream(stream)
 					<br />
 
 			<div class="row-fluid">
-			<label class="span2"><h4>Description</h4></label>
+			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
 			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Fill in stream description">@myForm("description").value</textarea>
 			</div>
 

@@ -12,7 +12,7 @@
 				@if(vfile.getType() == Vfile.Filetype.FILE) { 
 					@if(vfile.getLink() != null) {
 					<td><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i>@vfile.getName()</a></td>
-					<td>@** @vstream.streamToolbar(vfile.getLink(), vfile.getLink().canWrite(Secured.getCurrentUser()), false, vfile.getLink().publicAccess) **@</td>
+					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
 					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
 					} else {
 					<td><i class="icon-file">&nbsp&nbsp</i>@vfile.getName()</td>

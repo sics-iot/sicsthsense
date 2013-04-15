@@ -1,4 +1,9 @@
-	function toggleFollowStreamButton(event){
+function showAlert(type, msg) {
+	$('#mainContainer').before('<div class="container-errormsg"><div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg.data + '</div></div>');
+	//$('.container').after('<div class="container-errormsg><div class="' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
+}	
+
+function toggleFollowStreamButton(event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('parent_id');
 		var current_tooltip_title=$this_button.attr('title');
@@ -225,10 +230,8 @@
 
   // Rename fields to have a coherent payload like:
   //
-  // informations[0].label
-  // informations[0].email
-  // informations[0].phones[0]
-  // informations[0].phones[1]
+  // streamParserWrapers[0].label
+  // streamParserWrapers[0].inputParser
   // ...
   //
   // This is probably not the easiest way to do it. A jQuery plugin would help.
@@ -257,22 +260,22 @@
  	}
  	//remove from form and renumber the form
  	function removeParser(e) {
- 		var requestDelete = $(this).attr('delete');
- 		var parserId = $(this).attr('parserId');
- 		console.debug("parserID " + parserId);
- 		if(parserId > 0 && requestDelete=='true') {
- 			streamParsersToDelete.push(parserId);
+ 		var requestDelete = $(this).attr('data-delete');
+ 		var dataparserId = $(this).attr('data-parserId');
+ 		console.debug("data-parserId " + dataparserId);
+ 		if(dataparserId > 0 && requestDelete=='true') {
+ 			streamParsersToDelete.destroy(dataparserId);
  			//$(this).toggleClass('icon-trash icon-trash-white');
- 			$(this).attr('delete','false');
+ 			$(this).attr('data-delete','false');
  			$(this).parents('.parser').toggleClass('overlay');
-  		console.debug("Parser " + parserId + " request delete");
- 		} else if (parserId > 0 && requestDelete=='false'){
- 			streamParsersToDelete.destroy(parserId);
+  		console.debug("Parser " + dataparserId + " request delete true --> false");
+ 		} else if (dataparserId > 0 && requestDelete=='false'){
+ 			streamParsersToDelete.push(dataparserId);
  			//$(this).toggleClass('icon-trash icon-trash-white');
- 			$(this).attr('delete','true');
+ 			$(this).attr('data-delete','true');
  			$(this).parents('.parser').toggleClass('overlay');
-  		console.debug("Parser " + parserId + " request delete false");
- 		} else if(parserId <= 0 || typeof parserId === 'undefined'){
+  		console.debug("Parser " + dataparserId + " request delete false --> true");
+ 		} else if(dataparserId <= 0 || typeof dataparserId === 'undefined'){
  		//delete form field only
 			var streamParserWrapers = $(this).parents('.parsers');
 			$(this).parent().remove();
@@ -282,17 +285,23 @@
  		for (var i=0; i<streamParsersToDelete.length; i++) { 
   		console.debug(streamParsersToDelete[i]);
   	}
-		//deleteParser(parserId);
+		//deleteParser(dataparserId);
   };
   
   //send the delete request to server
-  function deleteParser(parserId) {
-  	jsRoutes.controllers.CtrlResource.deleteParser(parserId).ajax({
+  function deleteParser(dataparserId) {
+		console.debug("Parser " + dataparserId + " sending delete request.");
+		var msgToShow = "";
+  	jsRoutes.controllers.CtrlResource.deleteParser(dataparserId).ajax({
 	    success: function(msg) {
-	  		console.debug("Parser " + parserId + " deleted: " + msg);
+	    	msgToShow = "Parser " + dataparserId + " deleted: " + msg;
+	  		console.debug(msgToShow);
+				showAlert("alert-success", msgToShow);
 	    },
 	    error: function(msg) {
-	    	console.debug("Parser " + parserId + " delete error: " + msg);
+	    	msgToShow = "Parser " + dataparserId + " delete error: " + msg;
+	    	console.debug(msgToShow);
+				showAlert("alert-error", msgToShow);
 	    }
 	  });	
   };
@@ -302,17 +311,23 @@
 //	public static Result addParser(Long resourceId, String inputParser, String inputType, String streamPath) {
 
   function createParser(resourceId, inputParser, inputType, streamPath) {
+  	var smsg;
   	jsRoutes.controllers.CtrlResource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
-	  		console.debug("Parser " + parserId + " add: " + msg);
+	    	smsg="Parser " + dataparserId + " add: " + msg;
+	  		console.debug(smsg);
+				showAlert("alert-success", smsg);
 	    },
 	    error: function(msg) {
-	    	console.debug("Parser " + parserId + " add error: " + msg);
+	    	smsg="Parser " + dataparserId + " add error: " + msg;
+	  		console.debug(smsg);
+				showAlert("alert-error", smsg);
 	    }
 	  });	
   };
   //insert streamParser form field
   function insertParser(e) {
+  	$('.streamParsersLabels').removeClass("hidden");
 		var template = $('.parsers_template');
 		template.before('<div new="true">' + template.html() + '</div>');
 		renumberParsers();
@@ -330,10 +345,14 @@
 //  	  //$resource_form.submit();
 //  	} else {
 	  	$('.parsers_template').remove();
-	  	for (var i=0; i<streamParsersToDelete.length; i++) { 
+	  	var msg;
+	  	for (var i=0; i<streamParsersToDelete.length; i++) {
+	  		var msg = "Remove DOM: " + $('[data-parserId="'+streamParsersToDelete[i]+'"]').attr('id');
 	  		deleteParser(streamParsersToDelete[i]);
-	  		console.debug("Remove DOM: " + $('[parserId="'+streamParsersToDelete[i]+'"]').attr('id'));
-	  		$('[parserId="'+streamParsersToDelete[i]+'"]').remove();
+	  		console.debug(msg);
+	  		$('[data-parserId="'+streamParsersToDelete[i]+'"]').remove();
+				console.debug(msg);
+				showAlert("alert-success", msg);
 	  	}
 	  	streamParsersToDelete = new Array();
 			renumberParsers();
@@ -344,8 +363,24 @@
   $('#addResource').on("click", function(e) {  	
 	  	$('.parsers_template').remove();
 			renumberParsers();
-			console.debug("Adding new resource.");
+			var msg = "Adding new resource.";
+			console.debug(msg);
+			showAlert("alert-success", msg);			
   });
+  
+  function fileListFolderClick(e) {  	
+  	var path = $(this).attr('data-folderpath');
+  	console.debug("Browsing: " + path);
+  	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
+      success: function(msg) {
+      	$('#fileTableBody').html(msg);
+      },
+      error: function(msg) {
+      	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+      }
+    });
+  };
+  $('.folder-list-button').on("click", fileListFolderClick);
   
 //  function add_resource_form_handler(e) {	
 //  	$('.parsers_template').remove();
@@ -356,28 +391,28 @@
 //  add_resource_form.addEventListener("submit", add_resource_form_handler, false);
   
 //-----------jsTree
-$("#vfileTree").bind("select_node.jstree", function(event, data) {
-	var path = '/' + $(this).jstree('get_path', data.rslt.obj, false).join('/');
-	//alert(path);
-    //alert($(data.args[0]).text());
-		window.location.hash=path;
-});  
+
 $("#vfileTree").jstree();
+
 $("#vfileTree").load($(this).jstree());
 
-function fileListFolderClick(e) {  	
-	var path = $(this).attr('data-folderpath');
-	console.debug("Browsing: " + path);
-	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
-    success: function(msg) {
-    	$('#fileTableBody').html(msg);
-    },
-    error: function(msg) {
-    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
-    }
-  });
-};
-$('.folder-list-button').on("click", fileListFolderClick);
+//$("#vfileTree").bind("open_node.jstree select_node.jstree", function(event, data) {
+//	var path = '/' + $(this).jstree('get_path', data.rslt.obj, false).join('/');
+//	alert(path);
+//	console.debug("Browsing: " + path);
+//	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
+//    success: function(msg) {
+//    	$('#fileTableBody').html(msg);
+//    },
+//    error: function(msg) {
+//    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+//    }
+//  });
+//    //alert($(data.args[0]).text());
+//		//window.location.hash=path;
+//});  
+
+
 
 
 
