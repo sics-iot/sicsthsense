@@ -145,7 +145,7 @@ font-size: 12px;
 border-radius: 0;
 }
 
-input:read-only, textarea:read-only {
+textarea[readonly=""], textarea[readonly=true], textarea[readonly], input[readonly=""], input[readonly=true], input[readonly] {
 outline: none;
 cursor: default;
 }

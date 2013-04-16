@@ -22,7 +22,8 @@ public class Application extends Controller {
   
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(homePage.render(currentUser.followedStreams));
+  	List<Stream> lastUpdatedPublic = Stream.getLastUpdatedStreams(currentUser, 10);
+    return ok(homePage.render(currentUser.followedStreams, lastUpdatedPublic));
   }
   
   public static Result search() {

@@ -21,11 +21,11 @@
 						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
 						</ul>
 					</div>
-				} else {
-				}
+				} else {}
   </div>
 
 	<div class="span9">
+@if(stream.canRead(Secured.getCurrentUser())) {
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
 		<h1>Stream '@stream.file.getPath()'</h1>
@@ -38,7 +38,7 @@
 
 			<div class="row-fluid">
 			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
-			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Fill in stream description">@myForm("description").value</textarea>
+			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
 			</div>
 
 					<fieldset>
@@ -48,19 +48,22 @@
 					<br />
 			<div class="row-fluid">
 			<label>Latitude</label>
-			<input class="span4" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0">
+			<input class="span4" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			<label>Longtitude</label>
-			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0">
+			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			</div>
 					</fieldset>
 					<br />
+					@if(stream.canWrite(Secured.getCurrentUser())){
 					<div class="actions">
 						<input type="submit" class="btn btn-primary" value="Update">
 					</div>
+					}
 					<br /> <br />
 					<br /> <br />
 				}
     </div>
+    }
   </div>
 
  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-9DrIlaZr8XjhHtcKgM8lluCrz0iqydk&sensor=true"> </script>
@@ -79,7 +82,7 @@
             mapOptions);
 				marker = new google.maps.Marker({
 					position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-					draggable:true,
+					draggable:@stream.canWrite(Secured.getCurrentUser()),
 					animation:false,
 					map: map
       });

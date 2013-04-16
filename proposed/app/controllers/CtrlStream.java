@@ -50,8 +50,8 @@ public class CtrlStream extends Controller {
 			Stream submitted = theForm.get();
 			User currentUser = Secured.getCurrentUser();
 			Stream stream = Stream.get(id);
-			if (stream  == null) {
-				return badRequest("Stream does not exist: " + id);
+			if (stream  == null || !stream.canWrite(currentUser)) {
+				return unauthorized("Unauthorized!");
 			}
 
 			// probably not the correct way to do it

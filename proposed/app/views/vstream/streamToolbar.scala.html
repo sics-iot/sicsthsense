@@ -35,16 +35,16 @@
 	   
     <!-- 		 publicAccessIcon -->
  		@if(!stream.publicAccess) {
-		  <a class="icon-btn icon-globe icon-white set_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Share with the world!" inactive_title="Protect from the world!"></a>
+		  <a class="icon-btn icon-globe icon-white set_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Make public" inactive_title="Hide from the public"></a>
 		} else {
-		  <a class="icon-btn icon-globe remove_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Protect from the world!" inactive_title="Share with the world!"></a>
+		  <a class="icon-btn icon-globe remove_public_access_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Hide from the public" inactive_title="Make public"></a>
 		}
 		
 		<!-- 		 publicSearchIcon -->
  		@if(!stream.publicSearch) {
-		  <a class="icon-btn icon-eye-open icon-white set_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Make searchable to the world!" inactive_title="Hide from the world!"></a>
+		  <a class="icon-btn icon-eye-open icon-white set_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Make searchable" inactive_title="Hide from search"></a>
 		} else {
-		  <a class="icon-btn icon-eye-open remove_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Hide from the world!" inactive_title="Make searchable to the world!"></a>
+		  <a class="icon-btn icon-eye-open remove_public_search_stream" parent_id="@stream.id" href="#" rel="tooltip" title="Hide from search" inactive_title="Make searchable"></a>
 		}  
 	 }
 	 </span>

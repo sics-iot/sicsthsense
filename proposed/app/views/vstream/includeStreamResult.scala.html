@@ -10,9 +10,12 @@
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 			</span>
 		</div>
+@**Show key?**@
+@if(stream.showKey(Secured.getCurrentUser())!=null) {
 <div >
 	<input class="span10" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 </div>
+}
 	@if(!stream.hasData()) {
 		&nbsp;No data
 	}

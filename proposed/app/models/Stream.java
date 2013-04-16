@@ -5,6 +5,7 @@ import java.util.*;
 import javax.persistence.*;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.SqlUpdate;
 import com.avaje.ebean.annotation.EnumValue;
 
@@ -431,6 +432,10 @@ public class Stream extends Model implements Comparable<Stream> {
 		return pub;
 	}
 	
+	public boolean isPublicSearch() {
+		return publicSearch;
+	}
+	
 	public boolean setFrozen( Boolean frozen ) {
 		this.frozen = frozen;
 		this.update();
@@ -451,12 +456,29 @@ public class Stream extends Model implements Comparable<Stream> {
 	}
 
 	public static List<Stream> availableStreams(User currentUser) {
-		List<Stream> available = find.where().eq("publicSearch", true).findList();
-		if(currentUser != null) {
-			List<Stream> mine = find.where().eq("owner", currentUser).findList();
-			available.addAll(mine);
-		}
+		List<Stream> available = find.where()
+				.or(
+						Expr.eq("publicSearch", true), 
+						Expr.eq("owner", currentUser) 
+						)
+				.orderBy("owner").findList();
 		return available;
 	}
 
+	// get the recently updated public streams that are not followed by currentUser
+	public static List<Stream> getLastUpdatedStreams(User currentUser, int count) {
+		List<Stream> available = find.where()
+				.and(
+						//Expr.and(	Expr.eq("publicSearch", true), Expr.eq("publicAccess", true) ),
+						Expr.eq("publicSearch", true),
+						Expr.ne("owner", currentUser) 
+						)
+					 //do not include already followed streams	
+					.not(Expr.in("id", Stream.find.where().join("followingUsers").where().eq("followingUsers.id", currentUser.id).findIds())) // User.find.where().join("streams").where().eq("id", currentUser.id)))
+					.orderBy("lastUpdated")
+					.setMaxRows(count)
+					.findList();
+		return available;
+	}
+	
 }

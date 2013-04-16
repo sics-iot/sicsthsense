@@ -1,4 +1,21 @@
-    
+	function showHidePlots(e) {
+			var $showHidePlotsButton= $('#showHidePlotsButton');
+	
+		$('.streamconfig').toggle(); 
+		$('.streamplot_overview').toggle(); 
+		$('.streamplot').toggle();
+		$('.streamNoDataLine').toggle();
+		
+		var currentTitle = $showHidePlotsButton.text();
+		console.debug("currentTitle: " + currentTitle);
+		
+		var nextTitle = $showHidePlotsButton.attr('data-nextTitle');
+				console.debug("nextTitle: " + nextTitle);
+		
+		$showHidePlotsButton.text(nextTitle);
+		$showHidePlotsButton.attr('data-nextTitle', currentTitle);
+	}
+	
 function showAlert(type, msg) {
 	$('#mainContainer').before('<div class="container-errormsg"><div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg.data + '</div></div>');
 	//$('.container').after('<div class="container-errormsg><div class="' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
