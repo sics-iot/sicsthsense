@@ -115,6 +115,7 @@
 		$(document).ready(function() {
 			openid.init('openid_identifier');
 		});
+    $(document).on('click','input[readonly]',function(){ this.select(); });
 	</script>
 	<script src="@routes.Assets.at("javascripts/myscripts.js")" type="text/javascript"></script>
  

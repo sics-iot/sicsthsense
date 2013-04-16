@@ -49,12 +49,12 @@ public class Resource extends Operator implements Indexable {
 	 */
   private static final long serialVersionUID = 7683451697925144957L;
 	@Required
-  public String label = "NewResource";
+  public String label = "NewResource"+Utils.timeStr(Utils.currentTime());
   public Long pollingPeriod = 0L;
   public Long lastPolled = 0L;
 	public String pollingUrl = null;
 	public String pollingAuthenticationKey = null;
-	public String description; // dont use!
+	public String description=""; 
 
 	@OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
 	public List<StreamParser> streamParsers = new ArrayList<StreamParser>();

@@ -135,6 +135,21 @@ dd {
 		height: 0px;
 }
 
+input.url-field {
+position: relative;
+width: 100%;
+min-height: 26px;
+padding: 0 5px;
+font-family: Monaco, "Liberation Mono", Courier, monospace;
+font-size: 12px;
+border-radius: 0;
+}
+
+input:read-only, textarea:read-only {
+outline: none;
+cursor: default;
+}
+
 
 li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
 li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
