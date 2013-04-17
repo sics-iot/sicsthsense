@@ -364,13 +364,15 @@
 						}, this))
 					.bind("dblclick.jstree", function (event) { 
 						var sel;
-						if(document.selection && document.selection.empty) { document.selection.empty(); }
+						if(document.selection && document.selection.empty) {
+							//document.selection.empty(); 
+							}
 						else {
 							if(window.getSelection) {
 								sel = window.getSelection();
 								try { 
-									sel.removeAllRanges();
-									sel.collapse();
+									//sel.removeAllRanges();
+									//sel.collapse();
 								} catch (err) { }
 							}
 						}
