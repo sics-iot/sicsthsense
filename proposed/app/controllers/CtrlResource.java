@@ -46,12 +46,12 @@ public class CtrlResource extends Controller {
 			StringBuffer returnBuffer = new StringBuffer();  
 			BufferedReader serverResponse;
 			
-			if(submitted.pollingUrl != null && !"".equalsIgnoreCase(submitted.pollingUrl)) {
+			if(submitted.getPollingUrl() != null && !"".equalsIgnoreCase(submitted.getPollingUrl())) {
 			//fudge URL, should check HTTP
-				if (!submitted.pollingUrl.startsWith("http://") 
-						&& !submitted.pollingUrl.startsWith("https://") 
-						&& !submitted.pollingUrl.startsWith("coap://") ) {
-					submitted.pollingUrl = "http://"+submitted.pollingUrl;
+				if (!submitted.getPollingUrl().startsWith("http://") 
+						&& !submitted.getPollingUrl().startsWith("https://") 
+						&& !submitted.getPollingUrl().startsWith("coap://") && submitted.parent == null) {
+					submitted.setPollingUrl("http://"+submitted.getPollingUrl());
 				}
 				// get data
 				HttpURLConnection connection = submitted.probe();
@@ -199,6 +199,31 @@ public class CtrlResource extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
+	public static Result addSubResource() {
+	DynamicForm requestData;
+	
+		try {
+			requestData = Form.form().bindFromRequest();
+
+		Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
+		Long parentId = Long.parseLong( requestData.get("parent") );
+		User curentUser = Secured.getCurrentUser();
+		Resource parent = Resource.get(parentId, curentUser);
+		// validate form
+//		this(parent, owner, label, pollingPeriod, pollingUrl, pollingAuthenticationKey, "");
+
+			Resource submitted = new Resource(parent, curentUser, requestData.get("label"), pollingPeriod, requestData.get("pollingUrl"), requestData.get("pollingAuthenticationKey"), "Subresource" );
+			submitted = Resource.create(submitted);
+			Logger.info("Adding a new subresource: " + "Label: " + submitted.label
+					+ " URL: " + submitted.getUrl());
+			return CtrlResource.getById(parentId);
+		} catch (Exception e) {
+			return badRequest("Error: " + e.getMessage() + e.getStackTrace()[0].toString());
+		}
+		//return badRequest("Bad parsing of form");
+	}
+	
+	@Security.Authenticated(Secured.class)
 	public static Result addSimple() {
 		Form<Resource> theForm;
 		// error check
@@ -222,7 +247,7 @@ public class CtrlResource extends Controller {
 				submitted.pollingPeriod = 0L;
 				submitted = Resource.create(submitted);
 				Logger.info("Adding a new resource: " + "Label: " + submitted.label
-						+ " URL: " + submitted.pollingUrl);
+						+ " URL: " + submitted.getPollingUrl());
 				// if(submitted != null && submitted.id != null) {
 				// return redirect(routes.CtrlResource.getById(submitted.id));
 				// }
@@ -237,19 +262,6 @@ public class CtrlResource extends Controller {
   	User currentUser = Secured.getCurrentUser();
     return ok(resourcesPage.render(currentUser.resourceList, resourceForm));
 	}
-	//
-//DynamicForm requestData = Form.form().bindFromRequest();
-//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
-//String pollingUrl = requestData.get("pollingUrl");
-//String authentication = requestData.get("authentication");
-
-//extracting stream parsers
-//int n = 0;
-//while() {
-//String inputType = requestData.get("inputType["+ Integer.toString(n)+"]")
-//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
-//}
-//Long pollingPeriod = Long.parseLong( requestData.get("pollingPeriod") );
 
 	@Security.Authenticated(Secured.class)
 	public static Result post(Long id) {
@@ -280,7 +292,8 @@ public class CtrlResource extends Controller {
 				return badRequest("Resource does not exist: " + id);
 			}
 			Resource submitted = skeleton.getResource(currentUser);
-			Logger.info("Submitted resource url: " + submitted.pollingUrl);
+			submitted.parent = resource.parent;
+			Logger.info("Submitted resource url: " + submitted.getPollingUrl());
 			List<StreamParser> spList = skeleton.getStreamParsers(submitted);
 			try {
 				resource.updateResource(submitted);

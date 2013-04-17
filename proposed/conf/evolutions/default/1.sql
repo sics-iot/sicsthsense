@@ -48,7 +48,9 @@ create table resources (
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
   description               varchar(255),
+  parent_id                 bigint,
   secret_key                varchar(255),
+  version                   integer not null,
   constraint uq_resources_1 unique (owner_id,label),
   constraint pk_resources primary key (id))
 ;
@@ -152,20 +154,22 @@ alter table functions add constraint fk_functions_owner_4 foreign key (owner_id)
 create index ix_functions_owner_4 on functions (owner_id);
 alter table resources add constraint fk_resources_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_resources_owner_5 on resources (owner_id);
-alter table resource_log add constraint fk_resource_log_resource_6 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_resource_log_resource_6 on resource_log (resource_id);
-alter table streams add constraint fk_streams_owner_7 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_streams_owner_7 on streams (owner_id);
-alter table streams add constraint fk_streams_resource_8 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_streams_resource_8 on streams (resource_id);
-alter table parsers add constraint fk_parsers_resource_9 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_parsers_resource_9 on parsers (resource_id);
-alter table parsers add constraint fk_parsers_stream_10 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_parsers_stream_10 on parsers (stream_id);
-alter table vfiles add constraint fk_vfiles_owner_11 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_vfiles_owner_11 on vfiles (owner_id);
-alter table vfiles add constraint fk_vfiles_linkedStream_12 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_vfiles_linkedStream_12 on vfiles (linked_stream_id);
+alter table resources add constraint fk_resources_parent_6 foreign key (parent_id) references resources (id) on delete restrict on update restrict;
+create index ix_resources_parent_6 on resources (parent_id);
+alter table resource_log add constraint fk_resource_log_resource_7 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_resource_log_resource_7 on resource_log (resource_id);
+alter table streams add constraint fk_streams_owner_8 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_streams_owner_8 on streams (owner_id);
+alter table streams add constraint fk_streams_resource_9 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_streams_resource_9 on streams (resource_id);
+alter table parsers add constraint fk_parsers_resource_10 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_parsers_resource_10 on parsers (resource_id);
+alter table parsers add constraint fk_parsers_stream_11 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_parsers_stream_11 on parsers (stream_id);
+alter table vfiles add constraint fk_vfiles_owner_12 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_vfiles_owner_12 on vfiles (owner_id);
+alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
 
 

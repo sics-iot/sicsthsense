@@ -30,7 +30,7 @@ public class SkeletonResource {
 			this.key = resource.getKey();
 			this.label = resource.label;
 			this.pollingPeriod = resource.pollingPeriod;
-			this.pollingUrl = resource.pollingUrl;
+			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = streamParserWrapers;
@@ -42,7 +42,7 @@ public class SkeletonResource {
 			this.label = resource.label;
 			this.key = resource.getKey();
 			this.pollingPeriod = resource.pollingPeriod;
-			this.pollingUrl = resource.pollingUrl;
+			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 			if (resource.streamParsers != null) {
 				streamParserWrapers = new ArrayList<StreamParserWraper>(resource.streamParsers.size()+1);
@@ -59,7 +59,7 @@ public class SkeletonResource {
 			this.key = resource.getKey();
 			this.label = resource.label;
 			this.pollingPeriod = resource.pollingPeriod;
-			this.pollingUrl = resource.pollingUrl;
+			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 		}
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length+1);
@@ -114,7 +114,7 @@ public class SkeletonResource {
 			this.key = resource.key;
 			this.label = resource.label;
 			this.pollingPeriod = resource.pollingPeriod;
-			this.pollingUrl = resource.pollingUrl;
+			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
 			return true;
 		}

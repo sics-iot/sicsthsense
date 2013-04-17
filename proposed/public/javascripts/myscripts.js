@@ -346,6 +346,7 @@ function toggleFollowStreamButton(event){
   //insert streamParser form field
   function insertParser(e) {
   	$('.streamParsersLabels').removeClass("hidden");
+  	$('.streamParsersLabelsAddParserText').addClass("hidden");
 		var template = $('.parsers_template');
 		template.before('<div new="true">' + template.html() + '</div>');
 		renumberParsers();

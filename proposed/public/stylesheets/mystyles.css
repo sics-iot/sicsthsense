@@ -150,6 +150,9 @@ outline: none;
 cursor: default;
 }
 
+.bs-docs-sidebar {
+		margin-right: 1em;
+}
 
 li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
 li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }

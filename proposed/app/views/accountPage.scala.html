@@ -27,18 +27,13 @@
 }
 
 @layout("Account", session) {
-		
+  @displayUser(user)
+	<br /><br />
+		@helper.form(action = routes.CtrlUser.resetPassword(true)) {
+		<legend>For local access:</legend>   	     	  
 		@if(newPassword!=null && newPassword!="") {
 			@forms.input(userForm!=null, "text", "newPassword", "New Password", newPassword,"", true)
 		}
-		<br />
-  @displayUser(user)
-	<br />
-	<br />
-		@helper.form(action = routes.CtrlUser.resetPassword(true)) {
-		   	  <legend>For local access:</legend>   	     	  
-
 			<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
-		
 		}
 }
