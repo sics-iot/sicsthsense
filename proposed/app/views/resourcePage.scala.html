@@ -60,17 +60,17 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 
 @streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = true, deleteParser: Boolean = false) = {
 <div class="row-fluid parser controls controls-row @className" data-parserId="@{field("parserId").value}">
-<input type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
-<input class="span3" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
-<input class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="expression or /jsonnode/name">
-<input class="span3" type="text" id="@field("timeformat").id" name="@field("timeformat").name" value="@field("timeformat").value" placeholder="fill in if posting timestamps">
-  <select class="span2" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
+<input form="@resourceFormId" type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
+<input form="@resourceFormId" class="span3" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
+<input form="@resourceFormId" class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="expression or /jsonnode/name">
+<input form="@resourceFormId" class="span3" type="text" id="@field("timeformat").id" name="@field("timeformat").name" value="@field("timeformat").value" placeholder="fill in if posting timestamps">
+  <select form="@resourceFormId" class="span2" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
   	<option value=""></option>
 		<option value="application/json" @if(field("inputType").value.toString.contains("json")){selected="selected"}>application/json</option>
     <option value="text/plain" @if(field("inputType").value.toString.contains("text")){ selected="selected" }>text/plain</option>
   </select>
 	<i class="removeParser btn btn-danger pull-right" data-delete="false" @if(deleteParser){data-parserId="@{field("parserId").value}"}else{data-parserId="-1"}><span class="icon-trash icon-white"></span></i>
-@*<input type="text" id="@field("inputType").id" name="@field("inputType").name" value="@field("inputType").value" placeholder="Input type">*@
+@*<input form="@resourceFormId" type="text" id="@field("inputType").id" name="@field("inputType").name" value="@field("inputType").value" placeholder="Input type">*@
 </div>
 }
 
@@ -80,8 +80,20 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
     ================================================== -->
     <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
-			 
+ <div style="position:fixed;" >
+<span  class="btn-group">	      
+    	@if(!addNewResource) {
+		      <button type="submit" name="update" class="btn btn-primary" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i></button>
+				} else {
+		      <input type="submit" name="add" class="btn btn-primary" id="addResource" value="Add Resource" form="@resourceFormId">
+				}
+				<a href="@routes.CtrlResource.resources()" class="btn"><i class="icon-remove"></i></a>
+				@if(!addNewResource) {
+					<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger"><i class="icon-trash icon-white"></i></a>
+				}
+	      </span>
 			@manage.navigationMenu(resources) 
+			</div>
 			@**
 			should pass theses parameters(resources, extStreams)
 			**@
@@ -96,10 +108,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	      }
 	      
   <h1>@title</h1>
-	@if(!addNewResource) {
-		@interactWithResource(myForm("id").value.toLong, thisResource.getUrl())
-	}
-	
+     
 	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
 		      <legend>Parameters</legend>
@@ -136,7 +145,16 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				</fieldset>
 		    <!-- NOT WORKING input type="submit" name="poll" class="btn btn-primary" value="Poll URL"-->
 			}
-	      <fieldset>
+			<!-- end modify resource-->
+  }
+  
+	@if(!addNewResource) {
+		@interactWithResource(myForm("id").value.toLong, thisResource.getUrl())
+	}
+	
+	<!-- Parsers -->
+
+<fieldset>
 		      <legend>Parsers <span style="float: right;"><a class="addParser btn btn-success"><span class="icon-plus icon-white"></span></a></span></legend>
 		      <div id="parsers" resourceId="@myForm("id").value">
 						
@@ -154,9 +172,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 		      </div>
 	      </fieldset>
 				<br />
-			<!-- end modify resource-->
-  }
-  
+
 	<!-- Subresources -->
 	@if(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()).subResources.length > 0) {
 	<br />
@@ -198,20 +214,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	 </fieldset>
   }
   </div>
-				
-				<br/><br/>
-	      <div class="actions">				      
-				@if(!addNewResource) {
-		      <input type="submit" name="update" class="btn btn-primary" id="updateResource" value="Save changes"> &nbsp;
-				} else {
-		      <input type="submit" name="add" class="btn btn-primary" id="addResource" value="Add Resource"> &nbsp;
-				}
-				<a href="@routes.CtrlResource.resources()" class="btn">Cancel</a>
-				@if(!addNewResource) {
-					<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger pull-right">Delete everything</a> &nbsp;
-				}
-	      </div>
-	      
+
   <!-- Log view --->
 	     @if(!addNewResource) {
   			<br /><br />
