@@ -1,10 +1,10 @@
 @(vfiles : List[Vfile])
 
 	@if(vfiles.length > 0) {
-	@**<tr><td><i class="icon-folder-close">&nbsp&nbsp</i><a class="folder-list-button" id="UP_ID@vfiles(0).getPath()" data-folderpath="@vfiles(0).getParentPath()/" href="#">[UP] @vfiles(0).getParentPath()</a></td>
+	@*<tr><td><i class="icon-folder-close">&nbsp&nbsp</i><a class="folder-list-button" id="UP_ID@vfiles(0).getPath()" data-folderpath="@vfiles(0).getParentPath()" href="#">[UP] @vfiles(0).getParentPath()</a></td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
-	</tr>**@
+	</tr>*@
 		@for(vfile <- vfiles) {
 			@if(vfile != null) {					
   	  <tr>

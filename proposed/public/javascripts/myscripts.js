@@ -386,13 +386,14 @@ function toggleFollowStreamButton(event){
 			console.debug(msg);
 			showAlert("alert-success", msg);			
   });
-  
-  function fileListFolderClick(e) {  	
+  var fileListFolderClick;
+  fileListFolderClick = function (e) {  	
   	var path = $(this).attr('data-folderpath');
   	console.debug("Browsing: " + path);
   	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
       success: function(msg) {
       	$('#fileTableBody').html(msg);
+        $('.folder-list-button').on("click", fileListFolderClick);
       },
       error: function(msg) {
       	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
