@@ -130,8 +130,9 @@ public class CtrlResource extends Controller {
 				Logger.warn("Unknown content type!");
 			}	
 		}
-		//return ok(routes.CtrlResource.resource(currentUser.resourceList,null,false));
-		return ok("auto");
+		SkeletonResource skeleton = new SkeletonResource(resource);
+		Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
+		return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, false));
 		//SkeletonResource skeleton = new SkeletonResource(submitted);
 		//Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
 		//return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
