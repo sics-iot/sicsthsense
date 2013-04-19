@@ -25,7 +25,8 @@
 
 	@if(streams.length > 0) {
 		@for(stream <- streams) {
-			@vstream.includeStreamResult(stream)
+			@**vstream.includeStreamResult(stream)*@
+			@vstream.includeStream(stream)
 		}
 	} else {
 			No matches available!<br /> <br /> View/add your own through the <a href="/resources">Resources page</a>.

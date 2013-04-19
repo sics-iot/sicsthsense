@@ -23,7 +23,7 @@ function showAlert(type, msg) {
 
 function toggleFollowStreamButton(event){
 		var $this_button=$(this);
-		var my_stream_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
 		var next_tooltip_title=$this_button.attr('inactive_title');
 		var follow = false;
@@ -42,13 +42,13 @@ function toggleFollowStreamButton(event){
 	    	if(fmsg=="true") {
 					console.debug("FollowStream result: " + my_stream_id + fmsg);
 
-	    		$this_button.removeClass("icon-star-empty follow_stream");
-	    		$this_button.addClass("icon-star unfollow_stream");
+	    		$this_button.removeClass("follow_stream");
+	    		$this_button.addClass("btn-success disabled unfollow_stream");
 	    	} else if(fmsg=="false") {
 					console.debug("FollowStream result: " + my_stream_id + fmsg);
 
-	    		$this_button.removeClass("icon-star unfollow_stream");
-	    		$this_button.addClass("icon-star-empty follow_stream");
+	    		$this_button.removeClass("btn-success disabled unfollow_stream");
+	    		$this_button.addClass("follow_stream");
 	    	} 
 	    },
 	    error: function(emsg) {
@@ -60,11 +60,11 @@ function toggleFollowStreamButton(event){
 	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
 	  				console.debug("Error: Reparing Error of followStream! " + my_stream_id + fmsg);
 	  	    	if(fmsg=="true") {
-	  	    		$this_button.removeClass("icon-star-empty follow_stream");
-	  	    		$this_button.addClass("icon-star unfollow_stream");
+	  	    		$this_button.removeClass("follow_stream");
+	  	    		$this_button.addClass("btn-success disabled unfollow_stream");
 	  	    	} else if(fmsg=="false") {
-	  	    		$this_button.removeClass("icon-star unfollow_stream");
-	  	    		$this_button.addClass("icon-star-empty follow_stream");
+	  	    		$this_button.removeClass("btn-success disabled unfollow_stream");
+	  	    		$this_button.addClass("follow_stream");
 	  	    	} 
 	  	    },
 	  	    error: function(fmsg) {
@@ -92,7 +92,7 @@ function toggleFollowStreamButton(event){
 	//controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
 	function togglePublicAccessStreamButton(event){
 		var $this_button=$(this);
-		var my_stream_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
 		var next_tooltip_title=$this_button.attr('inactive_title');
 		var pub = false;
@@ -103,11 +103,11 @@ function toggleFollowStreamButton(event){
 	  	dataType : "text",
 	    success: function(fmsg) {
 	    	if(fmsg=="true") {
-	    		$this_button.removeClass("icon-white set_public_access_stream");
-	    		$this_button.addClass("remove_public_access_stream");
+	    		$this_button.removeClass("set_public_access_stream");
+	    		$this_button.addClass("btn-success disabled remove_public_access_stream");
 	    	} else if(fmsg=="false") {
-	    		$this_button.removeClass("remove_public_access_stream");
-	    		$this_button.addClass("icon-white set_public_access_stream");
+	    		$this_button.removeClass("btn-success disabled remove_public_access_stream");
+	    		$this_button.addClass("set_public_access_stream");
 	    	} 
 //	    	$this_button.attr('title', next_tooltip_title);
 //	    	$this_button.attr('inactive_title', current_tooltip_title);
@@ -123,11 +123,11 @@ function toggleFollowStreamButton(event){
 	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
 	  				console.debug("PublicAccess: Reparing Error! " + my_stream_id + fmsg);
 	  	    	if(fmsg=="true") {
-	  	    		$this_button.removeClass("icon-white set_public_access_stream");
-	  	    		$this_button.addClass("remove_public_access_stream");
+	  	    		$this_button.removeClass("set_public_access_stream");
+	  	    		$this_button.addClass("btn-success disabled remove_public_access_stream");
 	  	    	} else if(fmsg=="false") {
-	  	    		$this_button.removeClass("remove_public_access_stream");
-	  	    		$this_button.addClass("icon-white set_public_access_stream");
+	  	    		$this_button.removeClass("btn-success disabled remove_public_access_stream");
+	  	    		$this_button.addClass("set_public_access_stream");
 	  	    	} 
 	  	    },
 	  	    error: function(fmsg) {
@@ -147,7 +147,7 @@ function toggleFollowStreamButton(event){
 	//controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
 	function togglePublicSearchStreamButton(event){
 		var $this_button=$(this);
-		var my_stream_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
 		var next_tooltip_title=$this_button.attr('inactive_title');
 		var pub = false;
@@ -160,11 +160,11 @@ function toggleFollowStreamButton(event){
 	  	dataType : "text",
 	    success: function(fmsg) {
 	    	if(fmsg=="true") {
-	    		$this_button.removeClass("icon-white set_public_search_stream");
-	    		$this_button.addClass("remove_public_search_stream");
+	    		$this_button.removeClass("set_public_search_stream");
+	    		$this_button.addClass("btn-success disabled remove_public_search_stream");
 	    	} else if(fmsg=="false") {
-	    		$this_button.removeClass("remove_public_search_stream");
-	    		$this_button.addClass("icon-white set_public_search_stream");
+	    		$this_button.removeClass("btn-success disabled remove_public_search_stream");
+	    		$this_button.addClass("set_public_search_stream");
 	    	}
 	    	//event.stopImmediatePropagation();
 	    	//event.stopPropagation();	    	
@@ -178,11 +178,11 @@ function toggleFollowStreamButton(event){
 	  	    	//$('div.container-errormsg').html('<strong>Reparing Error!</strong>'+fmsg);
 	  				console.debug("PublicSearch: Reparing Error! " + my_stream_id + fmsg);
 	  	    	if(fmsg=="true") {
-	  	    		$this_button.removeClass("icon-white set_public_search_stream");
-	  	    		$this_button.addClass("remove_public_search_stream");
+	  	    		$this_button.removeClass("set_public_search_stream");
+	  	    		$this_button.addClass("btn-success disabled remove_public_search_stream");
 	  	    	} else if(fmsg=="false") {
-	  	    		$this_button.removeClass("remove_public_search_stream");
-	  	    		$this_button.addClass("icon-white set_public_search_stream");
+	  	    		$this_button.removeClass("btn-success disabled remove_public_search_stream");
+	  	    		$this_button.addClass("set_public_search_stream");
 	  	    	} 
 	  	    },
 	  	    error: function(fmsg) {
@@ -202,7 +202,7 @@ function toggleFollowStreamButton(event){
 //controllers.CtrlStream.clear(stream.id)
 	function clearStreamButton(event){
 		var $this_button=$(this);
-		var my_stream_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('data-parent_id');
 
 	  jsRoutes.controllers.CtrlStream.clear(my_stream_id).ajax({
 	  	dataType : "text",
@@ -218,14 +218,14 @@ function toggleFollowStreamButton(event){
 	    }
 	  });
 		$('.clearStreamButton').on("click", clearStreamButton);
-	  return false;
+	  //return false;
 	};
 	$('.clearStreamButton').on("click", clearStreamButton);
 	
 //controllers.CtrlStream.delete(stream.id)
 	function deleteStreamButton(event){
 		var $this_button=$(this);
-		var my_stream_id=$this_button.attr('parent_id');
+		var my_stream_id=$this_button.attr('data-parent_id');
 
 	  jsRoutes.controllers.CtrlStream.delete(my_stream_id).ajax({
 	  	dataType : "text",
@@ -240,7 +240,7 @@ function toggleFollowStreamButton(event){
 	    }
 	  });
 		$('.deleteStreamButton').on("click", deleteStreamButton);
-	  return false;
+	  //return false;
 	};
 	$('.deleteStreamButton').on("click", deleteStreamButton);
 	
