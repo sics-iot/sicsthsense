@@ -29,10 +29,8 @@ import play.libs.WS.WSRequestHolder;
 import play.mvc.*;
 import play.mvc.Http.Request;
 
-import models.*;
 import controllers.*;
 import index.*;
-import views.html.*;
 import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
@@ -384,14 +382,10 @@ public class Resource extends Operator {
 	}
 
 	public static Resource create(User user) {
-		if (user != null) {
 			Resource resource = new Resource(user);
-			//resource.save();
 			// Liam: not sure if we need an index creation here?
 			//Beshr: I  added it in the other create()
 			return Resource.create(resource);
-		}
-		return null;
 	}
 
 	public static void index(Resource resource) {

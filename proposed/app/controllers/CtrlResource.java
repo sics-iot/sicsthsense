@@ -24,6 +24,8 @@ import play.data.Form;
 import java.net.*;
 
 import models.*;
+import index.*;
+
 import views.html.*;
 
 public class CtrlResource extends Controller {
