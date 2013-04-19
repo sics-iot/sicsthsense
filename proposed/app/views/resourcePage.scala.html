@@ -1,4 +1,4 @@
-@(resources: List[Resource], myForm: Form[SkeletonResource], addNewResource: Boolean)
+@(resources: List[Resource], myForm: Form[SkeletonResource], autoParserForm: Boolean)
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -19,8 +19,8 @@
 }
 
 @title = {
-	@if(addNewResource) {
-		Add a new resource <small><a href="@routes.CtrlResource.add()"></a></small>
+	@if(autoParserForm) {
+		Resource '@myForm("label").value'
 	} else {
 		Resource '@myForm("label").value'
 	}
@@ -28,18 +28,10 @@
 @keyUrl = { @sicsthSenseURL()@{routes.CtrlResource.postByKey(myForm("key").value)} }
 
 @resourceFormAction = @{
-	if(addNewResource) {
-		routes.CtrlResource.add()	
-	} else {
 		routes.CtrlResource.modify(myForm("id").value.toLong)
-	}
 }
 @resourceFormId = @{
-	if(addNewResource) {
-		"add_resource_form"	
-	} else {
-		"modify_resource_form"
-	}
+"modify_resource_form"
 }
 @parentResource = @{Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()).parent}
 @thisResource = @{Resource.get(myForm("id").value.toLong, Secured.getCurrentUser())}
@@ -81,16 +73,9 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
     <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
  <div style="position:fixed;" >
-<span  class="btn-group">	      
-    	@if(!addNewResource) {
-		      <button type="submit" name="update" class="btn btn-primary" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i></button>
-				} else {
-		      <input type="submit" name="add" class="btn btn-primary" id="addResource" value="Add Resource" form="@resourceFormId">
-				}
+<span  class="btn-group">	    
+		      <button type="submit" name="update" class="btn btn-primary" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i> Save</button>
 				<a href="@routes.CtrlResource.resources()" class="btn"><i class="icon-remove"></i></a>
-				@if(!addNewResource) {
-					<a href="#confirmDeleteResourceModal" role="button" class="btn btn-danger" data-toggle="modal"><i class="icon-trash icon-white"></i></a>
-				}
 	      </span>
 			@manage.navigationMenu(resources) 
 			</div>
@@ -111,7 +96,11 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
      
 	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
-		      <legend>Parameters</legend>
+		      <legend>Parameters
+					@if(!autoParserForm) {
+						<a href="#confirmDeleteResourceModal" role="button" class="btn btn-danger pull-right" data-toggle="modal"><i class="icon-trash icon-white"></i> Delete resource</a>
+					}
+					</legend>
 					<div class="row-fluid controls controls-row">
 						<label class="span3" for="@myForm("label").id">Label</label>
 						@if(parentResource != null) {
@@ -134,7 +123,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 						}
 						<input class="span2" type="number" id="@myForm("pollingPeriod").id" name="@myForm("pollingPeriod").name" value="@myForm("pollingPeriod").value" placeholder="0">
 					</div>
-			@if(!addNewResource) {
+			@if(!autoParserForm) {
 				<div class="row-fluid controls controls-row">
 					<label class="span2" for="@{myForm("key").id}KeyURL">Key</label>
 				<input class="span10" type="text" id="@{myForm("key").id}KeyURL" name="keyUrl" value="@keyUrl" readonly>
@@ -149,24 +138,26 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	      </fieldset>
 			} else {
 				</fieldset>
-		    <!-- NOT WORKING input type="submit" name="poll" class="btn btn-primary" value="Poll URL"-->
 			}
 			<!-- end modify resource-->
   }
   
-	@if(!addNewResource) {
+	@if(!autoParserForm) {
 		@interactWithResource(myForm("id").value.toLong, thisResource.getUrl())
 	}
 	
 	<!-- Parsers -->
 
 <fieldset>
-		      <legend>Parsers <span style="float: right;"><a class="addParser btn btn-success"><span class="icon-plus icon-white"></span></a></span></legend>
+		      <legend>Parsers 
+<span style="float: right;">
+<a class="addParser btn btn-success"><span class="icon-plus icon-white"></span></a>
+</span></legend>
 		      <div id="parsers" resourceId="@myForm("id").value">
 						
 						@streamParserGroupLabels(numberOfParsers <= 0)
 			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
-			        @streamParserGroup(spw, className="", modifyStreamPath=addNewResource, deleteParser= !addNewResource)
+			        @streamParserGroup(spw, className="", modifyStreamPath= autoParserForm, deleteParser= !autoParserForm)
 			      }
 						
 			      @**
@@ -179,7 +170,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 
 				<br />
 				@helper.form(action = routes.CtrlResource.autoParser(myForm("id").value.toLong)) {
-					&nbsp; <input type="submit" class="span2 btn btn-success" value="Auto add parsers">
+				<input type="submit" class="btn btn-success" value="Auto add parsers">
 				}
 	      </fieldset>
 				<br />
@@ -227,7 +218,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
   </div>
 
   <!-- Log view --->
-	     @if(!addNewResource) {
+	     @if(!autoParserForm) {
   			<br /><br />
 				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), false),"Log of last post")
 				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), true),"Log of last poll")
@@ -247,7 +238,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
-		<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger"><i class="icon-trash icon-white"></i>Yes, delete everything</a>
+		<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger"><i class="icon-trash icon-white"></i> Yes, delete everything</a>
   </div>
 </div>
 }

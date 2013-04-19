@@ -173,7 +173,7 @@ public class CtrlResource extends Controller {
 			}
 	
 			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, false));
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 	}
 
 	@Security.Authenticated(Secured.class)
