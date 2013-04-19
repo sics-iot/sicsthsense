@@ -88,7 +88,7 @@ public class CtrlResource extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
-	public static Result autoPaser() {
+	public static Result autoParser(Long id) {
 		/*
 		Form<Resource> theForm = resourceForm.bindFromRequest();
 		if(theForm.hasErrors()) {
@@ -137,7 +137,7 @@ public class CtrlResource extends Controller {
 		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 		}
 		*/
-		return TODO;
+		return ok("TODO");
 	}
 	
 	@Security.Authenticated(Secured.class)

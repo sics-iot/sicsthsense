@@ -64,7 +64,7 @@ public class Application extends Controller {
 		}
 
 		//Resources.availableResources(currentUser);
-    return ok(searchPage.render(matches,q));
+    return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q));
   }
   
   public static Result admin() {
@@ -79,7 +79,7 @@ public class Application extends Controller {
   public static Result explore() {
   	User currentUser = Secured.getCurrentUser();
 		List<Resource> available = Resource.availableResources(currentUser);
-    return ok(searchPage.render(available,null));
+    return ok(searchPage.render(available,Stream.availableStreams(currentUser),null));
   }
   
   public static Result streams() {
