@@ -407,7 +407,7 @@ public class Resource extends Operator {
 				//IndexService.refresh();
 			} catch (java.lang.NullPointerException e) {
 				Logger.info("ElasticSearch server not available");
-			} catch {
+			} catch (Exception e) {
 				Logger.error("ElasticSearch index() error!");
 			}
 	}
