@@ -394,16 +394,22 @@ public class Resource extends Operator {
 	}
 
 	public static void index(Resource resource) {
-			// and search indexing through Elastic Search
-			Logger.warn("Trying to send indexed resource");
-			Indexer indexer = new Indexer();
-			indexer.id    = resource.id;
-			indexer.label = resource.label;
-			indexer.url   = resource.pollingUrl;
-			if (!resource.description.equals("")) { indexer.description = resource.description; }
-			indexer.index();
-      // Not sure if this is actually required?
-			//IndexService.refresh();
+			try {
+				// add search indexing through Elastic Search
+				Logger.warn("Trying to send indexed resource");
+				Indexer indexer = new Indexer();
+				indexer.id    = resource.id;
+				indexer.label = resource.label;
+				indexer.url   = resource.pollingUrl;
+				if (!resource.description.equals("")) { indexer.description = resource.description; }
+				indexer.index();
+				// Not sure if this is actually required?
+				//IndexService.refresh();
+			} catch (java.lang.NullPointerException e) {
+				Logger.info("ElasticSearch server not available");
+			} catch {
+				Logger.error("ElasticSearch index() error!");
+			}
 	}
 	
 	public static Resource create(Resource resource) {
