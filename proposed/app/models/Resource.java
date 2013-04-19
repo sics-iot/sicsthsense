@@ -389,6 +389,7 @@ public class Resource extends Operator {
 	}
 
 	public static void index(Resource resource) {
+		/* Search disabled
 			try {
 				// add search indexing through Elastic Search
 				Logger.warn("Trying to send indexed resource");
@@ -405,6 +406,7 @@ public class Resource extends Operator {
 			} catch (Throwable e) { // catch all!
 				Logger.error("ElasticSearch index() error!");
 			}
+		*/
 	}
 	
 	public static Resource create(Resource resource) {
