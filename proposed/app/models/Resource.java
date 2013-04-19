@@ -320,10 +320,9 @@ public class Resource extends Operator {
 		if(key == null || "".equalsIgnoreCase(key)) {
 			updateKey();
 		}
-
+		update();
 		// update indexes
 		Resource.index(this);
-		update();
 	}
 	
 	@Override
@@ -404,7 +403,7 @@ public class Resource extends Operator {
 			} catch (java.lang.NullPointerException e) {
 				Logger.info("ElasticSearch server not available");
 			} catch (Throwable e) { // catch all!
-				Logger.error("ElasticSearch index() error!");
+				Logger.error("ElasticSearch index() error! " + e.getMessage());
 			}
 		*/
 	}
@@ -416,7 +415,7 @@ public class Resource extends Operator {
 			}
 			resource.save();
 			resource.updateKey();
-			//Resource.index(resource);
+			Resource.index(resource);
 			return resource;
 		}
 		return null;
