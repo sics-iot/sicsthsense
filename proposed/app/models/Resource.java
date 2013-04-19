@@ -325,7 +325,6 @@ public class Resource extends Operator {
 
 		// update indexes
 		Resource.index(this);
-
 		update();
 	}
 	
@@ -335,6 +334,11 @@ public class Resource extends Operator {
 		//remove references
 		Stream.dattachResource(this);
 		ResourceLog.deleteByResource(this);
+//		Indexer thisIndexer = Indexer.find.byId(id.toString()); 
+//		if(thisIndexer != null) {
+//			thisIndexer.deleteAsync();
+//			//TODO: check for success
+//		}
 		//delete sub resources and their sub resources, etc...
 		List<Resource> subResList = Ebean.find(Resource.class)  
         .select("id, parent, pollingPeriod")
@@ -345,8 +349,6 @@ public class Resource extends Operator {
 		}
 		super.delete();
 	}
-
-
 
 	public static Resource getById(Long id) {
 		Resource resource = find.byId(id);
@@ -384,11 +386,10 @@ public class Resource extends Operator {
 	public static Resource create(User user) {
 		if (user != null) {
 			Resource resource = new Resource(user);
-			resource.save();
-
+			//resource.save();
 			// Liam: not sure if we need an index creation here?
-
-			return resource;
+			//Beshr: I  added it in the other create()
+			return Resource.create(resource);
 		}
 		return null;
 	}
@@ -400,7 +401,7 @@ public class Resource extends Operator {
 				Indexer indexer = new Indexer();
 				indexer.id    = resource.id;
 				indexer.label = resource.label;
-				indexer.url   = resource.pollingUrl;
+				indexer.url   = resource.getUrl(); //Beshr: to get the full url
 				if (!resource.description.equals("")) { indexer.description = resource.description; }
 				indexer.index();
 				// Not sure if this is actually required?
@@ -419,7 +420,7 @@ public class Resource extends Operator {
 			}
 			resource.save();
 			resource.updateKey();
-		
+			//Resource.index(resource);
 			return resource;
 		}
 		return null;
@@ -430,7 +431,7 @@ public class Resource extends Operator {
 		if(resource != null) resource.delete();
 
 		// Liam: need to delete index for this resource
-
+		// Beshr: Maybe in the resource.delete()?
 	}
 
 }
