@@ -1,8 +1,8 @@
-@(resources: List[Resource], query: String)
+@(resources: List[Resource], streams: List[Stream], query: String)
 
 @import helper._
 
-@layout("Streams", session) {
+@layout("Search", session) {
 
     <!-- Docs nav
     ================================================== -->
@@ -23,6 +23,14 @@
 		<Legend>Search results</Legend>
 		}
 
+	@if(streams.length > 0) {
+		@for(stream <- streams) {
+			@vstream.includeStreamResult(stream)
+		}
+	} else {
+			No matches available!<br /> <br /> View/add your own through the <a href="/resources">Resources page</a>.
+	}
+		<!--
 	@if(resources.length > 0) {
 	<br />
 	<div class="row-fluid ">
@@ -48,6 +56,9 @@
 		<br />
 			No matches available!<br /> <br /> View/add your own through the <a href="/resources">Resources page</a>.
 		}
+	-->
+
+
 		<br /> <br />
 	
     </div>
