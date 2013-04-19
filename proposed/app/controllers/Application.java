@@ -5,14 +5,23 @@ import java.util.List;
 
 import play.*;
 
+import com.github.cleverage.elasticsearch.IndexQuery;
+import com.github.cleverage.elasticsearch.IndexResults;
+import com.github.cleverage.elasticsearch.IndexService;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.terms.TermsFacet;
+
 import play.core.Router.Routes;
 import play.libs.F.*;
 import play.libs.*;
 import play.mvc.*;
 import play.data.*;
+import controllers.*;
 
 import views.html.*;
 import models.*;
+import index.*; // for search namespace
 
 @Security.Authenticated(Secured.class)
 public class Application extends Controller {
@@ -28,16 +37,49 @@ public class Application extends Controller {
   
   public static Result search() {
   	User currentUser = Secured.getCurrentUser();
-		//String q = Controller.params.get("q");
-		//Logger.warn("q: "+q);
-		List<Stream> availableStreams = Stream.availableStreams(currentUser);
-    return ok(searchPage.render(availableStreams));
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String q = dynamicForm.field("q").value();
+		Logger.warn("q: "+q);
+		/* Should we use streams or resources? or both?
+		*/
+		List<Resource> matches = new ArrayList<Resource>();
+
+		IndexQuery<Indexer> indexQuery = Indexer.find.query();
+		indexQuery.setBuilder(QueryBuilders.queryString(q));
+		IndexResults<Indexer> indexResults = null;
+		try {
+			indexResults = Indexer.find.search(indexQuery);
+		} catch (Exception e) {
+			Logger.warn("Search execution failed");
+		}
+
+		if (indexResults != null) {
+			for (Indexer result: indexResults.results) {
+				if (result.id == null) { Logger.error("Index id was null!"); continue; }
+				Resource resource = Resource.getById(result.id);
+				if (resource == null) {continue;} // shows a disconncet between ESindex and MySQL
+				//Logger.warn("found resource: "+resource.label);
+				matches.add(resource);
+			}
+		}
+
+		//Resources.availableResources(currentUser);
+    return ok(searchPage.render(matches,q));
+  }
+  
+  public static Result admin() {
+  	User currentUser = Secured.getCurrentUser();
+		// check admin
+		if (currentUser.isAdmin()) {
+			return ok(adminPage.render());
+		}
+    return redirect(routes.Application.home());
   }
   
   public static Result explore() {
   	User currentUser = Secured.getCurrentUser();
-		List<Stream> availableStreams = Stream.availableStreams(currentUser);
-    return ok(searchPage.render(availableStreams));
+		List<Resource> available = Resource.availableResources(currentUser);
+    return ok(searchPage.render(available,null));
   }
   
   public static Result streams() {

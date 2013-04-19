@@ -7,11 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.*;
-
 import com.avaje.ebean.Ebean;
+
 import com.github.cleverage.elasticsearch.Indexable;
 import com.github.cleverage.elasticsearch.Index;
 import com.github.cleverage.elasticsearch.IndexQuery;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.terms.TermsFacet;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -28,6 +31,7 @@ import play.mvc.Http.Request;
 
 import models.*;
 import controllers.*;
+import index.*;
 import views.html.*;
 import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
@@ -36,7 +40,7 @@ import play.data.validation.Constraints.Required;
 @Table(name = "resources", uniqueConstraints = { 
 	@UniqueConstraint(columnNames = {"owner_id", "label" }) 
 	})
-public class Resource extends Operator implements Indexable {
+public class Resource extends Operator {
 
 	@Id
   public Long id;
@@ -160,20 +164,6 @@ public class Resource extends Operator implements Indexable {
 	
 	public boolean hasUrl() {
 		return (Utils.isValidURL(getUrl()));
-	}
-	
-	public void updateResource(Resource resource) {
-		this.label = resource.label;
-		//this.key = resource.getKey();
-		this.pollingPeriod = resource.pollingPeriod;
-		this.lastPolled = resource.lastPolled;
-		this.pollingUrl = resource.getPollingUrl();
-		this.parent = resource.parent;
-		this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
-		if(key == null || "".equalsIgnoreCase(key)) {
-			updateKey();
-		}
-		update();
 	}
 
 	// construct a synchronous connnection to the URL to be probed in rela time
@@ -320,6 +310,25 @@ public class Resource extends Operator implements Indexable {
 		return result;
 	}
 	
+	public void updateResource(Resource resource) {
+		this.label = resource.label;
+		//this.key = resource.getKey();
+		this.pollingPeriod = resource.pollingPeriod;
+		this.lastPolled = resource.lastPolled;
+		this.pollingUrl = resource.getPollingUrl();
+		this.parent = resource.parent;
+		this.description = resource.description;
+		this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+		if(key == null || "".equalsIgnoreCase(key)) {
+			updateKey();
+		}
+
+		// update indexes
+		Resource.index(this);
+
+		update();
+	}
+	
 	@Override
 	public void delete() {
 		this.pollingPeriod = 0L;
@@ -337,23 +346,12 @@ public class Resource extends Operator implements Indexable {
 		super.delete();
 	}
 
-	/* toIndex() and fromIndex() are Indexable interface */
-	@Override
-	public Map toIndex() {
-			HashMap map = new HashMap();
-			map.put("label", label);
-			map.put("url", getUrl());
-			/*map.put("position", position);*/
-			return map;
+
+
+	public static Resource getById(Long id) {
+		Resource resource = find.byId(id);
+		return resource;
 	}
-
-	@Override
-	public Indexable fromIndex(Map map) {
-		return null;
-	}
-
-
-
 	public static Resource get(Long id, String key) {
 		Resource resource = find.byId(id);
 		if (resource != null && resource.checkKey(key))
@@ -378,13 +376,34 @@ public class Resource extends Operator implements Indexable {
 		return resource;
 	}
 
+	public static List<Resource> availableResources(User user) {
+		// should add public resources...
+		return user.resourceList;
+	}
+
 	public static Resource create(User user) {
 		if (user != null) {
 			Resource resource = new Resource(user);
 			resource.save();
+
+			// Liam: not sure if we need an index creation here?
+
 			return resource;
 		}
 		return null;
+	}
+
+	public static void index(Resource resource) {
+			// and search indexing through Elastic Search
+			Logger.warn("Trying to send indexed resource");
+			Indexer indexer = new Indexer();
+			indexer.id    = resource.id;
+			indexer.label = resource.label;
+			indexer.url   = resource.pollingUrl;
+			if (!resource.description.equals("")) { indexer.description = resource.description; }
+			indexer.index();
+      // Not sure if this is actually required?
+			//IndexService.refresh();
 	}
 	
 	public static Resource create(Resource resource) {
@@ -394,6 +413,7 @@ public class Resource extends Operator implements Indexable {
 			}
 			resource.save();
 			resource.updateKey();
+		
 			return resource;
 		}
 		return null;
@@ -402,6 +422,9 @@ public class Resource extends Operator implements Indexable {
 	public static void delete(Long id) {
 		Resource resource = find.ref(id);
 		if(resource != null) resource.delete();
+
+		// Liam: need to delete index for this resource
+
 	}
 
 }

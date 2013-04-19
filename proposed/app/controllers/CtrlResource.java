@@ -246,6 +246,7 @@ public class CtrlResource extends Controller {
 				submitted.owner = currentUser;
 				submitted.pollingPeriod = 0L;
 				submitted = Resource.create(submitted);
+
 				Logger.info("Adding a new resource: " + "Label: " + submitted.label
 						+ " URL: " + submitted.getPollingUrl());
 				// if(submitted != null && submitted.id != null) {

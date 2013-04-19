@@ -11,6 +11,7 @@ public class SkeletonResource {
 	public String label = null;
 	public String key = null;
 	public String pollingUrl = null;
+	public String description = null;
 	public Long pollingPeriod = 0L;
 	public String pollingAuthenticationKey = null;
 	public List<StreamParserWraper> streamParserWrapers;
@@ -32,6 +33,7 @@ public class SkeletonResource {
 			this.pollingPeriod = resource.pollingPeriod;
 			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+			this.description = resource.description;
 		}
 		this.streamParserWrapers = streamParserWrapers;
 	}
@@ -44,6 +46,7 @@ public class SkeletonResource {
 			this.pollingPeriod = resource.pollingPeriod;
 			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+			this.description = resource.description;
 			if (resource.streamParsers != null) {
 				streamParserWrapers = new ArrayList<StreamParserWraper>(resource.streamParsers.size()+1);
 				for (StreamParser sp : resource.streamParsers) {
@@ -61,6 +64,7 @@ public class SkeletonResource {
 			this.pollingPeriod = resource.pollingPeriod;
 			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+			this.description = resource.description;
 		}
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length+1);
 		for (StreamParserWraper spw : spws) {
@@ -75,6 +79,7 @@ public class SkeletonResource {
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
+		this.description = description;
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>();
 		for (StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);
@@ -90,6 +95,7 @@ public class SkeletonResource {
 				pollingPeriod, pollingUrl,
 				pollingAuthenticationKey);
 		src.id = id;
+		src.description = description;
 		return src;
 	}
 
@@ -116,6 +122,7 @@ public class SkeletonResource {
 			this.pollingPeriod = resource.pollingPeriod;
 			this.pollingUrl = resource.getPollingUrl();
 			this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+			this.description = resource.description;
 			return true;
 		}
 		return false;

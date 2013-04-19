@@ -62,6 +62,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String currentSessionToken;
 	/** Secret token for authentication */
 	private String token;
+	private boolean admin;
 
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
@@ -76,21 +77,25 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		this.lastName = lastName;
 		this.location = location;
 		this.password = hash(new BigInteger(130,new SecureRandom()).toString(32));
+		this.admin = false;
 	}
 	public User() {
 		this.creationDate = new Date();
 		this.password = DigestUtils.md5Hex(new BigInteger(130,new SecureRandom()).toString(32));
+		this.admin = false;
 	}
 
-	public String getEmail()     { return email; }
-	public void   setEmail(String email) { this.email=email; }
-	public String getToken()     { return token; }
-	public String getUserName()  { return userName; }
-	public String getFirstName() { return firstName; }
-	public String getLastName()  { return lastName; }
-	public String getLocation()  { return location; }
-	public Long   getId()        { return new Long(id); }
-	public boolean exists()      { return exists(id); }
+	public String  getEmail()             { return email; }
+	public void    setEmail(String email) { this.email=email; }
+	public String  getToken()             { return token; }
+	public String  getUserName()          { return userName; }
+	public String  getFirstName()         { return firstName; }
+	public String  getLastName()          { return lastName; }
+	public String  getLocation()          { return location; }
+	public Long    getId()                { return new Long(id); }
+	public boolean exists()               { return exists(id); }
+	public boolean isAdmin()		          { return admin; }
+	public void		 setAdmin(boolean admin){ this.admin=admin; }
 
 	public void updateUser(User user) {
 		this.userName = user.userName.toLowerCase();

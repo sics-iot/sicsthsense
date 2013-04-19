@@ -116,6 +116,7 @@ create table users (
   creation_date             datetime not null,
   last_login                datetime,
   token                     varchar(255),
+  admin                     tinyint(1) default 0,
   constraint uq_users_email unique (email),
   constraint uq_users_user_name unique (user_name),
   constraint pk_users primary key (id))

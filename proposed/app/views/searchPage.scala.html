@@ -1,4 +1,4 @@
-@(streams : List[Stream])
+@(resources: List[Resource], query: String)
 
 @import helper._
 
@@ -17,17 +17,36 @@
   <div class="span9">
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
+		@if((query!=null) && (query!="")) {
+		<Legend>Search results for "@query"</Legend>
+		} else {
 		<Legend>Search results</Legend>
-		@if(streams.length > 0) {
-			@for(stream <- streams) {					
-				<br />
-				@**vstream.includeStreamResult(stream)*@
-				@vstream.includeStream(stream)
-				<br />
-			}
+		}
+
+	@if(resources.length > 0) {
+	<br />
+	<div class="row-fluid ">
+		<legend>Matched resources</legend>
+		<div class="row-fluid ">
+	 		<div class="controls-row " >
+			<fieldset>
+				<div id="resourcelist-full">
+			@for(resource <- resources) {
+				<h4><a href="@routes.CtrlResource.getById(resource.id)">@resource.label&nbsp<i class="icon-wrench"></i></a></h4>
+				<div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@sicsthSenseURL()@{routes.CtrlResource.postByKey(resource.showKey(Secured.getCurrentUser()))}" readonly></div>
+				@if(resource.getUrl() != "" && resource.getUrl() != null) {
+				<div class="row-fluid"><span class="span1">URL</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
+				<div class="row-fluid"><span class="span1">Proxy</span><span class="span11">@interactWithResource(resource.id,resource.getUrl(),showHeader=false)</span></div>
+				}
+			} 
+				</div>
+			<fieldset>
+		</div></div>
+	</div>
+	<br />
 		} else {
 		<br />
-			No streams available! View/add your own through the <a href="/resources">Resources page</a>.
+			No matches available!<br /> <br /> View/add your own through the <a href="/resources">Resources page</a>.
 		}
 		<br /> <br />
 	
