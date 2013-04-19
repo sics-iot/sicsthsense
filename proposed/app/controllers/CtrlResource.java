@@ -89,55 +89,52 @@ public class CtrlResource extends Controller {
 
 	@Security.Authenticated(Secured.class)
 	public static Result autoParser(Long id) {
-		/*
-		Form<Resource> theForm = resourceForm.bindFromRequest();
-		if(theForm.hasErrors()) {
-		  return badRequest("Bad request");
-		} else {
-			User currentUser = Secured.getCurrentUser();
-			Resource submitted = theForm.get();
-			StringBuffer returnBuffer = new StringBuffer();  
-			BufferedReader serverResponse;
-			
-			if(submitted.getPollingUrl() != null && !"".equalsIgnoreCase(submitted.getPollingUrl())) {
-			//fudge URL, should check HTTP
-				if (!submitted.getPollingUrl().startsWith("http://") 
-						&& !submitted.getPollingUrl().startsWith("https://") 
-						&& !submitted.getPollingUrl().startsWith("coap://") && submitted.parent == null) {
-					submitted.setPollingUrl("http://"+submitted.getPollingUrl());
-				}
-				// get data
-				HttpURLConnection connection = submitted.probe();
-				String contentType = connection.getContentType();
-				Logger.warn("Probed and found contentType: "+contentType);
-				try {
-					serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
-					String line;
-					while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
-				} catch (IOException ioe) {  
-					Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
-					return badRequest("Error collecting data from the resource URL");
-				}
-				// decide to how to parse this data	
-				if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-					Logger.info("json file!");
-					return parseJson(returnBuffer.toString(), submitted);
-				} else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
-					Logger.info("html file!");
-					return parseHTML(returnBuffer.toString(), submitted);
+		Logger.warn("Auto configuring "+id);
+		
+		User currentUser = Secured.getCurrentUser();
+		Resource resource = Resource.getById(id);
+		if (resource==null) { return ok("Error getting resource"); }
+		StringBuffer returnBuffer = new StringBuffer();  
+		BufferedReader serverResponse;
+		
+		if(resource.getPollingUrl() != null && !"".equalsIgnoreCase(resource.getPollingUrl())) {
+		//fudge URL, should check HTTP
+			if (!resource.getPollingUrl().startsWith("http://") 
+					&& !resource.getPollingUrl().startsWith("https://") 
+					&& !resource.getPollingUrl().startsWith("coap://") && resource.parent == null) {
+				resource.setPollingUrl("http://"+resource.getPollingUrl());
+			}
+			// get data
+			HttpURLConnection connection = resource.probe();
+			String contentType = connection.getContentType();
+			Logger.warn("Probed and found contentType: "+contentType);
+			try {
+				serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
+				String line;
+				while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
+			} catch (IOException ioe) {  
+				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
+				return badRequest("Error collecting data from the resource URL");
+			}
+			// decide to how to parse this data	
+			if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
+				Logger.info("json file!");
+				return parseJson(returnBuffer.toString(), resource);
+			} else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
+				Logger.info("html file!");
+				return parseHTML(returnBuffer.toString(), resource);
 //				}  else if (contentType.matches("text/csv.*")) {
 //					Logger.info("csv file!");
-//					return parseCSV(returnBuffer.toString(), submitted);
-				} else {
-					Logger.warn("Unknown content type!");
-				}	
-			}
-			SkeletonResource skeleton = new SkeletonResource(submitted);
-			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
+//					return parseCSV(returnBuffer.toString(), resource);
+			} else {
+				Logger.warn("Unknown content type!");
+			}	
 		}
-		*/
-		return ok("TODO");
+		//return ok(routes.CtrlResource.resource(currentUser.resourceList,null,false));
+		return ok("auto");
+		//SkeletonResource skeleton = new SkeletonResource(submitted);
+		//Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
+		//return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
 	}
 	
 	@Security.Authenticated(Secured.class)
@@ -175,7 +172,7 @@ public class CtrlResource extends Controller {
 			}
 	
 			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true));
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, false));
 	}
 
 	@Security.Authenticated(Secured.class)

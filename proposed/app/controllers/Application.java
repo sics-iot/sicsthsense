@@ -87,6 +87,11 @@ public class Application extends Controller {
     return ok(streamsPage.render(currentUser.streamList));
   }
 
+  public static Result resources() {
+  	User currentUser = Secured.getCurrentUser();
+    return ok(resourcesPage.render(currentUser.resourceList,null));
+  }
+
   public static Result files() {
   	User currentUser = Secured.getCurrentUser();
     return ok(filesPage.render(FileSystem.lsDir(currentUser,"/")));

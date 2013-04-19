@@ -68,6 +68,7 @@ DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
 # Resources
 GET			/resources/add												controllers.CtrlResource.addSimple()
 GET			/resources/addSub											controllers.CtrlResource.addSubResource()
+GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
 
 #deprecated
 GET			/resources/addLegacy												controllers.CtrlResource.add()
