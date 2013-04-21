@@ -113,6 +113,23 @@ public class Vfile extends Model {
 		return path.substring(0, i);
 	}
 	
+	public String getUpperLevel() {
+		if(path == null) {
+			return null;
+		}
+		int i = path.lastIndexOf("/"+getName());
+		if(i<=0) {
+			return "";
+		} else {
+		int j = path.substring(0, i-1).lastIndexOf('/');
+		if(j<=0) {
+			return "";
+		} else {
+			return path.substring(0, j);
+		}
+		}
+	}
+	
 	public void setLink(Stream linkedStream) {
 		this.linkedStream = linkedStream;
 		if(id != null) {

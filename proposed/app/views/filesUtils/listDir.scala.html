@@ -1,26 +1,25 @@
-@(vfiles : List[Vfile])
-
-	@if(vfiles.length > 0) {
-	@*<tr><td><i class="icon-folder-close">&nbsp&nbsp</i><a class="folder-list-button" id="UP_ID@vfiles(0).getPath()" data-folderpath="@vfiles(0).getParentPath()" href="#">[UP] @vfiles(0).getParentPath()</a></td>
+@(vfiles : List[Vfile], upPath : String = "")
+	<tr><td><i class="icon-folder-close"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@UpPath/" href="#"> [UP] @UpPath</a></td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
-	</tr>*@
+	</tr>
+	@if(vfiles.length > 0) {
 		@for(vfile <- vfiles) {
 			@if(vfile != null) {					
   	  <tr>
     	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
 				@if(vfile.getType() == Vfile.Filetype.FILE) { 
 					@if(vfile.getLink() != null) {
-					<td><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i>@vfile.getName()</a></td>
+					<td><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a></td>
 					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
 					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
 					} else {
-					<td><i class="icon-file">&nbsp&nbsp</i>@vfile.getName()</td>
+					<td><i class="icon-file"></i> @vfile.getName()</td>
 					<td>No stream attached...</td>
 					<td>-</td>
 					}
 				} else {
-					<td><i class="icon-folder-close">&nbsp&nbsp</i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#">@vfile.getName()</a></td>
+					<td><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#"> @vfile.getName()</a></td>
 					<td><!--[Folder tools]--></td>
 					<td>-</td>
 				}

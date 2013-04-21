@@ -399,6 +399,7 @@ function toggleFollowStreamButton(event){
       	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
       }
     });
+  	//return false;
   };
   $('.folder-list-button').on("click", fileListFolderClick);
   
