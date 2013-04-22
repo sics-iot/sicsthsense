@@ -27,6 +27,9 @@ public class CtrlStream extends Controller {
 	private static boolean canWrite(User user, Stream stream) {
 		return (stream != null && user != null && stream.owner.equals(user));
 	}
+	private static boolean canRead(User user, Stream stream) {
+		return stream.canRead(user);
+	}
 
 	@Security.Authenticated(Secured.class)
 	public static Result getById(Long id) {
@@ -67,6 +70,25 @@ public class CtrlStream extends Controller {
 			stream.updateStream(submitted);
 		}
 		return redirect(routes.Application.viewStream(id));
+	}
+
+	@Security.Authenticated(Secured.class)
+	public static Result download(Long id) {
+		final User currentUser = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if (stream.canRead(currentUser)) {
+			StringBuilder sb = new StringBuilder(100);
+			Controller.response().setContentType("text/plain");
+			Controller.response().setHeader("Content-Disposition", "attachment; filename=streamdownload.txt");
+
+			List<? extends DataPoint> dataSet = null;
+			dataSet = stream.getDataPoints();
+			for (DataPoint dp: dataSet) {
+				sb.append(dp.toString()+"\n");
+			}
+			return ok(sb.toString());
+		}
+		return unauthorized();
 	}
 
 	@Security.Authenticated(Secured.class)

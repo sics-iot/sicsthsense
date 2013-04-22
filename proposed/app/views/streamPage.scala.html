@@ -34,9 +34,13 @@
 
 					<legend>View</legend>
 					@vstream.includeStream(stream)
-					<br />
+
 
 			<div class="row-fluid">
+				<a href="/streams/download/@stream.id" class="btn btn-success pull-right">Download Data</a>
+				<br />
+				<br />
+
 			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
 			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
 			</div>

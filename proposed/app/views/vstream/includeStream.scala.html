@@ -28,6 +28,7 @@
 		@if(stream.resource != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
 		}
+		&nbsp; &nbsp;
 		@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 	</div>
 		@**Show key?**@
@@ -101,3 +102,4 @@
 	}
 	</div>
 }
+<br />

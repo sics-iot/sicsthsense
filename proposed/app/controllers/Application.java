@@ -45,7 +45,7 @@ public class Application extends Controller {
 		List<Resource> matches = new ArrayList<Resource>();
 
 		IndexQuery<Indexer> indexQuery = Indexer.find.query();
-		indexQuery.setBuilder(QueryBuilders.queryString(q));
+		indexQuery.setBuilder(QueryBuilders.multiMatchQuery("description",q));
 		IndexResults<Indexer> indexResults = null;
 		try {
 			indexResults = Indexer.find.search(indexQuery);

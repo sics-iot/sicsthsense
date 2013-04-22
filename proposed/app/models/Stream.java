@@ -289,8 +289,20 @@ public class Stream extends Model implements Comparable<Stream> {
 		this.update();
 	}
 
+	/* Liam: This seems to only ever return null, added switch version
 	public List<? extends DataPoint> getDataPoints() {
 		return (List<? extends DataPoint>)dataPoints;
+	}*/
+	public List<? extends DataPoint> getDataPoints() {
+		List<? extends DataPoint> set = null;
+		if (type == StreamType.STRING) {
+			set = DataPointString.find.where().eq("stream", this)
+					.orderBy("timestamp desc").findList();
+		} else if (type == StreamType.DOUBLE) {
+			set = DataPointDouble.find.where().eq("stream", this)
+					.orderBy("timestamp desc").findList();
+		}
+		return set;
 	}
 
 	public List<? extends DataPoint> getDataPointsTail(long tail) {

@@ -56,6 +56,7 @@ GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerN
 GET		   	 /streams/view/:id										controllers.Application.viewStream(id: Long)
 POST       /streams/modify/:id									controllers.CtrlStream.modify(id: Long)
 GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
+GET		   	 /streams/download/:id								controllers.CtrlStream.download(id: Long)
 GET        /streams/clearData/:id 							controllers.CtrlStream.clear(id: Long)
 GET        /streams/publicAccess/:id/:pub 			controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
 GET        /streams/publicSearch/:id/:pub 			controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)

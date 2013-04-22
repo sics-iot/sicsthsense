@@ -4,8 +4,8 @@
 <div id="streamblock@{stream.id}" class="row-fluid">
 		<div id="streamtitle@{stream.id}" class="streamtitle span12">
 			<span class="span6">Stream 
-			<a herf="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
-			</span>
+			<a href="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			</span> 
 			<span class="span6">
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
 			</span>
