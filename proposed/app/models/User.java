@@ -20,7 +20,9 @@ import com.avaje.ebean.*;
 @Table(name = "users")
 public class User extends Model implements Comparable<User> { //PathBindable<User>,
 	/** User class, contains all personal information
-	 */
+	 */	
+	private static final long serialVersionUID = 5178587449713353935L;
+
 	@Id
 	public Long id;
 
@@ -39,7 +41,6 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String firstName;
 	public String lastName;
 	public String location;
-	private static final long serialVersionUID = 5178587449713353935L;
 
 	@Column(nullable = false)
 	public Date creationDate;
@@ -60,9 +61,10 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	/** Secret token for session authentication */
 	@Transient
 	public String currentSessionToken;
+
 	/** Secret token for authentication */
 	private String token;
-	private boolean admin;
+	private boolean admin=false;
 
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);

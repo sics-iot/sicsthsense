@@ -146,4 +146,22 @@ public class Vfile extends Model {
 		super.delete();
 	}
 
+	public static String extractUpperLevelPath(String path) {
+		if (path == null) {
+			return "";
+		}
+		String[] subPaths = path.split("/");
+		String name = subPaths[subPaths.length - 1];
+		int i = path.lastIndexOf("/" + name);
+		if (i <= 0) {
+			return "";
+		} else {
+			int j = path.substring(0, i - 1).lastIndexOf('/');
+			if (j <= 0) {
+				return "";
+			} else {
+				return path.substring(0, j);
+			}
+		}
+	}
 }

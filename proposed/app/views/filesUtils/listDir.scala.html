@@ -1,5 +1,6 @@
-@(vfiles : List[Vfile], upPath : String = "")
-	<tr><td><i class="icon-folder-close"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@UpPath/" href="#"> [UP] @UpPath</a></td>
+@(vfiles : List[Vfile], upPath : String)
+@upPathLoc={@if(vfiles.length > 0) {@vfiles(0).getUpperLevel()} else {@upPath}}
+	<tr><td><i class="icon-folder-close"></i><a class="folder-lst-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#"> [UP] @upPathLoc/</a></td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
 	</tr>
