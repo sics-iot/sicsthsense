@@ -1,11 +1,8 @@
-@(resources: List[Resource])
-@** needs user resources, external streams? available operators?
- available operators for this user!
- **@
+@(resources: List[Resource], message: String="")
 
 @import helper._
 
-@layout("Manage", session) {
+@layout("Attach a function", message, session) {
 
     <!-- Docs nav
     ================================================== -->

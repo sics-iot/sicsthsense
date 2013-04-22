@@ -1,8 +1,8 @@
-@(streams : List[Stream])
+@(streams : List[Stream], message: String="")
 
 @import helper._
 
-@layout("Streams", session) {
+@layout("Streams", message, session) {
 
     <!-- Docs nav
     ================================================== -->

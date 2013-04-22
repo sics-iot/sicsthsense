@@ -1,8 +1,8 @@
-@(followedStreams: List[Stream], lastUpdatedStreams: List[Stream])
+@(followedStreams: List[Stream], lastUpdatedStreams: List[Stream], message: String="")
 
 @import helper._
 
-@layout("Home", session) {
+@layout("Home", message, session) {
 <div class="row">
     <!-- Docs nav
     ================================================== -->

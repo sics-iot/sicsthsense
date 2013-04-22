@@ -1,3 +1,29 @@
+/*
+Copyright (c) 2013, Swedish Institute of Computer Science
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the <organization> nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 package controllers;
 
 import java.util.ArrayList;
@@ -32,7 +58,7 @@ public class Application extends Controller {
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
   	List<Stream> lastUpdatedPublic = Stream.getLastUpdatedStreams(currentUser, 10);
-    return ok(homePage.render(currentUser.followedStreams, lastUpdatedPublic));
+    return ok(homePage.render(currentUser.followedStreams, lastUpdatedPublic, ""));
   }
   
   public static Result search() {
@@ -64,14 +90,14 @@ public class Application extends Controller {
 		}
 
 		//Resources.availableResources(currentUser);
-    return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q));
+    return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q, ""));
   }
   
   public static Result admin() {
   	User currentUser = Secured.getCurrentUser();
 		// check admin
 		if (currentUser.isAdmin()) {
-			return ok(adminPage.render());
+			return ok(adminPage.render(""));
 		}
     return redirect(routes.Application.home());
   }
@@ -79,22 +105,22 @@ public class Application extends Controller {
   public static Result explore() {
   	User currentUser = Secured.getCurrentUser();
 		List<Resource> available = Resource.availableResources(currentUser);
-    return ok(searchPage.render(available,Stream.availableStreams(currentUser),null));
+    return ok(searchPage.render(available,Stream.availableStreams(currentUser),null, ""));
   }
   
   public static Result streams() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(streamsPage.render(currentUser.streamList));
+    return ok(streamsPage.render(currentUser.streamList, ""));
   }
 
   public static Result resources() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(resourcesPage.render(currentUser.resourceList,null));
+    return ok(resourcesPage.render(currentUser.resourceList, null, ""));
   }
 
   public static Result files() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(filesPage.render(FileSystem.lsDir(currentUser,"/")));
+    return ok(filesPage.render(FileSystem.lsDir(currentUser,"/"), ""));
   }
   
 	// Liam: this exists to do interesting things with Location...
@@ -102,24 +128,14 @@ public class Application extends Controller {
   	User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
 		Form<Stream> form = streamForm.fill(stream);
-		/*
-		if (true) {
-			form.field("latitude") = Form.Field();
-		}*/
-    return ok(streamPage.render(currentUser.streamList,stream,form));
+    return ok(streamPage.render(currentUser.streamList, stream, form, ""));
   }
   
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(attachFunctionPage.render(currentUser.resourceList));
+    return ok(attachFunctionPage.render(currentUser.resourceList, ""));
   }
 
-	/*
-	// deprecated
-  public static Result resources() {
-  	User currentUser = Secured.getCurrentUser();
-    return ok(resourcesPage.render(currentUser.resourceList, resourceForm));
-  }*/
   
   // -- Javascript routing
   public static Result javascriptRoutes() {

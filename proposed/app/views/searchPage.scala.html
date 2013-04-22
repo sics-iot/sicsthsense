@@ -1,8 +1,8 @@
-@(resources: List[Resource], streams: List[Stream], query: String)
+@(resources: List[Resource], streams: List[Stream], query: String, message: String="")
 
 @import helper._
 
-@layout("Search", session) {
+@layout("Search", message, session) {
 
     <!-- Docs nav
     ================================================== -->

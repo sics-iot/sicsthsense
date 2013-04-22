@@ -1,4 +1,4 @@
-@(user: User, userForm: Form[User]=null, newPassword: String="")
+@(user: User, userForm: Form[User]=null, newPassword: String="", message: String="")
 
 @import helper._
 
@@ -26,7 +26,7 @@
   
 }
 
-@layout("Account", session) {
+@layout("Account", message, session) {
   @displayUser(user)
 	<br /><br />
 		@helper.form(action = routes.CtrlUser.resetPassword(true)) {

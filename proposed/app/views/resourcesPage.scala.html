@@ -1,4 +1,4 @@
-@(resources : List[Resource], myForm : Form[Resource])
+@(resources : List[Resource], myForm : Form[Resource], message: String="")
 @import helper._
 
 @tbField(field: Field, label: String, className: String="", typeName: String ="text", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false, value: String=null) = {
@@ -16,7 +16,7 @@
 	}
 }
 	
-@layout("Resources", session) {
+@layout("Resources", message, session) {
 
     <!-- Docs nav
     ================================================== -->

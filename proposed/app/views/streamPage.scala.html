@@ -1,7 +1,8 @@
-@(streams : List[Stream], stream: Stream, myForm: Form[Stream])
+@(streams : List[Stream], stream: Stream, myForm: Form[Stream], message: String="")
 
 @import helper._
-@layout("Streams", session) {
+
+@layout("Streams", message, session) {
 
 <!--
 		<ul class="breadcrumb">

@@ -1,12 +1,13 @@
-@(msg: String)
+@(message: String)
+
 @import helper._
 @import controllers.Secured;
 
 
-@layout("Error!", session) {
+@layout("Error!", "", session) {
 	<div class="alert alert-block alert-error">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <strong>Error!</strong>@msg
+    <strong>Error!</strong>@message
   </div>
   
   @if(Secured.getUsername(session) != null) {   
