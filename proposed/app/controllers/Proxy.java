@@ -71,8 +71,21 @@ public class Proxy extends Controller {
 		if (resource == null) {
 			return badRequest("Resource does not exist: " + id);
 		}
+		String urlArgs = "";
+		if (resource.getUrl().indexOf('?') != -1) {
+			urlArgs = resource.getUrl().substring(resource.getUrl().indexOf('?') + 1, resource.getUrl().length());
+		}
+		if (urlArgs != "" && arguments.length() != 0) {
+			if(arguments.indexOf('?') != -1) {
+				urlArgs += "&" + arguments.substring(arguments.indexOf('?') + 1, arguments.length());
+			} else {
+				urlArgs += "&" + arguments;
+			}
+		} else if(urlArgs == "") {
+			urlArgs = arguments;
+		}
 		Pattern pattern = Pattern.compile("([^&?=]+)=([^?&]+)");
-		Matcher matcher = pattern.matcher(arguments);
+		Matcher matcher = pattern.matcher(urlArgs);
 		Map<String, String> queryParameters = new HashMap<String, String>();
 		while (matcher.find()) {
 			queryParameters.put(matcher.group(1), matcher.group(2));
