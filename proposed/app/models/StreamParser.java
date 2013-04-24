@@ -390,6 +390,8 @@ public class StreamParser extends Model {
 			if (parser.stream == null) {
 				if (parser.streamVfilePath == null) {
 					parser.streamVfilePath = "/" + parser.resource.label + "/newstream_" + (new Random(new Date().getTime()).nextInt(10000));
+				} else if(!parser.streamVfilePath.startsWith("/")) {
+					parser.streamVfilePath = "/" + parser.streamVfilePath;
 				}
 				parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
 			}
