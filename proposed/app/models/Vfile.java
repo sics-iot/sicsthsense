@@ -131,7 +131,9 @@ public class Vfile extends Model {
 			return null;
 		}
 		String [] subPaths = path.split("/");
-		return subPaths[ subPaths.length-1 ];
+		int i = subPaths.length-1;
+		if(i<0) return "";
+		return subPaths[ i ];
 	}
 	
 	public String getParentPath() {
@@ -139,25 +141,26 @@ public class Vfile extends Model {
 			return null;
 		}
 		int i = path.lastIndexOf("/"+getName());
+		if(i<0) return "";
 		return path.substring(0, i);
 	}
 	
-	public String getUpperLevel() {
-		if(path == null) {
+/*	public String getUpperLevel() {
+		if (path == null) {
 			return null;
 		}
-		int i = path.lastIndexOf("/"+getName());
-		if(i<=0) {
+		int i = path.lastIndexOf("/" + getName());
+		if (i <= 0) {
 			return "";
 		} else {
-		int j = path.substring(0, i-1).lastIndexOf('/');
-		if(j<=0) {
-			return "";
-		} else {
-			return path.substring(0, j);
+			int j = path.substring(0, i - 1).lastIndexOf('/');
+			if (j <= 0) {
+				return "";
+			} else {
+				return path.substring(0, j);
+			}	
 		}
-		}
-	}
+	}*/
 	
 	public void setLink(Stream linkedStream) {
 		this.linkedStream = linkedStream;
@@ -179,18 +182,28 @@ public class Vfile extends Model {
 		if (path == null) {
 			return "";
 		}
+		if(path.endsWith("/")) {
+			path = path.substring(0, path.length()-1);
+		}
 		String[] subPaths = path.split("/");
+		if(subPaths.length <= 0) {
+			return "";
+		}
 		String name = subPaths[subPaths.length - 1];
 		int i = path.lastIndexOf("/" + name);
 		if (i <= 0) {
 			return "";
 		} else {
-			int j = path.substring(0, i - 1).lastIndexOf('/');
-			if (j <= 0) {
-				return "";
-			} else {
-				return path.substring(0, j);
-			}
+			return path.substring(0, i);
+		}
+	}
+
+	public static String extractParentUpperLevelPath(String path) {
+		int j = extractUpperLevelPath(path).lastIndexOf('/');
+		if (j < 0) {
+			return "";
+		} else {
+			return path.substring(0, j);
 		}
 	}
 }

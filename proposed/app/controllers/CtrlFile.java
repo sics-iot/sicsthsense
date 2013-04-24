@@ -73,7 +73,7 @@ public class CtrlFile extends Controller {
 		if(full) {
 	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path), ""));
 		}
-    return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path), Vfile.extractUpperLevelPath(path)));
+    return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path), path));
 	}
 	
 	@Security.Authenticated(Secured.class)
@@ -82,10 +82,10 @@ public class CtrlFile extends Controller {
 		boolean success = FileSystem.deleteFile(currentUser, path);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser,  Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath( Vfile.extractUpperLevelPath(path))));
+					currentUser,  Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), Vfile.extractUpperLevelPath(path)));
+					currentUser, path), path));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -94,10 +94,10 @@ public class CtrlFile extends Controller {
 		boolean success = FileSystem.moveFile(currentUser, path, newPath);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, newPath), Vfile.extractUpperLevelPath(newPath)));
+					currentUser, newPath), newPath));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), Vfile.extractUpperLevelPath(path)));
+					currentUser, path), path));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -106,10 +106,10 @@ public class CtrlFile extends Controller {
 		boolean success = (FileSystem.addDirectory(currentUser, path) != null);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), Vfile.extractUpperLevelPath(path)));
+					currentUser, path),path));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, "/"), ""));
+					currentUser, "/"), "/"));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -123,9 +123,9 @@ public class CtrlFile extends Controller {
 		}
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, f.getParentPath()), f.getUpperLevel()));
+					currentUser, f.getParentPath()), f.getParentPath()));
 		else
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), ""));
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
 	}
 	
 	private static void parsePath(Vfile vfile) {
