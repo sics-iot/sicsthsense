@@ -33,8 +33,6 @@ import java.util.*;
 
 import javax.persistence.*;
 
-//import org.codehaus.jackson.JsonNode;
-
 import play.db.ebean.*;
 
 import com.avaje.ebean.*;
@@ -77,6 +75,8 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	}
 	
 		public abstract Object getData();
+
+		public abstract String toTSV();
 
 //	public abstract long getCount();
 //

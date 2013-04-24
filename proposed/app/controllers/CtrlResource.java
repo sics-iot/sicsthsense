@@ -62,55 +62,77 @@ public class CtrlResource extends Controller {
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
 	//static private Form<ResourceLogView> logViewForm = Form.form(ResourceLogView.class);
 
-	// poll the source data and fill the stream definition form
-	// with default sensible parameters for the user to confirm
 	@Security.Authenticated(Secured.class)
-	public static Result initialise() {
-		Form<Resource> theForm = resourceForm.bindFromRequest();
-		if(theForm.hasErrors()) {
-		  return badRequest("Bad request");
+	public static Result addSimple() {
+		Form<Resource> theForm;
+		// error check
+		try {
+			theForm = resourceForm.bindFromRequest();
+		} catch (Exception e) {
+			return badRequest("Bad parsing of form");
+		}
+		// validate form
+		if (theForm.hasErrors()) {
+			return badRequest("Bad request");
 		} else {
-			User currentUser = Secured.getCurrentUser();
 			Resource submitted = theForm.get();
-			StringBuffer returnBuffer = new StringBuffer();  
-			BufferedReader serverResponse;
-			
-			if(submitted.getPollingUrl() != null && !"".equalsIgnoreCase(submitted.getPollingUrl())) {
-				//fudge URL, should check HTTP
-				if (!submitted.getPollingUrl().startsWith("http://") 
-						&& !submitted.getPollingUrl().startsWith("https://") 
-						&& !submitted.getPollingUrl().startsWith("coap://") && submitted.parent == null) {
-					submitted.setPollingUrl("http://"+submitted.getPollingUrl());
+			if (submitted != null) {
+				User currentUser = Secured.getCurrentUser();
+				if (currentUser == null) {
+					Logger.error("[CtrlResource.add] currentUser is null!");
 				}
-				// get data
-				HttpURLConnection connection = submitted.probe();
-				String contentType = connection.getContentType();
-				Logger.warn("Probed and found contentType: "+contentType);
-				try {
-					serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
-					String line;
-					while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
-				} catch (IOException ioe) {  
-					Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
-					return badRequest("Error collecting data from the resource URL");
-				}
-				// decide to how to parse this data	
-				if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-					Logger.info("json file!");
-					return parseJson(returnBuffer.toString(), submitted);
-				} else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
-					Logger.info("html file!");
-					return parseHTML(returnBuffer.toString(), submitted);
-//				}  else if (contentType.matches("text/csv.*")) {
-//					Logger.info("csv file!");
-//					return parseCSV(returnBuffer.toString(), submitted);
-				} else {
-					Logger.warn("Unknown content type!");
-				}	
+				submitted.id = null;
+				submitted.owner = currentUser;
+				submitted.pollingPeriod = 0L;
+				submitted = Resource.create(submitted);
+
+				Logger.info("Adding a new resource: " + "Label: " + submitted.label
+						+ " URL: " + submitted.getPollingUrl());
+				// if(submitted != null && submitted.id != null) {
+				// return redirect(routes.CtrlResource.getById(submitted.id));
+				// }
 			}
-			SkeletonResource skeleton = new SkeletonResource(submitted);
-			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true, "Resource initialised"));
+		}
+		return redirect(routes.CtrlResource.resources());
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result modify(Long id) {
+		/*
+		 * TODO: Create source from Form or update existing Create a parser from an
+		 * embedded form and associate the parser with the new source
+		 */
+		Form<SkeletonResource> theForm = skeletonResourceForm.bindFromRequest();
+		// validate form
+		if (theForm.hasErrors()) {
+			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
+		} else {
+			SkeletonResource skeleton = theForm.get();
+			User currentUser = Secured.getCurrentUser();
+			Resource resource = Resource.get(id, currentUser);
+			if (resource == null) {
+				return badRequest("Resource does not exist: " + id);
+			}
+			Resource submitted = skeleton.getResource(currentUser);
+			submitted.parent = resource.parent;
+			Logger.info("Submitted resource url: " + submitted.getPollingUrl());
+			List<StreamParser> spList = skeleton.getStreamParsers(submitted);
+			try {
+				resource.updateResource(submitted);
+				if (spList != null) {
+					for (StreamParser sp : spList) {
+						if (sp.id != null) {
+							sp.update();
+						} else {
+							StreamParser.create(sp);
+						}
+					}
+				} //else { Ebean.delete( source.streamParsers ); }
+			} catch (Exception e) {
+				Logger.error(e.getMessage() + " Stack trace:\n" + e.getStackTrace()[0].toString());
+				return badRequest("Bad request");
+			}
+			return redirect(routes.CtrlResource.getById(id));
 		}
 	}
 
@@ -142,6 +164,7 @@ public class CtrlResource extends Controller {
 			} catch (IOException ioe) {  
 				Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
 				return badRequest("Error collecting data from the resource URL");
+				//return ok(views.html.resourcePage.render(currentUser.resourceList, myFOrm, false, "Error: collecting data from the resource URL!"));
 			}
 			// decide to how to parse this data	
 			if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
@@ -251,7 +274,7 @@ public class CtrlResource extends Controller {
 			}
 			currentUser.sortStreamList(); // reorder streams
 
-			if(submitted != null && submitted.id != null) {
+			if(submitted != null && submitted.id != null) { //go to successfully added Resource 
 				return redirect(routes.CtrlResource.getById(submitted.id));
 			}
 			return redirect(routes.CtrlResource.resources());
@@ -284,40 +307,6 @@ public class CtrlResource extends Controller {
 	}
 	
 	@Security.Authenticated(Secured.class)
-	public static Result addSimple() {
-		Form<Resource> theForm;
-		// error check
-		try {
-			theForm = resourceForm.bindFromRequest();
-		} catch (Exception e) {
-			return badRequest("Bad parsing of form");
-		}
-		// validate form
-		if (theForm.hasErrors()) {
-			return badRequest("Bad request");
-		} else {
-			Resource submitted = theForm.get();
-			if (submitted != null) {
-				User currentUser = Secured.getCurrentUser();
-				if (currentUser == null) {
-					Logger.error("[CtrlResource.add] currentUser is null!");
-				}
-				submitted.id = null;
-				submitted.owner = currentUser;
-				submitted.pollingPeriod = 0L;
-				submitted = Resource.create(submitted);
-
-				Logger.info("Adding a new resource: " + "Label: " + submitted.label
-						+ " URL: " + submitted.getPollingUrl());
-				// if(submitted != null && submitted.id != null) {
-				// return redirect(routes.CtrlResource.getById(submitted.id));
-				// }
-			}
-		}
-		return redirect(routes.CtrlResource.resources());
-	}
-	
-	@Security.Authenticated(Secured.class)
 	public static Result resources() {		
   	User currentUser = Secured.getCurrentUser();
     return ok(resourcesPage.render(currentUser.resourceList, resourceForm, ""));
@@ -333,46 +322,6 @@ public class CtrlResource extends Controller {
   public static Result edit() {
     return TODO; //ok(accountPage.render(getUser(), userForm));
   }
-	
-	@Security.Authenticated(Secured.class)
-	public static Result modify(Long id) {
-		/*
-		 * TODO: Create source from Form or update existing Create a parser from an
-		 * embedded form and associate the parser with the new source
-		 */
-		Form<SkeletonResource> theForm = skeletonResourceForm.bindFromRequest();
-		// validate form
-		if (theForm.hasErrors()) {
-			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
-		} else {
-			SkeletonResource skeleton = theForm.get();
-			User currentUser = Secured.getCurrentUser();
-			Resource resource = Resource.get(id, currentUser);
-			if (resource == null) {
-				return badRequest("Resource does not exist: " + id);
-			}
-			Resource submitted = skeleton.getResource(currentUser);
-			submitted.parent = resource.parent;
-			Logger.info("Submitted resource url: " + submitted.getPollingUrl());
-			List<StreamParser> spList = skeleton.getStreamParsers(submitted);
-			try {
-				resource.updateResource(submitted);
-				if (spList != null) {
-					for (StreamParser sp : spList) {
-						if (sp.id != null) {
-							sp.update();
-						} else {
-							StreamParser.create(sp);
-						}
-					}
-				} //else { Ebean.delete( source.streamParsers ); }
-			} catch (Exception e) {
-				Logger.error(e.getMessage() + " Stack trace:\n" + e.getStackTrace()[0].toString());
-				return badRequest("Bad request");
-			}
-			return redirect(routes.CtrlResource.getById(id));
-		}
-	}
 
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
@@ -558,4 +507,58 @@ public class CtrlResource extends Controller {
 
 		return ok(result);
 	}
+
+	/* poll the source data and fill the stream definition form
+	// with default sensible parameters for the user to confirm
+	@Security.Authenticated(Secured.class)
+	public static Result initialise() {
+		Form<Resource> theForm = resourceForm.bindFromRequest();
+		if(theForm.hasErrors()) {
+		  return badRequest("Bad request");
+		} else {
+			User currentUser = Secured.getCurrentUser();
+			Resource submitted = theForm.get();
+			StringBuffer returnBuffer = new StringBuffer();  
+			BufferedReader serverResponse;
+			
+			if(submitted.getPollingUrl() != null && !"".equalsIgnoreCase(submitted.getPollingUrl())) {
+				//fudge URL, should check HTTP
+				if (!submitted.getPollingUrl().startsWith("http://") 
+						&& !submitted.getPollingUrl().startsWith("https://") 
+						&& !submitted.getPollingUrl().startsWith("coap://") && submitted.parent == null) {
+					submitted.setPollingUrl("http://"+submitted.getPollingUrl());
+				}
+				// get data
+				HttpURLConnection connection = submitted.probe();
+				String contentType = connection.getContentType();
+				Logger.warn("Probed and found contentType: "+contentType);
+				try {
+					serverResponse = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );  
+					String line;
+					while ( (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);}  
+				} catch (IOException ioe) {  
+					Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
+					return badRequest("Error collecting data from the resource URL.");
+					//return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true, "Error: Problem collecting data from the resource URL."));
+				}
+				// decide to how to parse this data	
+				if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
+					Logger.info("json file!");
+					return parseJson(returnBuffer.toString(), submitted);
+				} else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
+					Logger.info("html file!");
+					return parseHTML(returnBuffer.toString(), submitted);
+//				}  else if (contentType.matches("text/csv.*")) {
+//					Logger.info("csv file!");
+//					return parseCSV(returnBuffer.toString(), submitted);
+				} else {
+					Logger.warn("Unknown content type!");
+				}	
+			}
+			SkeletonResource skeleton = new SkeletonResource(submitted);
+			Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
+		  return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true, "Resource initialised"));
+		}
+	}*/
+
 }

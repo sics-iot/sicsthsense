@@ -114,7 +114,7 @@ public class CtrlStream extends Controller {
 			List<? extends DataPoint> dataSet = null;
 			dataSet = stream.getDataPoints();
 			if (dataSet!=null) {
-				for (DataPoint dp: dataSet) { sb.append(dp.toString()+"\n"); }
+				for (DataPoint dp: dataSet) { sb.append(dp.toTSV()+"\n"); }
 			}
 			return ok(sb.toString());
 		}

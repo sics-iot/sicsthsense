@@ -38,6 +38,13 @@ GET        /account/submit                       controllers.CtrlUser.submit()
 GET        /account/resetToken                   controllers.CtrlUser.resetToken(confirmed: Boolean)
 GET        /account/resetPassword								 controllers.CtrlUser.resetPassword(confirmed: Boolean)
 
+# Administration
+GET        /admin/statistics										controllers.Application.statistics()
+GET        /admin/reindex												controllers.Application.reindex()
+GET        /admin/backup												controllers.Application.backup()
+GET        /admin/usermgmt											controllers.Application.userManagement()
+
+
 # Dummy thing
 GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
 GET         /dummy/:id/sensors                   controllers.DummyThing.sensors(id: Long)
@@ -73,7 +80,7 @@ GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: L
 
 #deprecated
 GET			/resources/addLegacy												controllers.CtrlResource.add()
-GET			/resources/initialise									controllers.CtrlResource.initialise()
+#GET			/resources/initialise									controllers.CtrlResource.initialise()
 POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
 GET			/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
 POST		/resources/delete/:id									controllers.CtrlResource.delete(id: Long)

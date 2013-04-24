@@ -84,6 +84,12 @@ public class DataPointDouble extends DataPoint {
   	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
 		return streamName + data + "@" + timestamp + " ";
 	}
+
+	@Override
+	public String toTSV() {
+  	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
+		return streamName +"\t"+ timestamp +"\t"+ data;
+	}
 	
   public static List<? extends DataPoint> getByStream(Stream stream) {
 		return find.where().eq("stream", stream).orderBy("timestamp desc")

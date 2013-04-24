@@ -80,6 +80,12 @@ public class DataPointString extends DataPoint {
 		}
 		return null;
 	}
+
+	@Override
+	public String toTSV() {
+  	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
+		return streamName +"\t"+ timestamp +"\t"+ data;
+	}
 	
 	public String getData() {
   	return data;

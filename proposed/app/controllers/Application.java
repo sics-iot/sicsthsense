@@ -95,10 +95,8 @@ public class Application extends Controller {
   public static Result admin() {
   	User currentUser = Secured.getCurrentUser();
 		// check user has right - Very Important!
-		if (currentUser.isAdmin()) {
-			return ok(adminPage.render(""));
-		}
-    return redirect(routes.Application.home());
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(adminPage.render(""));
   }
   
   public static Result explore() {
@@ -132,6 +130,35 @@ public class Application extends Controller {
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
     return ok(attachFunctionPage.render(currentUser.resourceList, ""));
+  }
+
+	// Admin functions
+  public static Result statistics() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(statisticsPage.render(""));
+  }
+
+  public static Result reindex() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(adminPage.render("Reindex not implemented yet"));
+  }
+
+  public static Result backup() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(adminPage.render("Backup not yet implemented"));
+  }
+
+  public static Result userManagement() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(userManagementPage.render(""));
   }
   
   // -- Javascript routing
