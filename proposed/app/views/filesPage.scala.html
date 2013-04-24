@@ -19,21 +19,8 @@
   <div class="span9">
 
 		<!--Body content-->
+		@filesUtils.listDir(vfiles, "/")
 
-<table class="table table-striped table-hover ">
-  <!--caption>File view</caption-->
-  <thead>
-    <tr>
-      <!-- th>Select</th -->
-      <th class="span3">Label</th>
-			<th class="span5">Graph</th>
-			<th class="span4">Modified</th>
-    </tr>
-  </thead>
-  <tbody id="fileTableBody">
-		@filesUtils.listDir(vfiles, "")
-  </tbody>
-</table>
 		<br /> <br />
 
     </div>
