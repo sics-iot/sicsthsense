@@ -287,12 +287,12 @@ public class ResourceLog extends Model {
 				if (rplCopy != null) {
 					rplCopy.updateResourceLog(resourceLog);
 					Logger.warn("[ResourceLog] updating existing for "
-							+ resourceLog.resource.label + resourceLog.resource.id);
+							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
 					return rplCopy;
 				} else {
 					resourceLog.save();
 					Logger.warn("[ResourceLog] creating new for "
-							+ resourceLog.resource.label + resourceLog.resource.id);
+							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
 					return resourceLog;
 				}
 
@@ -316,7 +316,7 @@ public class ResourceLog extends Model {
 		if (rpl == null) {
 			Logger.warn("[ResourceLog] Could not find a "
 					+ ((isPoll) ? "poll" : "post") + " log for resource: "
-					+ resource.id.toString() + resource.label);
+					+ resource.id.toString() +", id: "+ resource.label);
 		}
 		return rpl;
 	}
