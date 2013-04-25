@@ -54,7 +54,6 @@ POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id
 
 # Streams
 ## TODO move all functions that read streams to CtrlStream
-
 GET        /user/followStream/:id/:follow				controllers.CtrlUser.followStream(id: Long, follow: Boolean)
 GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStream(id: Long)
 GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)

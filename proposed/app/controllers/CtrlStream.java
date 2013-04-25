@@ -61,6 +61,13 @@ public class CtrlStream extends Controller {
 		return stream.canRead(user);
 	}
 
+	// do we push simple handlers down to the Ctrls? or keep in Application?
+	/*@Security.Authenticated(Secured.class) 
+	public static Result streams() {
+  	User currentUser = Secured.getCurrentUser();
+    return ok(resourcesPage.render(currentUser.streamList, ""));
+	}*/
+
 	@Security.Authenticated(Secured.class)
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();

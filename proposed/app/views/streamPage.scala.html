@@ -15,6 +15,12 @@
     ================================================== -->
 	<div class="row">
 		<div class="span2 bs-docs-sidebar">
+			 <div style="position:fixed;" >
+				<span  class="btn-group">	
+					<button type="submit" name="update" class="btn btn-primary" id="updateStream" form="streamFormId"><i class="icon-ok icon-white"></i>Save</button>
+					<a href="@routes.Application.streams()" class="btn"><i class="icon-remove"></i></a>
+	      </span>
+
 				@if(streams.length > 0) {
 				<h4>Streams</h4>
 					<div id="vfileTree">
@@ -23,6 +29,7 @@
 						</ul>
 					</div>
 				} else {}
+			</div>
   </div>
 
 	<div class="span9">
@@ -31,16 +38,17 @@
 		<!-- Stream listing and visualizing -->
 		<h1>Stream '@stream.file.getPath()'</h1>
 				<br />
-				@helper.form(action = routes.CtrlStream.modify(stream.id)) {
+				@helper.form(action = routes.CtrlStream.modify(stream.id), 'id -> "streamFormId") {
 
 					<legend>View</legend>
 					@vstream.includeStream(stream)
 
 
 			<div class="row-fluid">
+				@if(stream.hasData()) {
 				<a href="/streams/download/@stream.id" class="btn btn-success pull-right">Download Data</a>
-				<br />
-				<br />
+				<br /> <br />
+				}
 
 			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
 			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
@@ -58,11 +66,11 @@
 			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			</div>
 					</fieldset>
-					<br />
+					<!--br />
 					@if(stream.canWrite(Secured.getCurrentUser())){
 					<div class="actions">
 						<input type="submit" class="btn btn-primary" value="Update">
-					</div>
+					</div-->
 					}
 					<br /> <br />
 					<br /> <br />
