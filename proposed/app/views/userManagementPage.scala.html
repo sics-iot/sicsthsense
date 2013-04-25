@@ -1,4 +1,4 @@
-@(message: String="")
+@(users: List[User], message: String="")
 @import helper._
 
 @layout("User Management", message, session) {
@@ -14,6 +14,11 @@
   <div class="span9">
 		<!--Body content-->
 		<legend>User Management</legend>
+		<ul>
+			@for(user <- users){
+				<li><a href="">@user.userName</a></li>
+			}
+		</ul>
 
 
 		<br /> <br />

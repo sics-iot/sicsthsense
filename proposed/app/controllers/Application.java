@@ -92,13 +92,6 @@ public class Application extends Controller {
     return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q, ""));
   }
   
-  public static Result admin() {
-  	User currentUser = Secured.getCurrentUser();
-		// check user has right - Very Important!
-		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
-		return ok(adminPage.render(""));
-  }
-  
   public static Result explore() {
   	User currentUser = Secured.getCurrentUser();
 		List<Resource> available = Resource.availableResources(currentUser);
@@ -133,6 +126,13 @@ public class Application extends Controller {
   }
 
 	// Admin functions
+  public static Result admin() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has right - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		return ok(adminPage.render(""));
+  }
+  
   public static Result statistics() {
   	User currentUser = Secured.getCurrentUser();
 		// check user has rights - Very Important!
@@ -158,7 +158,8 @@ public class Application extends Controller {
   	User currentUser = Secured.getCurrentUser();
 		// check user has rights - Very Important!
 		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
-		return ok(userManagementPage.render(""));
+		List<User> users = User.all();
+		return ok(userManagementPage.render(users,""));
   }
   
   // -- Javascript routing

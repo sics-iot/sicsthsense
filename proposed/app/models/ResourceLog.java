@@ -108,14 +108,6 @@ public class ResourceLog extends Model {
 	public static Model.Finder<Long, ResourceLog> find = new Model.Finder<Long, ResourceLog>(
 			Long.class, ResourceLog.class);
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public void appendMessage(String message) {
-		this.message += message;
-	}
-
 	public ResourceLog(Long id, Resource resource, Long creationTimestamp,
 			Long responseTimestamp, Boolean parsedSuccessfully, Boolean isPoll,
 			String body, String method, String host, String uri, String headers,
@@ -217,6 +209,14 @@ public class ResourceLog extends Model {
 		}
 	}
 
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void appendMessage(String message) {
+		this.message += message;
+	}
+
 	public void setCreationTimestamp(Long creationTimestamp) {
 		this.creationTimestamp = (creationTimestamp == null || creationTimestamp <= 0) ? controllers.Utils
 				.currentTime() : creationTimestamp;
@@ -273,64 +273,6 @@ public class ResourceLog extends Model {
 			return true;
 		}
 		return false;
-	}
-
-	public static ResourceLog createOrUpdate(ResourceLog resourceLog) {
-		try {
-			if (resourceLog.resource != null) {
-				if (resourceLog.creationTimestamp == null
-						|| resourceLog.creationTimestamp == 0L) {
-					resourceLog.creationTimestamp = Utils.currentTime();
-				}
-				ResourceLog rplCopy = getByResource(resourceLog.resource,
-						resourceLog.isPoll);
-				if (rplCopy != null) {
-					rplCopy.updateResourceLog(resourceLog);
-					Logger.warn("[ResourceLog] updating existing for "
-							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
-					return rplCopy;
-				} else {
-					resourceLog.save();
-					Logger.warn("[ResourceLog] creating new for "
-							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
-					return resourceLog;
-				}
-
-			} else {
-				Logger.warn("[ResourceLog] resource null");
-			}
-		} catch (Exception e) {
-			Logger.error(e.getMessage() + e.getStackTrace()[0].toString()
-					+ e.toString());
-		}
-		return null;
-	}
-
-	public static ResourceLog getByResource(Resource resource, boolean isPoll) {
-		if (resource == null) {
-			Logger.warn("[ResourcePostLog] Could not find one for resource: Null");
-			return null;
-		}
-		ResourceLog rpl = find.where().eq("resource_id", resource.id)
-				.eq("is_poll", isPoll).findUnique();
-		if (rpl == null) {
-			Logger.warn("[ResourceLog] Could not find a "
-					+ ((isPoll) ? "poll" : "post") + " log for resource: "
-					+ resource.id.toString() +", id: "+ resource.label);
-		}
-		return rpl;
-	}
-
-	public static ResourceLog getById(Long id) {
-		return find.byId(id);
-	}
-
-	public static void delete(Long id) {
-		find.ref(id).delete();
-	}
-
-	public static void deleteByResource(Resource resource) {
-		Ebean.delete(find.where().eq("resource_id", resource.id).findList());
 	}
 
 	// trim strings longer than maximum length
@@ -393,6 +335,65 @@ public class ResourceLog extends Model {
 	public void update() {
 		verify();
 		super.update();
+	}
+
+
+	public static ResourceLog createOrUpdate(ResourceLog resourceLog) {
+		try {
+			if (resourceLog.resource != null) {
+				if (resourceLog.creationTimestamp == null
+						|| resourceLog.creationTimestamp == 0L) {
+					resourceLog.creationTimestamp = Utils.currentTime();
+				}
+				ResourceLog rplCopy = getByResource(resourceLog.resource,
+						resourceLog.isPoll);
+				if (rplCopy != null) {
+					rplCopy.updateResourceLog(resourceLog);
+					Logger.info("[ResourceLog] updating existing for "
+							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
+					return rplCopy;
+				} else {
+					resourceLog.save();
+					Logger.warn("[ResourceLog] creating new for "
+							+ resourceLog.resource.label +", id: " + resourceLog.resource.id);
+					return resourceLog;
+				}
+
+			} else {
+				Logger.warn("[ResourceLog] resource null");
+			}
+		} catch (Exception e) {
+			Logger.error(e.getMessage() + e.getStackTrace()[0].toString()
+					+ e.toString());
+		}
+		return null;
+	}
+
+	public static ResourceLog getByResource(Resource resource, boolean isPoll) {
+		if (resource == null) {
+			Logger.warn("[ResourcePostLog] Could not find one for resource: Null");
+			return null;
+		}
+		ResourceLog rpl = find.where().eq("resource_id", resource.id)
+				.eq("is_poll", isPoll).findUnique();
+		if (rpl == null) {
+			Logger.warn("[ResourceLog] Could not find a "
+					+ ((isPoll) ? "poll" : "post") + " log for resource: "
+					+ resource.id.toString() +", id: "+ resource.label);
+		}
+		return rpl;
+	}
+
+	public static ResourceLog getById(Long id) {
+		return find.byId(id);
+	}
+
+	public static void delete(Long id) {
+		find.ref(id).delete();
+	}
+
+	public static void deleteByResource(Resource resource) {
+		Ebean.delete(find.where().eq("resource_id", resource.id).findList());
 	}
 
 }

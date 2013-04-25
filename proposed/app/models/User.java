@@ -98,7 +98,6 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
-
 	public User(String email, String userName, String firstName, String lastName,
 			String location) {
 		this.creationDate = new Date();
