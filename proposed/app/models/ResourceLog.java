@@ -226,7 +226,7 @@ public class ResourceLog extends Model {
 	public void setResponseTimestamp(Long responseTimestamp) {
 		this.responseTimestamp = (responseTimestamp == null || responseTimestamp <= 0) ? controllers.Utils
 				.currentTime() : responseTimestamp;
-		this.responseTime = controllers.Utils.timeStr(responseTimestamp
+		this.responseTime = controllers.Utils.timeStr(this.responseTimestamp
 				- creationTimestamp);
 	}
 
