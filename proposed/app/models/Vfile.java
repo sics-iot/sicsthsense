@@ -95,7 +95,7 @@ public class Vfile extends Model {
 
 	//@Column(nullable = false)
 	//@Constraints.Required
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	Stream linkedStream;
 
 	public static Finder<Long,Vfile> find = new Finder<Long,Vfile>(Long.class, Vfile.class); 

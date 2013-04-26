@@ -81,11 +81,9 @@ public class CtrlFile extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		boolean success = FileSystem.deleteFile(currentUser, path);
 		if (success)
-			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser,  Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
+			return ok("true");
 		else
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), path));
+			return notFound("false");
 	}
 
 	@Security.Authenticated(Secured.class)

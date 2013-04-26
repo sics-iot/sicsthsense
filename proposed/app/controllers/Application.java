@@ -180,7 +180,12 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlStream.isPublicSearch(),
           		controllers.routes.javascript.CtrlUser.followStream(),
           		controllers.routes.javascript.CtrlUser.isFollowingStream(),
-          		controllers.routes.javascript.CtrlFile.lsDir()
+          		controllers.routes.javascript.CtrlFile.lsDir(),
+          		controllers.routes.javascript.CtrlFile.delete(),
+          		controllers.routes.javascript.CtrlFile.createFile(),
+          		controllers.routes.javascript.CtrlFile.createDir(),
+          		controllers.routes.javascript.CtrlFile.move()
+
           )
       );
   }

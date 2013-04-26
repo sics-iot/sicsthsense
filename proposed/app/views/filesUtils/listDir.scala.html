@@ -1,5 +1,105 @@
 @(vfiles : List[Vfile], path : String)
 @upPathLoc={@Vfile.extractUpperLevelPath(path)}
+
+@confirmDeleteStreamDialog(filePath : String, fileName : String) = {
+<!-- Modal confirmDeleteStream -->
+<div id="confirmDeleteStreamModal@fileName" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteStreamModalLabel@fileName" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="confirmDeleteStreamModalLabel@fileName">Delete Stream <em>@fileName</em></h3>
+  </div>
+  <div class="modal-body">
+    <p>Deleting <em>@fileName</em> implies removing the associated stream(s).</p>
+    <p>Are you sure you want to delete <em>@fileName</em>?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<button class="btn btn-danger deleteFileButton" data-filepath="@filePath" data-filename="@fileName" role="button" data-dismiss="modal" aria-hidden="true"><i class="icon-trash icon-white"></i> Yes, delete everything</button>
+  </div>
+</div>
+}
+@confirmClearStreamDialog(streamId : Long, streamTitle : String) = {
+<!-- Modal confirmClearStream -->
+<div id="confirmClearStreamModal@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
+  </div>
+  <div class="modal-body">
+    <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
+    <p>Are you sure you want to clear the stream's contents?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
+  </div>
+</div>
+}
+
+@renameFileDialog(streamId : Long, streamTitle : String) = {
+<!-- Modal renameFileDialog -->
+<div id="renameFileDialog@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
+  </div>
+  <div class="modal-body">
+    <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
+    <p>Are you sure you want to clear the stream's contents?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
+  </div>
+</div>
+}
+
+@fileRow(vfile:Vfile)={
+<tr id="fileRow@vfile.getName()">
+    	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
+				@if(vfile.getType() == Vfile.Filetype.FILE) { 
+					@if(vfile.getLink() != null) {
+					<td class="rowlink"><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
+					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
+					@confirmClearStreamDialog(vfile.getLink().id, vfile.getName())
+					} else {
+					<td class="rowlink"><i class="icon-file"></i> @vfile.getName() @fileMenu(vfile)</td>
+					<td>No stream attached...</td>
+					<td>-</td>
+					}
+				} else {
+					<td class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#folder=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td><!--[Folder tools]--></td>
+					<td>-</td>
+				}
+				@confirmDeleteStreamDialog(vfile.getPath(), vfile.getName())
+    	</tr>
+}
+@fileMenu(vfile : Vfile)={
+<div class="dropdown">
+  <a href="#" class="rowlink dropdown-toggle" data-toggle="dropdown"></a>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+	  <!-- li><a tabindex="-1" href="#"><i calss="icon-play"></i> Open</a></li -->
+		@if(vfile.getLink() != null) {
+	  <li>@vstream.followIcon(vfile.getLink(), "fileMenu", "Star", "Star", "", "btn-success")</li>
+	  <li><a href="@routes.CtrlStream.download(vfile.getLink().id)" tabindex="-1" class="" role="button"><i class="icon-download-alt"></i> Download</a></li>
+	  <li class="divider"></li>
+	  }
+	  <!-- li><a tabindex="-1" href="#"><i class="icon-share"></i> Move ...</a></li -->
+		<li><a tabindex="-1"  href="#renameBox" class="renameMenuButton" data-toggle="modal" rel="tooltip" title="Change the name" data-fileParentPath="@vfile.getParentPath()" data-filename="@vfile.getName()"><i class="icon-edit"></i> Rename ...</a></li>
+	  <li class="divider"></li>
+		@if(vfile.getLink() != null) {
+		<li><a tabindex="-1" href="#confirmClearStreamModal@vfile.getLink().id" class="" data-toggle="modal" rel="tooltip" title="Clear contents">
+			<i class="icon-remove-sign"></i>
+			Clear</a></li>
+			}		
+			<li><a tabindex="-1" href="#confirmDeleteStreamModal@vfile.getName()" class="" data-toggle="modal" rel="tooltip" title="Delete file">
+			<i class="icon-trash"></i>
+			Delete</a></li>
+	</ul>
+</div>
+}
 	<table class="table table-hover " id="fileTableBody">
   <!--caption>File view</caption-->
   <thead>
@@ -11,31 +111,14 @@
     </tr>
   </thead>
   <tbody id="folder=@path">
-	<tr><td><i class="icon-folder-close"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#folder=@upPathLoc/"> [UP] @path</a></td>
+	<tr><td><i class="icon-folder-open"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#folder=@upPathLoc/">@path..</a></td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
 	</tr>
 	@if(vfiles.length > 0) {
 		@for(vfile <- vfiles) {
 			@if(vfile != null) {					
-  	  <tr>
-    	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
-				@if(vfile.getType() == Vfile.Filetype.FILE) { 
-					@if(vfile.getLink() != null) {
-					<td><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a></td>
-					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
-					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
-					} else {
-					<td><i class="icon-file"></i> @vfile.getName()</td>
-					<td>No stream attached...</td>
-					<td>-</td>
-					}
-				} else {
-					<td><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#folder=@vfile.getPath()/"> @vfile.getName()</a></td>
-					<td><!--[Folder tools]--></td>
-					<td>-</td>
-				}
-    	</tr>
+    		@fileRow(vfile)
     	}
     }
 	} else {
@@ -47,4 +130,18 @@
 	}
   </tbody>
 </table>
-	
+
+<div class="modal hide fade" id="renameBox" role="dialog" aria-labelledby="renameBoxModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="renameBoxModalLabel">Rename file</h3>
+  </div>        
+<div class="modal-body">
+        <p id="renameConfirmMessage">Enter a new name:</p>
+  			<input id="renameInputBox" class="" type="text"  placeholder="Type a new name..." value="new2"></input>
+        </div>
+        <div class="modal-footer">
+        <button class="btn" id="renameConfirmFalse" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button class="btn btn-primary" id="renameConfirmTrue" >Rename</button>
+        </div>
+    </div>

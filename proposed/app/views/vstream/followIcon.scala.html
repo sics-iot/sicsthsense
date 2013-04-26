@@ -1,7 +1,7 @@
-@(stream: Stream, prefix: String)
+@(stream: Stream, prefix: String, captionAdd: String ="", captionRemove: String ="", className: String ="btn btn-small", classNameSuccess: String ="btn-success" )
  
 @if(!CtrlUser.getUser().isfollowingStream(stream)) {
-  <a class="btn btn-small follow_stream" data-parent_id="@stream.id" id="followr@prefix@stream.id" href="#" rel="tooltip" title="Follow" inactive_title="Stop following"><i class="icon-star"></i></a>
+  <a class="@className follow_stream" data-parent_id="@stream.id" id="followr@prefix@stream.id" href="#" rel="tooltip" title="Add star" inactive_title="Remove star"><i class="icon-star"></i> @captionAdd</a>
 } else {
-  <a class="btn btn-small btn-success disabled unfollow_stream" data-parent_id="@stream.id" id="unfollowr@prefix@stream.id" href="#" rel="tooltip" title="Stop following" inactive_title="Follow"><i class="icon-star"></i></a>
+  <a class="@className @classNameSuccess disabled unfollow_stream" data-parent_id="@stream.id" id="unfollowr@prefix@stream.id" href="#" rel="tooltip" title="Remove star" inactive_title="Add star"><i class="icon-star"></i> @captionRemove</a>
 }
