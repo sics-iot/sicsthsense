@@ -59,7 +59,7 @@
     	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
 				@if(vfile.getType() == Vfile.Filetype.FILE) { 
 					@if(vfile.getLink() != null) {
-					<td class="rowlink"><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td style="padding-left: 20px;" class="rowlink"><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
 					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
 					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
 					@confirmClearStreamDialog(vfile.getLink().id, vfile.getName())
@@ -69,7 +69,7 @@
 					<td>-</td>
 					}
 				} else {
-					<td class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#folder=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td style="padding-left: 20px;"  class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#folder=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
 					<td><!--[Folder tools]--></td>
 					<td>-</td>
 				}
@@ -103,7 +103,7 @@
 	<table class="table table-hover " id="fileTableBody">
   <!--caption>File view</caption-->
   <thead>
-    <tr>
+    <tr style="background-color: #f5f5f5;">
       <!-- th>Select</th -->
       <th class="span3">Label</th>
 			<th class="span5"></th>
@@ -111,7 +111,8 @@
     </tr>
   </thead>
   <tbody id="folder=@path">
-	<tr><td><i class="icon-folder-open"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#folder=@upPathLoc/">@path..</a></td>
+	<tr style="background-color: #fcfcfc;">
+		<td><i class="icon-folder-open"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#folder=@upPathLoc/"><b> @path..</b></a></td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
 	</tr>

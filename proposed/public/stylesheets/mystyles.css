@@ -99,64 +99,63 @@ span.streamconfig {
 }
 
 dl {
-	  margin: 0;
-	  padding: 0;
-    width: 100%;
-    overflow: hidden;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	overflow: hidden;
 }
 
 dt.action {
-    font-weight:normal; 
+	font-weight:normal; 
 }
 
 dt, dd {
-	  margin: 2px 0;
-	  min-height: 1.2em;
+	margin: 2px 0;
+	min-height: 1.2em;
 }
 
 dt {
-    clear: both;
-    float: left;
-    min-width: 20%;
-    font-weight:bold;
-    text-align: right;
+	clear: both;
+	float: left;
+	min-width: 20%;
+	font-weight:bold;
+	text-align: right;
 }
 dd {
-    float: left;
-    margin-left: 0.5em;
-    max-width: 75%;
+	float: left;
+	margin-left: 0.5em;
+	max-width: 75%;
 }
 .parsers_template {
 		display:none;
 }
 .hidden {
-		display:none;
-		width: 0px; 
-		height: 0px;
+	display:none;
+	width: 0px; 
+	height: 0px;
 }
 
 input.url-field {
-position: relative;
-width: 100%;
-min-height: 26px;
-padding: 0 5px;
-font-family: Monaco, "Liberation Mono", Courier, monospace;
-font-size: 12px;
-border-radius: 0;
+	position: relative;
+	width: 100%;
+	min-height: 26px;
+	padding: 0 5px;
+	font-family: Monaco, "Liberation Mono", Courier, monospace;
+	font-size: 12px;
+	border-radius: 0;
 }
 
 textarea[readonly=""], textarea[readonly=true], textarea[readonly], input[readonly=""], input[readonly=true], input[readonly] {
-outline: none;
-cursor: default;
+	outline: none;
+	cursor: default;
 }
 
 .bs-docs-sidebar {
-		margin-right: 1em;
+	margin-right: 1em;
 }
 
 li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
 li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
-
 li.jstree-leaf > a .jstree-icon { display: none; }
 
 
