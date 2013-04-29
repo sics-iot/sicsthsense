@@ -413,20 +413,60 @@ function toggleFollowStreamButton(event){
 	};
 	$('.deleteFileButton').on("click", deleteFileButton);
 	
-	
+	var fileRowClick, fileRowRightClick, fileMenuButtonHandlers;
+  fileMenuButtonHandlers = function(e) {
+  	$('.deleteFileButton').on("click", deleteFileButton);
+		$('.clearStreamButton').on("click", clearStreamButton);
+		$('.unfollow_stream').on("click", toggleFollowStreamButton);
+		$('.follow_stream').on("click", toggleFollowStreamButton);
+		$('.renameMenuButton').on("click", renameConfirmBox);
+	  $('.folder-list-button').on("click", fileListFolderClick);
+	  $('.rowlink').on('click', fileRowClick);
+	  $('.rowlink').on('contextmenu', fileRowRightClick);
+  }
+ 
+  fileRowRightClick = function(e) {
+  //	console.debug("fileRowRightClick: ");
+    $(this).find('.dropdown-toggle').dropdown();
+    $(this).parent().find('.dropdown').removeClass('open');
+    $(this).find('.dropdown').toggleClass('open');
+    fileMenuButtonHandlers();
+    e.stopPropagation();
+    return false;
+};
+
+fileRowClick = function(e) {
+//	console.debug("fileRowClick: ");
+  $(this).find('.dropdown').removeClass('open');
+};
+
+  var fileListFolderClick;
+  fileListFolderClick = function (e) {  	
+  	var path = $(this).attr('data-folderpath');
+  	console.debug("Browsing: " + path);
+  	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
+      success: function(msg) {
+      	$('#fileTableBody').html(msg);
+      	fileMenuButtonHandlers();
+      },
+      error: function(msg) {
+      	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+      }
+    });
+  	//return false;
+  };
+  fileMenuButtonHandlers();
+  
+
 	var renameConfirmBox = function (e){
    // confirmMessage = confirmMessage || '';
 		var $this_button=$(this);
 		var my_file_name=$this_button.attr('data-filename');
 		var my_file_parentpath=$this_button.attr('data-fileParentPath');
 		var my_file_path=my_file_parentpath+"/"+my_file_name;
-	
-
-    //$('#renameBox').modal({show:true, backdrop:false, keyboard: false,});
-
+   //$('#renameBox').modal({show:true, backdrop:false, keyboard: false,});
    // $('#confirmMessage').html(confirmMessage);
-    $('#renameConfirmTrue').click(function(){
-        
+    $('#renameConfirmTrue').click(function(){   
       	var newFileName=$('#renameInputBox').val();
     		var new_file_path=my_file_parentpath+"/"+newFileName;
     		console.debug("Trying: RenameFile! " + my_file_path + " to: "+new_file_path);
@@ -438,6 +478,7 @@ function toggleFollowStreamButton(event){
     	    	//$("[id^='stream'][id$='"+my_stream_id+"']").remove();
     				console.debug("Success: RenamingFile! " + my_file_path + " to: "+new_file_path);
           	$('#fileTableBody').html(msg);
+          	fileMenuButtonHandlers();
     	    },
     	    error: function(emsg) {
     				console.debug("Error: DeleteFile! " + my_file_path + emsg);
@@ -450,53 +491,6 @@ function toggleFollowStreamButton(event){
     });
 };
 
-
-
-
-	
-  var fileRowClick, fileRowRightClick, fileMenuButtonHandlers;
-  fileMenuButtonHandlers = function(e) {
-  	$('.deleteFileButton').on("click", deleteFileButton);
-		$('.clearStreamButton').on("click", clearStreamButton);
-		$('.unfollow_stream').on("click", toggleFollowStreamButton);
-		$('.follow_stream').on("click", toggleFollowStreamButton);
-		$('.renameMenuButton').on("click", renameConfirmBox);
-  }
-  fileRowRightClick = function(e) {
-  	console.debug("fileRowRightClick: ");
-    $(this).find('.dropdown-toggle').dropdown();
-    $(this).find('.dropdown').toggleClass('open');
-    fileMenuButtonHandlers();
-    e.stopPropagation();
-    return false;
-};
-fileRowClick = function(e) {
-	console.debug("fileRowClick: ");
-  $(this).find('.dropdown').removeClass('open');
-};
-
-  var fileListFolderClick;
-  fileListFolderClick = function (e) {  	
-  	var path = $(this).attr('data-folderpath');
-  	console.debug("Browsing: " + path);
-  	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
-      success: function(msg) {
-      	$('#fileTableBody').html(msg);
-      	$('.rowlink').on('contextmenu', fileRowRightClick);
-        $('.rowlink').on('click', fileRowClick);
-        $('.folder-list-button').on("click", fileListFolderClick);
-      },
-      error: function(msg) {
-      	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
-      }
-    });
-  	//return false;
-  };
-  $('.folder-list-button').on("click", fileListFolderClick);
-  $('.rowlink').on('click', fileRowClick);
-  $('.rowlink').on('contextmenu', fileRowRightClick);
-  
-  
 //  function add_resource_form_handler(e) {	
 //  	$('.parsers_template').remove();
 //		renumberParsers();

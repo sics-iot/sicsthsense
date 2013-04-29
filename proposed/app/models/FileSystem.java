@@ -69,6 +69,7 @@ public class FileSystem {
 
 	/** LS into a dir */
 	public static List<Vfile> lsDir(User user, String path) {
+		if(!path.endsWith("/")) path += "/";
 		return Vfile.find.where(
 				Expr.and(
 						Expr.eq("owner",user), Expr.and( 
@@ -234,7 +235,6 @@ public class FileSystem {
 
 						subfile.setPath( newPath + subfile.getPath().substring(path.length()) );
 						subfile.update();
-						//Ebean.update(subfile);
 						Logger.info("File moved to:: " + subfile.path);
 					}			
 				}

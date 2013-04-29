@@ -92,10 +92,10 @@ public class CtrlFile extends Controller {
 		boolean success = FileSystem.moveFile(currentUser, path, newPath);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, newPath), newPath+"/"));
+					currentUser, Vfile.extractUpperLevelPath(newPath)), Vfile.extractUpperLevelPath(newPath)));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), path+"/"));
+					currentUser, Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -104,7 +104,7 @@ public class CtrlFile extends Controller {
 		boolean success = (FileSystem.addDirectory(currentUser, path) != null);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path),path));
+					currentUser, Vfile.extractUpperLevelPath(path)),Vfile.extractUpperLevelPath(path)));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
 					currentUser, "/"), "/"));
