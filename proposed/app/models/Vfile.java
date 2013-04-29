@@ -55,14 +55,6 @@ import controllers.Utils;
 		})
 public class Vfile extends Model {
 
-	public Vfile() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1766439519493690841L;
 
 	public static enum Filetype {
@@ -85,25 +77,32 @@ public class Vfile extends Model {
 	@ManyToOne
 	User owner;
 
-	public User getOwner() {
-		return owner;
-	}
+	public User getOwner() { return owner; }
 	
 	@Column(nullable = false)
 	@Constraints.Required
-	Filetype type;
+	public Filetype type;
 
-	//@Column(nullable = false)
-	//@Constraints.Required
 	@OneToOne(cascade = CascadeType.ALL)
 	Stream linkedStream;
 
 	public static Finder<Long,Vfile> find = new Finder<Long,Vfile>(Long.class, Vfile.class); 
-
-	public Vfile(User user, String path, Filetype type) {
-		this.owner = user;
-		this.path= path;
+	
+	public Vfile(String path, User owner, Filetype type, Stream linkedStream) {
+		super();
+		this.path = path;
+		this.owner = owner;
 		this.type = type;
+		this.linkedStream = linkedStream;
+	}
+
+	public Vfile() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Vfile(User user, String path, Filetype type) {
+		this(path, user, type, null);
 	}
 	
 	public static Vfile create(Vfile file) {
@@ -115,16 +114,12 @@ public class Vfile extends Model {
 		return null;
 	}
 	
-	public Filetype getType() {
-		return type;
-	}
-
+	public Filetype getType() { return type; }
+	public String getPath() { return path; }
+	void setPath(String path) { this.path = path; }
 	public boolean isFile() {return type==Filetype.FILE;}
 	public boolean isDir() {return type==Filetype.DIR;}
 	
-	public String getPath() {
-		return path;
-	}
 	
 	public String getName() {
 		if(path == null) {
@@ -144,23 +139,6 @@ public class Vfile extends Model {
 		if(i<0) return "";
 		return path.substring(0, i);
 	}
-	
-/*	public String getUpperLevel() {
-		if (path == null) {
-			return null;
-		}
-		int i = path.lastIndexOf("/" + getName());
-		if (i <= 0) {
-			return "";
-		} else {
-			int j = path.substring(0, i - 1).lastIndexOf('/');
-			if (j <= 0) {
-				return "";
-			} else {
-				return path.substring(0, j);
-			}	
-		}
-	}*/
 	
 	public void setLink(Stream linkedStream) {
 		this.linkedStream = linkedStream;

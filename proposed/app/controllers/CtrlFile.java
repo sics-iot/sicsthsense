@@ -92,10 +92,10 @@ public class CtrlFile extends Controller {
 		boolean success = FileSystem.moveFile(currentUser, path, newPath);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, newPath), newPath));
+					currentUser, newPath), newPath+"/"));
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, path), path));
+					currentUser, path), path+"/"));
 	}
 
 	@Security.Authenticated(Secured.class)

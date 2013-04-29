@@ -200,7 +200,7 @@ public class FileSystem {
 				// loop throw all files and delete those with paths starting with this
 				// path...
 				List<Vfile> flist = Vfile.find.where().eq("owner", user)
-						.istartsWith("path", path+"/").findList();
+						.istartsWith("path", path + "/").findList();
 				Ebean.delete(flist);
 			}
 			f.delete();
@@ -210,28 +210,42 @@ public class FileSystem {
 		}
 		return false;
 	}
-	
+
 	@Transactional
 	public static boolean moveFile(User user, String path, String newPath) {
-		Vfile f = readFile(user, path);
-		if (f != null) {
-			if (f.isDir()) {
-				// loop throw all files and update those with paths starting with this
-				// path...
-				List<Vfile> flist = Vfile.find.where().eq("owner", user)
-						.istartsWith("path", path + "/").findList();
-				for (Vfile subfile : flist) {
-					subfile.path = newPath + subfile.path.substring(path.length());
-					subfile.update();
+		try {
+			Vfile f = readFile(user, path);
+			if (f != null) {
+				// XXX it was not working because I was trying to set path by direct
+				// access, while it is not public (but it is accessible to this class).
+				// However, due to play and ebean byte code modifications bug, we have
+				// to use a setter or make the field public
+				f.setPath( newPath );
+				f.update();
+				Logger.info("Main file moved from:: " + path + " ::to:: " + f.path);
+				if (f.isDir()) {
+					// loop throw all files and update those with paths starting with this
+					// path...
+					List<Vfile> flist = Vfile.find.select("path, owner, id").where().eq("owner_id", user.id)
+							.istartsWith("path", path + "/").findList();
+					for (Vfile subfile : flist) {
+						Logger.info("Moving sub file:: " + subfile.path + " ::to:: "
+								+ newPath + subfile.path.substring(path.length()));
+
+						subfile.setPath( newPath + subfile.getPath().substring(path.length()) );
+						subfile.update();
+						//Ebean.update(subfile);
+						Logger.info("File moved to:: " + subfile.path);
+					}			
 				}
+				return true;
+			} else {
+				Logger.warn("Vfile path to delete does not exist:: " + path);
 			}
-			f.path = newPath;
-			f.update();
-			return true;
-		} else {
-			Logger.warn("Vfile path to delete does not exist:: " + path);
+		} catch (Exception e) {
+			Logger.error("Error moving file from:: " + path + " ::to:: " + newPath
+					+ "\n " + e.getMessage() + e.getStackTrace()[0].toString());
 		}
 		return false;
-	}
-	
+	}	
 }
