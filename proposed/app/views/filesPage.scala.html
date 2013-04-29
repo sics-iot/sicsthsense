@@ -1,4 +1,4 @@
-@(vfiles : List[Vfile], message: String="")
+@(vfiles : List[Vfile], path: String="/", message: String=" ")
 
 @import helper._
 
@@ -19,7 +19,7 @@
   <div class="span9">
 
 		<!--Body content-->
-		@filesUtils.listDir(vfiles, "/")
+		@filesUtils.listDir(vfiles, path)
 
 		<br /> <br />
 

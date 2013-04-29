@@ -110,7 +110,7 @@ public class Application extends Controller {
 
   public static Result files() {
   	User currentUser = Secured.getCurrentUser();
-    return ok(filesPage.render(FileSystem.lsDir(currentUser,"/"), ""));
+    return ok(filesPage.render(FileSystem.lsDir(currentUser,"/"), "/", ""));
   }
   
   public static Result viewStream(Long id) {

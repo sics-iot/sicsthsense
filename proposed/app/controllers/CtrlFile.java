@@ -71,7 +71,7 @@ public class CtrlFile extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		List<Vfile> vfiles = FileSystem.lsDir(currentUser, path);
 		if(full) {
-	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path), ""));
+	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path), path, ""));
 		}
     return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path), path));
 	}

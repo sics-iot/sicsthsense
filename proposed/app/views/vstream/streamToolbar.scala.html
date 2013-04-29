@@ -1,6 +1,22 @@
 @(stream: Stream, own: Boolean, shared: Boolean, publicAccess: Boolean)
 @import helper._
 
+@streamPath=@{
+if(stream.file != null && stream.file.getPath() != null) {
+stream.file.getPath()
+} else {
+"ID: "+stream.id
+}
+}
+
+@streamParentPath=@{
+if(stream.file != null) {
+stream.file.getParentPath()
+} else {
+"/"
+}
+}
+
 @streamTitle={
 @if(stream.file!=null && stream.file.getPath()!="" && stream.file.getPath()!=null ){
 @stream.file.getPath()
@@ -44,6 +60,12 @@
 		} else {
 		  <a class="btn btn-small disabled btn-success remove_public_search_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Hide from search" inactive_title="Make searchable"><i class="icon-eye-open"></i></a>
 		}  
+		</span>
+		<span class="btn-group">
+		@if(stream.hasData()) {
+		<a href="@routes.CtrlStream.download(stream.id)" class="btn btn-small" role="button" rel="tooltip" title="Download Data"><i class="icon-download-alt"></i></a>
+		}
+		<a href="@routes.CtrlFile.lsDir(streamParentPath, true)" class="btn btn-small" role="button" rel="tooltip" title="Browse"><i class="icon-folder-open"></i></a>
 		</span>
 		<span class="btn-group">
 			<a href="#confirmClearStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Clear"><i class="icon-remove-sign icon-white"></i></a>

@@ -1,6 +1,21 @@
 @(streams : List[Stream], stream: Stream, myForm: Form[Stream], message: String="")
 
 @import helper._
+@streamPath=@{
+if(stream.file != null && stream.file.getPath() != null) {
+stream.file.getPath()
+} else {
+"ID: "+stream.id
+}
+}
+
+@streamParentPath=@{
+if(stream.file != null) {
+stream.file.getParentPath()
+} else {
+"/"
+}
+}
 
 @layout("Streams", message, session) {
 
@@ -36,17 +51,15 @@
 @if(stream.canRead(Secured.getCurrentUser())) {
 		<!--Body content-->
 		<!-- Stream listing and visualizing -->
-		<h1>Stream '@stream.file.getPath()'</h1>
+		<h1>Stream '@streamPath'</h1>
 				<br />
 				@helper.form(action = routes.CtrlStream.modify(stream.id), 'id -> "streamFormId") {
 
 					<legend>View
-					@if(stream.hasData()) {
-					<a href="@routes.CtrlStream.download(stream.id)" class="btn btn-success pull-right" role="button"><i class="icon-download-alt icon-white"></i> Download Data</a>
-					}
+						<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
+						</span>
 					</legend>
-					@vstream.includeStream(stream)
-
+					@vstream.includeStream(stream, displayHeader =true, displayOverview =true, displayPlot =true, displayToolbar =false)
 
 			<div class="row-fluid">
 			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
