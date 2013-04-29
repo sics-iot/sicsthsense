@@ -445,7 +445,10 @@ fileRowClick = function(e) {
   	var path = $(this).attr('data-folderpath');
   	console.debug("Browsing: " + path);
   	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
-      success: function(msg) {
+      success: function(msg) {  
+      	//stop active plots
+      	StreamPlots.stopActivePlots();
+      	//load file list
       	$('#fileTableBody').html(msg);
       	fileMenuButtonHandlers();
       },
@@ -477,6 +480,8 @@ fileRowClick = function(e) {
     	    	//remove all DOM elements related to the deleted stream
     	    	//$("[id^='stream'][id$='"+my_stream_id+"']").remove();
     				console.debug("Success: RenamingFile! " + my_file_path + " to: "+new_file_path);
+    		  	//stop active plots
+    		  	StreamPlots.stopActivePlots();
           	$('#fileTableBody').html(msg);
           	fileMenuButtonHandlers();
     	    },

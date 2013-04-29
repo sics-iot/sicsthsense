@@ -1,4 +1,5 @@
 var StreamPlots = {
+		activePlots : [ ],
 		clear : function(stream) {
 			var WIN_5M = 5*60*1000;
 			var streamID = $('#'+stream.id).attr('stream_id');
@@ -16,6 +17,7 @@ var StreamPlots = {
 	setup : function(stream) {
 		var streamID = $('#'+stream.id).attr('stream_id');
 		var streamplot = '#streamplot' + streamID; // == '#'+stream.id
+		StreamPlots.activePlots.push(streamID);
 		var overview = '#overview' + streamID;
 		$('#'+stream.id).bind("plotclick", StreamPlots.plotHoverHandler);
 		//console.debug("Hover bind.. ");
@@ -239,6 +241,24 @@ var StreamPlots = {
 		colors: [ "#77a" ],
 		selection: {
 			mode: "x"
+		}
+	}, 
+	stopActivePlots = function(e) {
+		var streamplotToStop = "", streamToStop = null;
+		if(StreamPlots.activePlots !== [ ]) {
+	  	for (var i=0; i<StreamPlots.activePlots.length; i++) {
+	  		var sp = StreamPlots.activePlots[i];
+	  		if (sp != "destroy") {
+	    		streamplotToStop = 'streamplot' + sp;
+	  			//console.debug("1 plot: " + streamplotToStop);
+	    		streamToStop =window['streamplot' + sp];
+	    		if (typeof streamToStop !== 'undefined'  && streamToStop != null) {
+	    			clearTimeout(streamToStop.timeout);
+	    			console.debug("Stopping plot: " + streamplotToStop);
+	    		}
+	  		}
+	  	}
+	  	StreamPlots.activePlots = [ ];
 		}
 	}
 };
