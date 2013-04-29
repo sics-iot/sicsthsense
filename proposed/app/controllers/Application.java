@@ -181,6 +181,7 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlUser.followStream(),
           		controllers.routes.javascript.CtrlUser.isFollowingStream(),
           		controllers.routes.javascript.CtrlFile.lsDir(),
+          		controllers.routes.javascript.CtrlFile.browse(),
           		controllers.routes.javascript.CtrlFile.delete(),
           		controllers.routes.javascript.CtrlFile.createFile(),
           		controllers.routes.javascript.CtrlFile.createDir(),

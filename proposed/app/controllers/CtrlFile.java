@@ -69,11 +69,24 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result lsDir(String path, Boolean full) {
 		User currentUser = Secured.getCurrentUser();
-		List<Vfile> vfiles = FileSystem.lsDir(currentUser, path);
+		//List<Vfile> vfiles = FileSystem.lsDir(currentUser, path);
 		if(full) {
 	    return ok(filesPage.render(FileSystem.lsDir(currentUser,path), path, ""));
 		}
     return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path), path));
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result browse(String path) {
+		User currentUser = Secured.getCurrentUser();
+		Vfile vfile = FileSystem.readFile(currentUser, path);
+		if(vfile.isFile() && vfile.getLink() != null) {
+			return Application.viewStream(vfile.getLink().id);
+		} else if(vfile.isDir()) {
+		   return ok(filesPage.render(FileSystem.lsDir(currentUser,path), path, ""));
+		} else {
+			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
+		}
 	}
 	
 	@Security.Authenticated(Secured.class)

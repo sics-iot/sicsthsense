@@ -423,6 +423,75 @@ function toggleFollowStreamButton(event){
 	};
 	$('.deleteFileButton').on("click", deleteFileButton);
 	
+	var removeSelection; 
+	removeSelection = function(e) {
+		var sel;
+		if(document.selection && document.selection.empty) {
+			document.selection.empty(); 
+			}
+		else {
+			if(window.getSelection) {
+				sel = window.getSelection();
+				try { 
+					sel.removeAllRanges();
+					sel.collapse();
+				} catch (err) { }
+			}
+		}
+	}
+	var browseFolder, browseFile;
+	browseFolder = function(event, data) {
+		event.stopPropagation();
+		if( $(this).hasClass('fileNode') )
+			return false;
+		removeSelection();
+		var path = $(this).attr('data-filepath');
+		//alert(path);
+		console.debug("Browsing: " + path);
+		jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
+	    success: function(msg) {
+      	StreamPlots.stopActivePlots();
+	    	$('#fileTableBody').html(msg);
+	    	fileMenuButtonHandlers();
+	    },
+	    error: function(msg) {
+	    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+	    }
+	  });
+	    //alert($(data.args[0]).text());
+			//window.location.hash=path;
+		return false;
+	};  
+	
+	browseFile = function(event, data) {
+		event.stopPropagation();
+		removeSelection();
+		var path = $(this).attr('data-filepath');
+		//alert(path);
+		console.debug("Browsing: " + path);
+		jsRoutes.controllers.CtrlFile.browse(path).ajax({
+	    success: function(msg) {
+      	StreamPlots.stopActivePlots();
+//      	var div = $("<div>").html(msg);
+//      	var content = $("#mainPane", div.get(0));
+//      	var mainPane = $("#mainPane", msg);
+//	    	$('#mainPane').html(content);
+      	//$(data).find("#fileTableBody").appendTo("#mainPane");
+
+	    	var newDoc = document.open("text/html", "replace");
+	    	newDoc.write(msg);
+	    	newDoc.close();
+	    	fileMenuButtonHandlers();
+	    },
+	    error: function(msg) {
+	    	console.debug("Failed to browse: " + path );
+	    }
+	  });
+	    //alert($(data.args[0]).text());
+			//window.location.hash=path;
+		return false;
+	};  
+	
 	var fileRowClick, fileRowRightClick, fileMenuButtonHandlers;
   fileMenuButtonHandlers = function(e) {
   	$('.deleteFileButton').on("click", deleteFileButton);
@@ -433,6 +502,9 @@ function toggleFollowStreamButton(event){
 	  $('.folder-list-button').on("click", fileListFolderClick);
 	  $('.rowlink').on('click', fileRowClick);
 	  $('.rowlink').on('contextmenu', fileRowRightClick);
+		$(".dirNode").on('dblclick', browseFolder); 
+		$(".fileNode").on('dblclick', browseFile); 
+
   }
  
   fileRowRightClick = function(e) {
@@ -516,27 +588,12 @@ fileRowClick = function(e) {
   
 //-----------jsTree
 
-$("#vfileTree").jstree();
+//$("#vfileTree").jstree();
 
-$("#vfileTree").load($(this).jstree());
-
-//$("#vfileTree").bind("open_node.jstree select_node.jstree", function(event, data) {
-//	var path = '/' + $(this).jstree('get_path', data.rslt.obj, false).join('/');
-//	alert(path);
-//	console.debug("Browsing: " + path);
-//	jsRoutes.controllers.CtrlFile.lsDir(path, false).ajax({
-//    success: function(msg) {
-//    	$('#fileTableBody').html(msg);
-//    },
-//    error: function(msg) {
-//    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
-//    }
-//  });
-//    //alert($(data.args[0]).text());
-//		//window.location.hash=path;
-//});  
+//$("#vfileTree").load($(this).jstree());
 
 
+//$("#vfileTree").bind("open_node.jstree select_node.jstree", browseFolder);
 
 
 
