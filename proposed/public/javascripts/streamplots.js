@@ -243,7 +243,7 @@ var StreamPlots = {
 			mode: "x"
 		}
 	}, 
-	stopActivePlots = function(e) {
+	stopActivePlots : function(keep) {
 		var streamplotToStop = "", streamToStop = null;
 		if(StreamPlots.activePlots !== [ ]) {
 	  	for (var i=0; i<StreamPlots.activePlots.length; i++) {
@@ -258,7 +258,26 @@ var StreamPlots = {
 	    		}
 	  		}
 	  	}
-	  	StreamPlots.activePlots = [ ];
+	  	if(!keep) {
+	  		StreamPlots.activePlots = [ ];
+	  	}
+		}
+	},
+	restartActivePlots : function() {
+		var streamplotToStart = "", streamToStart = null;
+		if(StreamPlots.activePlots !== [ ]) {
+	  	for (var i=0; i<StreamPlots.activePlots.length; i++) {
+	  		var sp = StreamPlots.activePlots[i];
+	  		if (sp != "destroy") {
+	    		streamplotToStart = 'streamplot' + sp;
+	  			//console.debug("1 plot: " + streamplotToStart);
+	    		streamToStart =window['streamplot' + sp];
+	    		if (typeof streamToStart !== 'undefined'  && streamToStart != null) {
+	    			StreamPlots.poll(streamToStart);
+	    			console.debug("Restarting plot: " + streamplotToStart);
+	    		}
+	  		}
+	  	}
 		}
 	}
 };

@@ -1,4 +1,5 @@
-	function showHidePlots(e) {
+	var showHidePlots;
+	showHidePlots = function (e) {
 			var $showHidePlotsButton= $('#showHidePlotsButton');
 	
 		$('.streamconfig').toggle(); 
@@ -6,6 +7,13 @@
 		$('.streamplot').toggle();
 		$('.streamNoDataLine').toggle();
 		
+		if($showHidePlotsButton.hasClass("ShowGraphs")) {
+			StreamPlots.restartActivePlots();
+		} else {
+			StreamPlots.stopActivePlots(true);
+		}
+		$showHidePlotsButton.toggleClass("ShowGraphs");
+
 		var currentTitle = $showHidePlotsButton.text();
 		console.debug("currentTitle: " + currentTitle);
 		
@@ -14,7 +22,9 @@
 		
 		$showHidePlotsButton.text(nextTitle);
 		$showHidePlotsButton.attr('data-nextTitle', currentTitle);
+		//$showHidePlotsButton.on("click", showHidePlots);
 	}
+	$('#showHidePlotsButton').on("click", showHidePlots);
 	
 function showAlert(type, msg) {
 	$('#mainContainer').before('<div class="container-errormsg"><div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg.data + '</div></div>');
