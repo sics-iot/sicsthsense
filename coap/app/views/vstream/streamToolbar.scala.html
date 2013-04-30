@@ -1,0 +1,110 @@
+@(stream: Stream, own: Boolean, shared: Boolean, publicAccess: Boolean)
+@import helper._
+
+@streamPath=@{
+if(stream.file != null && stream.file.getPath() != null) {
+stream.file.getPath()
+} else {
+"ID: "+stream.id
+}
+}
+
+@streamParentPath=@{
+if(stream.file != null) {
+stream.file.getParentPath()
+} else {
+"/"
+}
+}
+
+@streamTitle={
+@if(stream.file!=null && stream.file.getPath()!="" && stream.file.getPath()!=null ){
+@stream.file.getPath()
+}
+}
+
+@if(own || shared || publicAccess) {
+<span class="btn-toolbar">
+				
+		@**
+<span class="btn-group">
+		<!-- display stream plot -->
+		<span class="dropdown-submenu">
+	    <a class="btn btn-small" tabindex="-1" href="#" rel="tooltip" title="Display"><i class="icon-zoom-in"></i></a>
+	    <ul class="dropdown-menu">
+	   	<!-- displayStream dropdown menu -->
+		  @vstream.includeStream(stream)
+	    </ul>
+	  </span>
+		
+	 @if(stream.lastUpdated > 0) {
+		<span class="sideinfo">[Last update: @Utils.timeStr(stream.lastUpdated)]</span>
+		} else {
+		<span class="sideinfo">[Never]</span>
+		}
+		<a href="#confirmDeleteResourceModal" role="button" class="btn btn-small btn-danger" data-toggle="modal"><i class="icon-trash icon-white"></i></a>
+</span>	
+**@
+	<span class="btn-group">  
+	@vstream.followIcon(stream, "rlist_toolbar", "", "", "btn btn-small", "btn-success")
+	@if(own) {
+    <!-- 		 publicAccessIcon -->
+ 		@if(!stream.publicAccess) {
+		  <a class="btn btn-small set_public_access_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Make public" inactive_title="Hide from the public"><i class="icon-globe"></i></a>
+		} else {
+		  <a class="btn btn-small disabled btn-success remove_public_access_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Hide from the public" inactive_title="Make public"><i class="icon-globe"></i></a>
+		}
+		<!-- 		 publicSearchIcon -->
+ 		@if(!stream.publicSearch) {
+		  <a class="btn btn-small set_public_search_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Make searchable" inactive_title="Hide from search"><i class="icon-eye-open"></i></a>
+		} else {
+		  <a class="btn btn-small disabled btn-success remove_public_search_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Hide from search" inactive_title="Make searchable"><i class="icon-eye-open"></i></a>
+		}  
+		</span>
+		<span class="btn-group">
+		@if(stream.hasData()) {
+		<a href="@routes.CtrlStream.download(stream.id)" class="btn btn-small" role="button" rel="tooltip" title="Download Data"><i class="icon-download-alt"></i></a>
+		}
+		<a href="@routes.CtrlFile.lsDir(streamParentPath, true)" class="btn btn-small" role="button" rel="tooltip" title="Browse"><i class="icon-folder-open"></i></a>
+		</span>
+		<span class="btn-group">
+			<a href="#confirmClearStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Clear"><i class="icon-remove-sign icon-white"></i></a>
+			<a href="#confirmDeleteStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Delete"><i class="icon-trash icon-white"></i></a>
+	 }
+		</span>
+</span>
+
+<!-- Modal confirmDeleteStream -->
+<div id="confirmDeleteStreamModal@stream.id" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteStreamModalLabel@stream.id" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="confirmDeleteStreamModalLabel@stream.id">Delete Stream <em>@streamTitle</em></h3>
+  </div>
+  <div class="modal-body">
+    <p>Deleting the stream <em>@streamTitle</em> implies removing the file from the system and deleting all the datapoints.</p>
+    <p>Are you sure you want to delete the stream?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<button class="btn btn-danger deleteStreamButton" data-dismiss="modal" aria-hidden="true" data-parent_id="@stream.id" role="button" data-dismiss="modal" aria-hidden="true"><i class="icon-trash icon-white"></i> Yes, delete everything</button>
+  </div>
+</div>
+
+<!-- Modal confirmClearStream -->
+<div id="confirmClearStreamModal@stream.id" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@stream.id" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="confirmClearStreamModalLabel@stream.id">Clear Stream <em>@streamTitle</em></h3>
+  </div>
+  <div class="modal-body">
+    <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
+    <p>Are you sure you want to clear the stream's contents?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<button class="btn btn-danger clearStreamButton" data-dismiss="modal" aria-hidden="true" data-parent_id="@stream.id"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
+  </div>
+</div>
+
+ }				
+

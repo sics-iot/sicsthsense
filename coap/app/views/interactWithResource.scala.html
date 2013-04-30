@@ -1,0 +1,67 @@
+@(resourceId: Long, resourceUrl: String, showHeader: Boolean = true)  
+	@if(Utils.isValidURL(resourceUrl)) {
+<div class="row-fluid ">
+	 <form id="proxy@resourceId" action="@routes.Proxy.forwardById(resourceId, "")" class="controls-row " >
+<fieldset>
+  @if(showHeader) {<legend>Interact with 	<span id="ajax_wait@resourceId" style="display: none" class="pull-right">
+<img src='@routes.Assets.at("images/ajax_wait.gif")' alt="wait-spin"></span></legend>}
+	 	 <select class="span2" id="method@resourceId" name="method" >
+   		<option value="GET" selected="selected">GET</option>
+    	<option value="POST">POST</option>
+    	<option value="PUT">PUT</option>
+    	<option value="DELETE">DELETE</option>
+		 </select>
+		 <input class="span4" type="text" id="arguments@resourceId" name="arguments" placeholder="request query arguments ?arg=value" />
+     <input class="span4" type="text" id="body@resourceId" name="body" placeholder="request body" />
+		 <input class="span2 btn btn-primary" type="submit" name="send" id="send@resourceId" value="Send">
+	 </fieldset></form>
+
+	<div id="response@resourceId" style="display: none" class="controls-row ">
+<fieldset>
+		<div class="span2"><a id="hide@resourceId" href="#" class="icon-remove btn-icon"></a>&nbsp
+		<span id="response1@resourceId"></span></div>
+	  <textarea class="span10" id="response2@resourceId" name="response2@resourceId" wrap="soft"></textarea>
+</fieldset>
+	</div>
+   </div> 
+
+     <script type="text/javascript">
+	  $('#proxy@resourceId').submit(function() {
+	    var method = $("select#method@resourceId").val();
+	    var arguments = $("input#arguments@resourceId").val();
+	    var url = "@routes.Proxy.forwardById(resourceId, "")" + arguments;
+	    var body = $("input#body@resourceId").val();
+	    $("#ajax_wait@resourceId").show(); //css("visibility","visible");
+	    console.debug("[Proxy] Method: " + method + " URL: " + url + " Args: " + arguments + " Body: " + body);
+	    
+	    $.ajax({
+	    	  url: url,
+	    	  context: document.body,
+	    	  timeout: @Proxy.REQUEST_TIMEOUT,
+	    	  type: method,
+	    	  data: body,
+	    	  contentType: "text/plain",
+    	    error: function(x, t, m) {
+    	    	$("#response1@resourceId").html("Error");
+    	    	$("#response2@resourceId").text(m);
+            $("#response@resourceId").show();
+    	    	$("#ajax_wait@resourceId").hide();//.css("visibility","hidden");
+    	    },
+    	    success: function(response) {
+    	    	$("#response1@resourceId").html("Response");
+            $("#response2@resourceId").text(response);
+            $("#response@resourceId").show();
+            $("#ajax_wait@resourceId").hide();//.css("visibility","hidden");
+           }
+	    	});
+	    			    
+	    return false;
+	  });
+	  
+	  $('#hide@resourceId').click(function() {
+		  $("#response@resourceId").hide();              
+	      return false;
+	    });
+	  
+	  </script>
+	}

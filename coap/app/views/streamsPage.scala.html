@@ -1,0 +1,40 @@
+@(streams : List[Stream], message: String="")
+
+@import helper._
+
+@layout("Streams", message, session) {
+
+    <!-- Docs nav
+    ================================================== -->
+	<div class="row">
+		<div class="span2 bs-docs-sidebar">
+				@if(streams.length > 0) {
+				<h4>Streams</h4>
+					<div id="vfileTree">
+						<ul>
+						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
+						</ul>
+					</div>
+				} else {
+				}
+  </div>
+
+  <div id="mainPane" class="span9">
+		<!--Body content-->
+		<!-- Stream listing and visualizing -->
+		@if(streams.length > 0) {
+			<h1>Your streams</h1>
+			@for(stream <- streams) {					
+				<br />
+				@vstream.includeStream(stream)
+				<br />
+			}
+		} else {
+			No streams defined! Add some Resource's to your dashboard through the <a href="/resources">Resources page</a>.
+		}
+		<br /> <br />
+	
+    </div>
+  </div>
+
+}

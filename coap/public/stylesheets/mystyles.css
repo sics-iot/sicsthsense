@@ -1,0 +1,164 @@
+#oldapi pre { background: #fbfbfb; color: #666; font-family: inconsolata, monospace;
+  border: 1px solid #ddd; border-radius: 3px; padding: .2em; }
+
+#header {
+position: relative;
+color: #eee;
+padding: auto;
+margin: auto;
+text-align: center;
+font-size: 40pt;
+text-shadow: 4px 4px 4px #000;
+font-family: georgia, palatino, pala, serif;
+font-weight: bold;
+font-style: italic;
+}
+
+container { max-width: 800px; margin: 16px auto; padding: 0; }
+.inputL { height: 2em; padding: 0; width: 89%; }
+.buttonLG { height: 2.1em; border: 1px solid #888; background-color: #87f03c; width: 10%;}
+.buttonG { border: 1px solid #888; background-color: #eee; border-radius: 6px; }
+.texttt { font-family: inconsolata, monospace; }
+.update { color: #4F75AF; }
+.delete { color: #ff7140; }
+.rightControl { float: right; padding-right: 150px; }
+.logged { clear: both; float: right; font-style: italic; font-size: 0.9em; }
+.error {
+	margin: 10px 0px 10px 0px;
+	font-size: 20pt; text-shadow: 2px 2px 2px #000;
+	clear: both;
+	text-align: center;
+	float: center;
+	color: #ff5540;
+	height: 2em;
+	border: 2px solid #888;
+	background-color: #eee;
+}
+form { display: inline; }
+
+.sideinfo {
+	padding-left: 0.3em;
+	font-style: italic;
+	font-size: 0.8em;
+	color: #666;
+}
+
+div.streamtitle {
+	font-weight:bold; 
+	margin: 0.6em 0 0.2em 0;
+	color: #444;
+}
+
+div.streamplot {
+	width:100%;
+	height:200px;
+	margin: 10px 0px 10px 0px;
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
+}
+
+div.streamplot_overview {
+	width:100%;
+	height:200px;
+	margin: 10px 0px 10px 0px;
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
+}
+
+div.streampoint_tooltip {
+	position: absolute;
+	display: none;
+	border: 1px solid #87a;
+	padding: 2px;
+	background-color: #88b;
+	opacity: 0.75;
+}
+
+div.overlay {
+	display: block;
+	opacity: 0.5;
+	background-color: rgba(200, 100, 100, 0.5);
+}
+
+span.streamconfig {
+	float: right;
+	text-align: right;
+	position: relative;
+
+}
+
+.streamconfig input[type="radio"]:checked+label{
+	font-weight: bold;
+}
+
+.icon-btn {
+	margin: auto 10px auto;
+}
+.icon-btn i:hover {
+  "background-color": rgba(255,0,0,.25);
+}
+
+dl {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	overflow: hidden;
+}
+
+dt.action {
+	font-weight:normal; 
+}
+
+dt, dd {
+	margin: 2px 0;
+	min-height: 1.2em;
+}
+
+dt {
+	clear: both;
+	float: left;
+	min-width: 20%;
+	font-weight:bold;
+	text-align: right;
+}
+dd {
+	float: left;
+	margin-left: 0.5em;
+	max-width: 75%;
+}
+.parsers_template {
+		display:none;
+}
+.hidden {
+	display:none;
+	width: 0px; 
+	height: 0px;
+}
+
+input.url-field {
+	position: relative;
+	width: 100%;
+	min-height: 26px;
+	padding: 0 5px;
+	font-family: Monaco, "Liberation Mono", Courier, monospace;
+	font-size: 12px;
+	border-radius: 0;
+}
+
+textarea[readonly=""], textarea[readonly=true], textarea[readonly], input[readonly=""], input[readonly=true], input[readonly] {
+	outline: none;
+	cursor: default;
+}
+
+.bs-docs-sidebar {
+	margin-right: 1em;
+}
+
+li.jstree-open > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
+li.jstree-closed > a { font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;; }
+li.jstree-leaf > a .jstree-icon { display: none; }
+
+#vfileTree li { min-height:22px; line-height:22px; }
+#vfileTree a { line-height:20px; height:20px;  }
+#vfileTree a ins { height:20px; width:20px; background-position:-56px -17px; } 
+

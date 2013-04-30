@@ -1,0 +1,45 @@
+@(message: String="")
+
+@import helper._
+
+@layout("Login", message, null) {
+
+		<br />
+    <!-- Simple OpenID Selector -->
+    <form action="@routes.Login.authenticate("")" method="get" id="openid_form">
+      <input type="hidden" name="action" value="verify" />
+      <fieldset>
+        <legend>Sign-in with OpenID</legend>
+        <div id="openid_choice">
+          <p>Please click your account provider:</p>
+          <div id="openid_btns"></div>
+        </div>
+        <div id="openid_input_area">
+          <input id="openid_identifier" name="openid_identifier" type="url" required placeholder="Your OpenID" />
+          <input id="openid_submit" type="submit" value="Log in" class="buttonLG"/>
+        </div>
+          <p>OpenID is service that allows you to log-on to many different websites using a single identity.
+          Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
+      </fieldset>
+    </form>    
+		<br />
+		@helper.form(action = routes.Login.authenticatePassword("","")) {
+      <input type="hidden" name="action" value="verify" />
+      <fieldset>
+				<legend><b>Log in with Email/Password</b></legend>
+				<dt>Email</dt>
+				<dd><input type="text" name="username" value="" /></dd>
+
+				<dt>Password</dt>
+				<dd><input type="password" name="password" value="" /></dd>
+				<dt></dt>
+				<dd>
+				<input class="btn" type="submit" name="signin" value="Log in" /> 
+				&nbsp;
+				&nbsp;
+				&nbsp;
+		  <a href="/signup" >[or Signup]</a>
+			</dd>
+			</fieldset>
+		}
+}

@@ -1,0 +1,52 @@
+@(resources: List[Resource], message: String="")
+
+@import helper._
+
+@layout("Attach a function", message, session) {
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span2 bs-docs-sidebar">
+			@manage.navigationMenu(resources)
+			@** should pass theses parameters(resources, extStreams) **@
+      </div>
+      <div class="span9">
+			<br \>
+      <!--Body content-->
+  <h1>Attach function to existing Stream</h1>
+  <br />
+   @helper.form(action = routes.CtrlFunction.attach()) {
+    <dl>
+			Input Stream: <select name=="inputStream1">
+				@for(resource <- resources) {
+					@for(streamparser <- resource.streamParsers) {
+						<option value="@streamparser.stream.id">@streamparser.stream.id</option>
+					}
+				}
+				<option value="fakestream1">FakeStream1</option>
+			</select>
+			&nbsp; &nbsp;
+			Input Stream2: <select name=="inputStream2">
+				<option value="fakestream1">FakeStream1</option>
+			</select>
+			<br />
+			Function type: <select name=="operatorType">
+				<option value="add">Add</option>
+				<option value="sum">Sum</option>
+				<option value="max">Max</option>
+			</select>
+			<input input type="text" name="output" required placeholder="Label of the output stream" class="inputL" /><br />
+      <input input type="hidden" name="ownerName" class="inputL" value="someuser"/><br />
+
+      <input type="submit" value="Attach" class="buttonLG"/>
+    </dl>
+  }
+  <br />
+  <br />
+    </div>
+  </div>
+
+
+
+}

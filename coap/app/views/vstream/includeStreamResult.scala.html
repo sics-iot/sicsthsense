@@ -1,0 +1,23 @@
+@(stream: Stream)
+
+@if(stream != null) {
+<div id="streamblock@{stream.id}" class="row-fluid">
+		<div id="streamtitle@{stream.id}" class="streamtitle span12">
+			<span class="span6">Stream 
+			<a href="">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
+			</span> 
+			<span class="span6">
+			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess)
+			</span>
+		</div>
+@**Show key?**@
+@if(stream.showKey(Secured.getCurrentUser())!=null) {
+<div >
+	<input class="span10" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+</div>
+}
+	@if(!stream.hasData()) {
+		&nbsp;No data
+	}
+	</div>
+}

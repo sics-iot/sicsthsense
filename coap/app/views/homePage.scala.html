@@ -1,0 +1,42 @@
+@(followedStreams: List[Stream], lastUpdatedStreams: List[Stream], message: String="")
+
+@import helper._
+
+@layout("Home", message, session) {
+<div class="row">
+    <!-- Docs nav
+    ================================================== -->
+	<div class="span2 bs-docs-sidebar">
+		<h4></h4>
+<div style="position:fixed;" >
+		<ul class="unstyled">
+			<li><span href="#" id="showHidePlotsButton" data-nextTitle="Show graphs" class="btn btn-lnk">Hide graphs</span></li>
+		</ul>
+	  </div>
+	  </div>
+
+  <div id="mainPane" class="span9">
+		<!--Body content-->
+		<!-- Stream listing and visualizing -->
+		<legend>Favourite streams</legend>
+		@if(followedStreams.length > 0) {
+			@for(stream <- followedStreams) {					
+				@vstream.includeStream(stream)
+			}
+		} else {
+			You are not following any stream! 
+			<br />
+			Add some Resource's to your dashboard through the <a href="@routes.CtrlResource.resources()">Resources page</a> and follow them in the <a href="/streams">Streams</a> page. 
+			Alternatively Search for public Streams in the toolbar at the top of the page.
+		}
+		@if(lastUpdatedStreams.length > 0) {
+			<section>
+			<legend>Public streams</legend>
+			@for(stream <- lastUpdatedStreams) {					
+				@vstream.includeStream(stream)				
+			}
+			</section>
+		}
+    </div>
+  </div>
+}

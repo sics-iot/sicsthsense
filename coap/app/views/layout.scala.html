@@ -1,0 +1,118 @@
+@(title: String, message: String, session: Http.Session)(content: Html) 
+@import helper._
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SicsthSense - @title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<meta name="description" content="SicsthSense IoT cloud enabler">
+<!-- Bootstrap -->
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")" />
+<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")" />
+<!--link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+<!-- <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")" /> -->
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/mystyles.css")" />
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/openid.css")" />
+<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/flot-master/jquery.js")" type="text/javascript"></script-->
+<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+<script src="@routes.Application.javascriptRoutes()" type="text/javascript" ></script>
+</head>
+
+<body style="padding-top: 120px;">
+	<!--navigation bar-->
+	<div class="navbar navbar-inverse navbar-fixed-top" style="margin:0px; padding: 0px;">
+		<div class="navbar-inner">
+			<div class="container">
+			 <header id="header">
+			 <!-- div class="nav-collapse collapse" style="position: absolute; right: 0; top: 0;">
+				<form action="/search" class="navbar-search form-search pull-left">
+					<div class="input-append">
+						<input type="text" name="q" class="search-query" placeholder="Search">
+							<button type="submit" class="btn btn-inverse"><i class="icon-search icon-white"></i></button>
+					</div>
+				</form>
+			</div -->
+			<p class="navbar-text"><a style="color: white; text-decoration: none;" href="/"><h1>Sics<sup>th</sup>Sense</h1></a></p>
+			</header>
+
+ <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</a>
+				<!--navigation bar links-->
+			 <div class="nav-collapse collapse">
+				<ul class="nav">
+					<li><a href="@routes.Application.home()">Home</a></li>
+					<li><a href="@routes.Application.explore()">Search</a></li>
+					@if(session != null && Secured.getUsername(session) != null) {
+					<li><a href="@routes.CtrlResource.resources()" >Resources</a></li>
+					<!--li><a href="@routes.Application.streams()"></a></li-->
+					<li><a href="@routes.Application.files()">Streams</a></li>
+					@**<li><a href="@routes.CtrlUser.get()">Account</a></li>*@
+					} else {
+					<li><a href="@routes.Application.home()">Log in</a></li> 
+					}
+				</ul>		
+				
+				<!-- User menu -->
+				 @if(session != null && Secured.getUsername(session) != null) {
+		    <ul class="nav pull-right ">		   
+			    <li class="dropdown">
+				    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+				    <i class="icon-user icon-white"> </i> @Secured.getUsername(session)
+				    	<b class="caret"></b>
+				    </a>
+				    <ul class="dropdown-menu">
+					    <li><a href="@routes.CtrlUser.get()">View profile</a></li>
+					    <li><a href="@routes.CtrlUser.edit()">Edit profile</a></li>
+					    <li><a href="/logout">Logout</a></li>
+				    </ul>
+			    </li>
+		    </ul>
+     		}
+				<ul class="nav pull-right">
+					<li><a href="@routes.Public.about()">API</a></li>
+				</ul>
+			</div> 
+		 </div>
+		</div>
+	</div><!--navigation bar end-->
+	<!-- Alerts! -->
+	<span class="container-errormsg" style="margin-left: 20px;">	
+  @message
+  </span> <!-- /container-errormsg -->
+
+	<!-- Page contents -->
+	<div id="mainContainer" class="container">@content</div> <!-- /container -->
+	
+	<!-- Scripts at the end, to make loading faster -->
+	<script src="@routes.Assets.at("javascripts/flot-master/jquery.flot.js")" type="text/javascript"></script>	
+	<script src="@routes.Assets.at("javascripts/flot-master/jquery.flot.time.js")" type="text/javascript"></script>	
+	<script src="@routes.Assets.at("javascripts/flot-master/jquery.flot.navigate.js")" type="text/javascript"></script>	
+	<script src="@routes.Assets.at("javascripts/flot-master/jquery.flot.selection.js")" type="text/javascript"></script>	
+
+	<script src="@routes.Assets.at("javascripts/jquery.dateFormat-1.0.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/bootstrap.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/streamplots.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/openid-jquery.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.at("javascripts/openid-en.js")" type="text/javascript"></script>
+	
+<!-- REQUIRED SCRIPTS AND STYLES for jsTree -->
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/jstree-v.pre1.0/_lib/jquery.cookie.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/jstree-v.pre1.0/_lib/jquery.hotkeys.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/jstree-v.pre1.0/jquery.jstree.js")"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			openid.init('openid_identifier');
+		});
+    $(document).on('click','input[readonly]',function(){ this.select(); });
+	</script>
+	<script src="@routes.Assets.at("javascripts/myscripts.js")" type="text/javascript"></script>
+ 
+</body>
+</html>

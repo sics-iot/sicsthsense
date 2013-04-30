@@ -1,0 +1,13 @@
+@(theAction: play.api.mvc.Call)(content: Html)
+
+@helper.form(action = theAction, 'class -> "form-horizontal") {
+@**
+<dl>
+@content
+</dl>
+<!-- <div style="clear:both"/> -->
+**@
+	<fieldset>
+		@content
+	</fieldset>
+}

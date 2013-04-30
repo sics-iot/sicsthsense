@@ -1,0 +1,10 @@
+@(edit: Boolean, label: String)
+
+@if(edit) {
+<dt></dt>
+<dd>
+<input type="submit" value="@label" class="btn btn-primary"/>
+</dd>
+} else {
+<input type="submit" value="@label" class="btn btn-primary" style="visibility: hidden;"/>
+}
