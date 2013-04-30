@@ -29,15 +29,11 @@
 
 package models;
 
-import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
-import javax.persistence.*;
-
-import play.db.ebean.*;
-
-import com.avaje.ebean.*;
-
-import controllers.Utils;
+import play.db.ebean.Model;
 
 /** T could be any comparable type; i.e. Long, Double, String, etc. */
 @javax.persistence.MappedSuperclass

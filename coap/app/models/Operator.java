@@ -29,11 +29,10 @@
 
 package models;
 
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import javax.persistence.*;
-
-import play.Logger;
 import play.db.ebean.Model;
 
 @Entity

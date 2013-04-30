@@ -3,9 +3,13 @@ import play.libs.Akka
 import scala.concurrent.duration._
 import akka.actor._
 import models._
-import controllers.Poller
 import scala.compat.Platform
 import play.api.libs.concurrent.Execution.Implicits._
+import protocol.coap.CoapServer
+import java.net.URL
+import java.net.URLStreamHandlerFactory
+import java.net.URLStreamHandler
+import controllers.Poller
 
 class PeriodicMonitor extends Actor {
 
@@ -20,20 +24,26 @@ class PeriodicMonitor extends Actor {
       Poller.pollAll()
     }
   }
-  
+
 }
 
 object Global extends GlobalSettings {
-     
+
   override def onStart(app: Application) {
     Logger.info("Application has started")
-    var periodicMonitor = Akka.system.actorOf(Props[PeriodicMonitor])
-    Akka.system.scheduler.schedule(0.seconds, 5.seconds, periodicMonitor, "tick")
-  }  
-  
+    
+    val akkaSystem = Akka.system
+    
+    val periodicMonitor = akkaSystem.actorOf(Props[PeriodicMonitor])
+    akkaSystem.scheduler.schedule(0.seconds, 5.seconds, periodicMonitor, "tick")
+    
+    val coapServer = new CoapServer(app.configuration.getInt("coap.port").get)
+    coapServer.start()
+  }
+
   override def onStop(app: Application) {
     Logger.info("Application shutdown...")
     Akka.system.shutdown()
-  }  
-  
+  }
+
 }

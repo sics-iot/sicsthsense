@@ -29,25 +29,20 @@
 
 package models;
 
-import java.lang.Long;
-import java.util.*;
-
-import javax.persistence.*;
-
-import com.avaje.ebean.*;
-import com.avaje.ebean.annotation.EnumValue;
-
-import org.codehaus.jackson.JsonNode;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import play.Logger;
-import play.db.ebean.*;
-import play.data.format.*;
-import play.data.validation.*;
+import play.data.validation.Constraints;
+import play.db.ebean.Model;
 
-import play.libs.F.*;
-import play.libs.WS;
-
-import controllers.Utils;
+import com.avaje.ebean.annotation.EnumValue;
 
 @Entity
 @Table(name = "vfiles", uniqueConstraints = { 

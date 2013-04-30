@@ -1,0 +1,16 @@
+/bin
+/data
+/logs
+
+.cache
+.classpath
+.settings
+.target
+.project
+
+target
+
+RUNNING_PID
+
+Proxy.properties
+Californium.properties

@@ -29,28 +29,37 @@
 
 package controllers;
 
+import index.Indexer;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import play.*;
+import models.FileSystem;
+import models.Resource;
+import models.Stream;
+import models.User;
+
+import org.elasticsearch.index.query.QueryBuilders;
+
+import play.Logger;
+import play.data.DynamicForm;
+import play.data.Form;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Security;
+import views.html.adminPage;
+import views.html.attachFunctionPage;
+import views.html.filesPage;
+import views.html.homePage;
+import views.html.resourcesPage;
+import views.html.searchPage;
+import views.html.statisticsPage;
+import views.html.streamPage;
+import views.html.streamsPage;
+import views.html.userManagementPage;
 
 import com.github.cleverage.elasticsearch.IndexQuery;
 import com.github.cleverage.elasticsearch.IndexResults;
-import com.github.cleverage.elasticsearch.IndexService;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.facet.FacetBuilders;
-import org.elasticsearch.search.facet.terms.TermsFacet;
-
-import play.core.Router.Routes;
-import play.libs.F.*;
-import play.libs.*;
-import play.mvc.*;
-import play.data.*;
-import controllers.*;
-
-import views.html.*;
-import models.*;
-import index.*; // for search namespace
 
 @Security.Authenticated(Secured.class)
 public class Application extends Controller {

@@ -29,20 +29,28 @@
 
 package models;
 
-import java.util.*;
-import java.security.SecureRandom;
 import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.codec.digest.DigestUtils;
 
-import javax.persistence.*;
-
 import play.Logger;
-import play.db.ebean.*;
-import play.data.format.*;
-import play.data.validation.*;
-import play.mvc.PathBindable;
-
-import com.avaje.ebean.*;
+import play.data.format.Formats;
+import play.data.validation.Constraints;
+import play.db.ebean.Model;
 
 //the table name "user" might be invalid for some db systems
 @Entity

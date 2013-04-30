@@ -55,12 +55,13 @@ software, even if advised of the possibility of such damage.
 */
 package controllers;
 
-import play.*;
-import play.mvc.*;
-import play.mvc.Http.*;
-
-import models.*;
-import views.html.*;
+import models.User;
+import play.mvc.Http.Context;
+import play.mvc.Http.Request;
+import play.mvc.Http.Session;
+import play.mvc.Result;
+import play.mvc.Security;
+import views.html.loginPage;
 
 public class Secured extends Security.Authenticator {
 

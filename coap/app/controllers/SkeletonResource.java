@@ -109,7 +109,6 @@ public class SkeletonResource {
 		this.pollingPeriod = pollingPeriod;
 		this.pollingUrl = pollingUrl;
 		this.pollingAuthenticationKey = pollingAuthenticationKey;
-		this.description = description;
 		this.streamParserWrapers = new ArrayList<StreamParserWraper>();
 		for (StreamParserWraper spw : spws) {
 			this.streamParserWrapers.add(spw);

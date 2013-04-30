@@ -29,22 +29,14 @@
 
 package controllers;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
-
-import play.*;
-import play.core.Router.Routes;
-import play.libs.F.*;
-import play.libs.*;
-import play.mvc.*;
-import play.data.*;
+import models.Stream;
+import models.User;
+import play.Logger;
 import play.data.Form;
-
-import models.*;
-import views.html.*;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Security;
+import views.html.accountPage;
 
 @Security.Authenticated(Secured.class)
 public class CtrlUser extends Controller {

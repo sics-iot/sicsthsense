@@ -29,13 +29,12 @@
 
 package index;
 
-import com.github.cleverage.elasticsearch.Index;
-import com.github.cleverage.elasticsearch.Indexable;
-import com.github.cleverage.elasticsearch.IndexResults;
-import com.github.cleverage.elasticsearch.annotations.IndexType;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.Indexable;
+import com.github.cleverage.elasticsearch.annotations.IndexType;
 
 @IndexType(name = "indexer")
 public class Indexer extends Index {
@@ -50,7 +49,7 @@ public class Indexer extends Index {
     public static Finder<Indexer> find = new Finder<Indexer>(Indexer.class);
 
     @Override
-    public Map toIndex() {
+    public Map<String, Object> toIndex() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", id.toString());
         map.put("type", type);
