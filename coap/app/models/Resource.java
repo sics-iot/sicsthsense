@@ -225,7 +225,7 @@ public class Resource extends Operator {
     }
 
     // register asychronous polling of data
-    public Promise<Response> asynchPoll() {
+    private Promise<Response> asynchPoll() {
         final Resource thisResource = this;
         final Promise<Response> promise =
                 request("GET", new HashMap<String, String[]>(), new HashMap<String, String[]>(), "");
