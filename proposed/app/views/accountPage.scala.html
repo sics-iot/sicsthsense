@@ -27,6 +27,11 @@
 }
 
 @layout("Account", message, session) {
+<div class="row-fluid">
+	<div class="span2 bs-docs-sidebar">
+		
+	</div>
+	<div class="span9">
   @displayUser(user)
 	<br /><br />
 		@helper.form(action = routes.CtrlUser.resetPassword(true)) {
@@ -36,4 +41,6 @@
 		}
 			<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
 		}
+			</div>
+		
 }

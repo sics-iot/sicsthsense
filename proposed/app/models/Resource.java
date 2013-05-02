@@ -189,7 +189,7 @@ public class Resource extends Operator {
 
         path += getPollingUrl();
 
-        if (!path.startsWith("http://") && !path.startsWith("https://")
+        if (!path.equalsIgnoreCase("") && !path.startsWith("http://") && !path.startsWith("https://")
                 && !path.startsWith("coap://")) {
             path = "http://" + path;
         }
