@@ -233,7 +233,7 @@ public class Resource extends Operator {
 	}
 
 	// register asychronous polling of data
-	public void asynchPoll() {
+	private void asynchPoll() {
 		final Resource thisResource = this;
 		lastPolled = Utils.currentTime();
 		String arguments = "";
