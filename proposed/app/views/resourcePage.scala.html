@@ -43,7 +43,7 @@
 <span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Path</span>
 <span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON path)</span>
 <span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format</span>
-<span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">MIME type</span>
+<span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type</span>
 </div>
 <div class="@if(!hidden){hidden} streamParsersLabelsAddParserText">
 Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span></a> to add parsers.
@@ -107,7 +107,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 						<label class="span4" for="ParentUrl@myForm("id").value">Parent [<a href="@routes.CtrlResource.getById(parentResource.id)">@parentResource.label</a>]</label>
 						<label class="span3" for="@myForm("pollingUrl").id">Resource sub-path</label>
 						} else {
-						<label class="span7" for="@myForm("pollingUrl").id">Resource URL</label>
+						<label class="span7" for="@myForm("pollingUrl").id">Resource URI</label>
 						}
 						<label class="span2" for="@myForm("pollingPeriod").id">Polling period (s)</label>
 					</div>
@@ -189,7 +189,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				@**
 				<div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@sicsthSenseURL()@{routes.CtrlResource.postByKey(resource.showKey(Secured.getCurrentUser()))}" readonly></div>
 				@if(resource.getUrl() != "" && resource.getUrl() != null) {
-				<div class="row-fluid"><span class="span1">URL</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
+				<div class="row-fluid"><span class="span1">URI</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
 				<div class="row-fluid"><span class="span1">Proxy</span><span class="span11">@interactWithResource(resource.id,resource.getUrl(),showHeader=false)</span></div>
 				}
 				**@

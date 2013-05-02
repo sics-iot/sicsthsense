@@ -37,7 +37,7 @@
 		<legend>Add a new resource</legend>
 		@tbField(myForm("id"), "", "", "hidden")
 		@tbField(myForm("label"), "", "span5", "text", false, "Enter resource label", true)
-		@tbField(myForm("pollingUrl"), "", "span5", "url", false, "Resource URL (optional)")
+		@tbField(myForm("pollingUrl"), "", "span5", "url", false, "Resource URI (optional)")
 		<input type="submit" class="span2 btn btn-primary" value="Add">
 	 </fieldset>
   }
@@ -54,7 +54,7 @@
 				<h4><a href="@routes.CtrlResource.getById(resource.id)">@resource.label&nbsp<i class="icon-wrench"></i></a></h4>
 				<div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@sicsthSenseURL()@{routes.CtrlResource.postByKey(resource.showKey(Secured.getCurrentUser()))}" readonly></div>
 				@if(resource.getUrl() != "" && resource.getUrl() != null) {
-				<div class="row-fluid"><span class="span1">URL</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
+				<div class="row-fluid"><span class="span1">URI</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
 				<div class="row-fluid"><span class="span1">Proxy</span><span class="span11">@interactWithResource(resource.id,resource.getUrl(),showHeader=false)</span></div>
 				}
 			} 

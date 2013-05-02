@@ -60,7 +60,7 @@ import controllers.ScalaUtils;
 import controllers.Utils;
 
 @Entity
-@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id",
+@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id", "parent_id",
         "label"})})
 public class Resource extends Operator {
 
