@@ -29,19 +29,18 @@
 
 package models;
 
-import java.lang.Math;
-import javax.persistence.*;
-import models.*;
-import play.Logger;
-import play.db.ebean.*;
-import play.data.format.*;
-import play.data.validation.*;
+import javax.persistence.Id;
 
-import com.avaje.ebean.*;
+import play.db.ebean.Model;
 
 public class Location extends Model {
 
-	@Id
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1968322834503672949L;
+    
+    @Id
 	public Long id;
 	private double lat;
 	private double lon;

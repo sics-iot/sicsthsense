@@ -29,26 +29,24 @@
 
 package controllers;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.text.ParseException;
 
-import org.codehaus.jackson.JsonNode;
+import models.DataPoint;
+import models.FileSystem;
+import models.Stream;
+import models.User;
+import models.Vfile;
+
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
-import play.libs.Json;
-import play.mvc.*;
 import play.data.Form;
-import play.data.DynamicForm;
-import play.data.format.*;
-
-import models.*;
-import views.html.*;
+import play.libs.Json;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Security;
+import views.html.streamPage;
 
 public class CtrlStream extends Controller {
 
@@ -112,18 +110,32 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result download(Long id) {
 		final User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		final Stream stream = Stream.get(id);
+		final List<? extends DataPoint> dataSet = stream.getDataPoints();
+		
 		if (stream.canRead(currentUser)) {
-			StringBuilder sb = new StringBuilder(100);
-			Controller.response().setContentType("text/plain");
-			Controller.response().setHeader("Content-Disposition", "attachment; filename=streamdownload.txt");
+			response().setContentType("text/plain");
+			response().setHeader("Content-Disposition", "attachment; filename=streamdownload.txt");
+			
+			Chunks<String> chunks = new StringChunks() {
+			    
+			    // Called when the stream is ready
+			    public void onReady(Chunks.Out<String> out) {
+			    	if (dataSet == null) {
+			    		out.close();
+			    		return;
+			    	}
+			    	
+			    	for (DataPoint dp: dataSet) {
+			    		out.write(dp.toTSV()+"\n");
+			    	}
+			    	
+			    	out.close();
+			    }
+			    
+			};
 
-			List<? extends DataPoint> dataSet = null;
-			dataSet = stream.getDataPoints();
-			if (dataSet!=null) {
-				for (DataPoint dp: dataSet) { sb.append(dp.toTSV()+"\n"); }
-			}
-			return ok(sb.toString());
+			return ok(chunks);
 		}
 		return unauthorized();
 	}

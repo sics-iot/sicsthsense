@@ -40,13 +40,13 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import play.*;
+import org.codehaus.jackson.JsonNode;
+
+import play.Logger;
 import play.db.ebean.Model;
-import play.libs.WS;
 import play.mvc.Http.HeaderNames;
 import play.mvc.Http.Request;
-
-import org.codehaus.jackson.JsonNode;
+import protocol.Response;
 
 import com.avaje.ebean.Ebean;
 
@@ -167,13 +167,13 @@ public class ResourceLog extends Model {
 		}
 	}
 
-	public ResourceLog(Resource resource, WS.Response response,
+	public ResourceLog(Resource resource, Response response,
 			Long creationTimestamp, Long responseTimestamp) {
 		try {
 			this.resource = resource;
 			this.isPoll = true;
 			if (response != null) {
-				body += response.getBody() + "";
+				body += response.body();
 				// try {
 				// JsonNode jn = response.asJson();
 				// if (jn != null) {
@@ -186,14 +186,14 @@ public class ResourceLog extends Model {
 				// rpl.request.headers().values().toArray(String[] )
 				method = "";
 				host = "";
-				uri = response.getUri().toString();
-				headers = "Status " + response.getStatusText() + "\n"
+				uri = response.uri().toString();
+				headers = "Status " + response.statusText() + "\n"
 						+ HeaderNames.CONTENT_TYPE + " "
-						+ response.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
+						+ response.contentType() + "\n"
 						+ HeaderNames.CONTENT_ENCODING + " "
-						+ response.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
+						+ response.contentEncoding()	+ "\n"				
 						+ HeaderNames.CONTENT_LENGTH + " "
-						+ response.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
+						+ response.contentLength() + "\n";
 			}
 			setCreationTimestamp(creationTimestamp);
 			setResponseTimestamp(responseTimestamp);

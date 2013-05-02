@@ -29,24 +29,10 @@
 
 package controllers;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
-
-import play.*;
-import play.libs.F.*;
-import play.libs.*;
-import play.libs.WS.WSRequestHolder;
-import play.mvc.*;
-
-import models.*;
+import models.Resource;
+import play.mvc.Controller;
 
 public class Poller extends Controller {
   

@@ -29,27 +29,21 @@
 
 package controllers;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-import play.*;
-import play.core.Router.Routes;
-import play.libs.F.*;
-import play.libs.*;
-import play.libs.OpenID.UserInfo;
-import play.libs.WS.WSRequestHolder;
-import play.mvc.*;
-import play.mvc.Results.*;
-import play.mvc.Http.Context;
-import play.data.Form;
-import play.data.DynamicForm;
-
-import views.html.*;
 import models.User;
+import play.Logger;
+import play.data.DynamicForm;
+import play.data.Form;
+import play.libs.F.Function;
+import play.libs.F.Promise;
+import play.libs.OpenID;
+import play.libs.OpenID.UserInfo;
+import play.mvc.Call;
+import play.mvc.Controller;
+import play.mvc.Result;
+import views.html.registerPage;
 
 public class Login extends Controller {
 	static private Form<User> registerForm = Form.form(User.class);

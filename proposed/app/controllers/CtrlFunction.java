@@ -29,24 +29,23 @@
 
 package controllers;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.codehaus.jackson.JsonNode;
+import models.DataPoint;
+import models.FileSystem;
+import models.Function;
+import models.Stream;
+import models.User;
+import models.Vfile;
+
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
-import play.Logger;
-import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
-import play.mvc.*;
-import play.data.Form;
-
-import views.html.accountPage;
-import models.*;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Security;
 
 @Security.Authenticated(Secured.class)
 public class CtrlFunction extends Controller {
