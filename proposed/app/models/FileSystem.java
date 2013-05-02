@@ -103,13 +103,13 @@ public class FileSystem {
 			prevdepth = thisdepth;
 			if (f.isDir()) {
 				//sb.append("<li class='jstree-open dirNode' data-filepath='"+f.path+"'><a><b>"+ dirs[dirs.length-1] +"</b></a>\n<ul>\n"); // give node name
-				sb.append("<li class='jstree-open dirNode' data-filepath='"+f.path+"'><b>"+ dirs[dirs.length-1] +"</b>\n<ul>\n"); // give node name
+				sb.append("<li class='jstree-open dirNode' data-filepath='"+f.path+"'><i class='icon-folder-close'></i><a><b> "+ dirs[dirs.length-1] +"</b></a>\n<ul class='folderNodeUL'>\n"); // give node name
 
 			} else {
 				
 				prevdepth--; // if we were file, this doesnt count
 				//sb.append("<li class='fileNode' data-filepath='"+f.path+"'><a a='#'>"+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
-				sb.append("<li class='fileNode' data-filepath='"+f.path+"'>"+ dirs[dirs.length-1] +"</li>\n"); // give node name
+				sb.append("<li class='fileNode' data-filepath='"+f.path+"'><i class='icon-file'></i><a> "+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
 			}
 		}
 

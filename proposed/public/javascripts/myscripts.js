@@ -503,8 +503,14 @@ function toggleFollowStreamButton(event){
 	  $('.rowlink').on('click', fileRowClick);
 	  $('.rowlink').on('contextmenu', fileRowRightClick);
 		$(".dirNode").on('dblclick', browseFolder); 
+//		$(".folderNodeUL").on('click', function(e) {
+//			if( $(this).hasClass('fileNode') )
+//				return false;
+//			$(this).find('li').toggle();
+//			//$(this).toggle();
+//		}); 
 		$(".fileNode").on('dblclick', browseFile); 
-
+		$(".fileNode").on('click', browseFile); 
   }
  
   fileRowRightClick = function(e) {

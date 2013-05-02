@@ -162,3 +162,20 @@ li.jstree-leaf > a .jstree-icon { display: none; }
 #vfileTree a { line-height:20px; height:20px;  }
 #vfileTree a ins { height:20px; width:20px; background-position:-56px -17px; } 
 
+#vfileTree ul {  list-style-type: none; }
+
+li.dirNode > a:hover {
+  background: lightgray;
+  opacity: 0.85;
+  text-decoration:none;
+  list-style-type: none;
+  
+  
+}
+li.fileNode > a:hover {
+  background: lightgray;
+  opacity: 0.7;
+  text-decoration:none;
+  
+}
+
