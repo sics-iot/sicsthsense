@@ -29,13 +29,14 @@ stream.file.getParentPath()
     <!-- Docs nav
     ================================================== -->
 	<div class="row">
-		<div class="span2 bs-docs-sidebar">
+		<div class="span2 bs-docs-sidebar"> 
 			 <div style="position:fixed;" >
+				@if( stream.canWrite(Secured.getCurrentUser()) ) {
 				<span  class="btn-group">	
-					<button type="submit" name="update" class="btn btn-primary" id="updateStream" form="streamFormId"><i class="icon-ok icon-white"></i>Save</button>
+					<button type="submit" name="update" class="btn btn-primary" id="updateStream" form="streamFormId"><i class="icon-ok icon-white"></i> Save</button>
 					<a href="@routes.Application.streams()" class="btn"><i class="icon-remove"></i></a>
 	      </span>
-
+				}
 				@if(streams.length > 0) {
 				<h4>Streams</h4>
 					<div id="vfileTree">
@@ -78,14 +79,7 @@ stream.file.getParentPath()
 			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			</div>
 					</fieldset>
-					<!--br />
-					@if(stream.canWrite(Secured.getCurrentUser())){
-					<div class="actions">
-						<input type="submit" class="btn btn-primary" value="Update">
-					</div-->
-					}
-					<br /> <br />
-					<br /> <br />
+
 				}
     </div>
     }
