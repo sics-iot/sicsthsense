@@ -20,6 +20,32 @@
 			<li><a href="/admin/reindex">Reindex Search Database</a></li>
 			<li><a href="/admin/backup">Backup Database</a></li>
 			<li><a href="/admin/usermgmt">User Management</a></li>
+
+			<li>OpenID Login:<br/>
+				@helper.form(action = routes.Application.setOpenIDLogin()) {
+				@if(controllers.Application.canOpenIDLogin()) {
+					<input type="radio" name="openidLogin" value="true" checked /> Enabled<br/>
+					<input type="radio" name="openidLogin" value="false"/> Disabled &nbsp;&nbsp;
+				}else{
+					<input type="radio" name="openidLogin" value="true" /> Enabled<br/>
+					<input type="radio" name="openidLogin" value="false" checked/> Disabled &nbsp;&nbsp;
+				}
+					<input type="submit" class="btn" value="Update" />
+				}
+			</li>
+
+			<li>Username/password Login:<br/>
+				@helper.form(action = routes.Application.setPasswordLogin()) {
+				@if(controllers.Application.canPasswordLogin()) {
+					<input type="radio" name="passwordLogin" value="true" checked /> Enabled<br/>
+					<input type="radio" name="passwordLogin" value="false"/> Disabled &nbsp;&nbsp;
+				}else{
+					<input type="radio" name="passwordLogin" value="true" /> Enabled<br/>
+					<input type="radio" name="passwordLogin" value="false" checked /> Disabled &nbsp;&nbsp;
+				}
+					<input type="submit" class="btn" value="Update" /><br/><br/>
+				}
+			</li>
 		</ul>
 
 		<br /> <br />

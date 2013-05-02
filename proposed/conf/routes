@@ -45,6 +45,8 @@ GET        /admin/statistics										controllers.Application.statistics()
 GET        /admin/reindex												controllers.Application.reindex()
 GET        /admin/backup												controllers.Application.backup()
 GET        /admin/usermgmt											controllers.Application.userManagement()
+GET        /admin/setPasswordLogin							controllers.Application.setPasswordLogin()
+GET        /admin/setOpenIDLogin								controllers.Application.setOpenIDLogin()
 
 
 # Dummy thing

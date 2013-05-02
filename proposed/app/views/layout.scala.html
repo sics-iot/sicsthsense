@@ -81,6 +81,9 @@ if(titleNavbar==title) {
 		    </ul>
      		}
 				<ul class="nav pull-right">
+					@if(session != null && Secured.getUsername(session) != null && Secured.isAdmin(session)) {
+					<li class='@selectNavbarTab("Admin")'><a href="@routes.Application.admin()">Admin</a></li>
+					}
 					<li class='@selectNavbarTab("API")'><a href="@routes.Public.about()">API</a></li>
 				</ul>
 			</div> 

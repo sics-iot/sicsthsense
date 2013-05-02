@@ -38,6 +38,7 @@ import models.FileSystem;
 import models.Resource;
 import models.Stream;
 import models.User;
+import models.Setting;
 
 import org.elasticsearch.index.query.QueryBuilders;
 
@@ -170,6 +171,66 @@ public class Application extends Controller {
 		List<User> users = User.all();
 		return ok(userManagementPage.render(users,""));
   }
+
+	public static boolean canPasswordLogin() {
+		String value = Setting.getSetting("passwordLogin");
+		if ("false".equals(value)) {
+			return false; // only if set and == "false"
+		}
+		return true;
+	}
+	public static Result setPasswordLogin() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String passwordLogin = dynamicForm.field("passwordLogin").value();
+		if (passwordLogin==null) { return redirect(routes.Application.home()); }
+		Logger.warn("password: "+passwordLogin);
+
+		Setting setting = Setting.findName("passwordLogin");
+		if (passwordLogin.equals("true")) {
+			setting.val = "true";
+			setting.update();
+			Logger.warn("true");
+			return redirect(routes.Application.admin());
+		} else {
+			setting.val = "false";
+			setting.update();
+			Logger.warn("false");
+			return redirect(routes.Application.admin());
+		}
+	}
+
+	public static boolean canOpenIDLogin() {
+		String value = Setting.getSetting("openIDLogin");
+		if ("false".equals(value)) {
+			return false; // only if set and == "false"
+		}
+		return true;
+	}
+	public static Result setOpenIDLogin() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String openidLogin = dynamicForm.field("openidLogin").value();
+		if (openidLogin==null) { return redirect(routes.Application.home()); }
+		Logger.warn("password: "+openidLogin);
+
+		Setting setting = Setting.findName("openidLogin");
+		if (openidLogin.equals("true")) {
+			setting.val = "true";
+			setting.update();
+			Logger.warn("true");
+			return redirect(routes.Application.admin());
+		} else {
+			setting.val = "false";
+			setting.update();
+			Logger.warn("false");
+			return redirect(routes.Application.admin());
+		}
+	}
   
   // -- Javascript routing
   public static Result javascriptRoutes() {

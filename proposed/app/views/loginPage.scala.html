@@ -5,6 +5,7 @@
 @layout("Log In", message, null) {
 
 		<br />
+		@if(Application.canOpenIDLogin()) {
     <!-- Simple OpenID Selector -->
     <form action="@routes.Login.authenticate("")" method="get" id="openid_form">
       <input type="hidden" name="action" value="verify" />
@@ -22,7 +23,9 @@
           Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
       </fieldset>
     </form>    
+		}
 		<br />
+		@if(Application.canPasswordLogin()) {
 		@helper.form(action = routes.Login.authenticatePassword("","")) {
       <input type="hidden" name="action" value="verify" />
       <fieldset>
@@ -41,5 +44,6 @@
 		  <a href="/signup" >[or Signup]</a>
 			</dd>
 			</fieldset>
+		}
 		}
 }

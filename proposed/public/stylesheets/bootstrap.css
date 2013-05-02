@@ -3753,7 +3753,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-inverse .nav .active > a:hover,
 .navbar-inverse .nav .active > a:focus {
   color: #ffffff;
-  background-color: #111111;
+  background-color: transparent; /*# Liam modified this*/
 }
 .navbar-inverse .navbar-link {
   color: #999999;

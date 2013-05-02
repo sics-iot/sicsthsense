@@ -49,6 +49,7 @@ public class Login extends Controller {
 	static private Form<User> registerForm = Form.form(User.class);
 	
 	public static Result authenticate(String openid_identifier) {
+		if (!Application.canOpenIDLogin()) {return notFound("This feature is disabled.");}
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put("email", "http://axschema.org/contact/email");
 		attributes.put("firstName", "http://axschema.org/namePerson/first");
@@ -73,6 +74,7 @@ public class Login extends Controller {
   }
   
 	public static Result authenticatePassword(String username, String password) {
+		if (!Application.canPasswordLogin()) {return notFound("This feature is disabled.");}
 		// check database
 		User user = User.getByUserName(username);
 		if (user==null) {
