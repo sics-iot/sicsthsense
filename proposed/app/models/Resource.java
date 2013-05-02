@@ -387,8 +387,8 @@ public class Resource extends Operator {
         return resource;
     }
 
-    public static Resource getByUserLabel(User user, String label) {
-        Resource resource = find.where().eq("owner", user).eq("label", label).findUnique();
+    public static Resource getByUserLabel(User user, Resource parent, String label) {
+        Resource resource = find.select("id, owner, label, parent").where().eq("owner", user).eq("parent", parent).eq("label", label).findUnique();
         return resource;
     }
 
@@ -419,9 +419,9 @@ public class Resource extends Operator {
 
     public static Resource create(Resource resource) {
         if (resource.owner != null) {
-            if (getByUserLabel(resource.owner, resource.label) != null) {
+            if (getByUserLabel(resource.owner, resource.parent, resource.label) != null) {
                 resource.label =
-                        resource.label + new Random(new Date().getTime()).nextInt(10) + "_at_"
+                        resource.label + new Random(new Date().getTime()).nextInt() + "_at_"
                                 + (new Date().toString());
             }
             resource.save();

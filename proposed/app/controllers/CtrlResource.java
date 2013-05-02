@@ -376,9 +376,10 @@ public class CtrlResource extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    private static Result postByLabel(String user, String label) {
-        User owner = User.getByUserName(user);
-        Resource resource = Resource.getByUserLabel(owner, label);
+    private static Result postByLabel(String user,  String labelPath) {
+      User owner = User.getByUserName(user);
+      Resource parent = null;
+      Resource resource = Resource.getByUserLabel(owner, null, labelPath);
         // return post(owner, resource.id);
         return TODO;
     }
@@ -443,9 +444,10 @@ public class CtrlResource extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    private static Result getByLabel(String user, String label) {
+    private static Result getByLabel(String user, String labelPath) {
         User owner = User.getByUserName(user);
-        Resource resource = Resource.getByUserLabel(owner, label);
+        Resource parent = null;
+        Resource resource = Resource.getByUserLabel(owner, null, labelPath);
         if (resource == null) {
             Logger.warn("Resource not found!");
             return notFound();
