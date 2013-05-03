@@ -20,7 +20,7 @@
 
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
-		Stream
+			Stream
 		} else { 
 			Unnamed Stream
 		}
@@ -28,10 +28,12 @@
 		@if(stream.resource != null && stream.canWrite(Secured.getCurrentUser())) {
 			(<a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
 		}
-		&nbsp; &nbsp;
-			@if(displayToolbar){
+		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
+			owner: @stream.owner.userName
+		}
+		@if(displayToolbar){
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
-			}
+		}
 		</div>
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
@@ -88,6 +90,9 @@
 			} else {
 			<span>@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</span>
 			}
+@*		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
+			owner: @stream.owner.userName
+		} *@
 			@if(displayToolbar){
 			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
 			}
