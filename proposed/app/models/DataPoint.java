@@ -47,7 +47,6 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	public Long id;
 	
 	/**
-	 * 
 	 */
 	private static final long serialVersionUID = 2919758328697338009L;
 
@@ -56,10 +55,9 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	//@Id
 	public Long timestamp;
 	
-	// this is probably bad
-	//public Model.Finder<Long, ? extends DataPoint> find;
-
 	public abstract DataPoint add();
+	public abstract Object getData();
+	public abstract String toTSV();
 
 	public DataPoint() {
 		super();
@@ -69,10 +67,6 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 	public int compareTo(DataPoint point) {
 		return Long.valueOf(this.timestamp).compareTo(point.timestamp);
 	}
-	
-		public abstract Object getData();
-
-		public abstract String toTSV();
 
 //	public abstract long getCount();
 //

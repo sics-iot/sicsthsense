@@ -114,27 +114,25 @@ public class CtrlStream extends Controller {
 		final List<? extends DataPoint> dataSet = stream.getDataPoints();
 		
 		if (stream.canRead(currentUser)) {
+			final String streamName = "# SicsthSense "+currentUser.userName+" "+stream.file.getPath()+"\n";
 			response().setContentType("text/plain");
-			response().setHeader("Content-Disposition", "attachment; filename=streamdownload.txt");
+			response().setHeader("Content-Disposition", "attachment; filename="+stream.resource.label+"-Stream.txt");
 			
 			Chunks<String> chunks = new StringChunks() {
-			    
-			    // Called when the stream is ready
-			    public void onReady(Chunks.Out<String> out) {
-			    	if (dataSet == null) {
-			    		out.close();
-			    		return;
-			    	}
-			    	
-			    	for (DataPoint dp: dataSet) {
-			    		out.write(dp.toTSV()+"\n");
-			    	}
-			    	
-			    	out.close();
-			    }
-			    
+				// Called when the stream is ready
+				public void onReady(Chunks.Out<String> out) {
+					if (dataSet == null) {
+						out.close();
+						return;
+					}
+					out.write(streamName);
+					for (DataPoint dp: dataSet) {
+						out.write(dp.toTSV()+"\n");
+					}
+					
+					out.close();
+				}
 			};
-
 			return ok(chunks);
 		}
 		return unauthorized();

@@ -87,8 +87,7 @@ public class DataPointDouble extends DataPoint {
 
 	@Override
 	public String toTSV() {
-  	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
-		return streamName +"\t"+ timestamp +"\t"+ data;
+		return timestamp +"\t"+ data;
 	}
 	
   public static List<? extends DataPoint> getByStream(Stream stream) {
