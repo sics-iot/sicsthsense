@@ -16,6 +16,14 @@
 		<legend>Administrator's page</legend>
 
 		<ul>
+			<li>Instance domain name:<br />
+			<div class="row-fluid">
+				@helper.form(action = routes.Application.setDomain()) {
+				<input type="text" class="span5" name="domain" value="@controllers.Application.getDomain()" /> 
+				<input type="submit" class="span2 btn btn-primary" value="Update" />
+				}
+			</div>
+			</li>
 			<li><a href="/admin/statistics">Statistics page</a></li>
 			<li><a href="/admin/reindex">Reindex Search Database</a></li>
 			<li><a href="/admin/backup">Backup Database</a></li>

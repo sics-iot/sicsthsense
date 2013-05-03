@@ -73,7 +73,7 @@ public class Setting extends Model {
 	public static Setting findName(String name) {
 		Setting setting = Setting.find.where().eq("name",name).findUnique();
 		if (setting==null) {
-			setting = new Setting(name,"true");
+			setting = new Setting(name,"unset");
 			setting.save();
 		}
 		return setting;

@@ -209,6 +209,7 @@ public class Application extends Controller {
 		}
 		return true;
 	}
+
 	public static Result setOpenIDLogin() {
   	User currentUser = Secured.getCurrentUser();
 		// check user has rights - Very Important!
@@ -230,6 +231,30 @@ public class Application extends Controller {
 			Logger.warn("false");
 			return redirect(routes.Application.admin());
 		}
+	}
+
+	public static Result setDomain() {
+  	User currentUser = Secured.getCurrentUser();
+		// check user has rights - Very Important!
+		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String newDomain = dynamicForm.field("domain").value();
+		if (newDomain==null) { return redirect(routes.Application.home()); }
+		Logger.warn("password: "+newDomain);
+
+		Setting setting = Setting.findName("domain");
+		setting.val = newDomain;
+		setting.update();
+
+		return redirect(routes.Application.admin());
+	}
+
+	public static String getDomain() {
+		Setting setting = Setting.findName("domain");
+		if (setting.val=="unset") {
+			setting.val="presense.sics.se"; // should set these defaults in a config file?
+		}
+		return setting.val;
 	}
   
   // -- Javascript routing

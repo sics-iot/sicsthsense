@@ -47,6 +47,7 @@ GET        /admin/backup												controllers.Application.backup()
 GET        /admin/usermgmt											controllers.Application.userManagement()
 GET        /admin/setPasswordLogin							controllers.Application.setPasswordLogin()
 GET        /admin/setOpenIDLogin								controllers.Application.setOpenIDLogin()
+GET        /admin/setDomain											controllers.Application.setDomain()
 
 
 # Dummy thing
