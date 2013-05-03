@@ -70,11 +70,17 @@ public class Login extends Controller {
 	}
 	
   public static Result signup() {
-    return ok(registerPage.render(null));
+    return ok(registerPage.render(null,""));
   }
   
-	public static Result authenticatePassword(String username, String password) {
+	public static Result authenticatePassword(String username, String password, String signtype) {
 		if (!Application.canPasswordLogin()) {return notFound("This feature is disabled.");}
+
+		if (signtype.equals("Sign up")) {
+			return ok(registerPage.render(null,username));
+		}
+		Logger.warn(signtype);
+
 		// check database
 		User user = User.getByUserName(username);
 		if (user==null) {
@@ -95,14 +101,14 @@ public class Login extends Controller {
 		String password = dynamicForm.field("password").value();
 		String password2 = dynamicForm.field("password2").value();
 		if (username==null || password==null) {
-			return ok(registerPage.render("Error: must specify username/password!"));
+			return ok(registerPage.render("Error: must specify username/password!",username));
 		}
 		if (!password.equals(password2)) {
-			return ok(registerPage.render("Error: Passwords didn't match!"));
+			return ok(registerPage.render("Error: Passwords didn't match!",username));
 		}
 
 		if (User.getByUserName(username)!=null) {
-			return ok(registerPage.render("Username already exists!"));
+			return ok(registerPage.render("Username already exists!",""));
 		}
 		//validate username/pass
 		User user = new User(username,username,"","","");

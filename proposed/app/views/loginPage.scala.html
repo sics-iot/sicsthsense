@@ -19,17 +19,17 @@
           <input id="openid_identifier" name="openid_identifier" type="url" required placeholder="Your OpenID" />
           <input id="openid_submit" type="submit" value="Log in" class="buttonLG"/>
         </div>
-          <p>OpenID is service that allows you to log-on to many different websites using a single identity.
+          <p>OpenID is service that allows you to sign in to many different websites using a single identity.
           Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
       </fieldset>
     </form>    
 		}
 		<br />
 		@if(Application.canPasswordLogin()) {
-		@helper.form(action = routes.Login.authenticatePassword("","")) {
+		@helper.form(action = routes.Login.authenticatePassword("","","")) {
       <input type="hidden" name="action" value="verify" />
       <fieldset>
-				<legend><b>Log in with Email/Password</b></legend>
+				<legend><b>Sign in with Email/Password</b></legend>
 				<dt>Email</dt>
 				<dd><input type="text" name="username" value="" /></dd>
 
@@ -37,11 +37,13 @@
 				<dd><input type="password" name="password" value="" /></dd>
 				<dt></dt>
 				<dd>
-				<input class="btn" type="submit" name="signin" value="Log in" /> 
+				<input class="btn btn-primary" type="submit" name="signtype" value="Sign in" /> 
 				&nbsp;
 				&nbsp;
+				or 
 				&nbsp;
-		  <a href="/signup" >[or Signup]</a>
+				&nbsp;
+				<input class="btn" type="submit" name="signtype" value="Sign up" /> 
 			</dd>
 			</fieldset>
 		}

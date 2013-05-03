@@ -1,4 +1,4 @@
-@(message: String="")
+@(message: String="", username: String)
 
 @import helper._
 
@@ -10,7 +10,7 @@
       <fieldset>
 				<legend><b>Signup a new user account</b></legend>
 				<dt>Email</dt>
-				<dd><input type="text" name="username" value="" /></dd>
+				<dd><input type="text" name="username" value="@username" /></dd>
 
 				<dt>Password</dt>
 				<dd><input type="password" name="password" value="" /></dd>
