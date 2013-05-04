@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import play.db.ebean.Model;
+import play.Logger;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
@@ -373,8 +374,21 @@ public class Stream extends Model implements Comparable<Stream> {
     }
 
     public static Stream getByKey(String key) {
-        return find.where().eq("key", key).findUnique();
+			return find.where().eq("key", key).findUnique();
     }
+
+    public static Stream getByUserPath(String username, String path) {
+			User user = User.getByUserName(username);
+			if (user==null) {
+				Logger.warn("Can't find user: "+username);
+			}
+			Logger.warn(username+" "+user.id+" path "+path);
+			Vfile file = Vfile.find.where().eq("owner_id",user.id).eq("path", path).findUnique();
+			if (file==null) {
+				return null;
+			}
+			return file.linkedStream;
+		}
 
     private void deleteDataPoints() {
         if (type == StreamType.STRING && dataPointsString.size() > 0) {

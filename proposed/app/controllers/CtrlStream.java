@@ -226,6 +226,27 @@ public class CtrlStream extends Controller {
 		return getData(stream.owner, stream, tail, last, since);
 	}
 
+	// List data points of a user's path
+	public static Result getByPath(String path, Long tail,
+			Long last, Long since) {
+		final User user = Secured.getCurrentUser();
+		return getByUserPath(user.userName, path, tail, last, since);
+	}
+
+	public static Result getByUserPath(String username, String path, Long tail,
+			Long last, Long since) {
+		final Stream stream = Stream.getByUserPath(username,"/"+path);
+		final User owner = User.getByUserName(username);
+		final User currentUser = Secured.getCurrentUser();
+		if (stream == null)
+			return notFound();
+		if (!stream.canRead(currentUser)) {
+			// don't reveal this stream exists
+			return notFound();
+		}
+		return getData(currentUser, stream, tail, last, since);
+	}
+
 	public static Result postByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null)
