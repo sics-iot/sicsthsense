@@ -53,7 +53,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 @streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = true, deleteParser: Boolean = false) = {
 <div class="row-fluid parser controls controls-row @className" data-parserId="@{field("parserId").value}">
 <input form="@resourceFormId" type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
-<input form="@resourceFormId" class="span3" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
+<input form="@resourceFormId" class="span3 resourceStreamPath" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
 <input form="@resourceFormId" class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="expression or /jsonnode/name">
 <input form="@resourceFormId" class="span3" type="text" id="@field("timeformat").id" name="@field("timeformat").name" value="@field("timeformat").value" placeholder="fill in if posting timestamps">
   <select form="@resourceFormId" class="span2" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
@@ -229,7 +229,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 <!-- Modal confirmDeleteResource -->
 <div id="confirmDeleteResourceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResourceModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmDeleteResourceModalLabel">Delete Resource?</h3>
   </div>
   <div class="modal-body">

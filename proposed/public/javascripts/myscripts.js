@@ -27,7 +27,7 @@
 	$('#showHidePlotsButton').on("click", showHidePlots);
 	
 function showAlert(type, msg) {
-	$('#mainContainer').before('<div class="container-errormsg"><div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg.data + '</div></div>');
+	$('#container-errormsg').html('<div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div>');
 	//$('.container').after('<div class="container-errormsg><div class="' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
 }	
 
@@ -223,7 +223,9 @@ function toggleFollowStreamButton(event){
 	    	StreamPlots.clear(plot);
 	    },
 	    error: function(emsg) {
-				console.debug("Error: ClearStream! " + my_stream_id + emsg);
+	    	var errorMsg = "Error clearing stream: " + my_stream_id + emsg;
+	    	console.debug( errorMsg );
+	    	showAlert('alert-error',errorMsg);
 	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
 	    }
 	  });
@@ -245,7 +247,9 @@ function toggleFollowStreamButton(event){
 	    	$("#streamblock"+my_stream_id).remove();
 	    },
 	    error: function(emsg) {
-				console.debug("Error: DeleteStream! " + my_stream_id + emsg);
+	    	var errorMsg = "Error deleting stream: " + my_stream_id + emsg;
+	    	console.debug( errorMsg );
+	    	showAlert('alert-error',errorMsg);
 	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
 	    }
 	  });
@@ -342,7 +346,7 @@ function toggleFollowStreamButton(event){
   	var smsg;
   	jsRoutes.controllers.CtrlResource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
-	    	smsg="Parser " + dataparserId + " add: " + msg;
+	    	smsg="Parser " + dataparserId + " added ";
 	  		console.debug(smsg);
 				showAlert("alert-success", smsg);
 	    },
@@ -364,6 +368,37 @@ function toggleFollowStreamButton(event){
 	  $('.removeParser').on("click", removeParser);
   };
   $('.addParser').on("click", insertParser);
+  function resourceStreamPath(e) {
+  	if( $(this).attr('readonly') ) {
+  		var path = $(this).val();
+    	var myID = $(this).attr('id');
+    	var debugMsg = myID + " Browsing: " + path;
+    	console.debug(debugMsg);
+    	
+  		jsRoutes.controllers.CtrlFile.miniBrowse(path).ajax({
+  	    success: function(msg) {
+        	StreamPlots.stopActivePlots();
+        	var mainPane = $('#mainPane').html(msg);
+        	initializeMaps();
+        	fileMenuButtonHandlers();
+        	selectPathInTree(null, path);
+        	//window.history.pushState(“string”, “Title”, “newUrl”);
+        	//msg = msg.replace(/(\r\n|\n|\r)/gm,'').replace(/^$/, '');//.replace(/(<!DOCTYPE html>*<body>)/, '').replace(/(<.body>*<.html>)/, '');      	
+  	    },
+  	    error: function(msg) {
+  	    	var errorMsg = "Failed to browse: " + path;
+  	    	console.debug( errorMsg );
+  	    	showAlert('alert-error',errorMsg);
+  	    }
+  	  });
+  	   //alert($(data.args[0]).text());
+  		//window.location.hash=path;
+    	//event.preventDefault(); 
+    	event.stopPropagation();
+  		return false;
+  	}
+  }
+  $('.resourceStreamPath').on("click", resourceStreamPath);
   
   function updateResource(e) {
 //  	var $resource_form = $('#resource_form');
@@ -381,14 +416,19 @@ function toggleFollowStreamButton(event){
 	  		console.debug(msg);
 	  		$('[data-parserId="'+streamParsersToDelete[i]+'"]').remove();
 				console.debug(msg);
-				showAlert("alert-success", msg);
+//				showAlert("alert-success", msg);
 	  	}
 	  	streamParsersToDelete = new Array();
 			renumberParsers();
 //  	}		
   };
   $('#updateResource').on("click", updateResource);
-
+//  $('.addResourceQuick').on("click", function(e) {  	
+//			var msg = "Added a new resource successfully.";
+//			console.debug(msg);
+//			showAlert("alert-success", msg);			
+//  });
+  
   $('#addResource').on("click", function(e) {  	
 	  	$('.parsers_template').remove();
 			renumberParsers();
@@ -414,7 +454,9 @@ function toggleFollowStreamButton(event){
 	    	$("#fileRow"+my_file_name).remove();
 	    },
 	    error: function(emsg) {
-				console.debug("Error: DeleteFile! " + my_file_path + emsg);
+	    	var errorMsg = "Error deleting file " + my_file_path;
+	    	console.debug( errorMsg );
+	    	showAlert('alert-error',errorMsg);
 	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
 	    }
 	  });
@@ -458,7 +500,9 @@ function toggleFollowStreamButton(event){
 	    	//window.history.pushState(“string”, “Title”, “newUrl”);
 	    },
 	    error: function(msg) {
-	    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+	    	var errorMsg = "Failed to browse folder: " + path;
+	    	console.debug( errorMsg );
+	    	showAlert('alert-error',errorMsg);
 	    }
 	  });
   	//event.preventDefault(); 
@@ -485,7 +529,9 @@ function toggleFollowStreamButton(event){
       	//msg = msg.replace(/(\r\n|\n|\r)/gm,'').replace(/^$/, '');//.replace(/(<!DOCTYPE html>*<body>)/, '').replace(/(<.body>*<.html>)/, '');      	
 	    },
 	    error: function(msg) {
-	    	console.debug("Failed to browse: " + path );
+	    	var errorMsg = "Failed to browse: " + path;
+	    	console.debug( errorMsg );
+	    	showAlert('alert-error',errorMsg);
 	    }
 	  });
 	   //alert($(data.args[0]).text());
@@ -508,6 +554,34 @@ function toggleFollowStreamButton(event){
 
   	//event.preventDefault(); 
   	//event.stopPropagation();
+		return false;
+		//$(this).toggle();
+	};
+	
+	hideAllFolderFunction = function(event) {
+		if(! $(this).hasClass('showRoot')) {
+			$(this).addClass('showRoot')
+			$('#vfileTree').find('.hideFolder').each(function(event) {
+				$(this).removeClass('icon-folder-open'); 
+				$(this).siblings('span').removeClass('selectedFile');
+				if( !($(this).hasClass('icon-folder-close')) ) {
+					$(this).addClass('icon-folder-close');
+				}
+				$(this).parent().children().find("li").hide();
+				$(this).siblings('selectedFile').removeClass('selectedFile');
+			});
+		} else {
+			$(this).removeClass('showRoot');
+			$('#vfileTree').find('.hideFolder').each(function(event) {
+				$(this).removeClass('icon-folder-close'); 
+				$(this).siblings('span').removeClass('selectedFile');
+				if( !($(this).hasClass('icon-folder-open')) ) {
+					$(this).addClass('icon-folder-open');
+				}
+				$(this).parent().children().find("li").show();
+				$(this).siblings('selectedFile').removeClass('selectedFile');
+			});
+		}
 		return false;
 		//$(this).toggle();
 	};
@@ -561,6 +635,7 @@ function toggleFollowStreamButton(event){
 		$('.fileNode').unbind('click').on('click', browseFile);
 		$('.file-list-button').unbind('click').on('click', browseFile);
 		$('.hideFolder').unbind('click').on('click', hideFolderFunction); 
+		$('.hideRoot').unbind('click').on('click', hideAllFolderFunction);
   }
  
   fileRowRightClick = function(event) {
@@ -590,7 +665,7 @@ fileRowClick = function(e) {
       	//stop active plots
       	StreamPlots.stopActivePlots();
       	//load file list
-      	$('#fileTableBody').html(msg);       
+      	$('#mainPane').html(msg);       
       	selectPathInTree(null, path.substring(0,path.length-1));
       	fileMenuButtonHandlers();
       },
@@ -633,10 +708,14 @@ fileRowClick = function(e) {
           	$('#mainPane').html(msg);
           	findAndReplaceInSideTree(my_file_path, new_file_path, newFileName);
           	fileMenuButtonHandlers();
+    	    	var errorMsg = "Renamed file successfully to: " + newFileName;
+    	    	console.debug( errorMsg );
+    	    	showAlert('alert-success',errorMsg);
     	    },
     	    error: function(emsg) {
-    				console.debug("Error: DeleteFile! " + my_file_path + emsg);
-    	    	//$('div.container-errormsg').html('<strong>Error unfollow!</strong>'+emsg);
+    	    	var errorMsg = "Error renaming file: " + my_file_path;
+    	    	console.debug( errorMsg );
+    	    	showAlert('alert-error',errorMsg);
     	    }
     	  });
     });

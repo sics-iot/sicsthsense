@@ -8,13 +8,12 @@
     ================================================== -->
 	<div class="row-fluid">
 		<div class="span2 bs-docs-sidebar">
-				<h4>Drive</h4>
-					<div id="vfileTree">
-						<ul class="unstyled">
-						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
-						</ul>
-					</div>
-  </div>
+				<div id="vfileTree">
+					<ul class="unstyled"><li class=''><i class='icon-hdd hideRoot'></i> <span class='rootNode' data-filepath=''>Drive</span>
+						<ul class="folderNodeUL">@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))</ul>
+					</li></ul>
+				</div>
+  	</div>
 
   <div id="mainPane" class="span9">
 

@@ -186,3 +186,13 @@ span.fileNode:hover {
   background:lightgray;
   opacity:0.85;
 }
+
+.rootNode {
+	font-size: 120%;
+	font-weight: bold;
+	font-style: italic;
+}
+
+.resourceStreamPath {
+		  cursor:pointer;
+}
