@@ -12,7 +12,7 @@
 <!-- Modal confirmDeleteStream -->
 <div id="confirmDeleteStreamModal@fileName" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteStreamModalLabel@fileName" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmDeleteStreamModalLabel@fileName">Delete Stream <em>@fileName</em></h3>
   </div>
   <div class="modal-body">
@@ -30,7 +30,7 @@
 <!-- Modal confirmClearStream -->
 <div id="confirmClearStreamModal@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
   </div>
   <div class="modal-body">
@@ -48,7 +48,7 @@
 <!-- Modal renameFileDialog -->
 <div id="renameFileDialog@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
   </div>
   <div class="modal-body">
@@ -67,7 +67,7 @@
     	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
 				@if(vfile.getType() == Vfile.Filetype.FILE) { 
 					@if(vfile.getLink() != null) {
-					<td style="padding-left: 20px;" class="rowlink"><a href="@routes.Application.viewStream(vfile.getLink().id)"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td style="padding-left: 20px;" class="rowlink"><a href="#path=@vfile.getPath()" class="file-list-button" data-filepath="@vfile.getPath()"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
 					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
 					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
 					@confirmClearStreamDialog(vfile.getLink().id, vfile.getName())
@@ -77,7 +77,7 @@
 					<td>-</td>
 					}
 				} else {
-					<td style="padding-left: 20px;"  class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#folder=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
+					<td style="padding-left: 20px;"  class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#path=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
 					<td><!--[Folder tools]--></td>
 					<td>-</td>
 				}
@@ -145,7 +145,7 @@
 
 <div class="modal hide fade" id="renameBox" role="dialog" aria-labelledby="renameBoxModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="renameBoxModalLabel">Rename file</h3>
   </div>        
 <div class="modal-body">

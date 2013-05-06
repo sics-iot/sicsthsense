@@ -130,6 +130,13 @@ public class Application extends Controller {
     return ok(streamPage.render(currentUser.streamList, stream, form, ""));
   }
   
+  protected static Result ajaxViewStream(Long id) {
+  	User currentUser = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		Form<Stream> form = streamForm.fill(stream);
+    return ok(views.html.vstream.viewStreamMainDiv.render(currentUser.streamList, stream, form, ""));
+  }
+  
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
     return ok(attachFunctionPage.render(currentUser.resourceList, ""));
@@ -275,7 +282,7 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlStream.isPublicSearch(),
           		controllers.routes.javascript.CtrlUser.followStream(),
           		controllers.routes.javascript.CtrlUser.isFollowingStream(),
-          		controllers.routes.javascript.CtrlFile.lsDir(),
+          		controllers.routes.javascript.CtrlFile.miniBrowse(),
           		controllers.routes.javascript.CtrlFile.browse(),
           		controllers.routes.javascript.CtrlFile.delete(),
           		controllers.routes.javascript.CtrlFile.createFile(),

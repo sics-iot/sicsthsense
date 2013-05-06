@@ -164,18 +164,23 @@ li.jstree-leaf > a .jstree-icon { display: none; }
 
 #vfileTree ul {  list-style-type: none; }
 
-li.dirNode > a:hover {
-  background: lightgray;
-  opacity: 0.85;
+span.dirNode:hover {
+  background:lightgray;
+  opacity:0.85;
   text-decoration:none;
   list-style-type: none;
-  
-  
-}
-li.fileNode > a:hover {
-  background: lightgray;
-  opacity: 0.7;
-  text-decoration:none;
-  
+  cursor:pointer;
+
 }
 
+span.fileNode:hover {
+  background:lightgray;
+  opacity:0.7;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.selectedFile {
+  background:lightgray;
+  opacity:0.85;
+}

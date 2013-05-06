@@ -47,69 +47,9 @@ stream.file.getParentPath()
 				} else {}
 			</div>
   </div>
-
 	<div id="mainPane" class="span9">
-@if(stream.canRead(Secured.getCurrentUser())) {
-		<!--Body content-->
-		<!-- Stream listing and visualizing -->
-		<h1>Stream '@streamPath'</h1>
-				<br />
-				@helper.form(action = routes.CtrlStream.modify(stream.id), 'id -> "streamFormId") {
-
-					<legend>View
-						<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
-						</span>
-					</legend>
-					@vstream.includeStream(stream, displayHeader =true, displayOverview =true, displayPlot =true, displayToolbar =false)
-
-			<div class="row-fluid">
-			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
-			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
-			</div>
-
-					<fieldset>
-
-		      <legend>Location</legend>
-					<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
-					<br />
-			<div class="row-fluid">
-			<label>Latitude</label>
-			<input class="span4" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
-			<label>Longtitude</label>
-			<input class="span4" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
-			</div>
-					</fieldset>
-
-				}
-    </div>
-    }
+	@vstream.viewStreamMainDiv(streams, stream, myForm, message)
   </div>
-
- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-9DrIlaZr8XjhHtcKgM8lluCrz0iqydk&sensor=true"> </script>
-	<script type="text/javascript">
-      function initialize() {
-        var mapOptions = {
-          center: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-					@if(stream.latitude==0 && stream.longtitude==0) {
-						zoom: 1,
-					} else {
-						zoom: 7,
-					}
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map-canvas"),
-            mapOptions);
-				marker = new google.maps.Marker({
-					position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-					draggable:@stream.canWrite(Secured.getCurrentUser()),
-					animation:false,
-					map: map
-      });
-			google.maps.event.addListener(marker, 'dragend', function(event) {
-        document.getElementById("@myForm("latitude").id").value = this.getPosition().lat(); 
-        document.getElementById("@myForm("longtitude").id").value = this.getPosition().lng();
-			});
-}
-      google.maps.event.addDomListener(window, 'load', initialize);
-	</script>
+</div>
+	
 }

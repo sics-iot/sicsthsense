@@ -138,11 +138,11 @@ var StreamPlots = {
 				//console.debug(data);
 				var time = data["time"].reverse();
 				var data = data["data"].reverse();
-			
+				console.debug('Number of points to push: '+time.length);
 				for (var i=0; i< time.length; i++){
 					
 					stream.points.push(new Array(parseInt(time[i]) + StreamPlots.timezone, data[i]));
-					console.debug('pushed: '+parseInt(i));
+					//console.debug('pushed: '+parseInt(i));
 				}
 				
 				if (stream.points.length>0) {
@@ -154,7 +154,7 @@ var StreamPlots = {
 						// remove old plot points
 						console.debug('shifted: '+stream.points.shift());						
 					}
-				}
+				
 
 				var xaxis = stream.plot.getAxes().xaxis,
 						overview_xaxis = stream.overview.getAxes().xaxis;
@@ -172,6 +172,7 @@ var StreamPlots = {
         opts.max = max;
         overview_opts.min = min;
         overview_opts.max = max;
+				}
 				stream.plot.setData([stream.points]);
 				stream.plot.setupGrid();
     		stream.plot.draw();
@@ -246,8 +247,8 @@ var StreamPlots = {
 	stopActivePlots : function(keep) {
 		var streamplotToStop = "", streamToStop = null;
 		if(StreamPlots.activePlots !== [ ]) {
-	  	for (var i=0; i<StreamPlots.activePlots.length; i++) {
-	  		var sp = StreamPlots.activePlots[i];
+	  	for (var ii=0; ii<StreamPlots.activePlots.length; ii++) {
+	  		var sp = StreamPlots.activePlots[ii];
 	  		if (sp != "destroy") {
 	    		streamplotToStop = 'streamplot' + sp;
 	  			//console.debug("1 plot: " + streamplotToStop);

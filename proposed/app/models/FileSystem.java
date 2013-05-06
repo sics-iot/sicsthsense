@@ -103,17 +103,13 @@ public class FileSystem {
 			prevdepth = thisdepth;
 			if (f.isDir()) {
 				//sb.append("<li class='jstree-open dirNode' data-filepath='"+f.path+"'><a><b>"+ dirs[dirs.length-1] +"</b></a>\n<ul>\n"); // give node name
-				sb.append("<li class='jstree-open dirNode' data-filepath='"+f.path+"'><i class='icon-folder-close'></i><a><b> "+ dirs[dirs.length-1] +"</b></a>\n<ul class='folderNodeUL'>\n"); // give node name
-
+				sb.append("<li class='jstree-open'><i class='icon-folder-open hideFolder'></i><span class='dirNode' data-filepath='"+f.path+"'><b> "+ dirs[dirs.length-1] +"</b></span>\n<ul class='folderNodeUL'>\n"); // give node name
 			} else {
-				
 				prevdepth--; // if we were file, this doesnt count
 				//sb.append("<li class='fileNode' data-filepath='"+f.path+"'><a a='#'>"+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
-				sb.append("<li class='fileNode' data-filepath='"+f.path+"'><i class='icon-file'></i><a> "+ dirs[dirs.length-1] +"</a></li>\n"); // give node name
+				sb.append("<li class='jstree-leaf'><i class='icon-file'></i><span class='fileNode' data-filepath='"+f.path+"'> "+ dirs[dirs.length-1] +"</span></li>\n"); // give node name
 			}
 		}
-
-
 		return sb.toString();
 	}
 
@@ -188,6 +184,7 @@ public class FileSystem {
 	}
 
 	public static Vfile readFile(User user, String path) {
+		if(path.endsWith("/")) path = path.substring(0, path.length()-1);
 		Vfile f = Vfile.find.where().eq("owner",user).eq("path", path).findUnique();
 		if (f != null) { // if file exists
 			return f;
