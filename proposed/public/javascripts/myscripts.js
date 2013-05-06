@@ -556,12 +556,11 @@ function toggleFollowStreamButton(event){
 		$('.renameMenuButton').unbind('click').on("click", renameConfirmBox);
 	  $('.folder-list-button').unbind('click').on("click", fileListFolderClick);
 	  $('.rowlink').unbind('click').on('click', fileRowClick);
-	  $('.rowlink').unbind('click').on('contextmenu', fileRowRightClick);
+	  $('.rowlink').unbind('contextmenu').on('contextmenu', fileRowRightClick);
 		$('.dirNode').unbind('click').on('click', browseFolder);  
 		$('.fileNode').unbind('click').on('click', browseFile);
 		$('.file-list-button').unbind('click').on('click', browseFile);
 		$('.hideFolder').unbind('click').on('click', hideFolderFunction); 
-
   }
  
   fileRowRightClick = function(event) {
