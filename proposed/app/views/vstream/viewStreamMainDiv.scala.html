@@ -1,0 +1,81 @@
+@(streams : List[Stream], stream: Stream, myForm: Form[Stream], message: String="")
+
+@import helper._
+@streamPath=@{
+if(stream.file != null && stream.file.getPath() != null) {
+stream.file.getPath()
+} else {
+"ID: "+stream.id
+}
+}
+
+@streamParentPath=@{
+if(stream.file != null) {
+stream.file.getParentPath()
+} else {
+"/"
+}
+}
+
+@if(stream.canRead(Secured.getCurrentUser())) {
+		<!--Body content-->
+		<!-- Stream listing and visualizing -->
+		<h1>Stream '@streamPath'</h1>
+				<br />
+				@helper.form(action = routes.CtrlStream.modify(stream.id), 'id -> "streamFormId") {
+
+					<legend>View
+						<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
+						</span>
+					</legend>
+					@vstream.includeStream(stream, displayHeader =true, displayOverview =true, displayPlot =true, displayToolbar =false)
+
+			<div class="row-fluid">
+			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
+			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
+			</div>
+
+					<fieldset>
+
+		      <legend>Location</legend>
+					<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
+					<br />
+			<div class="row-fluid">
+			<label>Latitude</label>
+			<input class="span4 streamLat" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
+			<label>Longtitude</label>
+			<input class="span4 streamLong" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
+			</div>
+					</fieldset>
+    </div>
+				}
+    }
+
+ <script type="text/javascript">
+	     initializeMaps = function(e) {
+	        var mapOptions = {
+	          center: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
+						@if(stream.latitude==0 && stream.longtitude==0) {
+							zoom: 1,
+						} else {
+							zoom: 7,
+						}
+	          mapTypeId: google.maps.MapTypeId.ROADMAP
+	        };
+	        var map = new google.maps.Map(document.getElementById("map-canvas"),
+	            mapOptions);
+					marker = new google.maps.Marker({
+						position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
+						draggable:@stream.canWrite(Secured.getCurrentUser()),
+						animation:false,
+						map: map
+	      });
+				google.maps.event.addListener(marker, 'dragend', function(event) {
+	        document.getElementById("@myForm("latitude").id").value = this.getPosition().lat(); 
+	        document.getElementById("@myForm("longtitude").id").value = this.getPosition().lng();
+	       // $('.streamLat').val(this.getPosition().lat() );
+	        //$('.streamLong').val(this.getPosition().lng() );
+				});
+	}
+	      google.maps.event.addDomListener(window, 'load', initializeMaps);
+		</script>
