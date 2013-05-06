@@ -164,13 +164,15 @@ li.jstree-leaf > a .jstree-icon { display: none; }
 
 #vfileTree ul {  list-style-type: none; }
 
+.dirNode {
+	font-weight:bold;
+}
 span.dirNode:hover {
   background:lightgray;
   opacity:0.85;
   text-decoration:none;
   list-style-type: none;
   cursor:pointer;
-
 }
 
 span.fileNode:hover {

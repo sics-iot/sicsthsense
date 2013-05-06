@@ -603,7 +603,13 @@ fileRowClick = function(e) {
   };
   fileMenuButtonHandlers();
   
-
+  var findAndReplaceInSideTree = function(oldPath, newPath, newName) {
+		$('#vfileTree').find("[data-filepath='"+oldPath+"']").each( function(e) { 
+			$(this).attr("data-filepath", newPath);
+			var oldName = $(this).html(" "+ newName);
+		});
+  };
+  
 	var renameConfirmBox = function (e){
    // confirmMessage = confirmMessage || '';
 		var $this_button=$(this);
@@ -625,7 +631,8 @@ fileRowClick = function(e) {
     				console.debug("Success: RenamingFile! " + my_file_path + " to: "+new_file_path);
     		  	//stop active plots
     		  	StreamPlots.stopActivePlots();
-          	$('#fileTableBody').html(msg);
+          	$('#mainPane').html(msg);
+          	findAndReplaceInSideTree(my_file_path, new_file_path, newFileName);
           	fileMenuButtonHandlers();
     	    },
     	    error: function(emsg) {
