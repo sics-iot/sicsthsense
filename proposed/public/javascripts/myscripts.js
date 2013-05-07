@@ -559,6 +559,7 @@ function toggleFollowStreamButton(event){
 	};
 	
 	hideAllFolderFunction = function(event) {
+		removeSelection();
 		if(! $(this).hasClass('showRoot')) {
 			$(this).addClass('showRoot')
 			$('#vfileTree').find('.hideFolder').each(function(event) {
@@ -607,6 +608,7 @@ function toggleFollowStreamButton(event){
 	}
 			
 	selectPathInTree = function(event, path) {
+		$('.hideRoot').siblings('span').removeClass('selectedFile');
 		$('#vfileTree').find('.hideFolder').each(function(event) {
 			$(this).removeClass('icon-folder-open'); 
 			$(this).siblings('span').removeClass('selectedFile');
