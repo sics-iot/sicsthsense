@@ -394,6 +394,7 @@ public class CtrlResource extends Controller {
 	private static Result postByLabel(String user, String labelPath) {
 		User owner = User.getByUserName(user);
 		Resource parent = null;
+		labelPath = Utils.decodePath(labelPath);
 		Resource resource = Resource.getByUserLabel(owner, null, labelPath);
 		// return post(owner, resource.id);
 		return TODO;
@@ -463,6 +464,7 @@ public class CtrlResource extends Controller {
 	@Security.Authenticated(Secured.class)
 	private static Result getByLabel(String user, String labelPath) {
 		User owner = User.getByUserName(user);
+		labelPath = Utils.decodePath(labelPath);
 		Resource parent = null;
 		Resource resource = Resource.getByUserLabel(owner, null, labelPath);
 		if (resource == null) {
@@ -573,7 +575,7 @@ public class CtrlResource extends Controller {
 		List<Resource> subResources = Resource.find
 				.select("id, owner, label, parent").where().eq("owner", user)
 				.eq("parent", parentResource).orderBy("label asc").findList();
-		if (subResources != null) {
+		if (subResources != null && subResources.size()>0) {
 			sb.append("\n<ul data-parentResourceId='" + parentResourceId + "' >");
 			for (Resource sr : subResources) {
 				sb.append("<li><div class='resourceListItem' data-resourceId='" + sr.id.toString() + "'> "

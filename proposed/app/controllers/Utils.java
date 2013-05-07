@@ -28,10 +28,14 @@
  * */
 package controllers;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Date;
+
+import play.Logger;
 
 public class Utils {
 
@@ -97,5 +101,18 @@ public class Utils {
 		}
 		
 		return true;
+	}
+	
+	//decode path from URI encoding (e.g. base64)
+	public static String decodePath(String path) {
+		try {
+			return URLDecoder.decode(path, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			Logger.error("[Error] Could not decode: "+path + e.getMessage() + e.getStackTrace()[0].toString());
+			//play.mvc.Results.internalServerError()
+			return "";
+		}
 	}
 }

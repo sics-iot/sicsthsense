@@ -29,6 +29,8 @@
 
 package controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result browse(String path) {
 		User currentUser = Secured.getCurrentUser();
-		
+		path = Utils.decodePath(path);
 		if( path.trim().equalsIgnoreCase("") || path.trim().equalsIgnoreCase("/")) {
 			return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
 					""));
@@ -90,7 +92,8 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result miniBrowse(String path) {
 		User currentUser = Secured.getCurrentUser();
-		
+		path = Utils.decodePath(path);
+
 		if( path.trim().equalsIgnoreCase("") || path.trim().equalsIgnoreCase("/")) {
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
 		}
@@ -110,6 +113,7 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result delete(String path) {
 		User currentUser = Secured.getCurrentUser();
+		path = Utils.decodePath(path);
 		boolean success = FileSystem.deleteFile(currentUser, path);
 		if (success)
 			return ok("true");
@@ -120,6 +124,7 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result move(String path, String newPath) {
 		User currentUser = Secured.getCurrentUser();
+		path = Utils.decodePath(path);
 		boolean success = FileSystem.moveFile(currentUser, path, newPath);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
@@ -132,6 +137,7 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result createDir(String path) {
 		User currentUser = Secured.getCurrentUser();
+		path = Utils.decodePath(path);
 		boolean success = (FileSystem.addDirectory(currentUser, path) != null);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
@@ -144,6 +150,7 @@ public class CtrlFile extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result createFile(String path) {
 		User currentUser = Secured.getCurrentUser();
+		path = Utils.decodePath(path);
 		boolean success = false;
 		Vfile f = null;
 		if (!FileSystem.fileExists(currentUser, path)) {
@@ -177,5 +184,7 @@ public class CtrlFile extends Controller {
 			}
 		}
 	}
+	
+
 
 }

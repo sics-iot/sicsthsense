@@ -343,7 +343,23 @@ public class Resource extends Operator {
         // update indexes
         Resource.index(this);
     }
-
+    
+    public void verify() {
+    	this.label=label.replaceAll("[\\/:\"*?<>|']+", "");
+    }
+    
+    @Override
+    public void update() {
+    	verify();
+    	super.update();
+    }
+    
+    @Override
+    public void save() {
+    	verify();
+    	super.save();
+    }
+    
     @Override
     public void delete() {
         this.pollingPeriod = 0L;

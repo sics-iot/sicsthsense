@@ -113,7 +113,6 @@ public class Application extends Controller {
     return ok(streamsPage.render(currentUser.streamList, ""));
   }
 
-	@Security.Authenticated(Secured.class)
   public static Result resources() {
     return CtrlResource.resources();
   }
@@ -258,7 +257,7 @@ public class Application extends Controller {
 
 	public static String getDomain() {
 		Setting setting = Setting.findName("domain");
-		if (setting.val=="unset") {
+		if (setting.val.equalsIgnoreCase("unset")) {
 			setting.val="presense.sics.se"; // should set these defaults in a config file?
 		}
 		return setting.val;

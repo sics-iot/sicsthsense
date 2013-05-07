@@ -145,6 +145,23 @@ public class Vfile extends Model {
 		return linkedStream;
 	}
 	
+	//remove invalid characters
+  public void verify() {
+  	this.path=path.replaceAll("[\\:\"*?<>|']+", "");
+  }
+  
+  @Override
+  public void update() {
+  	verify();
+  	super.update();
+  }
+  
+  @Override
+  public void save() {
+  	verify();
+  	super.save();
+  }
+  
 	public void delete() {
 		//TODO: Check dependencies
 		//this.linkedStream.file = null;

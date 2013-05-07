@@ -193,8 +193,8 @@ span.fileNode:hover {
 	font-style: italic;
 }
 
-.resourceStreamPath {
-		  cursor:pointer;
+input.resourceStreamPath {
+	cursor:pointer;
 }
 
 .resourceListItem:hover {

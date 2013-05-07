@@ -22,7 +22,7 @@ if(titleNavbar==title) {
 <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/openid.css")" />
 <!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/flot-master/jquery.js")" type="text/javascript"></script-->
-<script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
 <script src="@routes.Application.javascriptRoutes()" type="text/javascript" ></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-9DrIlaZr8XjhHtcKgM8lluCrz0iqydk&sensor=true"> </script>
 
@@ -121,10 +121,8 @@ if(titleNavbar==title) {
 
 
 	<script type="text/javascript">
-		$(document).ready(function() {
-			openid.init('openid_identifier');
-		});
-    $(document).on('click','input[readonly]',function(){ this.select(); });
+		$(document).ready(function() {openid.init('openid_identifier');}); 
+    
 	</script>
 	<script src="@routes.Assets.at("javascripts/myscripts.js")" type="text/javascript"></script>
  
