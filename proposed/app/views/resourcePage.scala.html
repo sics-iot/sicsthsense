@@ -77,8 +77,10 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 					<button type="submit" name="update" class="btn btn-primary" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i> Save</button>
 					<a href="@routes.CtrlResource.resources()" class="btn"><i class="icon-remove"></i></a>
 	      </span></div>
-			@manage.navigationMenu(resources) 
-			
+			@manage.navigationMenu() 
+			<script type="text/javascript">
+			$('#resourcelist-sidenav').find('[data-resourceId="'+@myForm("id").value+'"]').addClass('selectedResourceListItem');
+			</script>
 			@**
 			should pass theses parameters(resources, extStreams)
 			**@
@@ -134,11 +136,8 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Resource description..." >@myForm("description").value</textarea>
 				</div>
 				<br />
-
-	      </fieldset>
-			} else {
+			} 
 				</fieldset>
-			}
 			<!-- end modify resource-->
   }
   

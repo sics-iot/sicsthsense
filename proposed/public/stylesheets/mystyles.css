@@ -196,3 +196,16 @@ span.fileNode:hover {
 .resourceStreamPath {
 		  cursor:pointer;
 }
+
+.resourceListItem:hover {
+  background:lightgray;
+  opacity:0.85;
+  text-decoration:none;
+  list-style-type: none;
+  cursor:pointer;
+}
+
+.selectedResourceListItem {
+  background:lightgray;
+  opacity:0.85;
+}

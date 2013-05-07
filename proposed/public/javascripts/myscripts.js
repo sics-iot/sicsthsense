@@ -726,6 +726,29 @@ fileRowClick = function(e) {
     });
 };
 
+var browseResourceList = function(e) {
+	var resId=$(this).attr('data-resourceId');
+	var debugMsg = "Browsing resource: " + resId;
+	console.debug(debugMsg);
+	//alert(debugMsg);  	
+	jsRoutes.controllers.CtrlResource.getById(resId).ajax({
+    success: function(msg) {  
+    	//load 
+    	$('#mainContainer').html(msg);   
+    	$('.resourceListItem').unbind('click').on('click', browseResourceList);
+    	$('#resourcelist-sidenav').find('.selectedResourceListItem').each(function(e){$(this).removeClass('selectedResourceListItem');});
+    	$('#resourcelist-sidenav').find('[data-resourceId="'+resId+'"]').addClass('selectedResourceListItem');
+    	
+    	//selectPathInTree(null, path.substring(0,path.length-1));
+    	//fileMenuButtonHandlers();
+    },
+    error: function(msg) {
+    	console.debug("Failed to browse folder: " + path + " Response: "+ msg);
+    }
+  });
+};
+$('.resourceListItem').unbind('click').on('click', browseResourceList);
+
 //  function add_resource_form_handler(e) {	
 //  	$('.parsers_template').remove();
 //		renumberParsers();
