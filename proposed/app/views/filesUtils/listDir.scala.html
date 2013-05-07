@@ -1,12 +1,23 @@
 @(vfiles : List[Vfile], path : String)
 @upPathLoc={@Vfile.extractUpperLevelPath(path)}
-@fullpathNavigation() = {
+@fullpathNavigationOrig() = {
 <ul id='filePathBreadCrumb' class="breadcrumb">
 	<li class="active">Drive <span class="divider">/</span></li>
 	@for( ii <- 1 to path.split("/").length -1) {
 	<li><a href="#" >@{path.split("/")(ii)}</a> @if(ii<=path.split("/").length -1){<span class="divider">/</span>}</li>
 	}
 </ul>
+}
+
+@parentPath(pathlist : Array[String], depth: Int) = {@for(dir <- 1 to depth) {/@pathlist(dir)}/}
+@fullpathNavigation() = {
+<span id='filePathBreadCrumb' class="breadcrumb">
+	<span class="divider">/</span>
+	@{val patharray = path.split("/")}
+	@for( ii <- 1 to path.split("/").length -1) {
+	 <a href="/files#folder=@parentPath(path.split("/"),ii)" >@{path.split("/")(ii)}</a> @if(ii<=path.split("/").length -1){<span class="divider">/</span>}
+	}
+</span>
 }
 
 @confirmDeleteStreamDialog(filePath : String, fileName : String) = {
@@ -127,6 +138,13 @@
   <tbody id="folder=@path">
 	<tr style="background-color: #fcfcfc;">
 		<td><i class="icon-folder-open"></i><a class="folder-list-button" id="UP_ID" data-folderpath="@upPathLoc/" href="#folder=@upPathLoc/"><b> @path..</b></a></td>
+		<td><!--[Folder tools]--></td>
+		<td>-</td>    	
+	</tr>
+	<tr style="background-color: #fcfcfc;">
+		<td><i class="icon-folder-open"></i>
+			@fullpathNavigation()
+		</td>
 		<td><!--[Folder tools]--></td>
 		<td>-</td>    	
 	</tr>
