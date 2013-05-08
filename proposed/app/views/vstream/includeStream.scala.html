@@ -8,7 +8,7 @@
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
 @if(stream != null) {
-<div id="streamblock@{stream.id}" >
+<div id="streamblock@{stream.id}">
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
 <div class="stream_header_block @if(!displayHeader){hidden}">
 	<div id="streamtitle@{stream.id}" class="streamtitle">
@@ -109,7 +109,7 @@
 		</div>
 		}	
 		<div class="streamNoDataLine">
-		&nbsp;No data currently available.
+		 <span style="color: #888; padding-left: 10px;">No data currently available.</span>
 		</div>
 	}
 	}
