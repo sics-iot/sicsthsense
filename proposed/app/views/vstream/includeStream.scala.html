@@ -11,13 +11,6 @@
 <div id="streamblock@{stream.id}" >
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
 <div class="stream_header_block @if(!displayHeader){hidden}">
-	<span id="streamconfig@{stream.id}" class="streamconfig form-inline">
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1D" id="streamwindow@{stream.id}-4"><label for="streamwindow@{stream.id}-4">1d</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
-	</span>
-
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
 			Stream
@@ -32,18 +25,24 @@
 			owner: @stream.owner.userName
 		}
 		@if(displayToolbar){
-			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
+		<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)</span>
 		}
 		</div>
+		<div class="row-fluid controls controls-row">
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
-		<div class="row-fluid controls controls-row">
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
 			}	
-			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
-		</div>
+			<input class="span7" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		}	
+	<span id="streamconfig@{stream.id}" class="span3 form-inline pull-right">
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1D" id="streamwindow@{stream.id}-4"><label for="streamwindow@{stream.id}-4">1d</label>
+	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
+	</span>
+</div>
 	</div>	
 @if(displayOverview || displayPlot){
 	<div class="plot-container">
@@ -97,7 +96,7 @@
 			owner: @stream.owner.userName
 		} *@
 			@if(displayToolbar){
-			@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
+				<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)</span>
 			}
 		</div>
 		@**Show key?**@
