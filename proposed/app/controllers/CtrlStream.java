@@ -33,6 +33,7 @@ import java.util.List;
 
 import models.DataPoint;
 import models.FileSystem;
+import models.Resource;
 import models.Stream;
 import models.User;
 import models.Vfile;
@@ -291,6 +292,18 @@ public class CtrlStream extends Controller {
 		final User user = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
 		return getData(user, stream, tail, last, since);
+	}
+	
+	@Security.Authenticated(Secured.class)
+	public static Result regenerateKey(Long id) {
+		User currentUser = Secured.getCurrentUser();
+		Stream stream = Stream.get(id);
+		if (stream == null || stream.owner.id != currentUser.id) {
+			return badRequest("Stream does not exist: " + id);
+		}
+		String key = stream.updateKey();
+		//return ok("Stream key reset successfully: " + id + " New key: " + key);
+		return ok(key);
 	}
 
 	// @Security.Authenticated(Secured.class)

@@ -272,6 +272,8 @@ public class Application extends Controller {
           		controllers.routes.javascript.CtrlResource.deleteParser(),
           		controllers.routes.javascript.CtrlResource.addParser(),
           		controllers.routes.javascript.CtrlResource.getById(),
+          		controllers.routes.javascript.CtrlResource.regenerateKey(),
+          		controllers.routes.javascript.CtrlStream.regenerateKey(),
           		controllers.routes.javascript.CtrlStream.delete(),
           		controllers.routes.javascript.CtrlStream.clear(),
           		controllers.routes.javascript.CtrlStream.deleteByKey(),

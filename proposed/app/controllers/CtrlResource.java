@@ -596,6 +596,18 @@ public class CtrlResource extends Controller {
 		return sb.toString();
 	}
 
+	@Security.Authenticated(Secured.class)
+	public static Result regenerateKey(Long id) {
+		User currentUser = Secured.getCurrentUser();
+		Resource resource = Resource.get(id, currentUser);
+		if (resource == null) {
+			return badRequest("Resource does not exist: " + id);
+		}
+		String key = resource.updateKey();
+		//return ok("Resource key reset successfully: " + id + " New key: " + key);
+		return ok(key);
+	}
+	
 	/*
 	 * poll the source data and fill the stream definition form // with default
 	 * sensible parameters for the user to confirm

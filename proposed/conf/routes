@@ -65,6 +65,7 @@ GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStrea
 GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 #GET		   	 /streams/view/:id										controllers.CtrlStream.getById(id: Long)
+GET        /streams/regenerateKey/:id			 			controllers.CtrlStream.regenerateKey(id: Long)
 GET		   	 /streams/view/:id										controllers.Application.viewStream(id: Long)
 POST       /streams/modify/:id									controllers.CtrlStream.modify(id: Long)
 GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
@@ -86,6 +87,7 @@ GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: L
 #deprecated
 GET			/resources/addLegacy												controllers.CtrlResource.add()
 #GET			/resources/initialise									controllers.CtrlResource.initialise()
+GET     /resources/regenerateKey/:id			 		controllers.CtrlResource.regenerateKey(id: Long)
 POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
 GET			/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
 POST		/resources/delete/:id									controllers.CtrlResource.delete(id: Long)

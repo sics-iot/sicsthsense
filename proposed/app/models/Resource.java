@@ -159,7 +159,7 @@ public class Resource extends Operator {
     }
 
     /** Call to create, or update an access token */
-    private String updateKey() {
+    public String updateKey() {
         String newKey = UUID.randomUUID().toString();
         key = newKey;
         if (id > 0) {

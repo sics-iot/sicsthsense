@@ -182,12 +182,12 @@ public class Stream extends Model implements Comparable<Stream> {
      * public void setLocation(double lon, double lat) { setLocation(new Location(lon,lat)); }
      */
 
-    /** Call to create, or update an access key */
     protected String createKey() {
         key = UUID.randomUUID().toString();
         return key;
     }
 
+    /** Call to create, or update an access key */
     public String updateKey() {
         key = createKey();
         update();

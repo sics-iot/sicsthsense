@@ -37,8 +37,11 @@
 		</div>
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
-		<div class="row-fluid">
-			<input class="span12" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+		<div class="row-fluid controls controls-row">
+			@if(stream.owner.id==Secured.getCurrentUser().id) {
+			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
+			}	
+			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		</div>
 		}	
 	</div>	
@@ -99,8 +102,11 @@
 		</div>
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
-		<div class="row-fluid">
-			<input class="span12" type="text" id="key" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+			<div class="row-fluid controls controls-row">
+			@if(stream.owner.id==Secured.getCurrentUser().id) {
+			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
+			}	
+			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		</div>
 		}	
 		<div class="streamNoDataLine">

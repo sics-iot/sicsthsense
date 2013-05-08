@@ -27,7 +27,7 @@
 	$('#showHidePlotsButton').on("click", showHidePlots);
 	
 function showAlert(type, msg) {
-	$('#container-errormsg').html('<div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div>');
+	$('#container-errormsg').html('<div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div>').show().fadeOut(20000);
 	// $('.container').after('<div class="container-errormsg><div class="' + type
 	// + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
 }	
@@ -775,6 +775,44 @@ browseResourceList = function(e) {
   });
 };
 $('.resourceListItem').unbind('click').on('click', browseResourceList);
+
+var resourceRegenerateKey;
+resourceRegenerateKey = function(e) {
+	var resId=$(this).attr('data-resourceId');
+	var debugMsg = "Regenerating resource key for id: " + resId;
+	console.debug(debugMsg);
+	// alert(debugMsg);
+	jsRoutes.controllers.CtrlResource.regenerateKey(resId).ajax({
+    success: function(msg) {
+    	$('#'+resId+'KeyURL').val(msg);
+    	showAlert('alert-success',debugMsg+" succeeded. <strong>New key:</strong> " +msg);
+    },
+    error: function(msg) {
+    	console.debug(msg);
+    	showAlert('alert-error',msg);
+    }
+  });
+};
+$('.resourceRegenerateKey').unbind('click').on('click', resourceRegenerateKey);
+
+var streamRegenerateKey;
+streamRegenerateKey = function(e) {
+	var resId=$(this).attr('data-streamId');
+	var debugMsg = "Regenerating stream key for id: " + resId;
+	console.debug(debugMsg);
+	// alert(debugMsg);
+	jsRoutes.controllers.CtrlStream.regenerateKey(resId).ajax({
+    success: function(msg) {
+    	$('#streamKey'+resId).val(msg);
+    	showAlert('alert-success',debugMsg+" succeeded. <strong>New key:</strong> " +msg);
+    },
+    error: function(msg) {
+    	console.debug(msg);
+    	showAlert('alert-error',msg);
+    }
+  });
+};
+$('.streamRegenerateKey').unbind('click').on('click', streamRegenerateKey);
 
 // function add_resource_form_handler(e) {
 // $('.parsers_template').remove();

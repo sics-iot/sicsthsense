@@ -134,8 +134,9 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 					</div>
 			@if(!autoParserForm) {
 				<div class="row-fluid controls controls-row">
-					<label class="span2" for="@{myForm("key").id}KeyURL">Key @helpMark("The hash/URI used to identify this resource","keyHelp")</label>
-				<input class="span10" type="text" id="@{myForm("key").id}KeyURL" name="keyUrl" value="@keyUrl" readonly>
+					<label class="span2" for="@{myForm("id").value}KeyURL">Key @helpMark("The hash/URI used to identify this resource","keyHelp")</label>
+					<input class="span8" type="text" id="@{myForm("id").value}KeyURL" name="keyUrl" value="@keyUrl" readonly>
+					<button class="span2 btn btn-danger resourceRegenerateKey" id="resourceRegenerateKey@myForm("id").value" data-resourceId="@myForm("id").value"><i class="icon-refresh icon-white"></i> Regenerate!</button>
 				</div>
 
 				<div class="row-fluid controls controls-row">
