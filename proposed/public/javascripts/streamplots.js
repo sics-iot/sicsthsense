@@ -136,7 +136,7 @@ var StreamPlots = {
 			top: y + 5,
 			left: x + 5
 		})
-		.appendTo('body').fadeIn(500);
+		.appendTo('body').show();
 	},
 
 	getStream : function(stream) {		
