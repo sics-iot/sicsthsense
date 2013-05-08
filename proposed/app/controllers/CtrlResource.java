@@ -578,8 +578,8 @@ public class CtrlResource extends Controller {
 		if (subResources != null && subResources.size()>0) {
 			sb.append("\n<ul data-parentResourceId='" + parentResourceId + "' >");
 			for (Resource sr : subResources) {
-				sb.append("<li><div class='resourceListItem' data-resourceId='" + sr.id.toString() + "'> "
-						+ sr.label + "</div>"); // give node name
+				sb.append("<li><span class='resourceListItem' data-resourceId='" + sr.id.toString() + "'> "
+						+ sr.label + "</span>"); // give node name
 				sb = exploreResourceTree(user, sb, sr);
 				sb.append("</li>");
 			}

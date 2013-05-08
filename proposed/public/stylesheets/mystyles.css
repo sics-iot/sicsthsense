@@ -201,14 +201,14 @@ input.resourceStreamPath {
 .resourceListItem:hover {
   background:lightgray;
   opacity:0.85;
-  text-decoration:none;
-  list-style-type: none;
   cursor:pointer;
+  font-weight: bold; 
 }
 
 .selectedResourceListItem {
   background:lightgray;
   opacity:0.85;
+  font-weight: bold;
 }
 .helptooltip {
 max-width: 20%;
