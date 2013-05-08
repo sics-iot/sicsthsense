@@ -1,9 +1,14 @@
 @(resourceId: Long, resourceUrl: String, showHeader: Boolean = true)  
+
+@helpMark(text: String, apiLocation: String="") = {
+<a href="@routes.Public.about()#@apiLocation" class="helptooltip" data-toggle="tooltip" title="@text"><i class="icon-question-sign"></i></a>
+}
+
 	@if(Utils.isValidURL(resourceUrl)) {
 <div class="row-fluid ">
 	 <form id="proxy@resourceId" action="@routes.Proxy.forwardById(resourceId, "")" class="controls-row " >
 <fieldset>
-  @if(showHeader) {<legend>Interact with 	<span id="ajax_wait@resourceId" style="display: none" class="pull-right">
+  @if(showHeader) {<legend>Interact with 	@helpMark("Send requests to the resource directly","proxyHelp")<span id="ajax_wait@resourceId" style="display: none" class="pull-right">
 <img src='@routes.Assets.at("images/ajax_wait.gif")' alt="wait-spin"></span></legend>}
 	 	 <select class="span2" id="method@resourceId" name="method" >
    		<option value="GET" selected="selected">GET</option>

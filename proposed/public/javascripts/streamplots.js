@@ -14,16 +14,23 @@ var StreamPlots = {
 			stream.plot.setupGrid();
   		stream.plot.draw();
 		},
+		clearSelection : function(event, plot) {
+			var streamID = $(this).attr('stream_id');
+			var overviewPlot = window['streamplot'+streamID].overview;
+			overviewPlot.clearSelection();
+		},
 	setup : function(stream) {
 		var streamID = $('#'+stream.id).attr('stream_id');
 		var streamplot = '#streamplot' + streamID; // == '#'+stream.id
 		StreamPlots.activePlots.push(streamID);
 		var overview = '#overview' + streamID;
-		$('#'+stream.id).bind("plotclick", StreamPlots.plotHoverHandler);
+		$('#'+stream.id).bind("plothover", StreamPlots.plotHoverHandler);
 		//console.debug("Hover bind.. ");
 		$('#'+stream.id).bind("plotpan", StreamPlots.plotPanHandler);
 		$('#'+stream.id).bind("plotzoom", StreamPlots.plotPanHandler);
 		$(overview).bind("plotselected", StreamPlots.plotSelectHandler); 
+		$('#'+stream.id).bind("click", StreamPlots.clearSelection);
+
 	},
 	plotPanHandler : function (event, plot) {
 		var streamID = $(this).attr('stream_id');
@@ -32,7 +39,8 @@ var StreamPlots = {
 		var overviewPlot = window['streamplot'+streamID].overview;
 		var axes = plot.getAxes();
 		overviewPlot.setSelection({ xaxis: { from: axes.xaxis.min, to: axes.xaxis.max }, yaxis: { from: axes.yaxis.min, to: axes.yaxis.max } }, true);
-		
+		//$('#tooltip'+streamID).remove();
+
 		console.debug("Panning to x: "  + axes.xaxis.min.toFixed(2)
 		+ " &ndash; " + axes.xaxis.max.toFixed(2)
 		+ " and y: " + axes.yaxis.min.toFixed(2)
@@ -128,7 +136,7 @@ var StreamPlots = {
 			top: y + 5,
 			left: x + 5
 		})
-		.appendTo('body').fadeIn(200);
+		.appendTo('body').fadeIn(500);
 	},
 
 	getStream : function(stream) {		
@@ -174,12 +182,16 @@ var StreamPlots = {
         overview_opts.max = max;
 				}
 				stream.plot.setData([stream.points]);
-				stream.plot.setupGrid();
-    		stream.plot.draw();
+				//will not redraw plot if overview is selected
+				if(stream.overview.getSelection() == null) {
+					stream.plot.setupGrid();
+	    		stream.plot.draw();
+				}
     		stream.overview.setData([stream.points]);
 				stream.overview.setupGrid();
     		stream.overview.draw();
 				$('#'+stream.id).css('background-color', '');
+				//$('#tooltip'+streamID).remove();
 			}});
 	},
 
@@ -215,8 +227,8 @@ var StreamPlots = {
 //			mode: "xy"
 //		},
 		grid: {
-			hoverable: false,
-			clickable: true
+			hoverable: true,
+			clickable: false
 		}
 	},
 	overview_options : {
