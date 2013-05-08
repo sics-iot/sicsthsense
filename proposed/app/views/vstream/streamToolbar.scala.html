@@ -24,7 +24,6 @@ stream.file.getParentPath()
 }
 
 @if(own || shared || publicAccess) {
-<span class="btn-toolbar">
 				
 @**
 <span class="btn-group">
@@ -71,14 +70,15 @@ stream.file.getParentPath()
 		<span class="btn-group">
 			<a href="#confirmClearStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Clear"><i class="icon-remove-sign icon-white"></i></a>
 			<a href="#confirmDeleteStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Delete"><i class="icon-trash icon-white"></i></a>
-	 }
-		</span>
-</span>
+		</span>	 
+	} else {
+	</span>
+	}
 
 <!-- Modal confirmDeleteStream -->
 <div id="confirmDeleteStreamModal@stream.id" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteStreamModalLabel@stream.id" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmDeleteStreamModalLabel@stream.id">Delete Stream <em>@streamTitle</em></h3>
   </div>
   <div class="modal-body">
@@ -94,7 +94,7 @@ stream.file.getParentPath()
 <!-- Modal confirmClearStream -->
 <div id="confirmClearStreamModal@stream.id" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@stream.id" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="confirmClearStreamModalLabel@stream.id">Clear Stream <em>@streamTitle</em></h3>
   </div>
   <div class="modal-body">

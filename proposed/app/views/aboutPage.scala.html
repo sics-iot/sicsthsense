@@ -42,7 +42,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 
 
 	<br /> <br />
-  <h1>Polling data</h1>
+  <h1 id='pollingDataHelp'>Polling data</h1>
   
 	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
 	This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
@@ -51,7 +51,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 
 
 	<br /> <br />
-  <h1>Posting data</h1>
+  <h1 id='postingDataHelp'>Posting data</h1>
   
   Posting to Sics<sup>th</sup>Sense is also useful, for delay-sensitive notification, or for data collection from devices with no public URL (e.g. a smartphone).
   You have to ways to post to SiscthSense:
@@ -79,7 +79,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 			<pre> @sicsthSenseURL()@{routes.CtrlStream.postByKey("key")}</pre>
 			</ul>
 		</li>
-		<li> Posting complex data that needs to be parsed before feeding multiple streams
+		<li id="parserHelp"> Posting complex data that needs to be parsed before feeding multiple streams
 			<ul>
 				<li> Complex text which should be parsed using a REGEX to extract the goal values. 
 					<ul>
@@ -92,11 +92,11 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 					</ul>
 				</li>
 				<li> Complex JSON objects from which you need to select a specific node. </li>
-				<li> Posting with a specific time format (<em>e.g.</em> Wed Mar 27, 18:00:12 CET 2013). 
+				<li id="timestampHelp"> Posting with a specific time format (<em>e.g.</em> Wed Mar 27, 18:00:12 CET 2013). 
 				See <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">this.</a></li>
 			</ul>
 			In this case you need to create a resource and define the needed stream parsers.
-			After creating the resource, the system will provide a <code>key</code> that should be used for posting to the URL:
+			After creating the resource, the system will provide a <code id="keyHelp">key</code> that should be used for posting to the URL:
 			<pre> @sicsthSenseURL()@{routes.CtrlResource.postByKey("key")}</pre>
 		</li>
 	</ul>

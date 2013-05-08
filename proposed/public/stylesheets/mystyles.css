@@ -209,3 +209,6 @@ input.resourceStreamPath {
   background:lightgray;
   opacity:0.85;
 }
+.helptooltip {
+max-width: 20%;
+}

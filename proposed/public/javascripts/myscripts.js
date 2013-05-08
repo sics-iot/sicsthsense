@@ -751,11 +751,12 @@ fileRowClick = function(e) {
 };
 var browseResourceList, loadResourceList = function(msg, resId) {  
 	// load
-	msg = $.trim(msg).replace(/<!DOCTYPE html>[\r\n\s]*.*<div id="mainContainer"/igm, '<div id="mainContainer"').replace(/(<\/body>.*<\/html>)/igm, '');      	
+	//.replace(/<!DOCTYPE html>[\r\n\s]*.*<div id="mainContainer"/igm, '<div id="mainContainer"').replace(/(<\/body>.*<\/html>)/igm, '');      	
 	//alert(msg)
-	msg = $("#mainContainer",$('<div></div>').append(msg));
-	$('#mainContainer').html(msg.html());   
-	$('#mainPane').find('.selectedResourceListItem').each(function(e){$(this).removeClass('selectedResourceListItem');});
+	msg = $.trim(msg);
+	msg = $("#mainPane",$('<div></div>').append(msg));
+	$('#mainPane').html(msg.html());   
+	$('.selectedResourceListItem').each(function(e){$(this).removeClass('selectedResourceListItem');});
 	$('#resourcelist-sidenav').find('[data-resourceId="'+resId+'"]').addClass('selectedResourceListItem');
 	$('.resourceListItem').unbind('click').on('click', browseResourceList);
   $('input[readonly]').unbind('click').on('click', resourceStreamPath);

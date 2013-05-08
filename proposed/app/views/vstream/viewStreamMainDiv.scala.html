@@ -26,7 +26,13 @@ stream.file.getParentPath()
 
 					<legend>View
 						<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
-						</span>
+						
+				@if( stream.canWrite(Secured.getCurrentUser()) ) {
+				<span class="btn-group">	
+					<a href="@routes.Application.streams()" class="btn btn-small"><i class="icon-remove"></i></a>
+					<button type="submit" name="update" class="btn btn-primary btn-small" id="updateStream" form="streamFormId"><i class="icon-ok icon-white"></i> Save</button>
+	      </span>
+				} </span>
 					</legend>
 					@vstream.includeStream(stream, displayHeader =true, displayOverview =true, displayPlot =true, displayToolbar =false)
 

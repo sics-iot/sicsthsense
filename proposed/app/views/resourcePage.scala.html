@@ -36,14 +36,18 @@
 @parentResource = @{Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()).parent}
 @thisResource = @{Resource.get(myForm("id").value.toLong, Secured.getCurrentUser())}
 
+@helpMark(text: String, apiLocation: String="") = {
+<a href="@routes.Public.about()#@apiLocation" class="helptooltip" data-toggle="tooltip" title="@text"><i class="icon-question-sign"></i></a>
+}
+
 @numberOfParsers = @{myForm("streamParserWrapers").indexes().length}
 
 @streamParserGroupLabels(hidden: Boolean, className: String = "") = {
 <div class="@if(hidden){hidden} row-fluid @className controls controls-row streamParsersLabels">
-<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Path</span>
-<span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON path)</span>
-<span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format</span>
-<span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Path @helpMark("File path for generated stream","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format @helpMark("Required if extracting timestamp information along with data","parserHelp")</span>
+<span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type @helpMark("Internet media type for incoming data","parserHelp")</span>
 </div>
 <div class="@if(!hidden){hidden} streamParsersLabelsAddParserText">
 Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span></a> to add parsers.
@@ -72,11 +76,6 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
     ================================================== -->
     <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
-			 <div style="position:fixed;" >
-				<span  class="btn-group">	
-					<button type="submit" name="update" class="btn btn-primary" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i> Save</button>
-					<a href="@routes.CtrlResource.resources()" class="btn"><i class="icon-remove"></i></a>
-	      </span></div>
 			@manage.navigationMenu() 
 			<script type="text/javascript">
 			$('#resourcelist-sidenav').find('[data-resourceId="'+@myForm("id").value+'"]').addClass('selectedResourceListItem');
@@ -99,19 +98,27 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
 		      <legend>Parameters
-					@if(!autoParserForm) {
-						<a href="#confirmDeleteResourceModal" role="button" class="btn btn-danger pull-right" data-toggle="modal"><i class="icon-trash icon-white"></i> Delete resource</a>
-					}
+						<span class="pull-right">
+						@if(!autoParserForm) {
+						<span class="btn-group">	
+							<a href="#confirmDeleteResourceModal" role="button" class="btn btn-danger btn-small" data-toggle="modal"><i class="icon-trash icon-white"></i> Delete</a>
+						</span>
+						}
+						<span class="btn-group">	
+							<a href="@routes.CtrlResource.resources()" class="btn btn-small"><i class="icon-remove"></i></a>
+							<button type="submit" name="update" class="btn btn-primary btn-small" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i> Save</button>
+	      		</span>
+						</span>
 					</legend>
 					<div class="row-fluid controls controls-row">
-						<label class="span3" for="@myForm("label").id">Label</label>
+						<label class="span3" for="@myForm("label").id">Label @helpMark("A unique label for identifying this resoure","pollingDataHelp")</label>
 						@if(parentResource != null) {
 						<label class="span4" for="ParentUrl@myForm("id").value">Parent [<a href="@routes.CtrlResource.getById(parentResource.id)">@parentResource.label</a>]</label>
-						<label class="span3" for="@myForm("pollingUrl").id">Resource sub-path</label>
+						<label class="span3" for="@myForm("pollingUrl").id">Resource sub-path @helpMark("The path to access this subresource under the parent URI","pollingDataHelp")</label>
 						} else {
-						<label class="span7" for="@myForm("pollingUrl").id">Resource URI</label>
+						<label class="span7" for="@myForm("pollingUrl").id">Resource URI @helpMark("Public address. Suppoted protocols: coap:// and http://","pollingDataHelp")</label>
 						}
-						<label class="span2" for="@myForm("pollingPeriod").id">Polling period (s)</label>
+						<label class="span2" for="@myForm("pollingPeriod").id">Polling period (s) @helpMark("Minimum polling period is 120s","pollingDataHelp")</label>
 					</div>
 					<div class="row-fluid controls controls-row">
 						<input type="hidden" id="myForm("id").id" name="@myForm("id").name" value="@myForm("id").value" readonly="readonly" size="0">
@@ -127,12 +134,12 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 					</div>
 			@if(!autoParserForm) {
 				<div class="row-fluid controls controls-row">
-					<label class="span2" for="@{myForm("key").id}KeyURL">Key</label>
+					<label class="span2" for="@{myForm("key").id}KeyURL">Key @helpMark("The hash/URI used to identify this resource","keyHelp")</label>
 				<input class="span10" type="text" id="@{myForm("key").id}KeyURL" name="keyUrl" value="@keyUrl" readonly>
 				</div>
 
 				<div class="row-fluid controls controls-row">
-				<label class="span2" for="@myForm("description").id">Description</label>
+				<label class="span2" for="@myForm("description").id">Description @helpMark("A human readable description","")</label>
 				<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Resource description..." >@myForm("description").value</textarea>
 				</div>
 				<br />
