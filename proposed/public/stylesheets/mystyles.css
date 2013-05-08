@@ -202,7 +202,6 @@ input.resourceStreamPath {
   background:lightgray;
   opacity:0.85;
   cursor:pointer;
-  font-weight: bold; 
 }
 
 .selectedResourceListItem {
