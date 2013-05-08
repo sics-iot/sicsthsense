@@ -3850,7 +3850,7 @@ input[type="submit"].btn.btn-mini {
   background-color: #000000 \9;
 }
 .breadcrumb {
-  padding: 8px 15px;
+  padding: 5px;
   margin: 0 0 20px;
   list-style: none;
   -webkit-border-radius: 4px;
