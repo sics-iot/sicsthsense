@@ -1,0 +1,72 @@
+@(user: User, userForm: Form[User]=null, newPassword: String="", message: String="")
+
+@import helper._
+
+@displayUser(user: User) = {
+   @forms.form(routes.CtrlUser.submit()) {
+   	  <legend>Profile of @user.userName!</legend>
+   	  @forms.input(userForm!=null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
+			@if(user.firstName!="") {@forms.input(userForm!=null, "text", "firstName", "First name", user.firstName, "", true) }
+			@if(user.lastName!="") {@forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName, "", true) }
+			@if(user.description!="" && user.description!=null) {
+			<div class="control-group">
+				<label class="control-label" for="DescriptionID">Description</label>
+				<div class="controls">
+				<textarea rows="3" cols="80" id="DescriptionID" readonly>@user.description</textarea>
+				</div>
+			</div>
+			}
+
+			@if(user.latitude!=0 && user.longitude!=0) {
+				<fieldset>
+				<legend>Location</legend>
+				<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
+				<br />
+				<div class="row-fluid">
+				@forms.input(userForm!=null, "number", "latitude", "Latitude", user.latitude.toString(), "", true)
+				@forms.input(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString(), "", true)
+				</div>
+				</fieldset>
+				<br />
+			}
+  }
+  
+}
+
+@layout("Account", message, session) {
+<div class="row-fluid">
+	<div class="span2 bs-docs-sidebar">
+		
+	</div>
+	<div class="span9">
+  @displayUser(user)
+	<br /><br />
+		
+ <script type="text/javascript">
+	     initializeMaps = function(e) {
+	        var mapOptions = {
+	          center: new google.maps.LatLng(@user.latitude, @user.longitude),
+						@if(user.latitude==0 && user.longitude==0) {
+							zoom: 1,
+						} else {
+							zoom: 7,
+						}
+	          mapTypeId: google.maps.MapTypeId.ROADMAP
+	        };
+	        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+					marker = new google.maps.Marker({
+						position: new google.maps.LatLng(@user.latitude, @user.longitude),
+						draggable:true,
+						animation:false,
+						map: map
+	      });
+				google.maps.event.addListener(marker, 'dragend', function(event) {
+	        document.getElementById("latitude") = this.getPosition().lat(); 
+	        document.getElementById("longtitude") = this.getPosition().lng();
+	       // $('.streamLat').val(this.getPosition().lat() );
+	        //$('.streamLong').val(this.getPosition().lng() );
+				});
+	}
+	      google.maps.event.addDomListener(window, 'load', initializeMaps);
+		</script>
+}

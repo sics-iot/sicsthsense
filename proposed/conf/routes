@@ -41,6 +41,8 @@ GET        /account/submit                       controllers.CtrlUser.submit()
 GET        /account/resetToken                   controllers.CtrlUser.resetToken(confirmed: Boolean)
 GET        /account/resetPassword								 controllers.CtrlUser.resetPassword(confirmed: Boolean)
 
+GET        /accounts/:username                   controllers.CtrlUser.view(username: String)
+
 # Administration
 GET        /admin/statistics										controllers.Application.statistics()
 GET        /admin/reindex												controllers.Application.reindex()

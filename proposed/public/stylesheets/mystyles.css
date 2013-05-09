@@ -212,3 +212,19 @@ input.resourceStreamPath {
 .helptooltip {
 max-width: 20%;
 }
+
+hr.dashed {
+	border-top: 1px dashed #ccc;
+	color: #fff;
+	background-color: #fff;
+	height: 1px;
+	margin: 2px;
+}
+
+div#footer {
+  padding: 8px;
+  padding-left: 18px;
+	color: #666;
+	background-color: #eee;
+	font-size: 80%;
+}

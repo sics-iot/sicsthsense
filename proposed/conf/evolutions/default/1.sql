@@ -191,36 +191,3 @@ alter table users_streams add constraint fk_users_streams_users_01 foreign key (
 alter table users_streams add constraint fk_users_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
 
 # --- !Downs
-
-SET FOREIGN_KEY_CHECKS=0;
-
-drop table actuators;
-
-drop table data_point_double;
-
-drop table data_point_string;
-
-drop table functions;
-
-drop table functions_streams;
-
-drop table operators;
-
-drop table resources;
-
-drop table resource_log;
-
-drop table settings;
-
-drop table streams;
-
-drop table users_streams;
-
-drop table parsers;
-
-drop table users;
-
-drop table vfiles;
-
-SET FOREIGN_KEY_CHECKS=1;
-
