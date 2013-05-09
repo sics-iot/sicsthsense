@@ -77,7 +77,9 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String password; // only for username/password login
 	public String firstName;
 	public String lastName;
-	public String location;
+	public String description;
+	public double latitude;
+	public double longitude;
 
 	@Column(nullable = false)
 	public Date creationDate;
@@ -107,19 +109,32 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
 	public User(String email, String userName, String firstName, String lastName,
-			String location) {
+			String latitude, String longitude) {
 		this.creationDate = new Date();
-		this.email = email.toLowerCase();
-		this.userName = userName.toLowerCase();
+		this.email     = email.toLowerCase();
+		this.userName  = userName.toLowerCase();
 		this.firstName = firstName;
-		this.lastName = lastName;
-		this.location = location;
-		this.password = hash(new BigInteger(130,new SecureRandom()).toString(32));
-		this.admin = false;
+		this.lastName  = lastName;
+		if (latitude==null || "".equals(latitude)) {
+			Logger.warn("empty latitude");
+			this.latitude=0;
+		} else {
+			this.latitude  = Double.parseDouble(latitude);
+		}
+		if (longitude==null || "".equals(longitude)) {
+			Logger.warn("empty longtideu");
+			this.longitude=0;
+		} else {
+			this.longitude  = Double.parseDouble(longitude);
+		}
+		this.description = "";
+		this.password  = hash(new BigInteger(130,new SecureRandom()).toString(32));
+		this.admin     = false; // mannually set this!
 	}
 	public User() {
 		this.creationDate = new Date();
 		this.password = DigestUtils.md5Hex(new BigInteger(130,new SecureRandom()).toString(32));
+		this.description = "";
 		this.admin = false;
 	}
 
@@ -129,18 +144,24 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String  getUserName()          { return userName; }
 	public String  getFirstName()         { return firstName; }
 	public String  getLastName()          { return lastName; }
-	public String  getLocation()          { return location; }
+	public String  description()          { return description; }
+	public Double  getLatitude()          { return latitude; }
+	public Double  getLongitude()         { return longitude; }
 	public Long    getId()                { return new Long(id); }
 	public boolean exists()               { return exists(id); }
 	public boolean isAdmin()		          { return admin; }
 	public void		 setAdmin(boolean admin){ this.admin=admin; }
 
 	public void updateUser(User user) {
-		this.userName = user.userName.toLowerCase();
+		this.userName  = user.userName.toLowerCase();
 		this.firstName = user.firstName;
-		this.lastName = user.lastName;
-		this.location = user.location;
-		this.password = user.password;
+		this.lastName  = user.lastName;
+		this.latitude  = latitude;
+		this.longitude = longitude;
+		this.password  = user.password;
+		this.latitude  = user.latitude;
+		this.longitude = user.longitude;
+		this.description = user.description;
 		update();
 	}
 
@@ -212,6 +233,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		Logger.info("Sorting StreamList");
 		Collections.sort(streamList);
 	}
+
 
 	// perform the Password -> Hash transform
 	public static String hash(String toHash) {

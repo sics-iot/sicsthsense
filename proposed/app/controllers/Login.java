@@ -111,7 +111,7 @@ public class Login extends Controller {
 			return ok(registerPage.render("Username already exists!",""));
 		}
 		//validate username/pass
-		User user = new User(username,username,"","","");
+		User user = new User(username,username,"","","","");
 		user.setPassword(password);
 		//and register in database
 		//user.save(); --wrong.. does not create everything
@@ -127,7 +127,8 @@ public class Login extends Controller {
 			user = User.create(new User(userInfo.attributes.get("email"),
 					userInfo.attributes.get("email"), userInfo.attributes
 							.get("firstName"), userInfo.attributes.get("lastName"),
-					userInfo.attributes.get("location")));
+					userInfo.attributes.get("latitude"),
+					userInfo.attributes.get("longitude")));
 			destination = routes.CtrlUser.edit();
 			Logger.info("created");
 		}

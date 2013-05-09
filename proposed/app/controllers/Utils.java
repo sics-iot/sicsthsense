@@ -84,6 +84,9 @@ public class Utils {
 	}
 
 	public static String dateFormatter(long time) {
+		if (time==0) {
+			return "Never";
+		}
 		return new Date(time).toString();
 	}
 

@@ -1,6 +1,7 @@
 @(vfiles : List[Vfile], path : String)
 @upPathLoc={@Vfile.extractUpperLevelPath(path)}
 @parentPath(pathlist : Array[String], depth: Int) = {@for(dir <- 1 to depth) {/@pathlist(dir)}/}
+
 @fullpathNavigation() = {
 <span id='filePathBreadCrumb' class="breadcrumb">
 	<a href="#path=/" class="folder-list-button" data-folderpath="/">Drive</a> 

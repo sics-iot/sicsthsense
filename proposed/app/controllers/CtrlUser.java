@@ -37,6 +37,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.accountPage;
+import views.html.accountsPage;
 
 @Security.Authenticated(Secured.class)
 public class CtrlUser extends Controller {
@@ -63,6 +64,7 @@ public class CtrlUser extends Controller {
 		return ok(accountPage.render(getUser(), userForm, "", ""));
 	}
 
+	// submitting a modified user detail form
 	public static Result submit() {
 		Form<User> theForm = userForm.bindFromRequest();
 		if (theForm.hasErrors()) {
@@ -70,6 +72,7 @@ public class CtrlUser extends Controller {
 		} else {
 			User current = getUser();
 			User submitted = theForm.get();
+			Logger.warn("sub "+submitted.latitude);
 			submitted.id = current.id;
 			submitted.email = current.email;
 			try {
@@ -106,7 +109,6 @@ public class CtrlUser extends Controller {
 		return ok(accountPage.render(getUser(), userForm, "", "Password has not been reset"));
 
 	}
-
 	
 	@Security.Authenticated(Secured.class)
 	public static Result followStream(Long id, Boolean follow) {
@@ -131,4 +133,9 @@ public class CtrlUser extends Controller {
 		return ok(Boolean.toString(user.isfollowingStream(stream)));
 	}
 
+	public static Result view(String username) {
+		final User user = User.getByUserName(username);
+		if(user == null) return notFound();
+		return ok(accountsPage.render(user,userForm,"",""));
+	}
 }
