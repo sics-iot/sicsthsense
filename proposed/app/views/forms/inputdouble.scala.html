@@ -1,0 +1,11 @@
+@(edit: Boolean, itype: String, name: String, label: String, value: String,  className: String="", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false)
+	@if(label != null && label != "") { 
+		<div class="control-group">
+			<label class="control-label" for="@{label}ID">@label</label>
+			<div class="controls">
+				<input class="@className" type="number" step="any" id="@{label}ID" name="@name" value=@if(value!=null){"@value"}else{""} placeholder="@placeHolder" @if(!edit || readOnly){ readonly }  @if(required){ required } />
+			</div>
+		</div>
+		} else {
+				<input class="@className" type="number" step="any" id="@{label}ID" name="@name" value=@if(value!=null){"@value"}else{""} placeholder="@placeHolder" @if(!edit || readOnly){ readonly }  @if(required){ required } />
+	}

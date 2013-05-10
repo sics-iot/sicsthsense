@@ -119,32 +119,28 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
-	public User(String email, String userName, String firstName, String lastName,
-			String latitude, String longitude) {
-		this.creationDate = new Date();
+	public User(String email, String userName, String firstName, String lastName) {
+		this();
 		this.email     = email.toLowerCase();
 		this.userName  = userName.toLowerCase();
 		this.firstName = firstName;
 		this.lastName  = lastName;
-		if (latitude==null || "".equals(latitude)) {
-			Logger.warn("empty latitude");
-			this.latitude=0;
-		} else {
-			this.latitude  = Double.parseDouble(latitude);
-		}
-		if (longitude==null || "".equals(longitude)) {
-			Logger.warn("empty longtideu");
-			this.longitude=0;
-		} else {
-			this.longitude  = Double.parseDouble(longitude);
-		}
-		this.description = "";
-		this.password  = hash(new BigInteger(130,new SecureRandom()).toString(32));
-		this.admin     = false; // mannually set this!
+//		if (latitude==null || "".equals(latitude)) {
+//			Logger.warn("empty latitude");
+//			this.latitude=0;
+//		} else {
+//			this.latitude  = Double.parseDouble(latitude);
+//		}
+//		if (longitude==null || "".equals(longitude)) {
+//			Logger.warn("empty longtideu");
+//			this.longitude=0;
+//		} else {
+//			this.longitude  = Double.parseDouble(longitude);
+//		}
 	}
 	public User() {
 		this.creationDate = new Date();
-		this.password = DigestUtils.md5Hex(new BigInteger(130,new SecureRandom()).toString(32));
+		setPassword(new BigInteger(130,new SecureRandom()).toString(32));
 		this.description = "";
 		this.admin = false;
 	}
