@@ -5,6 +5,11 @@
 @layout("Log In", message, null) {
 
 		<br />
+       <legend>Welcome to SicsthSense!</legend>
+		SicsthSense is a new cloud platform that makes connecting sensors, actuators, smart phones and online services easier than ever. Through this new platform, users can gather their sensor data, share it in a secure way, look for other’s data, set triggers and interact with objects or services.
+		<br />
+		<br />
+		<br />
 		@if(Application.canOpenIDLogin()) {
     <!-- Simple OpenID Selector -->
     <form action="@routes.Login.authenticate("")" method="get" id="openid_form">
