@@ -1,0 +1,11 @@
+@(edit: Boolean, itype: String, name: String, label: String, value: String,  className: String="", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false)
+	@if(label != null && label != "") { 
+		<div class="control-group">
+			<label class="control-label" for="@{label}ID">@label</label>
+			<div class="controls">
+				<textarea class="@className" id="@{label}ID" name="@name" placeholder="@placeHolder" @if(!edit || readOnly){ readonly }  @if(required){ required } >@if(value!=null){@value}else{}</textarea>
+			</div>
+		</div>
+		} else {
+				<textarea class="@className" id="@{label}ID" name="@name" placeholder="@placeHolder" @if(!edit || readOnly){ readonly }  @if(required){ required } >@if(value!=null){@value}else{}</textarea>
+	}
