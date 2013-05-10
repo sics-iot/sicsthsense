@@ -22,19 +22,15 @@
    	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(),"", true)
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
-			<div class="control-group">
-				<label class="control-label" for="DescriptionID">Description</label>
-				<div class="controls">
-				<textarea rows="3" cols="80" id="DescriptionID">@user.description</textarea>
-				</div>
-			</div>
+	    @forms.textarea(userForm!=null, "", "description", "Description", user.description)
+	    
 
 			<fieldset>
 			<legend>Location</legend>
 			<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
 			<br />
 			<div class="row-fluid">
-	    @forms.input(userForm!=null, "number", "latitude", "Latitude", user.latitude.toString())
+	    @forms.input(userForm!=null, "number", "latitude", "Latitude", user.latitude.toString())   
 	    @forms.input(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString())
 			</div>
 			</fieldset>

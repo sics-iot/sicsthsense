@@ -82,6 +82,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String lastName;
 	
 	@Column(length = 2*1024)
+	@Constraints.MaxLength(2*1024)
 	public String description = "";
 	
 	public double latitude = 0.0;
@@ -166,8 +167,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		this.userName  = user.userName.toLowerCase();
 		this.firstName = user.firstName;
 		this.lastName  = user.lastName;
-		this.latitude  = latitude;
-		this.longitude = longitude;
+		this.latitude  = user.latitude;
+		this.longitude = user.longitude;
 		this.password  = user.password;
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
