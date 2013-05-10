@@ -24,24 +24,17 @@
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
 	    @forms.textarea(userForm!=null, "", "description", "Description", user.description)
 	    
-	    @**
- 			@forms.inputdouble(userForm!=null, "number", "latitude", "Latitude", user.latitude.toString())   
-	    @forms.inputdouble(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString())
-	    
 			<fieldset>
 			<legend>Location</legend>
+ 			@forms.inputdouble(userForm!=null, "number", "latitude",  "Latitude",  user.latitude.toString())   
+	    @forms.inputdouble(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString())
 			<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
 			<br />
 			<div class="row-fluid">
-	   
 			</div>
 			</fieldset>
 			<br />
-			**@
-
   }
-  
- @*** 
  <script type="text/javascript">
 	     initializeMaps = function(e) {
 	        var mapOptions = {
@@ -61,15 +54,14 @@
 						map: map
 	      });
 				google.maps.event.addListener(marker, 'dragend', function(event) {
-	        document.getElementById("LatitudeID") = this.getPosition().lat(); 
-	        document.getElementById("LongtitudeID") = this.getPosition().lng();
+	        document.getElementById("LatitudeID").value   = this.getPosition().lat(); 
+	        document.getElementById("LongitudeID").value = this.getPosition().lng();
 	       // $('.streamLat').val(this.getPosition().lat() );
 	        //$('.streamLong').val(this.getPosition().lng() );
 				});
 	}
 	      google.maps.event.addDomListener(window, 'load', initializeMaps);
 		</script>
-		***@
 }
 
 @layout("Account", message, session) {
@@ -79,14 +71,16 @@
 	</div>
 	<div class="span9">
   @displayUser(user)
-	<br /><br />
-		@helper.form(action = routes.CtrlUser.resetPassword(true)) {
-		<legend>For local access:</legend>   	     	  
-		@if(newPassword!=null && newPassword!="") {
-			@forms.input(userForm!=null, "text", "newPassword", "New Password", newPassword,"", true)
+	<br />
+	@if(controllers.Application.canPasswordLogin()) {
+			@helper.form(action = routes.CtrlUser.resetPassword(true)) {
+			<legend>For local access:</legend>   	     	  
+			@if(newPassword!=null && newPassword!="") {
+				@forms.input(userForm!=null, "text", "newPassword", "New Password", newPassword,"", true)
+			}
+				<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
+			}
+				</div>
 		}
-			<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
-		}
-			</div>
-		
+		<br />
 }

@@ -20,12 +20,12 @@
 			@if(user.latitude!=0 && user.longitude!=0) {
 				<fieldset>
 				<legend>Location</legend>
-				<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
-				<br />
 				<div class="row-fluid">
 				@forms.input(userForm!=null, "number", "latitude", "Latitude", user.latitude.toString(), "", true)
 				@forms.input(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString(), "", true)
 				</div>
+				<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
+				<br />
 				</fieldset>
 				<br />
 			}

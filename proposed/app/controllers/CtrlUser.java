@@ -70,9 +70,8 @@ public class CtrlUser extends Controller {
 		if (theForm.hasErrors()) {
 			return badRequest("Form errors: " + theForm.errors().toString());
 		} else {
-			User current = getUser();
 			User submitted = theForm.get();
-			Logger.warn("sub "+submitted.latitude);
+			User current = getUser();
 			submitted.id = current.id;
 			submitted.email = current.email;
 			try {

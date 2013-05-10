@@ -85,8 +85,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.MaxLength(2*1024)
 	public String description = "";
 	
-	public double latitude = 0.0;
-	public double longitude = 0.0;
+	public Double latitude = 0.0;
+	public Double longitude = 0.0;
 
 	@Column(nullable = false)
 	public Date creationDate;
@@ -119,30 +119,23 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
+	// constructor userd by OpenID callback
 	public User(String email, String userName, String firstName, String lastName) {
 		this();
 		this.email     = email.toLowerCase();
 		this.userName  = userName.toLowerCase();
 		this.firstName = firstName;
 		this.lastName  = lastName;
-//		if (latitude==null || "".equals(latitude)) {
-//			Logger.warn("empty latitude");
-//			this.latitude=0;
-//		} else {
-//			this.latitude  = Double.parseDouble(latitude);
-//		}
-//		if (longitude==null || "".equals(longitude)) {
-//			Logger.warn("empty longtideu");
-//			this.longitude=0;
-//		} else {
-//			this.longitude  = Double.parseDouble(longitude);
-//		}
 	}
 	public User() {
 		this.creationDate = new Date();
 		setPassword(new BigInteger(130,new SecureRandom()).toString(32));
-		this.description = "";
 		this.admin = false;
+		this.description = "";
+		this.latitude = 0.0;
+		this.longitude= 0.0;
+		this.firstName = "";
+		this.lastName  = "";
 	}
 
 	public String  getEmail()             { return email; }
@@ -157,14 +150,12 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public Long    getId()                { return new Long(id); }
 	public boolean exists()               { return exists(id); }
 	public boolean isAdmin()		          { return admin; }
-	public void		 setAdmin(boolean admin){ this.admin=admin; }
+	public void		 setAdmin(boolean admin){ this.admin = admin; }
 
 	public void updateUser(User user) {
 		this.userName  = user.userName.toLowerCase();
 		this.firstName = user.firstName;
 		this.lastName  = user.lastName;
-		this.latitude  = user.latitude;
-		this.longitude = user.longitude;
 		this.password  = user.password;
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
