@@ -44,6 +44,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -74,12 +75,17 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.Required
 	@Formats.NonEmpty
 	public String userName;
+	
 	public String password; // only for username/password login
+	
 	public String firstName;
 	public String lastName;
-	public String description;
-	public double latitude;
-	public double longitude;
+	
+	@Column(length = 2*1024)
+	public String description = "";
+	
+	public double latitude = 0.0;
+	public double longitude = 0.0;
 
 	@Column(nullable = false)
 	public Date creationDate;
@@ -104,6 +110,10 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	/** Secret token for authentication */
 	private String token;
 	private boolean admin=false;
+
+  @Version
+  // for concurrency protection
+  private int version;
 
 	
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
