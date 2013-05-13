@@ -18,6 +18,7 @@ GET        /resources													 	controllers.CtrlResource.resources()
 GET        /attachFunction											controllers.Application.attachFunction()
 GET        /API                                 controllers.Public.about()
 GET        /files					                      controllers.Application.files()
+GET        /sitemap															controllers.Application.sitemap()
 
 # Files
 #GET        /files/lsdir/$path<.*>                	controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)

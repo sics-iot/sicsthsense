@@ -2642,6 +2642,7 @@ input[type="submit"].btn.btn-mini {
   background-position: -72px -96px;
 }
 .icon-question-sign {
+	background-image: url("../img/glyphicons-halflings-pale.png");
   background-position: -96px -96px;
 }
 .icon-info-sign {

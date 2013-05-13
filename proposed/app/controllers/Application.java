@@ -57,6 +57,7 @@ import views.html.searchPage;
 import views.html.statisticsPage;
 import views.html.streamPage;
 import views.html.streamsPage;
+import views.html.sitemap;
 import views.html.userManagementPage;
 
 import com.github.cleverage.elasticsearch.IndexQuery;
@@ -115,6 +116,9 @@ public class Application extends Controller {
 
   public static Result resources() {
     return CtrlResource.resources();
+  }
+  public static Result sitemap() {
+    return ok(sitemap.render(""));
   }
 
   public static Result files() {
