@@ -35,9 +35,6 @@ stream.file.getParentPath()
 						<ul class="folderNodeUL">@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))</ul>
 					</li></ul>
 				</div>
- <script type="text/javascript">
-	selectPathInTree(null, "@streamPath");
-	</script>
   	</div>
 	<div id="mainPane" class="span9">
 	@vstream.viewStreamMainDiv(streams, stream, myForm, message)
