@@ -180,11 +180,13 @@ public class Resource extends Operator {
         String path = "";
 
         if (parent != null && parent.hasUrl()) {
-            if (parent.getUrl().endsWith("/")) {
-                path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
-            } else {
-                path = parent.getUrl();
-            }
+//            if (parent.getUrl().endsWith("/")) {
+//                path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
+//            } else {
+//                path = parent.getUrl();
+//            }
+        path = parent.getUrl();
+
         }
 
         path += getPollingUrl();
