@@ -381,6 +381,7 @@ public class Stream extends Model implements Comparable<Stream> {
 			User user = User.getByUserName(username);
 			if (user==null) {
 				Logger.warn("Can't find user: "+username);
+				return null;
 			}
 			Logger.warn(username+" "+user.id+" path "+path);
 			Vfile file = Vfile.find.where().eq("owner_id",user.id).eq("path", path).findUnique();

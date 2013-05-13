@@ -231,6 +231,9 @@ public class CtrlStream extends Controller {
 	public static Result getByPath(String path, Long tail,
 			Long last, Long since) {
 		final User user = Secured.getCurrentUser();
+		if(user == null) {
+			return notFound();
+		}
 		return getByUserPath(user.userName, path, tail, last, since);
 	}
 
