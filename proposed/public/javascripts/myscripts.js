@@ -1,4 +1,12 @@
-	var showHidePlots;
+var clearStreamButton, streamButtonsHandler, togglePublicAccessStreamButton, toggleFollowStreamButton, togglePublicSearchStreamButton, showAlert, hideStreamList;
+var browseFolder, browseFile, initializeMaps, hideFolderFunction, selectPathInTree;
+var showHidePlots;
+var streamRegenerateKey;
+var resourceRegenerateKey;
+var browseResourceList, loadResourceList;
+var fileRowClick, fileRowRightClick, fileMenuButtonHandlers, fileListFolderClick;
+var renameConfirmBox, findAndReplaceInSideTree, utilShowPath;
+
 	showHidePlots = function (e) {
 			var $showHidePlotsButton= $('#showHidePlotsButton');
 	
@@ -26,13 +34,13 @@
 	}
 	$('#showHidePlotsButton').on("click", showHidePlots);
 	
-function showAlert(type, msg) {
+	showAlert = function (type, msg) {
 	$('#container-errormsg').html('<div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div>').show().fadeOut(20000);
 	// $('.container').after('<div class="container-errormsg><div class="' + type
 	// + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
 }	
 
-function toggleFollowStreamButton(event){
+toggleFollowStreamButton = function (event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
@@ -88,23 +96,23 @@ function toggleFollowStreamButton(event){
 	  	  });
 	    }
 	  });
-		$('.unfollow_stream').on("click", toggleFollowStreamButton);
-		$('.follow_stream').on("click", toggleFollowStreamButton);
+		$('.unfollow_stream').unbind('click').on("click", toggleFollowStreamButton);
+		$('.follow_stream').unbind('click').on("click", toggleFollowStreamButton);
 	  // return false;
 	};
-	$('.unfollow_stream').on("click", toggleFollowStreamButton);
-	$('.follow_stream').on("click", toggleFollowStreamButton);
+	$('.unfollow_stream').unbind('click').on("click", toggleFollowStreamButton);
+	$('.follow_stream').unbind('click').on("click", toggleFollowStreamButton);
 
-	function hideStreamList(event){
+	hideStreamList = function (event){
 		$(this).toggleClass("icon-chevron-down icon-chevron-up");
 		// $(this).children().find('.icon-chevron-up').toggleClass("icon-chevron-down").toggleClass("icon-chevron-up");
 		$(this).parent().find('.stream_list').toggle();
 		return false;
 	};
-	$('.hide_streams').on("click", hideStreamList);
+	$('.hide_streams').unbind('click').on("click", hideStreamList);
 	
 	// controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
-	function togglePublicAccessStreamButton(event){
+	togglePublicAccessStreamButton = function (event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
@@ -157,11 +165,11 @@ function toggleFollowStreamButton(event){
 		$('.remove_public_access_stream').on("click", togglePublicAccessStreamButton);
 	  return false;
 	};
-	$('.set_public_access_stream').on("click", togglePublicAccessStreamButton);
-	$('.remove_public_access_stream').on("click", togglePublicAccessStreamButton);
+	$('.set_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
+	$('.remove_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
 	
 	// controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
-	function togglePublicSearchStreamButton(event){
+	togglePublicSearchStreamButton = function (event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('data-parent_id');
 		var current_tooltip_title=$this_button.attr('title');
@@ -210,15 +218,15 @@ function toggleFollowStreamButton(event){
 	  	  });
 	    }
 	  });
-		$('.set_public_search_stream').on("click", togglePublicSearchStreamButton);
-		$('.remove_public_search_stream').on("click", togglePublicSearchStreamButton);
+		$('.set_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
+		$('.remove_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
 	  return false;
 	};
-	$('.set_public_search_stream').on("click", togglePublicSearchStreamButton);
-	$('.remove_public_search_stream').on("click", togglePublicSearchStreamButton);
+	$('.set_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
+	$('.remove_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
 	
 // controllers.CtrlStream.clear(stream.id)
-	function clearStreamButton(event){
+	clearStreamButton = function (event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('data-parent_id');
 
@@ -238,10 +246,10 @@ function toggleFollowStreamButton(event){
 				// unfollow!</strong>'+emsg);
 	    }
 	  });
-		$('.clearStreamButton').on("click", clearStreamButton);
+		$('.clearStreamButton').unbind('click').on("click", clearStreamButton);
 	  // return false;
 	};
-	$('.clearStreamButton').on("click", clearStreamButton);
+	$('.clearStreamButton').unbind('click').on("click", clearStreamButton);
 	
 // controllers.CtrlStream.delete(stream.id)
 	function deleteStreamButton(event){
@@ -263,11 +271,21 @@ function toggleFollowStreamButton(event){
 				// unfollow!</strong>'+emsg);
 	    }
 	  });
-		$('.deleteStreamButton').on("click", deleteStreamButton);
+		$('.deleteStreamButton').unbind('click').on("click", deleteStreamButton);
 	  // return false;
 	};
-	$('.deleteStreamButton').on("click", deleteStreamButton);
+	$('.deleteStreamButton').unbind('click').on("click", deleteStreamButton);
 	
+	streamButtonsHandler = function (e) {
+		$('.deleteStreamButton').unbind('click').on("click", deleteStreamButton);
+		$('.clearStreamButton').unbind('click').on("click", clearStreamButton);
+		$('.set_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
+		$('.remove_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
+		$('.set_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
+		$('.remove_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
+		$('.unfollow_stream').unbind('click').on("click", toggleFollowStreamButton);
+		$('.follow_stream').unbind('click').on("click", toggleFollowStreamButton);
+	};
   // -- renumber fields
 
   // Rename fields to have a coherent payload like:
@@ -322,7 +340,7 @@ function toggleFollowStreamButton(event){
 			var streamParserWrapers = $(this).parents('.parsers');
 			$(this).parent().remove();
 			renumberParsers();
-		  $('.removeParser').on("click", removeParser);
+		  $('.removeParser').unbind('click').on("click", removeParser);
  		}
  		for (var i=0; i<streamParsersToDelete.length; i++) { 
   		console.debug(streamParsersToDelete[i]);
@@ -347,7 +365,7 @@ function toggleFollowStreamButton(event){
 	    }
 	  });	
   };
-  $('.removeParser').on("click", removeParser);
+  $('.removeParser').unbind('click').on("click", removeParser);
 
   // send the create request to server
 // public static Result addParser(Long resourceId, String inputParser, String
@@ -376,7 +394,7 @@ function toggleFollowStreamButton(event){
 		template.before('<div new="true">' + template.html() + '</div>');
 		renumberParsers();
 		// bind button functionality
-	  $('.removeParser').on("click", removeParser);
+	  $('.removeParser').unbind('click').on("click", removeParser);
   };
   $('.addParser').on("click", insertParser);
   var resourceStreamPath = function (e) {
@@ -502,7 +520,6 @@ function toggleFollowStreamButton(event){
 			}
 		}
 	}
-	var browseFolder, browseFile, initializeMaps, hideFolderFunction, selectPathInTree;
 	
 	browseFolder = function(event, data) {
 		if( $(this).hasClass('fileNode') )
@@ -610,7 +627,7 @@ function toggleFollowStreamButton(event){
 		// $(this).toggle();
 	};
 	
-	var utilShowPath = function(event, path, root) {
+	utilShowPath = function(event, path, root) {
 		$('#vfileTree').find("[data-filepath='"+path+"']").each( function(e) { 
 			$(this).parent().children().find('li').show();
 			$(this).parent().find('.icon-folder-close').toggleClass('icon-folder-open icon-folder-close');
@@ -645,7 +662,6 @@ function toggleFollowStreamButton(event){
 		utilShowPath(event, path, true);
 		};
 	
-	var fileRowClick, fileRowRightClick, fileMenuButtonHandlers, fileListFolderClick;
   fileMenuButtonHandlers = function(e) {
   	// unbind first then bind again so the event does not fire twice and the
 		// handlers get reassociated
@@ -703,14 +719,14 @@ fileRowClick = function(e) {
   };
   fileMenuButtonHandlers();
   
-  var findAndReplaceInSideTree = function(oldPath, newPath, newName) {
+  findAndReplaceInSideTree = function(oldPath, newPath, newName) {
 		$('#vfileTree').find("[data-filepath='"+oldPath+"']").each( function(e) { 
 			$(this).attr("data-filepath", newPath);
 			var oldName = $(this).html(" "+ newName);
 		});
   };
   
-	var renameConfirmBox = function (e){
+	renameConfirmBox = function (e){
    // confirmMessage = confirmMessage || '';
 		var $this_button=$(this);
 		var my_file_name=$this_button.attr('data-filename');
@@ -749,7 +765,7 @@ fileRowClick = function(e) {
         $('#renameBox').modal('hide');
     });
 };
-var browseResourceList, loadResourceList = function(msg, resId) {  
+loadResourceList = function(msg, resId) {  
 	// load
 	//.replace(/<!DOCTYPE html>[\r\n\s]*.*<div id="mainContainer"/igm, '<div id="mainContainer"').replace(/(<\/body>.*<\/html>)/igm, '');      	
 	//alert(msg)
@@ -776,7 +792,6 @@ browseResourceList = function(e) {
 };
 $('.resourceListItem').unbind('click').on('click', browseResourceList);
 
-var resourceRegenerateKey;
 resourceRegenerateKey = function(e) {
 	var resId=$(this).attr('data-resourceId');
 	var debugMsg = "Regenerating resource key for id: " + resId;
@@ -795,7 +810,7 @@ resourceRegenerateKey = function(e) {
 };
 $('.resourceRegenerateKey').unbind('click').on('click', resourceRegenerateKey);
 
-var streamRegenerateKey;
+
 streamRegenerateKey = function(e) {
 	var resId=$(this).attr('data-streamId');
 	var debugMsg = "Regenerating stream key for id: " + resId;

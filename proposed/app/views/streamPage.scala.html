@@ -29,18 +29,16 @@ stream.file.getParentPath()
     <!-- Docs nav
     ================================================== -->
 	<div class="row-fluid">
-		<div class="span2 bs-docs-sidebar"> 
-			 <div style="position:fixed;" >
-				@if(streams.length > 0) {
-				<h4>Streams</h4>
-					<div id="vfileTree">
-						<ul>
-						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
-						</ul>
-					</div>
-				} else {}
-			</div>
-  </div>
+		<div class="span2 bs-docs-sidebar">
+				<div id="vfileTree">
+					<ul class="unstyled"><li class=''><i class='icon-hdd hideRoot'></i> <span class='dirNode selectedFile' data-filepath=''>Drive</span>
+						<ul class="folderNodeUL">@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))</ul>
+					</li></ul>
+				</div>
+ <script type="text/javascript">
+	selectPathInTree(null, "@streamPath");
+	</script>
+  	</div>
 	<div id="mainPane" class="span9">
 	@vstream.viewStreamMainDiv(streams, stream, myForm, message)
   </div>
