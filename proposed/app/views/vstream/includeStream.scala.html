@@ -32,7 +32,7 @@
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
-			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
+			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate key</button>
 			}	
 			<input class="span7" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		}	
