@@ -81,6 +81,7 @@ public class CtrlResource extends Controller {
 			return badRequest("Bad request");
 		} else {
 			Resource submitted = theForm.get();
+			Logger.info("preurl"+submitted.getPollingUrl());
 
 			if (submitted != null) {
 				final User currentUser = Secured.getCurrentUser();

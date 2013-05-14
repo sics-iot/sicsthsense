@@ -93,10 +93,10 @@ public class Resource extends Operator {
     }
 
     public void setPollingUrl(String pollingUrl) {
-        if (pollingUrl.endsWith("/")) {
-            pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 2);
-        }
-        this.pollingUrl = pollingUrl;
+			if (pollingUrl.endsWith("/")) {
+				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
+			}
+			this.pollingUrl = pollingUrl;
     }
 
     public String pollingAuthenticationKey = null;
@@ -178,17 +178,14 @@ public class Resource extends Operator {
 
     public String getUrl() {
         String path = "";
-
         if (parent != null && parent.hasUrl()) {
 //            if (parent.getUrl().endsWith("/")) {
 //                path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
 //            } else {
 //                path = parent.getUrl();
 //            }
-        path = parent.getUrl();
-
+					path = parent.getUrl();
         }
-
         path += getPollingUrl();
 
         if (!path.equalsIgnoreCase("") && !path.startsWith("http://") && !path.startsWith("https://")
