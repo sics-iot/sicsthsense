@@ -490,6 +490,8 @@ toggleFollowStreamButton = function (event){
 	  $('#updateResource').unbind('click').on("click", updateResource);
 	  $('#addResource').unbind('click').on("click", addResourceFunction);
 	  $('.resourceListItem').unbind('click').on('click', browseResourceList);
+	  $('.resourceRegenerateKey').unbind('click').on('click', resourceRegenerateKey);
+
 	};
  
   deleteFileButton = function(event){

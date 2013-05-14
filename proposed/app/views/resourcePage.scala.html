@@ -85,6 +85,22 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 			**@
       </div>
       <div id="mainPane" class="span9">
+
+<!-- Modal confirmDeleteResource -->
+<div id="confirmDeleteResourceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResourceModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 id="confirmDeleteResourceModalLabel">Delete Resource?</h3>
+  </div>
+  <div class="modal-body">
+    <p>Deleting the resource implies deleting all the associated parsers and sub resources (if any).</p>
+    <p>Are you sure you want to delete the resource?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+		<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger"><i class="icon-trash icon-white"></i> Yes, delete everything</a>
+  </div>
+</div>
  	      <!--Body content-->
 	      <!-- TODO: handle errors-->
 	      @if(myForm.hasErrors) {
@@ -232,20 +248,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 			}
 			
   </div>
+  
 </div>
-<!-- Modal confirmDeleteResource -->
-<div id="confirmDeleteResourceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResourceModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3 id="confirmDeleteResourceModalLabel">Delete Resource?</h3>
-  </div>
-  <div class="modal-body">
-    <p>Deleting the resource implies deleting all the associated parsers and sub resources (if any).</p>
-    <p>Are you sure you want to delete the resource?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
-		<a href="@routes.CtrlResource.delete(myForm("id").value.toLong)" class="btn btn-danger"><i class="icon-trash icon-white"></i> Yes, delete everything</a>
-  </div>
-</div>
+
 }
