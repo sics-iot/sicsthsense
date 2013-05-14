@@ -38,6 +38,7 @@ import models.Stream;
 import models.User;
 import models.Vfile;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -239,6 +240,7 @@ public class CtrlStream extends Controller {
 
 	public static Result getByUserPath(String username, String path, Long tail,
 			Long last, Long since) {
+		path=Utils.decodePath(path);
 		final Stream stream = Stream.getByUserPath(username,"/"+path);
 		final User owner = User.getByUserName(username);
 		final User currentUser = Secured.getCurrentUser();
@@ -248,6 +250,19 @@ public class CtrlStream extends Controller {
 			return notFound();
 		}
 		return getData(currentUser, stream, tail, last, since);
+	}
+
+	public static Result postByPath(String path) {
+		final User user = Secured.getCurrentUser();
+		if (user == null) {
+			return notFound();
+		}
+		String username = user.userName;
+		path = Utils.decodePath(path);
+		final Stream stream = Stream.getByUserPath(username, "/" + path);
+		if (stream == null)
+			return notFound();
+		return post(stream.owner, stream);
 	}
 
 	public static Result postByKey(String key) {
@@ -268,16 +283,57 @@ public class CtrlStream extends Controller {
 	}
 
 	private static Result post(User user, Stream stream) {
+		boolean success = false;
+		long currentTime = Utils.currentTime();
 		if (canWrite(user, stream)) {
-			String strBody = request().body().asText();
-			long currentTime = Utils.currentTime();
-			if (!stream.post(strBody, currentTime)) {
+			// Logger.info("StreamParser: parseResponse(): post: "+stream.file.getPath());
+			if ("application/json".equalsIgnoreCase(request().getHeader(
+					"Content-Type"))
+					|| "text/json".equalsIgnoreCase(request().getHeader("Content-Type"))) {
+				JsonNode jsonBody = request().body().asJson();
+				// Logger.info("[StreamParser] as json");
+				success = parseJsonResponse(stream, jsonBody, currentTime);
+			} else {
+				String textBody = request().body().asText(); // request.body().asRaw().toString();
+				// Logger.info("[StreamParser] as text");
+				double number = Double.parseDouble(textBody);
+				success = stream.post(number, currentTime);
+			}
+			if (!success) {
 				return badRequest("Bad request: Error!");
 			} else {
 				return ok("ok");
 			}
 		}
 		return unauthorized();
+	}
+	
+	private static boolean parseJsonResponse(Stream stream, JsonNode root,
+			Long currentTime) {
+		// TODO check concat path against inputParser, get the goal and stop
+		// TODO (linear time) form a list of nested path elements from the gui, and
+		if (root == null) {
+			return false;
+		}
+		JsonNode node = root;
+
+		if (node.isValueNode()) { // it is a simple primitive
+			Logger.info("posting: " + node.getDoubleValue() + " "
+					+ Utils.currentTime());
+			return stream.post(node.getDoubleValue(), Utils.currentTime());
+
+		} else if (node.get("value") != null) { // it may be value:X
+			double value = node.get("value").getDoubleValue();
+			// should be resource timestamp
+
+			if (node.get("time") != null) { // it may have time:Y
+				currentTime = node.get("time").getLongValue();
+			}
+			Logger.info("posting: " + node.getDoubleValue() + " "
+					+ Utils.currentTime());
+			return stream.post(value, currentTime);
+		}
+		return false;
 	}
 
 	@Security.Authenticated(Secured.class)

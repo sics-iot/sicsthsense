@@ -128,6 +128,8 @@ GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String, 
 
 GET				/api/files/$path<.*>							controllers.CtrlStream.getByPath(path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET				/api/ext/:user/$path<.*>					controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+POST			/api/files/$path<.*>							controllers.CtrlStream.postByPath(path: String)
+
 
 
 #Function 

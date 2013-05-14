@@ -237,7 +237,7 @@ public class Stream extends Model implements Comparable<Stream> {
         return lastUpdated != 0L;
     }
 
-    protected boolean post(double data, long time) {
+    public boolean post(double data, long time) {
         if (!this.frozen) {
             if (type == StreamType.UNDEFINED) {
                 type = StreamType.DOUBLE;
