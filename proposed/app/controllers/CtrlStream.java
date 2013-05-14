@@ -285,25 +285,30 @@ public class CtrlStream extends Controller {
 	private static Result post(User user, Stream stream) {
 		boolean success = false;
 		long currentTime = Utils.currentTime();
-		if (canWrite(user, stream)) {
-			// Logger.info("StreamParser: parseResponse(): post: "+stream.file.getPath());
-			if ("application/json".equalsIgnoreCase(request().getHeader(
-					"Content-Type"))
-					|| "text/json".equalsIgnoreCase(request().getHeader("Content-Type"))) {
-				JsonNode jsonBody = request().body().asJson();
-				// Logger.info("[StreamParser] as json");
-				success = parseJsonResponse(stream, jsonBody, currentTime);
-			} else {
-				String textBody = request().body().asText(); // request.body().asRaw().toString();
-				// Logger.info("[StreamParser] as text");
-				double number = Double.parseDouble(textBody);
-				success = stream.post(number, currentTime);
+		try {
+			if (canWrite(user, stream)) {
+				// Logger.info("StreamParser: parseResponse(): post: "+stream.file.getPath());
+				if ("application/json".equalsIgnoreCase(request().getHeader(
+						"Content-Type"))
+						|| "text/json"
+								.equalsIgnoreCase(request().getHeader("Content-Type"))) {
+					JsonNode jsonBody = request().body().asJson();
+					// Logger.info("[StreamParser] as json");
+					success = parseJsonResponse(stream, jsonBody, currentTime);
+				} else {
+					String textBody = request().body().asText(); // request.body().asRaw().toString();
+					// Logger.info("[StreamParser] as text");
+					double number = Double.parseDouble(textBody);
+					success = stream.post(number, currentTime);
+				}
+				if (!success) {
+					return badRequest("Bad request: Error!");
+				} else {
+					return ok("ok");
+				}
 			}
-			if (!success) {
-				return badRequest("Bad request: Error!");
-			} else {
-				return ok("ok");
-			}
+		} catch (Exception e) {
+			return badRequest("Bad request: Error! " + e.getMessage());
 		}
 		return unauthorized();
 	}
