@@ -48,6 +48,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.Http.HeaderNames;
 import views.html.streamPage;
 
 public class CtrlStream extends Controller {
@@ -262,7 +263,7 @@ public class CtrlStream extends Controller {
 		final Stream stream = Stream.getByUserPath(username, "/" + path);
 		if (stream == null)
 			return notFound();
-		return post(stream.owner, stream);
+		return post(user, stream);
 	}
 
 	public static Result postByKey(String key) {
@@ -285,24 +286,25 @@ public class CtrlStream extends Controller {
 	private static Result post(User user, Stream stream) {
 		boolean success = false;
 		long currentTime = Utils.currentTime();
+		String textBody="";
 		try {
 			if (canWrite(user, stream)) {
 				// Logger.info("StreamParser: parseResponse(): post: "+stream.file.getPath());
 				if ("application/json".equalsIgnoreCase(request().getHeader(
-						"Content-Type"))
-						|| "text/json"
-								.equalsIgnoreCase(request().getHeader("Content-Type"))) {
+						HeaderNames.CONTENT_TYPE))
+						|| "text/json".equalsIgnoreCase(request().getHeader(HeaderNames.CONTENT_TYPE))) {
 					JsonNode jsonBody = request().body().asJson();
+					textBody += jsonBody.asText();
 					// Logger.info("[StreamParser] as json");
 					success = parseJsonResponse(stream, jsonBody, currentTime);
 				} else {
-					String textBody = request().body().asText(); // request.body().asRaw().toString();
+					textBody = request().body().asText(); // request.body().asRaw().toString();
 					// Logger.info("[StreamParser] as text");
 					double number = Double.parseDouble(textBody);
 					success = stream.post(number, currentTime);
 				}
 				if (!success) {
-					return badRequest("Bad request: Error!");
+					return badRequest("Bad request: Error! " + textBody);
 				} else {
 					return ok("ok");
 				}
