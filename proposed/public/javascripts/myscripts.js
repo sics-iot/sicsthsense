@@ -378,6 +378,7 @@ toggleFollowStreamButton = function (event){
   	var smsg;
   	jsRoutes.controllers.CtrlResource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
+	  		console.debug("success");
 	    	smsg="Parser " + dataparserId + " added ";
 	  		console.debug(smsg);
 				showAlert("alert-success", smsg);
@@ -861,6 +862,7 @@ $('.streamRegenerateKey').unbind('click').on('click', streamRegenerateKey);
 
 // $("#vfileTree").bind("open_node.jstree select_node.jstree", browseFolder);
 
+// used to ensure clean resource names
 function alphanum(e) {
     var k;
     document.all ? k = e.keyCode : k = e.which;

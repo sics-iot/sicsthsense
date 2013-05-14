@@ -135,7 +135,9 @@ public class SkeletonResource {
 		for (int i = 0; i < streamParserWrapers.size(); i++) {
 			if (streamParserWrapers.get(i).vfilePath != null) {
 				StreamParser sp = streamParserWrapers.get(i).getStreamParser(resource);
-				list.add(sp);
+				//if (sp != null) { // ignore bad parsers (probably regex failure)
+				list.add(sp); // add null streamparsers, to give feedback
+				//}
 			} else {
 				Logger.warn("Got a null vfilePath");
 			}
@@ -236,11 +238,15 @@ public class SkeletonResource {
 		}
 
 		public StreamParser getStreamParser(Resource resource) {
-			StreamParser sp = new StreamParser(resource,
+			try {
+				StreamParser sp = new StreamParser(resource,
 					this.inputParser, this.inputType,
 					this.vfilePath, this.timeformat, this.dataGroup, this.timeGroup, this.numberOfPoints);
-			sp.id = this.parserId;
-			return sp;
+				sp.id = this.parserId;
+				return sp;
+			} catch (Exception e) {
+				return null; // Parser not reconstructed correctly	
+			}
 		}
 	}
 }

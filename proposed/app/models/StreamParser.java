@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -122,22 +123,22 @@ public class StreamParser extends Model {
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, String path,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
         super();
-        setInputParser(inputParser);
-        this.inputType = inputType;
-        this.resource = resource;
-        this.streamVfilePath = path;
-        this.timeformat = timeformat;
-        this.dataGroup = dataGroup;
-        this.timeGroup = timeGroup;
-        this.numberOfPoints = numberOfPoints;
-        Vfile f = FileSystem.readFile(resource.owner, path);
-        this.stream = (f != null) ? f.linkedStream : null;
+				setInputParser(inputParser);
+				this.inputType = inputType;
+				this.resource = resource;
+				this.streamVfilePath = path;
+				this.timeformat = timeformat;
+				this.dataGroup = dataGroup;
+				this.timeGroup = timeGroup;
+				this.numberOfPoints = numberOfPoints;
+				Vfile f = FileSystem.readFile(resource.owner, path);
+				this.stream = (f != null) ? f.linkedStream : null;
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, Stream stream,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+            String timeformat, int dataGroup, int timeGroup, int numberOfPoints)  throws Exception {
         super();
         setInputParser(inputParser);
         this.inputType = inputType;
@@ -152,10 +153,10 @@ public class StreamParser extends Model {
         }
     }
 
-    public boolean setInputParser(String inputParser) {
+    public boolean setInputParser(String inputParser) throws Exception {
         this.inputParser = inputParser;
         if (inputParser != null) {
-            regexPattern = Pattern.compile(inputParser);
+		         regexPattern = Pattern.compile(inputParser);
             if (this.id != null) {
                 this.update();
             }

@@ -54,6 +54,7 @@ import play.mvc.Security;
 import protocol.Response;
 import views.html.resourcePage;
 import views.html.resourcesPage;
+import java.util.regex.PatternSyntaxException;
 
 public class CtrlResource extends Controller {
 
@@ -110,11 +111,9 @@ public class CtrlResource extends Controller {
 		 * TODO: Create source from Form or update existing Create a parser from an
 		 * embedded form and associate the parser with the new source
 		 */
-		final Form<SkeletonResource> theForm = skeletonResourceForm
-				.bindFromRequest();
+		final Form<SkeletonResource> theForm = skeletonResourceForm.bindFromRequest();
 
-		// validate form
-		if (theForm.hasErrors()) {
+		if (theForm.hasErrors()) { // validate form
 			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
 		} else {
 			SkeletonResource skeleton = theForm.get();
@@ -141,9 +140,9 @@ public class CtrlResource extends Controller {
 					}
 				} // else { Ebean.delete( source.streamParsers ); }
 			} catch (Exception e) {
-				Logger.error(e.getMessage() + " Stack trace:\n"
+				Logger.error("CtrlResource: " + e.getMessage() + " Stack trace:\n"
 						+ e.getStackTrace()[0].toString());
-				return badRequest("Bad request");
+				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
 			}
 			return redirect(routes.CtrlResource.getById(id));
 		}
@@ -371,18 +370,31 @@ public class CtrlResource extends Controller {
 		return ok("true");
 	}
 
+	/*
+	 * Is this actually used?
+	 * */
 	@Security.Authenticated(Secured.class)
 	public static Result addParser(Long resourceId, String inputParser,
 			String inputType, String streamPath, String timeformat, int dataGroup,
 			int timeGroup, int numberOfPoints) {
 		Resource resource = Resource.get(resourceId, Secured.getCurrentUser());
-		StreamParser parser = new StreamParser(resource, inputParser, inputType,
+		StreamParser parser = null;
+
+		Logger.error("[CtrlResource]: StreamParser trying to make parser!");
+		try {
+			parser = new StreamParser(resource, inputParser, inputType,
 				streamPath, timeformat, dataGroup, timeGroup, numberOfPoints);
+		} catch (PatternSyntaxException e) {
+			return badRequest("StreamParser not made due to Regex parsing error!");
+		} catch (Exception e) {
+			return badRequest("StreamParser not made due to error!");
+		}
 		parser = StreamParser.create(parser);
 		if (parser != null) {
-			return ok("true");
+			Logger.info("[CtrlResource]: StreamParser created!");
+			return ok("");
 		}
-		return ok("false");
+		return badRequest("StreamParser not made due to undefined error!");
 	}
 
 	public static Result postByKey(String key) {

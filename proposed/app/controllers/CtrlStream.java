@@ -242,8 +242,7 @@ public class CtrlStream extends Controller {
 		final Stream stream = Stream.getByUserPath(username,"/"+path);
 		final User owner = User.getByUserName(username);
 		final User currentUser = Secured.getCurrentUser();
-		if (stream == null)
-			return notFound();
+		if (stream == null) { return notFound(); }
 		if (!stream.canRead(currentUser)) {
 			// don't reveal this stream exists
 			return notFound();
