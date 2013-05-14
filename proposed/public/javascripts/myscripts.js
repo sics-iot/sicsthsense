@@ -6,6 +6,8 @@ var resourceRegenerateKey;
 var browseResourceList, loadResourceList;
 var fileRowClick, fileRowRightClick, fileMenuButtonHandlers, fileListFolderClick;
 var renameConfirmBox, findAndReplaceInSideTree, utilShowPath;
+var deleteStreamButton, renumberParsers, streamParsersToDelete, removeParser, deleteParser, deleteFileButton, removeSelection, updateResource, insertParser, createParser; 
+var resourceStreamPath, addResourceFunction, resourceButtonsHandler;
 
 	showHidePlots = function (e) {
 			var $showHidePlotsButton= $('#showHidePlotsButton');
@@ -250,9 +252,9 @@ toggleFollowStreamButton = function (event){
 	  // return false;
 	};
 	$('.clearStreamButton').unbind('click').on("click", clearStreamButton);
-	
+
 // controllers.CtrlStream.delete(stream.id)
-	function deleteStreamButton(event){
+  deleteStreamButton = function (event){
 		var $this_button=$(this);
 		var my_stream_id=$this_button.attr('data-parent_id');
 
@@ -295,7 +297,8 @@ toggleFollowStreamButton = function (event){
   // ...
   //
   // This is probably not the easiest way to do it. A jQuery plugin would help.
-	function renumberParsers() {
+
+  renumberParsers = function () {
 		console.debug("renumberParsers");
 		$('.parser').each(function(i) {
 			console.debug("renumbering parser " + i + $(this).attr('class'));
@@ -312,14 +315,15 @@ toggleFollowStreamButton = function (event){
     });
  	};
 
- 	var streamParsersToDelete = new Array();
+ 	streamParsersToDelete = new Array();
  	Array.prototype.destroy = function(obj){
     while (this.indexOf(obj) != -1) {
     	this.splice(this.indexOf(obj), 1);
     };
  	}
+
  	// remove from form and renumber the form
- 	function removeParser(e) {
+  removeParser = function (e) {
  		var requestDelete = $(this).attr('data-delete');
  		var dataparserId = $(this).attr('data-parserId');
  		console.debug("data-parserId " + dataparserId);
@@ -347,9 +351,9 @@ toggleFollowStreamButton = function (event){
   	}
 		// deleteParser(dataparserId);
   };
-  
+
   // send the delete request to server
-  function deleteParser(dataparserId) {
+  deleteParser = function (dataparserId) {
 		console.debug("Parser " + dataparserId + " sending delete request.");
 		var msgToShow = "";
   	jsRoutes.controllers.CtrlResource.deleteParser(dataparserId).ajax({
@@ -370,8 +374,7 @@ toggleFollowStreamButton = function (event){
   // send the create request to server
 // public static Result addParser(Long resourceId, String inputParser, String
 // inputType, String streamPath) {
-
-  function createParser(resourceId, inputParser, inputType, streamPath) {
+  createParser = function (resourceId, inputParser, inputType, streamPath) {
   	var smsg;
   	jsRoutes.controllers.CtrlResource.addParser(resourceId, inputParser, inputType, streamPath).ajax({
 	    success: function(msg) {
@@ -387,7 +390,8 @@ toggleFollowStreamButton = function (event){
 	  });	
   };
   // insert streamParser form field
-  function insertParser(e) {
+
+  insertParser = function (e) {
   	$('.streamParsersLabels').removeClass("hidden");
   	$('.streamParsersLabelsAddParserText').addClass("hidden");
 		var template = $('.parsers_template');
@@ -396,8 +400,10 @@ toggleFollowStreamButton = function (event){
 		// bind button functionality
 	  $('.removeParser').unbind('click').on("click", removeParser);
   };
-  $('.addParser').on("click", insertParser);
-  var resourceStreamPath = function (e) {
+  
+  $('.addParser').unbind('click').on("click", insertParser);
+  
+  resourceStreamPath = function (e) {
   	 if(!($(this).hasClass('resourceStreamPath'))) {
        this.select();
        return false;
@@ -436,8 +442,8 @@ toggleFollowStreamButton = function (event){
   };
   
   $('input[readonly]').unbind('click').on('click', resourceStreamPath);
-  
-  function updateResource(e) {
+
+   updateResource = function (e) {
 // var $resource_form = $('#resource_form');
 // if (!$resource_form[0].checkValidity()) {
 // // If the form is invalid, submit it. The form won't actually submit;
@@ -458,24 +464,33 @@ toggleFollowStreamButton = function (event){
 	  	}
 	  	streamParsersToDelete = new Array();
 			renumberParsers();
+			showAlert("alert-success", "Resource updated.");
 // }
   };
-  $('#updateResource').on("click", updateResource);
+  $('#updateResource').unbind('click').on("click", updateResource);
 // $('.addResourceQuick').on("click", function(e) {
 // var msg = "Added a new resource successfully.";
 // console.debug(msg);
 // showAlert("alert-success", msg);
 // });
+  addResourceFunction = function(e) {  	
+  	$('.parsers_template').remove();
+		renumberParsers();
+		var msg = "Adding new resource.";
+		console.debug(msg);
+		showAlert("alert-success", msg);			
+};
+  $('#addResource').unbind('click').on("click", addResourceFunction);
   
-  $('#addResource').on("click", function(e) {  	
-	  	$('.parsers_template').remove();
-			renumberParsers();
-			var msg = "Adding new resource.";
-			console.debug(msg);
-			showAlert("alert-success", msg);			
-  });
-  
-  var deleteFileButton;
+	resourceButtonsHandler = function (e) {
+	  $('.removeParser').unbind('click').on("click", removeParser);
+	  $('input[readonly]').unbind('click').on('click', resourceStreamPath);
+	  $('.addParser').unbind('click').on("click", insertParser);
+	  $('#updateResource').unbind('click').on("click", updateResource);
+	  $('#addResource').unbind('click').on("click", addResourceFunction);
+	  $('.resourceListItem').unbind('click').on('click', browseResourceList);
+	};
+ 
   deleteFileButton = function(event){
 		var $this_button=$(this);
 		var my_file_path=$this_button.attr('data-filepath');
@@ -504,7 +519,7 @@ toggleFollowStreamButton = function (event){
 	};
 	$('.deleteFileButton').on("click", deleteFileButton);
 	
-	var removeSelection; 
+	
 	removeSelection = function(e) {
 		var sel;
 		if(document.selection && document.selection.empty) {
@@ -774,8 +789,7 @@ loadResourceList = function(msg, resId) {
 	$('#mainPane').html(msg.html());   
 	$('.selectedResourceListItem').each(function(e){$(this).removeClass('selectedResourceListItem');});
 	$('#resourcelist-sidenav').find('[data-resourceId="'+resId+'"]').addClass('selectedResourceListItem');
-	$('.resourceListItem').unbind('click').on('click', browseResourceList);
-  $('input[readonly]').unbind('click').on('click', resourceStreamPath);
+  resourceButtonsHandler();
 };
 
 browseResourceList = function(e) {
