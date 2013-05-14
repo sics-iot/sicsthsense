@@ -264,6 +264,7 @@ toggleFollowStreamButton = function (event){
 	    	// remove all DOM elements related to the deleted stream
 	    	// $("[id^='stream'][id$='"+my_stream_id+"']").remove();
 	    	$("#streamblock"+my_stream_id).remove();
+				location.reload(true);
 	    },
 	    error: function(emsg) {
 	    	var errorMsg = "Error deleting stream: " + my_stream_id + emsg;
@@ -505,9 +506,12 @@ toggleFollowStreamButton = function (event){
 	  	dataType : "text",
 	    success: function(msg) {
 	    	// remove all DOM elements related to the deleted stream
+				//
 	    	// $("[id^='stream'][id$='"+my_stream_id+"']").remove();
 				console.debug("Success: DeleteFile! " + my_file_path + msg);
 	    	$("#fileRow"+my_file_name).remove();
+				location.reload(true);
+				// should refresh Drive list!
 	    },
 	    error: function(emsg) {
 	    	var errorMsg = "Error deleting file " + my_file_path;
@@ -571,6 +575,7 @@ toggleFollowStreamButton = function (event){
 		// removeSelection();
 		var path = $(this).attr('data-filepath');
   	var myID = $(this).attr('id');
+		// should test if myID is undefined
   	var debugMsg = myID + " Browsing: " + path;
   	console.debug(debugMsg);
   	
