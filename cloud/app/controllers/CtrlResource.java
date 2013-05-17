@@ -163,11 +163,20 @@ public class CtrlResource extends Controller {
 		if (resource.hasUrl()) {
 			// fudge URL, should check HTTP
 			// get data
+			Response response = null;
+			String contentType = null;
+			try {
 			Promise<Response> promise = resource.request("GET",
 					new HashMap<String, String[]>(), new HashMap<String, String[]>(),
 					null);
-			final Response response = promise.get();
-			final String contentType = response.contentType();
+				response = promise.get();
+				contentType = response.contentType();
+			} catch (Exception e) {
+				Logger.error("Auto add parser failed: "+e.toString());
+				SkeletonResource skeleton = new SkeletonResource(resource);
+				Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
+				return ok(resourcePage.render(currentUser.resourceList, myForm, false, "Error polling resource URL: "+resource.getPollingUrl()));
+			}
 
 			Logger.warn("Probed and found contentType: " + contentType);
 
