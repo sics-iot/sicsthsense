@@ -44,10 +44,10 @@
 
 @streamParserGroupLabels(hidden: Boolean, className: String = "") = {
 <div class="@if(hidden){hidden} row-fluid @className controls controls-row streamParsersLabels">
-<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Stream Path @helpMark("File path for generated stream","postingDataHelp")</span>
 <span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
 <span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format @helpMark("Required if extracting timestamp information along with data","parserHelp")</span>
 <span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type @helpMark("Internet media type for incoming data","parserHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Stream File Path @helpMark("File path for generated stream","postingDataHelp")</span>
 </div>
 <div class="@if(!hidden){hidden} streamParsersLabelsAddParserText">
 Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span></a> to add parsers.
@@ -57,7 +57,6 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 @streamParserGroup(field: Field, className: String = "", modifyStreamPath: Boolean = true, deleteParser: Boolean = false) = {
 <div class="row-fluid parser controls controls-row @className" data-parserId="@{field("parserId").value}">
 <input form="@resourceFormId" type="hidden" id="@field("parserId").id" name="@field("parserId").name" value="@field("parserId").value" readonly="readonly" size="0">
-<input form="@resourceFormId" class="span3 resourceStreamPath" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
 <input form="@resourceFormId" class="span3" type="text" id="@field("inputParser").id" name="@field("inputParser").name" value="@field("inputParser").value" placeholder="expression or /jsonnode/name">
 <input form="@resourceFormId" class="span3" type="text" id="@field("timeformat").id" name="@field("timeformat").name" value="@field("timeformat").value" placeholder="fill in if posting timestamps">
   <select form="@resourceFormId" class="span2" id="@field("inputType").id" name="@field("inputType").name" selected="@field("inputType").value">
@@ -65,6 +64,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 		<option value="application/json" @if(field("inputType").value.toString.contains("json")){selected="selected"}>application/json</option>
     <option value="text/plain" @if(field("inputType").value.toString.contains("text")){ selected="selected" }>text/plain</option>
   </select>
+<input form="@resourceFormId" class="span3 resourceStreamPath" type="text" required id="@field("vfilePath").id" name="@field("vfilePath").name" value="@field("vfilePath").value" @if(!modifyStreamPath){ readonly } else { placeholder="Stream path"}>
 	<i class="removeParser btn btn-danger pull-right" data-delete="false" @if(deleteParser){data-parserId="@{field("parserId").value}"}else{data-parserId="-1"}><span class="icon-trash icon-white"></span></i>
 @*<input form="@resourceFormId" type="text" id="@field("inputType").id" name="@field("inputType").name" value="@field("inputType").value" placeholder="Input type">*@
 </div>
@@ -172,7 +172,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	<!-- Parsers -->
 
 <fieldset>
-		      <legend>Parsers 
+		      <legend>Stream Parsers 
 <span class="pull-right">
 <a class="addParser btn btn-success btn-small"><span class="icon-plus icon-white"></span></a>
 </span></legend>
