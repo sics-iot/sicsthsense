@@ -171,7 +171,7 @@ public class CtrlResource extends Controller {
 					null);
 				response = promise.get();
 				contentType = response.contentType();
-			} catch (Exception e) {
+			} catch (Exception e) { // Auto parser failed
 				Logger.error("Auto add parser failed: "+e.toString());
 				SkeletonResource skeleton = new SkeletonResource(resource);
 				Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
