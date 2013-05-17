@@ -1,18 +1,45 @@
+@(followedStreams: List[Stream], lastUpdatedStreams: List[Stream], message: String="")
+
 @import helper._
 
-@showFollowed(endPoints: List[EndPoint], resources: List[Resource]) = {
+@layout("Home", message, session) {
+<div class="row-fluid">
+    <!-- Docs nav
+    ================================================== -->
+	<div class="span2 bs-docs-sidebar">
+		<h4></h4>
+<div style="position:fixed;" >
+		<ul class="unstyled">
+			<li><span href="#" id="showHidePlotsButton" data-nextTitle="Show graphs" class="btn btn-lnk">Hide graphs</span></li>
+		</ul>
+	  </div>
+	  </div>
 
-  @vendpoint.list{<h1>End points you follow</h1>}(CtrlUser.getUser().followedEndPoints())
-
-  @vresource.listStreams{<h1>Resources you follow</h1>}(CtrlUser.getUser().followedResources())
-  
-  @if(endPoints.size == 0 && resources.size == 0) {
-    You don't follow any end point nor resource yet. <a href="@routes.Application.search()">Search</a> public resources or <a href="@routes.Application.manage()">add yours</a> to get started!<p/>
-  }
-}
-
-@layout("Home", session) {
-
-  @showFollowed(CtrlUser.getUser().followedEndPoints(), CtrlUser.getUser().followedResources()) 
-
+  <div id="mainPane" class="span9">
+		<!--Body content-->
+		<!-- Stream listing and visualizing -->
+		<legend>Starred streams</legend>
+		@if(followedStreams.length > 0) {
+			@for(stream <- followedStreams) {					
+				@vstream.includeStream(stream)
+				<hr class="dashed" />
+			}
+		} else {
+			You have not starred any stream! 
+			<br />
+			Add some Resource's to your dashboard through the <a href="@routes.CtrlResource.resources()">Resources page</a> and star them in the <a href="/streams">Streams</a> page. 
+			Alternatively Search for public Streams in the toolbar at the top of the page.
+			<br />
+			<br />
+		}
+		@if(lastUpdatedStreams.length > 0) {
+			<section>
+			<legend>Public streams</legend>
+			@for(stream <- lastUpdatedStreams) {					
+				@vstream.includeStream(stream)				
+			}
+			</section>
+		}
+    </div>
+  </div>
 }

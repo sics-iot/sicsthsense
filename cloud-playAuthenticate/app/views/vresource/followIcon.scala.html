@@ -1,8 +1,0 @@
-@(resource: Resource, prefix: String)
- 
-@if(!CtrlUser.getUser().followsResource(resource)) {
-  <a class="icon-btn icon-star-empty follow_resource" parent_id="@resource.id" id="followr@prefix@resource.id" href="#" rel="tooltip" title="Follow" inactive_title="Stop following"></a>
-} else {
-  <a class="icon-btn icon-star unfollow_resource" parent_id="@resource.id" id="unfollowr@prefix@resource.id" href="#" rel="tooltip" title="Stop following" inactive_title="Follow"></a>
-}
-

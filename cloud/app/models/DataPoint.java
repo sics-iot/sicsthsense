@@ -1,101 +1,84 @@
+/*
+ * Copyright (c) 2013, Swedish Institute of Computer Science
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of The Swedish Institute of Computer Science nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+
+/* Description:
+ * TODO:
+ * */
+
 package models;
 
-import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
-import javax.persistence.*;
+import play.db.ebean.Model;
 
-import org.codehaus.jackson.JsonNode;
+/** T could be any comparable type; i.e. Long, Double, String, etc. */
+@javax.persistence.MappedSuperclass
+public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
-import play.db.ebean.*;
-import play.data.format.*;
-import play.data.validation.*;
+	@Column(name = "stream_id", nullable = false)
+	@ManyToOne
+	public Stream stream;
 
-import ch.qos.logback.classic.db.SQLBuilder;
+	@Id
+	public Long id;
+	
+	/**
+	 */
+	private static final long serialVersionUID = 2919758328697338009L;
 
-import com.avaje.ebean.*;
+	/** T could be any comparable type; i.e. Long, Double, String, etc. */
+	//@Column(unique = true, nullable = false)
+	//@Id
+	public Long timestamp;
+	
+	public abstract DataPoint add();
+	public abstract Object getData();
+	public abstract String toTSV();
 
-import controllers.Utils;
-import play.libs.F.*;
-import play.libs.WS;
+	public DataPoint() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-@Entity 
-public class DataPoint extends Model implements Comparable<DataPoint> {
-  
-    @Id
-    public Long id;
-  
-    @ManyToOne 
-    public Resource resource;
-    
-    public float data;
-    public long timestamp;
-          
-    public static Model.Finder<Long,DataPoint> find = new Model.Finder<Long, DataPoint>(Long.class, DataPoint.class);
-    
-    public DataPoint(Resource resource, float data, long timestamp) {
-      this.resource = resource;
-      this.data = data;
-      this.timestamp = timestamp;
-    }
-    
-    public static DataPoint add(Resource resource, float data, long timestamp) {
-      DataPoint dataPoint = new DataPoint(resource, data, timestamp);
-      dataPoint.save();
-      return dataPoint;
-    }
-    
-    public static long getCount() {
-      return find.findRowCount();
-    }
-    
-    public static List<DataPoint> getByStream(Resource stream) {
-      return find.where()
-          .eq("resource", stream)
-          .orderBy("timestamp desc")
-          .findList();
-    }
-    
-    public static List<DataPoint> getByStreamTail(Resource stream, long tail) {
-      List<DataPoint> set = find.where()
-          .eq("resource", stream)
-          .setMaxRows((int)tail)
-          .orderBy("timestamp desc")
-          .findList();
-//      return set.subList(set.size()-(int)tail, set.size());
-      return set;
-    }
-    
-    public static List<DataPoint> getByStreamLast(Resource stream, long last) {
-      return getByStreamSince(stream, Utils.currentTime() - last);
-    }
-    
-    public static List<DataPoint> getByStreamSince(Resource stream, long since) {
-      return find.where()
-          .eq("resource", stream)
-          .ge("timestamp", since)
-          .orderBy("timestamp desc")
-          .findList();
-    }
-    
-    public static void deleteByStream(Resource stream) {
-    //TODO this is an ugly workaround, we need to find out how to SQL delete directly
-      List<DataPoint> list = find.where()
-          .eq("resource", stream)
-          .orderBy("timestamp desc")
-          .findList();
-//    Ebean.delete(list);
-      List<Long> ids = new LinkedList<Long>();
-      for(DataPoint element: list) {
-        ids.add(element.id);
-      }
-      for(Long id: ids) {
-        find.ref(id).delete(); 
-      }
-    }
+	public int compareTo(DataPoint point) {
+		return Long.valueOf(this.timestamp).compareTo(point.timestamp);
+	}
 
-    public int compareTo(DataPoint point) {
-      return Long.valueOf(this.timestamp).compareTo(point.timestamp);
-    }
-    
+//	public abstract long getCount();
+//
+//
+//	public abstract List<? extends DataPoint> getByStream(Stream stream);
+//
+//	public abstract List<? extends DataPoint> getByStreamTail(Stream stream, long tail);
+//
+//	public abstract List<? extends DataPoint> getByStreamLast(Stream stream, long last);
+//
+//	public abstract List<? extends DataPoint> getByStreamSince(Stream stream, long since);
+//
+//	public abstract void deleteByStream(Stream stream);
+
 }
-

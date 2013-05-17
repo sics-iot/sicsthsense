@@ -3,124 +3,227 @@
 
 # --- !Ups
 
-create table data_point (
-  id                        bigint not null,
-  resource_id               bigint,
-  data                      float,
+create table actuators (
+  id                        bigint auto_increment not null,
+  owner_id                  bigint,
+  input_parser              varchar(255),
+  constraint pk_actuators primary key (id))
+;
+
+create table data_point_double (
+  id                        bigint auto_increment not null,
+  stream_id                 bigint,
   timestamp                 bigint,
-  constraint pk_data_point primary key (id))
+  data                      double,
+  constraint uq_data_point_double_1 unique (stream_id,timestamp),
+  constraint pk_data_point_double primary key (id))
 ;
 
-create table end_point (
-  id                        bigint not null,
+create table data_point_string (
+  id                        bigint auto_increment not null,
+  stream_id                 bigint,
+  timestamp                 bigint,
+  data                      varchar(160),
+  constraint uq_data_point_string_1 unique (stream_id,timestamp),
+  constraint pk_data_point_string primary key (id))
+;
+
+create table functions (
+  id                        bigint auto_increment not null,
+  owner_id                  bigint,
+  constraint pk_functions primary key (id))
+;
+
+create table operators (
+  id                        bigint auto_increment not null,
+  constraint pk_operators primary key (id))
+;
+
+create table resources (
+  id                        bigint auto_increment not null,
+  owner_id                  bigint,
   label                     varchar(255),
-  url                       varchar(255),
-  uid                       varchar(255),
-  description               varchar(255),
-  location                  varchar(255),
-  user_id                   bigint,
-  constraint uq_end_point_1 unique (user_id,label),
-  constraint pk_end_point primary key (id))
-;
-
-create table resource (
-  id                        bigint not null,
-  path                      varchar(255),
-  end_point_id              bigint,
-  user_id                   bigint,
   polling_period            bigint,
   last_polled               bigint,
-  last_updated              bigint,
-  constraint uq_resource_1 unique (end_point_id,path),
-  constraint pk_resource primary key (id))
+  polling_url               varchar(255),
+  polling_authentication_key varchar(255),
+  description               varchar(255),
+  parent_id                 bigint,
+  secret_key                varchar(255),
+  version                   integer not null,
+  constraint uq_resources_1 unique (owner_id,parent_id,label),
+  constraint pk_resources primary key (id))
 ;
 
-create table user (
-  id                        bigint not null,
-  email                     varchar(255),
-  user_name                 varchar(255),
+create table resource_log (
+  id                        bigint auto_increment not null,
+  resource_id               bigint,
+  creation_timestamp        bigint,
+  response_timestamp        bigint,
+  parsed_successfully       tinyint(1) default 0,
+  is_poll                   tinyint(1) default 0,
+  body                      varchar(8192),
+  method                    varchar(255),
+  host_name                 varchar(255),
+  uri                       varchar(255),
+  headers                   varchar(4096),
+  message                   varchar(4096),
+  version                   integer not null,
+  constraint uq_resource_log_1 unique (resource_id,is_poll),
+  constraint pk_resource_log primary key (id))
+;
+
+create table settings (
+  id                        bigint auto_increment not null,
+  name                      varchar(255) not null,
+  val                       varchar(255),
+  constraint uq_settings_1 unique (name),
+  constraint pk_settings primary key (id))
+;
+
+create table streams (
+  id                        bigint auto_increment not null,
+  type                      varchar(1),
+  latitude                  double,
+  longtitude                double,
+  description               varchar(255),
+  public_access             tinyint(1) default 0,
+  public_search             tinyint(1) default 0,
+  frozen                    tinyint(1) default 0,
+  history_size              bigint,
+  last_updated              bigint,
+  secret_key                varchar(255),
+  owner_id                  bigint,
+  resource_id               bigint,
+  version                   integer not null,
+  constraint ck_streams_type check (type in ('U','D','S')),
+  constraint pk_streams primary key (id))
+;
+
+create table parsers (
+  id                        bigint auto_increment not null,
+  resource_id               bigint,
+  stream_id                 bigint,
+  input_parser              varchar(255),
+  input_type                varchar(255),
+  timeformat                varchar(255),
+  data_group                integer,
+  time_group                integer,
+  number_of_points          integer,
+  constraint pk_parsers primary key (id))
+;
+
+create table users (
+  id                        bigint auto_increment not null,
+  email                     varchar(255) not null,
+  user_name                 varchar(255) not null,
+  password                  varchar(255),
   first_name                varchar(255),
   last_name                 varchar(255),
-  location                  varchar(255),
-  constraint uq_user_1 unique (user_name),
-  constraint uq_user_2 unique (email),
-  constraint pk_user primary key (id))
+  description               varchar(2048),
+  latitude                  double,
+  longitude                 double,
+  creation_date             datetime not null,
+  last_login                datetime,
+  token                     varchar(255),
+  admin                     tinyint(1) default 0,
+  version                   integer not null,
+  constraint uq_users_email unique (email),
+  constraint uq_users_user_name unique (user_name),
+  constraint pk_users primary key (id))
+;
+
+create table vfiles (
+  id                        bigint auto_increment not null,
+  path                      varchar(255) not null,
+  owner_id                  bigint,
+  type                      varchar(1) not null,
+  linked_stream_id          bigint,
+  constraint ck_vfiles_type check (type in ('F','D')),
+  constraint uq_vfiles_1 unique (owner_id,path),
+  constraint pk_vfiles primary key (id))
 ;
 
 
-create table resource_user (
-  resource_id                    bigint not null,
-  user_id                        bigint not null,
-  constraint pk_resource_user primary key (resource_id, user_id))
+create table functions_streams (
+  functions_id                   bigint not null,
+  streams_id                     bigint not null,
+  constraint pk_functions_streams primary key (functions_id, streams_id))
 ;
 
-create table user_resource (
-  user_id                        bigint not null,
-  resource_id                    bigint not null,
-  constraint pk_user_resource primary key (user_id, resource_id))
+create table users_streams (
+  users_id                       bigint not null,
+  streams_id                     bigint not null,
+  constraint pk_users_streams primary key (users_id, streams_id))
 ;
+alter table actuators add constraint fk_actuators_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_actuators_owner_1 on actuators (owner_id);
+alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_data_point_double_stream_2 on data_point_double (stream_id);
+alter table data_point_string add constraint fk_data_point_string_stream_3 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_data_point_string_stream_3 on data_point_string (stream_id);
+alter table functions add constraint fk_functions_owner_4 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_functions_owner_4 on functions (owner_id);
+alter table resources add constraint fk_resources_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_resources_owner_5 on resources (owner_id);
+alter table resources add constraint fk_resources_parent_6 foreign key (parent_id) references resources (id) on delete restrict on update restrict;
+create index ix_resources_parent_6 on resources (parent_id);
+alter table resource_log add constraint fk_resource_log_resource_7 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_resource_log_resource_7 on resource_log (resource_id);
+alter table streams add constraint fk_streams_owner_8 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_streams_owner_8 on streams (owner_id);
+alter table streams add constraint fk_streams_resource_9 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_streams_resource_9 on streams (resource_id);
+alter table parsers add constraint fk_parsers_resource_10 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_parsers_resource_10 on parsers (resource_id);
+alter table parsers add constraint fk_parsers_stream_11 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_parsers_stream_11 on parsers (stream_id);
+alter table vfiles add constraint fk_vfiles_owner_12 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_vfiles_owner_12 on vfiles (owner_id);
+alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
-create table user_end_point (
-  user_id                        bigint not null,
-  end_point_id                   bigint not null,
-  constraint pk_user_end_point primary key (user_id, end_point_id))
-;
-create sequence data_point_seq;
-
-create sequence end_point_seq;
-
-create sequence resource_seq;
-
-create sequence user_seq;
-
-alter table data_point add constraint fk_data_point_resource_1 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
-create index ix_data_point_resource_1 on data_point (resource_id);
-alter table end_point add constraint fk_end_point_user_2 foreign key (user_id) references user (id) on delete restrict on update restrict;
-create index ix_end_point_user_2 on end_point (user_id);
-alter table resource add constraint fk_resource_endPoint_3 foreign key (end_point_id) references end_point (id) on delete restrict on update restrict;
-create index ix_resource_endPoint_3 on resource (end_point_id);
-alter table resource add constraint fk_resource_user_4 foreign key (user_id) references user (id) on delete restrict on update restrict;
-create index ix_resource_user_4 on resource (user_id);
 
 
+alter table functions_streams add constraint fk_functions_streams_functions_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;
 
-alter table resource_user add constraint fk_resource_user_resource_01 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
+alter table functions_streams add constraint fk_functions_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
 
-alter table resource_user add constraint fk_resource_user_user_02 foreign key (user_id) references user (id) on delete restrict on update restrict;
+alter table users_streams add constraint fk_users_streams_users_01 foreign key (users_id) references users (id) on delete restrict on update restrict;
 
-alter table user_resource add constraint fk_user_resource_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
-
-alter table user_resource add constraint fk_user_resource_resource_02 foreign key (resource_id) references resource (id) on delete restrict on update restrict;
-
-alter table user_end_point add constraint fk_user_end_point_user_01 foreign key (user_id) references user (id) on delete restrict on update restrict;
-
-alter table user_end_point add constraint fk_user_end_point_end_point_02 foreign key (end_point_id) references end_point (id) on delete restrict on update restrict;
+alter table users_streams add constraint fk_users_streams_streams_02 foreign key (streams_id) references streams (id) on delete restrict on update restrict;
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+SET FOREIGN_KEY_CHECKS=0;
 
-drop table if exists data_point;
+drop table actuators;
 
-drop table if exists end_point;
+drop table data_point_double;
 
-drop table if exists resource;
+drop table data_point_string;
 
-drop table if exists resource_user;
+drop table functions;
 
-drop table if exists user;
+drop table functions_streams;
 
-drop table if exists user_resource;
+drop table operators;
 
-drop table if exists user_end_point;
+drop table resources;
 
-SET REFERENTIAL_INTEGRITY TRUE;
+drop table resource_log;
 
-drop sequence if exists data_point_seq;
+drop table settings;
 
-drop sequence if exists end_point_seq;
+drop table streams;
 
-drop sequence if exists resource_seq;
+drop table users_streams;
 
-drop sequence if exists user_seq;
+drop table parsers;
+
+drop table users;
+
+drop table vfiles;
+
+SET FOREIGN_KEY_CHECKS=1;
 

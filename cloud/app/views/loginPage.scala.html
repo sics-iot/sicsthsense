@@ -1,6 +1,16 @@
+@(message: String="")
+
 @import helper._
 
-@layout("Home", null) {
+@layout("Log In", message, null) {
+
+		<br />
+       <legend>Welcome to SicsthSense!</legend>
+		SicsthSense is a new cloud platform that makes connecting sensors, actuators, smart phones and online services easier than ever. Through this new platform, users can gather their sensor data, share it in a secure way, look for other’s data, set triggers and interact with objects or services.
+		<br />
+		<br />
+		<br />
+		@if(Application.canOpenIDLogin()) {
     <!-- Simple OpenID Selector -->
     <form action="@routes.Login.authenticate("")" method="get" id="openid_form">
       <input type="hidden" name="action" value="verify" />
@@ -14,8 +24,33 @@
           <input id="openid_identifier" name="openid_identifier" type="url" required placeholder="Your OpenID" />
           <input id="openid_submit" type="submit" value="Log in" class="buttonLG"/>
         </div>
-          <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
+          <p>OpenID is service that allows you to sign in to many different websites using a single identity.
           Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
       </fieldset>
     </form>    
+		}
+		<br />
+		@if(Application.canPasswordLogin()) {
+		@helper.form(action = routes.Login.authenticatePassword("","","")) {
+      <input type="hidden" name="action" value="verify" />
+      <fieldset>
+				<legend><b>Sign in with Email/Password</b></legend>
+				<dt>Email</dt>
+				<dd><input type="text" name="username" value="" /></dd>
+
+				<dt>Password</dt>
+				<dd><input type="password" name="password" value="" /></dd>
+				<dt></dt>
+				<dd>
+				<input class="btn btn-primary" type="submit" name="signtype" value="Sign in" /> 
+				&nbsp;
+				&nbsp;
+				or 
+				&nbsp;
+				&nbsp;
+				<input class="btn" type="submit" name="signtype" value="Sign up" /> 
+			</dd>
+			</fieldset>
+		}
+		}
 }
