@@ -72,6 +72,7 @@ public class Resource extends Operator {
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
     public Long pollingPeriod = 0L;
     public Long lastPolled = 0L;
+    public Long lastPosted = 0L;
     @ManyToOne
     public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
@@ -112,6 +113,7 @@ public class Resource extends Operator {
         this.owner = owner;
         this.pollingPeriod = pollingPeriod;
         this.lastPolled = 0L;
+        this.lastPosted = 0L;
         this.pollingUrl = pollingUrl;
         this.pollingAuthenticationKey = pollingAuthenticationKey;
         this.description = description;
@@ -134,6 +136,12 @@ public class Resource extends Operator {
     public Resource() {
         this(null, null, "NewResource" + Utils.timeStr(Utils.currentTime()), 0L, null, null, "");
     }
+
+
+		public boolean isUnused() {
+			if (lastPolled==0 && lastPosted==0) { return true; }
+			return false;
+		}
 
     public String getPollingUrl() {
         return pollingUrl;
@@ -303,14 +311,15 @@ public class Resource extends Operator {
     public boolean parseAndPost(Request req, Long currentTime) throws Exception {
         boolean result = false;
         if (streamParsers != null) {
-            for (StreamParser sp : streamParsers) {
-                // Logger.info("handing request to stream parser");
-                if (sp != null) {
-                    // Logger.info("New request: " + req.body().asText());
-                    result |= sp.parseRequest(req, currentTime);
-                }
-            }
+					for (StreamParser sp : streamParsers) {
+						if (sp != null) {
+							Logger.info("handing request to stream parser:");
+							// Logger.info("New request: " + req.body().asText());
+							result |= sp.parseRequest(req, currentTime);
+						}
+					}
         }
+				this.lastPosted = Utils.currentTime();
         return result;
     }
 
@@ -319,6 +328,7 @@ public class Resource extends Operator {
         // this.key = resource.getKey();
         this.pollingPeriod = resource.pollingPeriod;
         this.lastPolled = resource.lastPolled;
+        this.lastPosted = resource.lastPosted;
         this.pollingUrl = resource.getPollingUrl();
         this.parent = resource.parent;
         this.description = resource.description;
