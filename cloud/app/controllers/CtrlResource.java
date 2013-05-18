@@ -439,48 +439,40 @@ public class CtrlResource extends Controller {
 
 	@BodyParser.Of(BodyParser.TolerantText.class)
 	private static Result postByResource(Resource resource) {
-		if (resource != null) {
-			ResourceLog resourceLog = null;
-			try {
-				Long requestTime = Utils.currentTime();
-				// Log request
-				resourceLog = new ResourceLog(resource, request(), requestTime);
-				resourceLog = ResourceLog.createOrUpdate(resourceLog);
+		if (resource == null) { return notFound(); }
+		ResourceLog resourceLog = null;
+		Long requestTime = Utils.currentTime();
+		boolean parsedSuccessfully = false;
+		try {
+			resourceLog = new ResourceLog(resource, request(), requestTime);
+			resourceLog = ResourceLog.createOrUpdate(resourceLog);
 
-				// XXX: asText() does not work unless ContentType is
-				// "text/plain"
-				String strBody = request().body().asText();
-				String jsonBodyString = (request().body().asJson() != null) ? request()
-						.body().asJson().toString() : "";
-				Logger.info("[Resources] post received from: " + " URI "
-						+ request().uri() + ", content type: "
-						+ request().getHeader("Content-Type") + ", payload: " + strBody
-						+ jsonBodyString);
-				Boolean parsedSuccessfully = resource.parseAndPost(request(),
-						requestTime);
-				resourceLog.updateParsedSuccessfully(parsedSuccessfully);
-				if (!parsedSuccessfully) {
-					Logger.info("[Resources] Can't parse!");
-					return badRequest("Bad request: Can't parse!");
-				}
-			} catch (Exception e) {
-				String msg = "[CtrlResource] Exception while receiving a post in Resource: "
-						+ resource.label
-						+ "Owner "
-						+ resource.owner.userName
-						+ "\n"
-						+ e.getMessage() + e.getStackTrace()[0].toString();
-				Logger.error(msg);
-				if (resourceLog != null) {
-					resourceLog.updateMessages(msg);
-				}
-				// Logger.info("[Streams] User null" +
-				// Boolean.toString(currentUser == null));
-				return badRequest("Bad request: Error!" + msg);
-			}
-			return ok("ok");
+			// XXX: asText() does not work unless ContentType is // "text/plain"
+			String strBody = request().body().asText();
+			String jsonBodyString = (request().body().asJson() != null) ? request()
+					.body().asJson().toString() : "";
+			Logger.info("[Resources] post received from URI: " + request().uri() 
+					+ ", content type: " + request().getHeader("Content-Type") 
+					+ ", payload: " + strBody + jsonBodyString);
+			// if first POST (and no poll's), auto make parsers
+			//if (resource.streamParsers.empty() && resource.isEmpty()) {autoCreateParsers(jsonBody)}
+
+			parsedSuccessfully = resource.parseAndPost(request(), requestTime);
+			resourceLog.updateParsedSuccessfully(parsedSuccessfully);
+		} catch (Exception e) {
+			String msg = "[CtrlResource] Exception while receiving a post in Resource: "
+					+ resource.label
+					+ " Owner " + resource.owner.userName + "\n"
+					+ e.getMessage() + e.getStackTrace()[0].toString();
+			Logger.error(msg);
+			if (resourceLog != null) { resourceLog.updateMessages(msg); }
+			return badRequest("Bad request: Error! " + msg);
 		}
-		return notFound();
+		if (!parsedSuccessfully) {
+			Logger.info("[CtrlResource] Bad request: Can't parse!");
+			return badRequest("Bad request: Can't parse!");
+		}
+		return ok("ok");
 	}
 
 	@Security.Authenticated(Secured.class)

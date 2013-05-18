@@ -66,47 +66,25 @@ public class Resource extends Operator {
 
     @Id
     public Long id;
-
     @ManyToOne
-    // (cascade = CascadeType.ALL)
     public User owner;
-
-    /**
-     * The serialization runtime associates with each serializable class a version number, called a
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 7683451697925144957L;
-
     @Required
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
-
     public Long pollingPeriod = 0L;
-
     public Long lastPolled = 0L;
-
+    @ManyToOne
+    public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
     // never use field access. Always use getter...
     private String pollingUrl = "";
-
-    public String getPollingUrl() {
-        return pollingUrl;
-    }
-
-    public void setPollingUrl(String pollingUrl) {
-			if (pollingUrl.endsWith("/")) {
-				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
-			}
-			this.pollingUrl = pollingUrl;
-    }
-
     public String pollingAuthenticationKey = null;
     public String description = "";
 
-    @ManyToOne
-    public Resource parent = null;
+    /** Secret key for authenticating posts coming from outside */
+    @Column(name = "secret_key")
+    public String key; // key is a reserved keyword in mysql
 
     @OneToMany(mappedBy = "parent")
-    // , cascade = CascadeType.ALL)
     public List<Resource> subResources = new ArrayList<Resource>();
 
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
@@ -115,14 +93,13 @@ public class Resource extends Operator {
     @OneToMany(mappedBy = "resource")
     public List<Stream> streams = new ArrayList<Stream>();
 
-    /** Secret key for authenticating posts coming from outside */
-    @Column(name = "secret_key")
-    // key is a reserved keyword in mysql
-    public String key;
-
     @Version
-    // for concurrency protection
-    private int version;
+    private int version; // for concurrency protection
+    /**
+     * The serialization runtime associates with each serializable class a version number, called a
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 7683451697925144957L;
 
     public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(Long.class,
             Resource.class);
@@ -156,6 +133,17 @@ public class Resource extends Operator {
 
     public Resource() {
         this(null, null, "NewResource" + Utils.timeStr(Utils.currentTime()), 0L, null, null, "");
+    }
+
+    public String getPollingUrl() {
+        return pollingUrl;
+    }
+
+    public void setPollingUrl(String pollingUrl) {
+			if (pollingUrl.endsWith("/")) {
+				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
+			}
+			this.pollingUrl = pollingUrl;
     }
 
     /** Call to create, or update an access token */
