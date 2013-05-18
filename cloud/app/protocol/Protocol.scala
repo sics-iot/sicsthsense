@@ -1,9 +1,11 @@
 package protocol
 
-import java.net.URL
-import java.net.URLConnection
+import scala.concurrent.Future
 
-trait Protocol {
-  def createUrl(url: String): URL
-  def createConnection(url: String): URLConnection
+trait Protocol[TRequest, TResponse] {
+  def request(request: Request): Future[Response]
+
+  def translateRequest(request: TRequest): Request
+
+  def translateResponse(response: TResponse): Response
 }

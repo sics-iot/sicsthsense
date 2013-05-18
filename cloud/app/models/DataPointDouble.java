@@ -31,7 +31,9 @@ package models;
 
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import play.db.ebean.Model;
 
@@ -40,97 +42,105 @@ import com.avaje.ebean.Ebean;
 import controllers.Utils;
 
 @Entity
-@Table(name = "data_point_double", uniqueConstraints = { 
-		@UniqueConstraint(columnNames = {"stream_id", "timestamp" }) 
-		})
+@Table(name = "data_point_double", uniqueConstraints = {@UniqueConstraint(columnNames = {
+        "stream_id", "timestamp"})})
 public class DataPointDouble extends DataPoint {
-	
-	public DataPointDouble() {
-		this(null, null, null);
-		// TODO Auto-generated constructor stub
-	}
 
-	public static Model.Finder<Long, DataPointDouble> find = new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
-	/**
+    public DataPointDouble() {
+        this(null, null, null);
+        // TODO Auto-generated constructor stub
+    }
+
+    public static Model.Finder<Long, DataPointDouble> find =
+            new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -6502881310122879601L;
-	
-	public Double data;
+    private static final long serialVersionUID = -6502881310122879601L;
 
-	public DataPointDouble(Stream stream, Double data, Long timestamp) {
-		super();
-		this.stream = stream;
-		this.data = data;
-		this.timestamp = timestamp;
-		//find = new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
-	}
+    public Double data;
 
-	public DataPointDouble add() {
-		// DataPointDouble dataPoint = new DataPoint(stream, data, timestamp);
-		if (stream != null) {
-			this.save();
-			return this;
-		}
-		return null;
-	}
+    public DataPointDouble(Double data, Long timestamp) {
+        super();
+        this.data = data;
+        this.timestamp = timestamp;
+        // find = new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
+    }
 
-  public Double getData() {
-  	return data;
-  }
-  
-  @Override
-	public String toString() {
-  	String streamName = ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
-		return streamName + data + "@" + timestamp + " ";
-	}
+    public DataPointDouble(Stream stream, Double data, Long timestamp) {
+        super();
+        this.stream = stream;
+        this.data = data;
+        this.timestamp = timestamp;
+        // find = new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
+    }
 
-	@Override
-	public String toTSV() {
-		return timestamp +"\t"+ data;
-	}
-	
-  public static List<? extends DataPoint> getByStream(Stream stream) {
-		return find.where().eq("stream", stream).orderBy("timestamp desc")
-				.findList();
-	}
+    public DataPointDouble add() {
+        // DataPointDouble dataPoint = new DataPoint(stream, data, timestamp);
+        if (stream != null) {
+            this.save();
+            return this;
+        }
+        return null;
+    }
 
-	public static List<? extends DataPoint> getByStreamTail(Stream stream, long tail) {
-		if (tail == 0) {
-			tail++;
-		}
-		List<? extends DataPoint> set = find.where().eq("stream", stream)
-				.setMaxRows((int) tail).orderBy("timestamp desc").findList();
-		// return set.subList(set.size()-(int)tail, set.size());
-		return set;
-	}
+    public Double getData() {
+        return data;
+    }
 
-	public static List<? extends DataPoint> getByStreamLast(Stream stream, long last) {
-		return getByStreamSince(stream, Utils.currentTime() - last);
-	}
+    @Override
+    public String toString() {
+        String streamName =
+                ((stream != null && stream.file != null) ? stream.file.path + ": " : "");
+        return streamName + data + "@" + timestamp + " ";
+    }
 
-	public static List<? extends DataPoint> getByStreamSince(Stream stream, long since) {
-		return find.where().eq("stream", stream).ge("timestamp", since)
-				.orderBy("timestamp desc").findList();
-	}
+    @Override
+    public String toTSV() {
+        return timestamp + "\t" + data;
+    }
 
-	public static void deleteByStream(Stream stream) {
-		// TODO this is an ugly workaround, we need to find out how to SQL delete
-		// directly
-		List<? extends DataPoint> list = find.where().eq("stream", stream)
-				.orderBy("timestamp desc").findList();
-		Ebean.delete(list);
-		// List<Long> ids = new LinkedList<Long>();
-		// for(DataPoint element: list) {
-		// ids.add(element.id);
-		// }
-		// for(Long id: ids) {
-		// find.ref(id).delete();
-		// }
-	}	
-	
-	public static long getCount() {
-		return find.findRowCount();
-	}
-	
+    public static List<? extends DataPoint> getByStream(Stream stream) {
+        return find.where().eq("stream", stream).orderBy("timestamp desc").findList();
+    }
+
+    public static List<? extends DataPoint> getByStreamTail(Stream stream, long tail) {
+        if (tail == 0) {
+            tail++;
+        }
+        List<? extends DataPoint> set =
+                find.where().eq("stream", stream).setMaxRows((int) tail).orderBy("timestamp desc")
+                        .findList();
+        // return set.subList(set.size()-(int)tail, set.size());
+        return set;
+    }
+
+    public static List<? extends DataPoint> getByStreamLast(Stream stream, long last) {
+        return getByStreamSince(stream, Utils.currentTime() - last);
+    }
+
+    public static List<? extends DataPoint> getByStreamSince(Stream stream, long since) {
+        return find.where().eq("stream", stream).ge("timestamp", since).orderBy("timestamp desc")
+                .findList();
+    }
+
+    public static void deleteByStream(Stream stream) {
+        // TODO this is an ugly workaround, we need to find out how to SQL delete
+        // directly
+        List<? extends DataPoint> list =
+                find.where().eq("stream", stream).orderBy("timestamp desc").findList();
+        Ebean.delete(list);
+        // List<Long> ids = new LinkedList<Long>();
+        // for(DataPoint element: list) {
+        // ids.add(element.id);
+        // }
+        // for(Long id: ids) {
+        // find.ref(id).delete();
+        // }
+    }
+
+    public static long getCount() {
+        return find.findRowCount();
+    }
+
 }

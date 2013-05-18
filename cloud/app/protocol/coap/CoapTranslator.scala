@@ -1,4 +1,4 @@
-package protocol
+package protocol.coap
 
 import java.nio.ByteBuffer
 
@@ -10,15 +10,15 @@ import scala.util.Try
 import org.apache.http.entity.ContentType
 import org.apache.http.impl.EnglishReasonPhraseCatalog
 
-import ch.ethz.inf.vs.californium.coap.{Message => CoapMessage}
-import ch.ethz.inf.vs.californium.coap.{Option => CoapOption}
+import ch.ethz.inf.vs.californium.coap.{ Message => CoapMessage }
+import ch.ethz.inf.vs.californium.coap.{ Option => CoapOption }
 import ch.ethz.inf.vs.californium.coap.registries.CodeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.MediaTypeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
 import play.api.Configuration
 import play.api.Play
 
-object Translator {
+object CoapTranslator {
   private val KEY_COAP_CODE: String = "coap.response.code."
   private val KEY_COAP_OPTION: String = "CoapMessage.option."
   private val KEY_COAP_MEDIA: String = "CoapMessage.media."

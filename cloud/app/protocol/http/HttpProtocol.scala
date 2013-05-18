@@ -9,23 +9,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.libs.ws.WS
 import protocol.Protocol
+import protocol.Request
 import protocol.Response
 import java.net.URI
 import scala.io.Codec
 
-object HttpProtocol extends Protocol {
+object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Response] {
   def createUrl(url: String): URL = ???
   def createConnection(url: String): URLConnection = ???
 
-  def request(
-    url: String,
-    requestMethod: String,
-    headers: java.util.Map[String, Array[String]],
-    queryString: java.util.Map[String, Array[String]],
-    body: String): Future[Response] = {
+  def request(request: Request): Future[Response] = {
 
-    val hs = headers.mapValues(_.mkString(",")).toSeq
-    val qs = queryString.mapValues {
+    val hs = request.headers.mapValues(_.mkString(",")).toSeq
+    val qs = request.params.mapValues {
       values =>
         values.length match {
           case 0 => ""
@@ -34,36 +30,20 @@ object HttpProtocol extends Protocol {
         }
     }.toSeq
 
-    val req = WS.url(url).withQueryString(qs: _*).withHeaders(hs: _*)
+    val req = WS.url(request.uri.toString()).withQueryString(qs: _*).withHeaders(hs: _*)
 
-    val promise = requestMethod match {
+    val promise = request.method match {
       case "GET"    => req.get()
-      case "POST"   => req.post(body)
-      case "PUT"    => req.put(body)
+      case "POST"   => req.post(request.body)
+      case "PUT"    => req.put(request.body)
       case "DELETE" => req.delete()
       case _        => throw new Exception("Unrecognized request method")
     }
 
-    promise.map {
-      res =>
-        new Response {
-          override val uri: URI = res.getAHCResponse.getUri()
-
-          override val status: Int = res.status
-          override val statusText: String = res.statusText
-
-          override def header(key: String): String =
-            headers(key).head
-
-          override lazy val headers: Map[String, Array[String]] =
-            mapAsScalaMap(res.ahcResponse.getHeaders).mapValues(_.to[Array]).toMap
-
-          override val contentType: String = res.getAHCResponse.getContentType()
-          override lazy val contentLength: Long = body.length
-          override lazy val contentEncoding: String = Codec.UTF8.name
-
-          override lazy val body: String = res.body
-        }
-    }
+    promise.map(translateResponse)
   }
+
+  def translateRequest(request: play.mvc.Http.Request): Request = new HttpRequest(request)
+
+  def translateResponse(response: play.api.libs.ws.Response): Response = new HttpResponse(response)
 }

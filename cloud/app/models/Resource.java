@@ -25,6 +25,7 @@
 
 package models;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import play.libs.F;
 import play.libs.F.Promise;
 import play.mvc.Http.Request;
 import protocol.Response;
+import protocol.GenericRequest;
 import protocol.coap.CoapProtocol;
 import protocol.http.HttpProtocol;
 import scala.concurrent.Future;
@@ -60,8 +62,8 @@ import controllers.ScalaUtils;
 import controllers.Utils;
 
 @Entity
-@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id", "parent_id",
-        "label"})})
+@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id",
+        "parent_id", "label"})})
 public class Resource extends Operator {
 
     @Id
@@ -188,8 +190,8 @@ public class Resource extends Operator {
         }
         path += getPollingUrl();
 
-        if (!path.equalsIgnoreCase("") && !path.startsWith("http://") && !path.startsWith("https://")
-                && !path.startsWith("coap://")) {
+        if (!path.equalsIgnoreCase("") && !path.startsWith("http://")
+                && !path.startsWith("https://") && !path.startsWith("coap://")) {
             path = "http://" + path;
         }
 
@@ -212,11 +214,11 @@ public class Resource extends Operator {
         // Create connection depending on protocol
         if (url.startsWith("http") || url.startsWith("https")) {
             final Future<Response> promise =
-                    HttpProtocol.request(url, method, headers, params, body);
+                    HttpProtocol.request(new GenericRequest(URI.create(url), method, headers, params, body));
             return new Promise<Response>(promise);
         } else if (url.startsWith("coap")) {
             final Future<Response> promise =
-                    CoapProtocol.request(url, method, headers, params, body);
+                    CoapProtocol.request(new GenericRequest(URI.create(url), method, headers, params, body));
             return new Promise<Response>(promise);
         }
 
@@ -248,7 +250,9 @@ public class Resource extends Operator {
                 String msgs = "";
                 for (StreamParser sp : streamParsers) {
                     try {
-                        parsedSuccessfully |= sp.parseResponse(response, currentTime);
+                        final List<DataPoint> data =
+                                sp.parse(response.body(), response.contentType());
+                        parsedSuccessfully |= sp.stream.post(data, currentTime);
                     } catch (Exception e) {
                         msgs +=
                                 e.getMessage() + e.getStackTrace()[0].toString() + e.toString()
@@ -312,17 +316,34 @@ public class Resource extends Operator {
         this.pollingPeriod = period;
     }
 
-    public boolean parseAndPost(Request req, Long currentTime) throws Exception {
+    public boolean parseAndStore(String text, String contentType, Long currentTime)
+            throws Exception {
         boolean result = false;
+
         if (streamParsers != null) {
             for (StreamParser sp : streamParsers) {
                 // Logger.info("handing request to stream parser");
-                if (sp != null) {
-                    // Logger.info("New request: " + req.body().asText());
-                    result |= sp.parseRequest(req, currentTime);
-                }
+                final List<DataPoint> data = sp.parse(text, contentType);
+                result |= sp.stream.post(data, currentTime);
             }
         }
+
+        return result;
+    }
+
+
+    public boolean parseAndPost(Request req, Long currentTime) throws Exception {
+        boolean result = false;
+
+        if (streamParsers != null) {
+            for (StreamParser sp : streamParsers) {
+                // Logger.info("handing request to stream parser");
+                final List<DataPoint> data =
+                        sp.parse(req.body().asText(), req.getHeader("Content-Type"));
+                result |= sp.stream.post(data, currentTime);
+            }
+        }
+
         return result;
     }
 
@@ -342,23 +363,23 @@ public class Resource extends Operator {
         // update indexes
         Resource.index(this);
     }
-    
+
     public void verify() {
-    	this.label=label.replaceAll("[\\/:\"*?<>|']+", "");
+        this.label = label.replaceAll("[\\/:\"*?<>|']+", "");
     }
-    
+
     @Override
     public void update() {
-    	verify();
-    	super.update();
+        verify();
+        super.update();
     }
-    
+
     @Override
     public void save() {
-    	verify();
-    	super.save();
+        verify();
+        super.save();
     }
-    
+
     @Override
     public void delete() {
         this.pollingPeriod = 0L;
@@ -403,7 +424,9 @@ public class Resource extends Operator {
     }
 
     public static Resource getByUserLabel(User user, Resource parent, String label) {
-        Resource resource = find.select("id, owner, label, parent").where().eq("owner", user).eq("parent", parent).eq("label", label).findUnique();
+        Resource resource =
+                find.select("id, owner, label, parent").where().eq("owner", user)
+                        .eq("parent", parent).eq("label", label).findUnique();
         return resource;
     }
 

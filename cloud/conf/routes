@@ -22,12 +22,12 @@ GET        /sitemap															controllers.Application.sitemap()
 
 # Files
 #GET        /files/lsdir/$path<.*>                	controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
-GET        /files/browse/$path<.*>                controllers.CtrlFile.browse(path: String)
-GET        /files/miniBrowse/$path<.*>            controllers.CtrlFile.miniBrowse(path: String)
-GET        /files/delete/$path<.*>                controllers.CtrlFile.delete(path: String)
-GET        /files/createDir/$path<.*>             controllers.CtrlFile.createDir(path: String)
-GET        /files/createFile/$path<.*>            controllers.CtrlFile.createFile(path: String)
-GET        /files/move						                controllers.CtrlFile.move(path: String, newPath: String)
+GET      /files/browse/$path<.*>          controllers.CtrlFile.browse(path: String)
+GET      /files/miniBrowse/$path<.*>      controllers.CtrlFile.miniBrowse(path: String)
+GET      /files/delete/$path<.*>          controllers.CtrlFile.delete(path: String)
+GET      /files/createDir/$path<.*>       controllers.CtrlFile.createDir(path: String)
+GET      /files/createFile/$path<.*>      controllers.CtrlFile.createFile(path: String)
+GET      /files/move                      controllers.CtrlFile.move(path: String, newPath: String)
 
 
 #DELETE     /api/files/$path<.*>           			     controllers.CtrlFile.delete(path: String)
@@ -36,83 +36,83 @@ GET        /files/move						                controllers.CtrlFile.move(path: Stri
 
 
 # Accounts
-GET        /account                              controllers.CtrlUser.get()
-GET        /account/edit                         controllers.CtrlUser.edit()
-GET        /account/submit                       controllers.CtrlUser.submit()
-GET        /account/resetToken                   controllers.CtrlUser.resetToken(confirmed: Boolean)
-GET        /account/resetPassword								 controllers.CtrlUser.resetPassword(confirmed: Boolean)
+GET      /account                         controllers.CtrlUser.get()
+GET      /account/edit                    controllers.CtrlUser.edit()
+GET      /account/submit                  controllers.CtrlUser.submit()
+GET      /account/resetToken              controllers.CtrlUser.resetToken(confirmed: Boolean)
+GET      /account/resetPassword           controllers.CtrlUser.resetPassword(confirmed: Boolean)
 
-GET        /accounts/:username                   controllers.CtrlUser.view(username: String)
+GET      /accounts/:username              controllers.CtrlUser.view(username: String)
 
 # Administration
-GET        /admin/statistics										controllers.Application.statistics()
-GET        /admin/reindex												controllers.Application.reindex()
-GET        /admin/backup												controllers.Application.backup()
-GET        /admin/usermgmt											controllers.Application.userManagement()
-GET        /admin/setPasswordLogin							controllers.Application.setPasswordLogin()
-GET        /admin/setOpenIDLogin								controllers.Application.setOpenIDLogin()
-GET        /admin/setDomain											controllers.Application.setDomain()
+GET      /admin/statistics                controllers.Application.statistics()
+GET      /admin/reindex                   controllers.Application.reindex()
+GET      /admin/backup                    controllers.Application.backup()
+GET      /admin/usermgmt                  controllers.Application.userManagement()
+GET      /admin/setPasswordLogin          controllers.Application.setPasswordLogin()
+GET      /admin/setOpenIDLogin            controllers.Application.setOpenIDLogin()
+GET      /admin/setDomain                 controllers.Application.setDomain()
 
 
 # Dummy thing
-GET         /dummy/:id/discover                  controllers.DummyThing.discover(id: Long)
-GET         /dummy/:id/sensors                   controllers.DummyThing.sensors(id: Long)
-GET         /dummy/:id/sensors/temperature       controllers.DummyThing.temperature(id: Long)
-GET         /dummy/:id/sensors/energy            controllers.DummyThing.energy(id: Long)
-POST        /dummy/:id/actuators/print           controllers.DummyThing.print(id: Long)
+GET      /dummy/:id/discover              controllers.DummyThing.discover(id: Long)
+GET      /dummy/:id/sensors               controllers.DummyThing.sensors(id: Long)
+GET      /dummy/:id/sensors/temperature   controllers.DummyThing.temperature(id: Long)
+GET      /dummy/:id/sensors/energy        controllers.DummyThing.energy(id: Long)
+POST     /dummy/:id/actuators/print       controllers.DummyThing.print(id: Long)
 
 # Streams
 ## TODO move all functions that read streams to CtrlStream
-GET        /user/followStream/:id/:follow				controllers.CtrlUser.followStream(id: Long, follow: Boolean)
-GET        /user/isFollowingStream/:id					controllers.CtrlUser.isFollowingStream(id: Long)
-GET        /user/:ownerName/$path<.*>						controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET      /user/followStream/:id/:follow   controllers.CtrlUser.followStream(id: Long, follow: Boolean)
+GET      /user/isFollowingStream/:id      controllers.CtrlUser.isFollowingStream(id: Long)
+GET      /user/:ownerName/$path<.*>       controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 #GET		   	 /streams/view/:id										controllers.CtrlStream.getById(id: Long)
-GET        /streams/regenerateKey/:id			 			controllers.CtrlStream.regenerateKey(id: Long)
-GET		   	 /streams/view/:id										controllers.Application.viewStream(id: Long)
-POST       /streams/modify/:id									controllers.CtrlStream.modify(id: Long)
-GET        /streams/delete/:id   								controllers.CtrlStream.delete(id: Long)
-GET		   	 /streams/download/:id								controllers.CtrlStream.download(id: Long)
-GET        /streams/clearData/:id 							controllers.CtrlStream.clear(id: Long)
-GET        /streams/publicAccess/:id/:pub 			controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
-GET        /streams/publicSearch/:id/:pub 			controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
-GET        /streams/publicAccess/:id						controllers.CtrlStream.isPublicAccess(id: Long)
-GET        /streams/publicSearch/:id						controllers.CtrlStream.isPublicSearch(id: Long)
-GET        /streams/:id								    			controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
-DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
+GET      /streams/view/:id                controllers.Application.viewStream(id: Long)
+GET      /streams/regenerateKey/:id       controllers.CtrlStream.regenerateKey(id: Long)
+POST     /streams/modify/:id              controllers.CtrlStream.modify(id: Long)
+GET      /streams/delete/:id              controllers.CtrlStream.delete(id: Long)
+GET      /streams/download/:id            controllers.CtrlStream.download(id: Long)
+GET      /streams/clearData/:id           controllers.CtrlStream.clear(id: Long)
+GET      /streams/publicAccess/:id/:pub   controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
+GET      /streams/publicSearch/:id/:pub   controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
+GET      /streams/publicAccess/:id        controllers.CtrlStream.isPublicAccess(id: Long)
+GET      /streams/publicSearch/:id        controllers.CtrlStream.isPublicSearch(id: Long)
+GET      /streams/:id                     controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+DELETE   /streams/:id                     controllers.CtrlStream.clear(id: Long)
 #POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
 # Resources
-GET			/resources/add												controllers.CtrlResource.addSimple()
-GET			/resources/addSub											controllers.CtrlResource.addSubResource()
-GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
+GET      /resources/add                   controllers.CtrlResource.addSimple()
+GET      /resources/addSub                controllers.CtrlResource.addSubResource()
+GET      /resources/autoParsers/:id       controllers.CtrlResource.autoParser(id: Long)
 
 #deprecated
-GET			/resources/addLegacy												controllers.CtrlResource.add()
+GET      /resources/addLegacy             controllers.CtrlResource.add()
 #GET			/resources/initialise									controllers.CtrlResource.initialise()
-GET     /resources/regenerateKey/:id			 		controllers.CtrlResource.regenerateKey(id: Long)
-POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
-GET			/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
-POST		/resources/delete/:id									controllers.CtrlResource.delete(id: Long)
-GET			/resources/deleteParser/:id						controllers.CtrlResource.deleteParser(id: Long)
-POST		/resources/deleteParser/:id						controllers.CtrlResource.deleteParser(id: Long)
-POST		/resources/addParser									controllers.CtrlResource.addParser(resourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String, dataGroup: Integer ?= 1, timeGroup: Integer ?= 2, numberOfPoints: Integer ?= 1)
-GET			/resources/:id												controllers.CtrlResource.getById(id: Long)
-POST    /resources/:id			    							controllers.CtrlResource.post(id: Long)
+GET      /resources/regenerateKey/:id     controllers.CtrlResource.regenerateKey(id: Long)
+POST     /resources/modify/:id            controllers.CtrlResource.modify(id: Long)
+GET      /resources/delete/:id            controllers.CtrlResource.delete(id: Long)
+POST     /resources/delete/:id            controllers.CtrlResource.delete(id: Long)
+GET      /resources/deleteParser/:id      controllers.CtrlResource.deleteParser(id: Long)
+POST     /resources/deleteParser/:id      controllers.CtrlResource.deleteParser(id: Long)
+POST     /resources/addParser             controllers.CtrlResource.addParser(resourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String, dataGroup: Integer ?= 1, timeGroup: Integer ?= 2, numberOfPoints: Integer ?= 1)
+GET      /resources/:id                   controllers.CtrlResource.getById(id: Long)
+POST     /resources/:id                   controllers.CtrlResource.post(id: Long)
 
 # Proxy
-GET					/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
-POST				/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
-PUT					/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
-DELETE			/proxy/:id											controllers.Proxy.forwardById(id: Long, arguments: String)
+GET      /proxy/:id                       controllers.Proxy.forwardById(id: Long, arguments: String)
+POST     /proxy/:id                       controllers.Proxy.forwardById(id: Long, arguments: String)
+PUT      /proxy/:id                       controllers.Proxy.forwardById(id: Long, arguments: String)
+DELETE   /proxy/:id                       controllers.Proxy.forwardById(id: Long, arguments: String)
 # Proxy, API
-GET					/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
-POST				/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
-PUT					/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
-DELETE			/api/proxy/:key									controllers.Proxy.forwardByKey(key: String, arguments: String)
+GET      /api/proxy/:key                  controllers.Proxy.forwardByKey(key: String, arguments: String)
+POST     /api/proxy/:key                  controllers.Proxy.forwardByKey(key: String, arguments: String)
+PUT      /api/proxy/:key                  controllers.Proxy.forwardByKey(key: String, arguments: String)
+DELETE   /api/proxy/:key                  controllers.Proxy.forwardByKey(key: String, arguments: String)
 
 # Resources API
-POST    /api/resources/:key										controllers.CtrlResource.postByKey(key: String)
+POST     /api/resources/:key              controllers.CtrlResource.postByKey(key: String)
 #GET		/api/resources/:key										controllers.CtrlResource.getByKey(key: String)
 #GET    /api/resources/:key										controllers.CtrlResource.postByKey(key: String)
 
@@ -121,23 +121,22 @@ POST    /api/resources/:key										controllers.CtrlResource.postByKey(key: Str
 #GET		/api/label/:user/:label							controllers.CtrlResource.getByLabel( user: String, label: String)
 
 # Streams, API
-GET    	/api/streams/delete/:key   					controllers.CtrlStream.deleteByKey(key: String)
-GET     /api/streams/clearData/:key					controllers.CtrlStream.clearByKey(key: String)
-POST		/api/streams/:key							    	controllers.CtrlStream.postByKey(key: String)
-GET			/api/streams/:key							    	controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
+GET      /api/streams/delete/:key         controllers.CtrlStream.deleteByKey(key: String)
+GET      /api/streams/clearData/:key      controllers.CtrlStream.clearByKey(key: String)
+POST     /api/streams/:key                controllers.CtrlStream.postByKey(key: String)
+GET      /api/streams/:key                controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 GET				/api/files/$path<.*>							controllers.CtrlStream.getByPath(path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET				/api/ext/:user/$path<.*>					controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST			/api/files/$path<.*>							controllers.CtrlStream.postByPath(path: String)
 
 
-
 #Function 
-POST		/attachFunction/attach							controllers.CtrlFunction.attach()
+POST     /attachFunction/attach           controllers.CtrlFunction.attach()
 
 # Javascript Routes
-GET    /assets/javascripts/routes      			controllers.Application.javascriptRoutes()
+GET      /assets/javascripts/routes       controllers.Application.javascriptRoutes()
 
 # Map static reresources from the /public folder to the /assets URL path
-GET        /assets/*file                		controllers.Assets.at(path="/public", file)
+GET      /assets/*file                    controllers.Assets.at(path="/public", file)
 

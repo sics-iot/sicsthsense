@@ -3,62 +3,54 @@
  */
 package protocol.coap
 
-import java.io.ByteArrayInputStream
-import java.io.InputStream
 import java.net.URI
-import java.net.URL
-import java.net.URLConnection
-import java.net.URLStreamHandler
-
-import scala.Array.canBuildFrom
+import java.util.Date
+import scala.annotation.elidable
+import scala.annotation.elidable.ASSERTION
 import scala.collection.JavaConversions.mapAsScalaMap
-import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.concurrent.duration.Duration
-
+import scala.concurrent.stm.TMap
+import scala.concurrent.stm.atomic
+import scala.util.Try
+import akka.actor.Props
+import akka.actor.actorRef2Scala
+import ch.ethz.inf.vs.californium.coap
 import ch.ethz.inf.vs.californium.coap.DELETERequest
 import ch.ethz.inf.vs.californium.coap.GETRequest
 import ch.ethz.inf.vs.californium.coap.POSTRequest
 import ch.ethz.inf.vs.californium.coap.PUTRequest
-import ch.ethz.inf.vs.californium.coap.{Response => CoapResponse}
 import ch.ethz.inf.vs.californium.coap.ResponseHandler
-import ch.ethz.inf.vs.californium.coap.registries.MediaTypeRegistry
 import ch.ethz.inf.vs.californium.util.HttpTranslator
+import observing.Observable
+import observing.impl.Complete
+import observing.impl.MemoizeObserver
+import observing.impl.Next
+import play.api.Play.current
+import protocol.GetRequest
 import protocol.Protocol
+import protocol.Request
 import protocol.Response
-import protocol.Translator
+import scala.util.Success
+import scala.util.Failure
+import observing.Observer
 
-object CoapProtocol extends Protocol {
+object CoapProtocol extends Protocol[coap.Message, coap.Response] {
 
-  private class CoapUrlStreamHandler extends URLStreamHandler {
-    override def openConnection(url: URL): URLConnection = new CoapUrlConnection(url)
-  }
-
-  private val handler = new CoapUrlStreamHandler()
-
-  def createUrl(url: String): URL =
-    new URL(null, url, handler)
-
-  def createConnection(url: String): CoapUrlConnection =
-    createUrl(url).openConnection().asInstanceOf[CoapUrlConnection]
-
-  def request(
-    url: String,
-    requestMethod: String,
-    headers: java.util.Map[String, Array[String]],
-    queryString: java.util.Map[String, Array[String]],
-    body: String): Future[Response] = {
-
-    val req = requestMethod match {
+  private[coap] def createRequest(request: Request): coap.Request = {
+    // Create the appropriate request type. Only GET, POST, PUT, and DELETE are supported
+    val req = request.method match {
       case "GET"    => new GETRequest()
       case "POST"   => new POSTRequest()
       case "PUT"    => new PUTRequest()
       case "DELETE" => new DELETERequest()
-      case _        => throw new IllegalArgumentException(s"Unknown request type: $requestMethod")
+      case _        => throw new IllegalArgumentException(s"Unknown request type: ${request.method}")
     }
 
-    val qs = queryString.map {
+    // Concatenate the querystring values, if we have multiple values for the same
+    // key, print them as array inside [ ].
+    val qs = request.params.map {
       case ((key, values)) =>
         key + "=" + (values.length match {
           case 0 => ""
@@ -67,76 +59,321 @@ object CoapProtocol extends Protocol {
         })
     }.mkString("&")
 
-    val ops = HttpTranslator.getCoapOptions(headers.toArray.map {
+    // Convert the headers to option values, concatenate multiple values for the
+    // same key with ,.
+    val ops = HttpTranslator.getCoapOptions(request.headers.map {
       case ((key, values)) => new org.apache.http.message.BasicHeader(key, values.mkString(","))
-    })
+    }.toArray)
 
-    val responsePromise = Promise[Response]
-
-    req.setURI(url)
+    // Set the request uri
+    req.setURI(request.uri)
+    // Override the querystring
     req.setUriQuery(qs)
+    // Attach the headers
     req.setOptions(ops)
+
+    // return the created request object
+    req
+  }
+
+  private def executeRequest(req: coap.Request): Future[Response] = {
+    // We store the response into this promise
+    val promise = Promise[Response]
+
+    // Register an response handler that stores the response into the promise
     req.registerResponseHandler(new ResponseHandler() {
-      override def handleResponse(resp: CoapResponse): Unit =
-        responsePromise.success(new Response() {
-          override val uri: URI = new URI("coap", resp.getUriHost(), resp.getUriPath(), resp.getUriQuery(), null)
-
-          override val status: Int = Translator.getHttpStatusCode(resp.getCode()).get
-          override val statusText: String = Translator.getHttpStatusText(resp.getCode()).get
-
-          override def header(key: String): String = headers(key).head
-
-          override lazy val headers: Map[String, Array[String]] =
-            Translator.getHttpHeaders(resp.getOptions)
-
-          private lazy val ct = Translator.getContentType(resp)
-
-          override lazy val contentType: String =
-            if (ct == null) ""
-            else ct.getMimeType()
-          override lazy val contentEncoding: String =
-            if (ct == null) ""
-            else ct.getCharset().name()
-          override lazy val contentLength: Long = body.length
-
-          override lazy val body: String = Translator.getContent(resp)
-        })
+      override def handleResponse(resp: coap.Response): Unit =
+        promise.success(translateResponse(resp))
     })
 
+    // Start executing the request
     req.execute
 
-    responsePromise.future
+    // Return the future of the promise
+    promise.future
   }
+
+  /**
+   * Returns either the cached response, a reference to a currently running request
+   * or a reference to a new request that is started.
+   */
+  private def get(request: Request): Future[Response] =
+    RequestStore.getOrCreateRequest(request)
+
+  def request(request: Request): Future[Response] = request.method match {
+    // Because the semantics of GET in CoAP force a concurrently running Observer
+    // to cancel as soon as we make a GET request we need to handle GET request
+    // as special cases.
+    case "GET" => get(request)
+    // All other cases just simply execute the request.
+    case _     => executeRequest(createRequest(request))
+  }
+
+  def observe(
+    url: String,
+    headers: java.util.Map[String, Array[String]],
+    queryString: java.util.Map[String, Array[String]],
+    body: String): Observable[Response] =
+    RequestStore.getOrCreateObserve(GetRequest(URI.create(url), headers, queryString, body))
+
+  def translateRequest(request: coap.Message): Request = new CoapRequest(request)
+
+  def translateResponse(response: coap.Response): Response = new CoapResponse(response)
 }
 
-class CoapUrlConnection(
-  url: URL,
-  requestMethod: String = "GET") extends URLConnection(url) {
+private object RequestStore {
+  import scala.concurrent.stm.atomic
 
-  private val responsePromise = Promise[CoapResponse]
+  val actorSystem = play.api.libs.concurrent.Akka.system
 
-  private def response: CoapResponse =
-    Await.result(responsePromise.future, Duration.Inf)
+  val responses = TMap.empty[String, (Long, Response)]
+  val connections = TMap.empty[String, Either[Future[Response], Observable[Response]]]
 
-  override def connect: Unit = {
-    val req = requestMethod match {
-      case "GET"    => new GETRequest()
-      case "POST"   => new POSTRequest()
-      case "PUT"    => new PUTRequest()
-      case "DELETE" => new DELETERequest()
-      case _        => throw new IllegalArgumentException(s"Unknown request type: $requestMethod")
-    }
+  private def createRequest(request: Request): (Future[Response], coap.Request) = {
+    // We need to prepare the actual request object. 
+    // We make it lazy so that we only pay the price if we need to create a request.
+    val actualRequest = CoapProtocol.createRequest(request)
 
-    req.setURI(url.toURI())
-    req.registerResponseHandler(new ResponseHandler() {
-      override def handleResponse(resp: CoapResponse): Unit =
-        responsePromise.success(resp)
+    // We store the response into this promise
+    val promise = Promise[Response]
+
+    // Register an response handler that stores the response into the promise
+    actualRequest.registerResponseHandler(new ResponseHandler() {
+      override def handleResponse(resp: coap.Response): Unit =
+        promise.success(CoapProtocol.translateResponse(resp))
     })
 
-    req.execute
+    (promise.future, actualRequest)
   }
 
-  override def getContentType: String = MediaTypeRegistry.toString(response.getContentType)
+  private def createObserve(request: Request): (Observable[Response], coap.Request) = {
+    assert(request.method == "GET")
 
-  override def getInputStream: InputStream = new ByteArrayInputStream(response.getPayload())
+    // Create the coap request from a generic request object
+    val req = CoapProtocol.createRequest(request)
+
+    // Create the observing actor
+    // Execute the request when the actor receives the first connect request.
+    // It is possible that the server never response with an Observe
+    // option and thus we can only guarantee at least one Response to all observers.
+    val observer = actorSystem.actorOf(Props[MemoizeObserver[Response]])
+
+    // Register a response handler that pushes Responses into the channel
+    req.registerResponseHandler(new ResponseHandler() {
+      override def handleResponse(resp: coap.Response): Unit = {
+        // On each notification CoAP sends a full response containing the resources new state
+        val response = CoapProtocol.translateResponse(resp)
+
+        // Push the translated response into the channel
+        observer ! Next(response)
+
+        // If the server stopped sending notifications, end the actor
+        if (!response.headers.containsKey("Observe")) {
+          observer ! Complete
+        }
+      }
+    })
+
+    // Add the Observe option to the request
+    req.setObserve()
+
+    (Observable.fromActor[Response](observer), req)
+  }
+
+  /**
+   * Get the Response cached for the give request. If it is expired the Response
+   * is removed from the cache and None is returned.
+   */
+  private def getCached(request: Request): Option[Response] = {
+    val key = s"COAP.GET.${id(request)}"
+
+    atomic { implicit tx =>
+      val now = new Date().getTime() / 1000
+
+      responses.get(key).flatMap { cached =>
+        val (expires, response) = cached
+
+        if (expires >= now)
+          Some(response)
+        else {
+          responses.remove(key)
+          None
+        }
+      }
+    }
+  }
+
+  /**
+   * Set the Response that is cached for a specific request. The time
+   * it is expired is new Date().getTime() + Max-Age Header or
+   * 60 seconds as written in the CoAP specification.
+   */
+  private def setCached(request: Request, response: Response): Unit = {
+    val key = s"COAP.GET.${id(request)}"
+    val now = (new Date().getTime() / 1000).toInt
+    val expires = Try(response.header("Max-Age").toInt).getOrElse(60)
+
+    responses.single.put(key, (expires, response))
+  }
+
+  /**
+   * Return the String that uniquely identifies the given request.
+   *
+   * Currently it is just the complete uri without the querystring.
+   */
+  def id(request: Request): String =
+    request.uri.getHost() + request.uri.getPath()
+
+  /**
+   * Returns the future that is remembered for the given id. If no simple GET request
+   * or Observe request is running then a new request is executed and remembered.
+   */
+  def getOrCreateRequest(request: Request): Future[Response] = {
+    // We need to prepare the actual request object. 
+    // We make it lazy so that we only pay the price if we need to create a request.
+    lazy val (future, actualRequest) = createRequest(request)
+
+    // Check the cache and the currently open connections or create a new request atomically
+    atomic { implicit tx =>
+      // Load the value from the cache
+      val cached = getCached(request)
+      // Prepare the load of the open connection for a more fluent syntax later
+      lazy val inFlight = connections.get(id(request))
+
+      if (cached.isDefined) {
+        // If we found a value in cache, return it. The cache only returns non-expired responses.
+        // Return false to signal that we did not create a new request
+        (false, Future(cached.get))
+
+      } else if (inFlight.isDefined) {
+        // If there is a currently open connection, make a future out of it
+        val future = inFlight.get match {
+          // If the currently open connection is also just a simple get request, just use it
+          case Left(f) =>
+            f
+          // If the currently open connection is an Observable, use its head
+          case Right(obs) =>
+            obs.head
+        }
+
+        // Return false to signal that we did not create a new request
+        (false, future)
+
+      } else {
+        // Try to store the future of the response inside the map of open connections
+        connections.put(id(request), Left(future))
+
+        // Return true to signal that we did create a new request and thus actualRequest needs to bee executed.
+        (true, future)
+      }
+    } match {
+      // If actualRequest needs to be executed, do it and the return the future 
+      case (true, f) =>
+        // Attach a continuation function to the future that removes the future from the
+        // connections as soon as we got a response. It should also store a successful 
+        // response into the cache
+        f.andThen {
+          case Success(response) =>
+            setCached(request, response)
+            removeSafe(id(request), f)
+          case Failure(t) =>
+            removeSafe(id(request), f)
+        }
+
+        // Execute the request
+        actualRequest.execute()
+
+        // Return the original future
+        f
+      // Otherwise just return the future
+      case (false, f) =>
+        f
+    }
+  }
+
+  /**
+   * Returns the Observable[Response] that currently is responsible for observing the given id. If
+   * a simple GET request is running concurrently, the response of the GET request is ignored
+   * and a new Observe request is started by evaluating the given observable.
+   * The observable is then remembered.
+   */
+  def getOrCreateObserve(request: Request): Observable[Response] = {
+    // We need to prepare the actual request object. 
+    // We make it lazy so that we only pay the price if we need to create a request.
+    lazy val (observable, actualRequest) = createObserve(request)
+
+    // Check the cache and the currently open connections or create a new request atomically
+    atomic { implicit tx =>
+      // If there is a currently open connection that is an Observable then use it.
+      // Otherwise overwrite existing Futures
+      connections.get(id(request)) match {
+        // If the currently open connection is an Observable, use it
+        // Return false to signal that we did not create a new request
+        case Some(Right(obs)) =>
+          (false, obs)
+        // If the currently open connection is a Future, overwrite it
+        // Return true to signal that we did create a new request
+        case Some(Left(f)) =>
+          connections.put(id(request), Right(observable))
+          (true, observable)
+        // If there is no currently open connection, store the lazy value
+        // Return true to signal that we did create a new request
+        case None =>
+          connections.put(id(request), Right(observable))
+          (true, observable)
+      }
+    } match {
+      // If actualRequest needs to be executed, do it and the return the future 
+      case (true, obs) =>
+        // Subscribe to the observable to cache the most recent response and
+        // remove the observable from the connections as soon as an error happens
+        // or it completes.
+        obs.subscribe(
+          Observer.create(
+            { response => setCached(request, response) },
+            { t => removeSafe(id(request), obs) },
+            { () => removeSafe(id(request), obs) }
+          )
+        )
+        
+        // Execute the request
+        actualRequest.execute()
+        
+        // Return the original observable
+        obs
+      // Otherwise just return the future
+      case (false, obs) =>
+        obs
+    }
+  }
+
+  /**
+   * Removes what ever is remembered for the given id.
+   */
+  def remove(id: String): Unit =
+    connections.single -= id
+
+  def removeSafe(id: String, future: Future[Response]): Unit =
+    atomic { implicit tx =>
+      connections.get(id) match {
+        case Some(Left(f)) if f == future =>
+          connections -= id
+        case _ =>
+      }
+    }
+
+  def removeSafe(id: String, observable: Observable[Response]): Unit =
+    atomic { implicit tx =>
+      connections.get(id) match {
+        case Some(Right(obs)) if obs == observable =>
+          connections -= id
+        case _ =>
+      }
+    }
+
+  /**
+   * Removes everything that is remembered.
+   */
+  def clear(): Unit =
+    connections.single.empty
 }
