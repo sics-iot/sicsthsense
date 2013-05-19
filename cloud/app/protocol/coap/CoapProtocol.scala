@@ -5,6 +5,7 @@ package protocol.coap
 
 import java.net.URI
 import java.util.Date
+
 import scala.annotation.elidable
 import scala.annotation.elidable.ASSERTION
 import scala.collection.JavaConversions.mapAsScalaMap
@@ -13,9 +14,10 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.concurrent.stm.TMap
 import scala.concurrent.stm.atomic
+import scala.util.Failure
+import scala.util.Success
 import scala.util.Try
-import akka.actor.Props
-import akka.actor.actorRef2Scala
+
 import ch.ethz.inf.vs.californium.coap
 import ch.ethz.inf.vs.californium.coap.DELETERequest
 import ch.ethz.inf.vs.californium.coap.GETRequest
@@ -24,17 +26,12 @@ import ch.ethz.inf.vs.californium.coap.PUTRequest
 import ch.ethz.inf.vs.californium.coap.ResponseHandler
 import ch.ethz.inf.vs.californium.util.HttpTranslator
 import observing.Observable
-import observing.impl.Complete
-import observing.impl.MemoizeObserver
-import observing.impl.Next
-import play.api.Play.current
+import observing.Observer
+import observing.impl.MemoSubject
 import protocol.GetRequest
 import protocol.Protocol
 import protocol.Request
 import protocol.Response
-import scala.util.Success
-import scala.util.Failure
-import observing.Observer
 
 object CoapProtocol extends Protocol[coap.Message, coap.Response] {
 
@@ -124,8 +121,6 @@ object CoapProtocol extends Protocol[coap.Message, coap.Response] {
 private object RequestStore {
   import scala.concurrent.stm.atomic
 
-  val actorSystem = play.api.libs.concurrent.Akka.system
-
   val responses = TMap.empty[String, (Long, Response)]
   val connections = TMap.empty[String, Either[Future[Response], Observable[Response]]]
 
@@ -156,7 +151,7 @@ private object RequestStore {
     // Execute the request when the actor receives the first connect request.
     // It is possible that the server never response with an Observe
     // option and thus we can only guarantee at least one Response to all observers.
-    val observer = actorSystem.actorOf(Props[MemoizeObserver[Response]])
+    val subject = new MemoSubject[Response]
 
     // Register a response handler that pushes Responses into the channel
     req.registerResponseHandler(new ResponseHandler() {
@@ -165,11 +160,11 @@ private object RequestStore {
         val response = CoapProtocol.translateResponse(resp)
 
         // Push the translated response into the channel
-        observer ! Next(response)
+        Try(subject.onNext(response))
 
         // If the server stopped sending notifications, end the actor
         if (!response.headers.containsKey("Observe")) {
-          observer ! Complete
+          subject.onCompleted()
         }
       }
     })
@@ -177,7 +172,7 @@ private object RequestStore {
     // Add the Observe option to the request
     req.setObserve()
 
-    (Observable.fromActor[Response](observer), req)
+    (subject, req)
   }
 
   /**
@@ -329,16 +324,14 @@ private object RequestStore {
         // remove the observable from the connections as soon as an error happens
         // or it completes.
         obs.subscribe(
-          Observer.create(
-            { response => setCached(request, response) },
-            { t => removeSafe(id(request), obs) },
-            { () => removeSafe(id(request), obs) }
-          )
+          { response => setCached(request, response) },
+          { t => removeSafe(id(request), obs) },
+          { () => removeSafe(id(request), obs) }
         )
-        
+
         // Execute the request
         actualRequest.execute()
-        
+
         // Return the original observable
         obs
       // Otherwise just return the future

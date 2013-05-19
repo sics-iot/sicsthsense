@@ -1,26 +1,24 @@
 package observing
 
-import java.util.concurrent.atomic.AtomicBoolean
+import observing.impl.AnonymouseDisposable
+import observing.impl.BooleanDisposable
 
 trait Disposable {
-  def dispose(): Boolean
-  def isDisposed: Boolean = disposed.get
+  def dispose(): Unit
+}
 
-  protected val disposed = new AtomicBoolean
+trait Cancelable extends Disposable {
+  def isDisposed: Boolean
 }
 
 object Disposable {
-  def create(action: => Unit): Disposable = new Disposable {
-    def dispose(): Boolean =
-      if (!disposed.compareAndSet(false, true)) {
-        action
-        false
-      } else {
-        true
-      }
-  }
+  val empty: Disposable = new Disposable { def dispose() {} }
 
-  def boolean(): Disposable = new Disposable {
-    def dispose(): Boolean = disposed.getAndSet(true)
-  }
+  def boolean(initial: Boolean = false) = new BooleanDisposable(initial)
+
+  private[observing] val disposed: Cancelable = new BooleanDisposable(true)
+
+  def create(action: () => Unit): Cancelable = new AnonymouseDisposable(action)
 }
+
+case class AlreadyDisposedException(message: String) extends Exception(message)
