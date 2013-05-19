@@ -62,53 +62,33 @@ import controllers.ScalaUtils;
 import controllers.Utils;
 
 @Entity
-@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id",
-        "parent_id", "label"})})
+@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id", "parent_id",
+        "label"})})
 public class Resource extends Operator {
 
     @Id
     public Long id;
 
     @ManyToOne
-    // (cascade = CascadeType.ALL)
     public User owner;
-
-    /**
-     * The serialization runtime associates with each serializable class a version number, called a
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 7683451697925144957L;
-
     @Required
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
-
     public Long pollingPeriod = 0L;
-
     public Long lastPolled = 0L;
-
+    public Long lastPosted = 0L;
+    @ManyToOne
+    public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
     // never use field access. Always use getter...
     private String pollingUrl = "";
-
-    public String getPollingUrl() {
-        return pollingUrl;
-    }
-
-    public void setPollingUrl(String pollingUrl) {
-			if (pollingUrl.endsWith("/")) {
-				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
-			}
-			this.pollingUrl = pollingUrl;
-    }
-
     public String pollingAuthenticationKey = null;
     public String description = "";
 
-    @ManyToOne
-    public Resource parent = null;
+    /** Secret key for authenticating posts coming from outside */
+    @Column(name = "secret_key")
+    public String key; // key is a reserved keyword in mysql
 
     @OneToMany(mappedBy = "parent")
-    // , cascade = CascadeType.ALL)
     public List<Resource> subResources = new ArrayList<Resource>();
 
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
@@ -117,14 +97,13 @@ public class Resource extends Operator {
     @OneToMany(mappedBy = "resource")
     public List<Stream> streams = new ArrayList<Stream>();
 
-    /** Secret key for authenticating posts coming from outside */
-    @Column(name = "secret_key")
-    // key is a reserved keyword in mysql
-    public String key;
-
     @Version
-    // for concurrency protection
-    private int version;
+    private int version; // for concurrency protection
+    /**
+     * The serialization runtime associates with each serializable class a version number, called a
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 7683451697925144957L;
 
     public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(Long.class,
             Resource.class);
@@ -137,6 +116,7 @@ public class Resource extends Operator {
         this.owner = owner;
         this.pollingPeriod = pollingPeriod;
         this.lastPolled = 0L;
+        this.lastPosted = 0L;
         this.pollingUrl = pollingUrl;
         this.pollingAuthenticationKey = pollingAuthenticationKey;
         this.description = description;
@@ -158,6 +138,23 @@ public class Resource extends Operator {
 
     public Resource() {
         this(null, null, "NewResource" + Utils.timeStr(Utils.currentTime()), 0L, null, null, "");
+    }
+
+
+		public boolean isUnused() {
+			if (lastPolled==0 && lastPosted==0) { return true; }
+			return false;
+		}
+
+    public String getPollingUrl() {
+        return pollingUrl;
+    }
+
+    public void setPollingUrl(String pollingUrl) {
+			if (pollingUrl.endsWith("/")) {
+				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
+			}
+			this.pollingUrl = pollingUrl;
     }
 
     /** Call to create, or update an access token */
@@ -343,7 +340,7 @@ public class Resource extends Operator {
                 result |= sp.stream.post(data, currentTime);
             }
         }
-
+				this.lastPosted = Utils.currentTime();
         return result;
     }
 
@@ -352,6 +349,7 @@ public class Resource extends Operator {
         // this.key = resource.getKey();
         this.pollingPeriod = resource.pollingPeriod;
         this.lastPolled = resource.lastPolled;
+        this.lastPosted = resource.lastPosted;
         this.pollingUrl = resource.getPollingUrl();
         this.parent = resource.parent;
         this.description = resource.description;
@@ -424,9 +422,7 @@ public class Resource extends Operator {
     }
 
     public static Resource getByUserLabel(User user, Resource parent, String label) {
-        Resource resource =
-                find.select("id, owner, label, parent").where().eq("owner", user)
-                        .eq("parent", parent).eq("label", label).findUnique();
+        Resource resource = find.select("id, owner, label, parent").where().eq("owner", user).eq("parent", parent).eq("label", label).findUnique();
         return resource;
     }
 

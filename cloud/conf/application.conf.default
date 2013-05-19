@@ -1,0 +1,95 @@
+# This is the main configuration file for the application.
+# ~~~~~
+
+# Secret key
+# ~~~~~
+# The secret key is used to secure cryptographics functions.
+# If you deploy your application to several instances be sure to use the same key!
+application.secret="K7iyBPC08uIcqxm?LwVedKpdbJ94d:C]JE7hZe9cyPnnRtw5iGJ9TvN=V8:rEkNm"
+
+# The application languages
+# ~~~~~
+application.langs="en"
+
+# Global object class
+# ~~~~~
+# Define the Global object class for this application.
+# Default to Global in the root package.
+# global=Global
+
+# Database configuration
+# ~~~~~ 
+# You can declare as many datasources as you want.
+# By convention, the default datasource is named `default`
+#
+#db.default.driver=org.h2.Driver
+#db.default.url="jdbc:h2:~/sicsthsenseproposed.db"
+
+db.default.driver=com.mysql.jdbc.Driver
+db.default.url="jdbc:mysql://localhost/sicsth2?characterEncoding=UTF-8"
+db.default.logStatements=true
+db.default.user=sicsthsense
+db.default.password=sicsdev
+# db.isolation=SERIALIZABLE
+#
+# You can expose this datasource via JNDI if needed (Useful for JPA)
+# db.default.jndiName=DefaultDS
+
+# Evolutions
+# ~~~~~
+# You can disable evolutions if needed
+evolutionplugin=disabled
+#applyEvolutions.default=true
+
+# Ebean configuration
+# ~~~~~
+# You can declare as many Ebean servers as you want.
+# By convention, the default server is named `default`
+#
+ebean.default="models.*"
+
+# Logger
+# ~~~~~
+# You can also configure logback (http://logback.qos.ch/), by providing a logger.xml file in the conf directory .
+
+# Root logger:
+logger.root=ERROR
+
+# Logger used by the framework:
+logger.play=INFO
+
+# Logger provided to your application:
+logger.application=DEBUG
+
+# logging DB transactions and ebean sql statements (for debugging)
+#db.default.logStatements=true
+#logger.com.jolbox=DEBUG
+
+ws.timeout=120000
+
+include "coap"
+
+coap.port=5683
+
+## ElasticSearch Configuration
+##############################
+## define local mode or not
+#elasticsearch.local=false
+
+## Coma-separated list of clients
+#elasticsearch.client="192.168.0.46:9300"
+#elasticsearch.client="193.10.66.54:9301"
+# ex : elasticsearch.client="192.168.0.46:9300,192.168.0.47:9300"
+elasticsearch.client="127.0.0.1:9300"
+
+## Name of the index
+#elasticsearch.index.name="sicsthsense"
+
+## Custom settings to apply when creating the index (optional)
+#elasticsearch.index.settings="{ analysis: { analyzer: { my_analyzer: { type: \"custom\", tokenizer: \"standard\" } } } }"
+
+## define package or class separate by commas for loading @IndexType and @IndexMapping information
+elasticsearch.index.clazzs="index.*"
+
+## show request & result json of search request in log (it will be logged using Logger.debug())
+#elasticsearch.index.show_request=true
