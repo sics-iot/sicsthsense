@@ -75,7 +75,7 @@ public class FileSystem {
 						Expr.eq("owner",user), Expr.and( 
 								Expr.startsWith("path", path), Expr.not( Expr.like("path", path+"%/%") ) 
 								) ) )
-								.orderBy("type")
+								.orderBy("type").orderBy("path")
 								.findList();
 	}
 	
