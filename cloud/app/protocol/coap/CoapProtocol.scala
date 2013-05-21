@@ -6,13 +6,12 @@ package protocol.coap
 import java.net.URI
 import java.util.Date
 
-import scala.annotation.elidable
-import scala.annotation.elidable.ASSERTION
 import scala.collection.JavaConversions.mapAsScalaMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.concurrent.stm.TMap
+import scala.concurrent.stm.Txn
 import scala.concurrent.stm.atomic
 import scala.util.Failure
 import scala.util.Success
@@ -24,14 +23,17 @@ import ch.ethz.inf.vs.californium.coap.GETRequest
 import ch.ethz.inf.vs.californium.coap.POSTRequest
 import ch.ethz.inf.vs.californium.coap.PUTRequest
 import ch.ethz.inf.vs.californium.coap.ResponseHandler
+import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
 import ch.ethz.inf.vs.californium.util.HttpTranslator
-import observing.Observable
-import observing.Observer
-import observing.impl.MemoSubject
+import controllers.ScalaUtils
 import protocol.GetRequest
 import protocol.Protocol
 import protocol.Request
 import protocol.Response
+import rx.Observable
+import rx.Observer
+import rx.subscriptions.Subscriptions
+import rx.util.functions.Action0
 
 object CoapProtocol extends Protocol[coap.Message, coap.Response] {
 
@@ -141,38 +143,43 @@ private object RequestStore {
     (promise.future, actualRequest)
   }
 
-  private def createObserve(request: Request): (Observable[Response], coap.Request) = {
+  private def createObserve(request: Request): Observable[Response] = {
     assert(request.method == "GET")
-
-    // Create the coap request from a generic request object
-    val req = CoapProtocol.createRequest(request)
 
     // Create the observing actor
     // Execute the request when the actor receives the first connect request.
     // It is possible that the server never response with an Observe
     // option and thus we can only guarantee at least one Response to all observers.
-    val subject = new MemoSubject[Response]
+    Observable.create[Response] { observer: Observer[Response] =>
+      // Create the coap request from a generic request object
+      val req = CoapProtocol.createRequest(request)
 
-    // Register a response handler that pushes Responses into the channel
-    req.registerResponseHandler(new ResponseHandler() {
-      override def handleResponse(resp: coap.Response): Unit = {
-        // On each notification CoAP sends a full response containing the resources new state
-        val response = CoapProtocol.translateResponse(resp)
+      // Register a response handler that pushes Responses into the channel
+      val responseHandler = new ResponseHandler() {
+        override def handleResponse(resp: coap.Response): Unit = {
+          // On each notification CoAP sends a full response containing the resources new state
+          val response = CoapProtocol.translateResponse(resp)
 
-        // Push the translated response into the channel
-        Try(subject.onNext(response))
+          // Push the translated response into the channel
+          observer.onNext(response)
 
-        // If the server stopped sending notifications, end the actor
-        if (!response.headers.containsKey("Observe")) {
-          subject.onCompleted()
+          // If the server stopped sending notifications, end the actor
+          if (!response.headers.containsKey("Observe")) {
+            observer.onCompleted()
+          }
         }
       }
-    })
 
-    // Add the Observe option to the request
-    req.setObserve()
+      req.registerResponseHandler(responseHandler)
+      req.setObserve()
+      req.execute()
 
-    (subject, req)
+      Subscriptions.create {
+        val req = CoapProtocol.createRequest(request)
+        req.removeOptions(OptionNumberRegistry.OBSERVE)
+        req.execute()
+      }
+    }
   }
 
   /**
@@ -181,21 +188,9 @@ private object RequestStore {
    */
   private def getCached(request: Request): Option[Response] = {
     val key = s"COAP.GET.${id(request)}"
+    val now = new Date().getTime() / 1000
 
-    atomic { implicit tx =>
-      val now = new Date().getTime() / 1000
-
-      responses.get(key).flatMap { cached =>
-        val (expires, response) = cached
-
-        if (expires >= now)
-          Some(response)
-        else {
-          responses.remove(key)
-          None
-        }
-      }
-    }
+    responses.single.get(key).filter(_._1 >= now).map(_._2)
   }
 
   /**
@@ -226,7 +221,7 @@ private object RequestStore {
   def getOrCreateRequest(request: Request): Future[Response] = {
     // We need to prepare the actual request object. 
     // We make it lazy so that we only pay the price if we need to create a request.
-    lazy val (future, actualRequest) = createRequest(request)
+    lazy val (actualFuture, actualRequest) = createRequest(request)
 
     // Check the cache and the currently open connections or create a new request atomically
     atomic { implicit tx =>
@@ -237,52 +232,42 @@ private object RequestStore {
 
       if (cached.isDefined) {
         // If we found a value in cache, return it. The cache only returns non-expired responses.
-        // Return false to signal that we did not create a new request
-        (false, Future(cached.get))
+        Future(cached.get)
 
       } else if (inFlight.isDefined) {
         // If there is a currently open connection, make a future out of it
-        val future = inFlight.get match {
+        inFlight.get match {
           // If the currently open connection is also just a simple get request, just use it
           case Left(f) =>
             f
-          // If the currently open connection is an Observable, use its head
+          // If the currently open connection is an Observable, convert it into a Future by taking its next value.
           case Right(obs) =>
-            obs.head
+            ScalaUtils.observableToFuture(obs)
         }
-
-        // Return false to signal that we did not create a new request
-        (false, future)
 
       } else {
         // Try to store the future of the response inside the map of open connections
-        connections.put(id(request), Left(future))
+        connections.put(id(request), Left(actualFuture))
 
-        // Return true to signal that we did create a new request and thus actualRequest needs to bee executed.
-        (true, future)
-      }
-    } match {
-      // If actualRequest needs to be executed, do it and the return the future 
-      case (true, f) =>
         // Attach a continuation function to the future that removes the future from the
         // connections as soon as we got a response. It should also store a successful 
         // response into the cache
-        f.andThen {
+        actualFuture.andThen {
           case Success(response) =>
             setCached(request, response)
-            removeSafe(id(request), f)
+            removeSafe(id(request), actualFuture)
           case Failure(t) =>
-            removeSafe(id(request), f)
+            removeSafe(id(request), actualFuture)
         }
 
-        // Execute the request
-        actualRequest.execute()
+        // Register the request execution to run after a successful commit
+        Txn.afterCommit { _ =>
+          actualRequest.execute()
+        }
 
-        // Return the original future
-        f
-      // Otherwise just return the future
-      case (false, f) =>
-        f
+        // Return the newly created future
+        actualFuture
+      }
     }
   }
 
@@ -292,53 +277,41 @@ private object RequestStore {
    * and a new Observe request is started by evaluating the given observable.
    * The observable is then remembered.
    */
-  def getOrCreateObserve(request: Request): Observable[Response] = {
-    // We need to prepare the actual request object. 
-    // We make it lazy so that we only pay the price if we need to create a request.
-    lazy val (observable, actualRequest) = createObserve(request)
-
+  def getOrCreateObserve(request: Request): Observable[Response] =
     // Check the cache and the currently open connections or create a new request atomically
     atomic { implicit tx =>
+      def createNew() = {
+        var observable: Observable[Response] = null
+
+        observable = createObserve(request).map[Response] { response: Response =>
+          setCached(request, response)
+          response
+        }.finallyDo(new Action0 {
+          def call() { removeSafe(id(request), observable) }
+        })
+
+        connections.put(id(request), Right(observable))
+
+        observable
+      }
+
       // If there is a currently open connection that is an Observable then use it.
       // Otherwise overwrite existing Futures
       connections.get(id(request)) match {
         // If the currently open connection is an Observable, use it
         // Return false to signal that we did not create a new request
         case Some(Right(obs)) =>
-          (false, obs)
+          obs
         // If the currently open connection is a Future, overwrite it
         // Return true to signal that we did create a new request
         case Some(Left(f)) =>
-          connections.put(id(request), Right(observable))
-          (true, observable)
+          createNew()
         // If there is no currently open connection, store the lazy value
         // Return true to signal that we did create a new request
         case None =>
-          connections.put(id(request), Right(observable))
-          (true, observable)
+          createNew()
       }
-    } match {
-      // If actualRequest needs to be executed, do it and the return the future 
-      case (true, obs) =>
-        // Subscribe to the observable to cache the most recent response and
-        // remove the observable from the connections as soon as an error happens
-        // or it completes.
-        obs.subscribe(
-          { response => setCached(request, response) },
-          { t => removeSafe(id(request), obs) },
-          { () => removeSafe(id(request), obs) }
-        )
-
-        // Execute the request
-        actualRequest.execute()
-
-        // Return the original observable
-        obs
-      // Otherwise just return the future
-      case (false, obs) =>
-        obs
     }
-  }
 
   /**
    * Removes what ever is remembered for the given id.

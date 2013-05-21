@@ -14,7 +14,8 @@ object ApplicationBuild extends Build {
       "commons-io" % "commons-io" % "2.3",
       "commons-codec" % "commons-codec" % "1.6",
       "com.clever-age" % "play2-elasticsearch" % "0.5.4",
-      "org.apache.httpcomponents" % "httpcore" % "4.2.4"
+      "org.apache.httpcomponents" % "httpcore" % "4.2.4",
+      "com.netflix.rxjava" % "rxjava-scala" % "0.9.0"
     )
 
     val main = play.Project(appName, appVersion, appDependencies).settings(
