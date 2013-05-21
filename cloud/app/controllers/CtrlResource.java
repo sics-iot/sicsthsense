@@ -439,19 +439,19 @@ public class CtrlResource extends Controller {
 		ResourceLog resourceLog = null;
 		Long requestTime = Utils.currentTime();
 		boolean parsedSuccessfully = false;
+		String requestBody = getRequestBody();
 		try {
 			resourceLog = new ResourceLog(resource, request(), requestTime);
 			resourceLog = ResourceLog.createOrUpdate(resourceLog);
 
-			// XXX: asText() does not work unless ContentType is // "text/plain"
-			String strBody = request().body().asText();
-			String jsonBodyString = (request().body().asJson() != null) ? request()
-					.body().asJson().toString() : "";
 			Logger.info("[Resources] post received from URI: " + request().uri() 
 					+ ", content type: " + request().getHeader("Content-Type") 
-					+ ", payload: " + strBody + jsonBodyString);
+					+ ", payload: " + requestBody);
 			// if first POST (and no poll's), auto make parsers
-			//if () {parseJson()}
+      if (resource.streamParsers.isEmpty() && resource.isUnused()) {
+        Logger.info("Automatically making parsers on empty unused Resource.");
+        autoCreateParsers(resource,requestBody);
+      }
 
 			parsedSuccessfully = resource.parseAndPost(request(), requestTime);
 			resourceLog.updateParsedSuccessfully(parsedSuccessfully);
@@ -465,11 +465,77 @@ public class CtrlResource extends Controller {
 			return badRequest("Bad request: Error! " + msg);
 		}
 		if (!parsedSuccessfully) {
-			Logger.info("[CtrlResource] Bad request: Can't parse!");
-			return badRequest("Bad request: Can't parse!");
+			Logger.info("[CtrlResource] Bad request: Not parsed successfully! "+requestBody);
+			return badRequest("Bad request: not parsed successfully! "+requestBody);
 		}
 		return ok("ok");
 	}
+
+	public static String getRequestBody() {
+    String body = "";
+    if (request().getHeader("Content-Type").equals("text/plain")) {
+      // XXX: asText() does not work unless ContentType is // "text/plain"
+      body = request().body().asText();
+    } else if (request().getHeader("Content-Type").equals("application/json")) {
+      body = (request().body().asJson() != null) ? request().body().asJson().toString() : "";
+    } else {
+      Logger.error("[CtrlResource] request() did not have a recognised Content-Type");
+      body = "";
+    }
+    Logger.info("[Resources] post received from URI: " + request().uri() 
+      + ", content type: " + request().getHeader("Content-Type") 
+      + ", payload: " + body);
+    return body;
+  }
+
+  // Walk Json tree creating resource parsers
+  //@Security.Authenticated(Secured.class)
+  public static void parseJsonNode(Resource resource, JsonNode node, String parents) {
+    // descend to all nodes to find all primitive element paths...
+    Iterator<String> nodeIt = node.getFieldNames();
+    while (nodeIt.hasNext()) {
+      String field = nodeIt.next();
+      // Logger.info("field: "+field);
+      JsonNode n = node.get(field);
+      if (n.isValueNode()) {
+        //Logger.info("value node: " + parents + "/" + field);
+        // TODO: try to guess time format instead of defaulting to "unix"!
+        String nodePath = parents+"/"+field;
+        //Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ nodePath);
+        addParser(resource.id, nodePath, "application/json", "/"+resource.label+nodePath, "unix", 1, 2, 1);
+      } else {
+        String fullNodeName = parents + "/" + field;
+        Logger.info("Node: " + fullNodeName);
+        parseJsonNode(resource, n, fullNodeName);
+      }
+    }
+  }
+
+  // Parse Json into resource parsers
+  //@Security.Authenticated(Secured.class)
+  public static boolean createJsonParsers(Resource resource, String data) {
+    Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
+    User currentUser = Secured.getCurrentUser();
+
+    try {
+      // recusively parse JSON and add() all fields
+      JsonNode root = Json.parse(data);
+      parseJsonNode(resource, root, "");
+    } catch (Exception e) { // nevermind, move on...
+      Logger.error("[CtrlResource] createJsonParsers() had problems parsing JSON: "+  data);
+      return false;
+    }
+    resource.update();
+    return true;
+  }
+
+  // create parsers in the resource with the json body of a post/poll
+  @Security.Authenticated(Secured.class)
+  private static boolean autoCreateParsers(Resource resource, String jsonBody) {
+    if (!resource.streamParsers.isEmpty() || !resource.isUnused()) { return false; }
+    createJsonParsers(resource,jsonBody);
+    return true;
+  }
 
 	@Security.Authenticated(Secured.class)
 	private static Result getByLabel(String user, String labelPath) {
