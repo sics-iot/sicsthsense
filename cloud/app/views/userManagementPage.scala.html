@@ -19,7 +19,13 @@
 				<li><a href="/accounts/@user.userName">@user.userName</a></li>
 			}
 		</ul>
+		<br />
 
+			<legend>Swap User:<legend/>
+				@helper.form(action = routes.Login.swapUser()) {
+					<input type="text" name="newUser" value="" placeholder="New Username"/>
+					<input type="submit" class="btn btn-primary" value="Swap" /><br/><br/>
+				}
 
 		<br /> <br />
     </div>

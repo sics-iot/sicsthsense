@@ -159,6 +159,20 @@ public class Login extends Controller {
 //			throw new RuntimeException(e);
 //		}
 //	}
+
+	// Become another user, only allowed if admin
+	public static Result swapUser() {
+  	User currentUser = Secured.getCurrentUser();
+		if (!currentUser.isAdmin()) {return unauthorized("You are not an Admin!");}
+
+		DynamicForm dynamicForm = Form.form().bindFromRequest();
+		String username = dynamicForm.field("newUser").value();
+		User user = User.getByUserName(username);
+		if (user==null) {return notFound("Username "+username+" does not exist!");}
+
+		Call destination = routes.Application.home();
+		return doLogin(user, destination);
+	}
 	
 	public static Result logout() {
 		session().clear();
