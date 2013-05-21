@@ -222,9 +222,20 @@ hr.dashed {
 }
 
 div#footer {
-  padding: 8px;
+  padding: 4px;
   padding-left: 18px;
 	color: #666;
 	background-color: #eee;
 	font-size: 80%;
+}
+
+img.screenshot {
+	border: 1px solid black;
+	-webkit-box-shadow: 3px 3px 3px #bbb;
+	box-shadow: 3px 3px 3px #bbb;
+	display: block; 
+	margin-top: 15px; 
+	margin-bottom: 15px; 
+	margin-left: auto; 
+	margin-right: auto; 
 }

@@ -16,7 +16,13 @@ GET        /streams                             controllers.Application.streams(
 GET        /explore                             controllers.Application.explore()
 GET        /resources													 	controllers.CtrlResource.resources()
 GET        /attachFunction											controllers.Application.attachFunction()
-GET        /API                                 controllers.Public.about()
+
+# deprecated
+GET        /API																	controllers.Public.about()
+
+GET        /docs                                controllers.Public.docs()
+GET        /docs/web                            controllers.Public.web()
+GET        /docs/api                            controllers.Public.api()
 GET        /files					                      controllers.Application.files()
 GET        /sitemap															controllers.Application.sitemap()
 

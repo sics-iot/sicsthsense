@@ -1,0 +1,61 @@
+@import helper._
+
+@layout("Docs", "", session) {
+
+<div class="row-fluid">
+	<div class="span2 bs-docs-sidebar">
+		<div class="alert alert-info">
+  		<strong>New!</strong><br/> You can poll resources that use COAP protocol now!
+		</div>
+		<div class="alert alert-warning">
+  		<strong>Supported browsers</strong><br/> To ensure better compatibility of the webpages, please upgrade to Chrome (v26+) or Firefox (v20+) browsers.  
+		</div>
+	</div>
+	<div class="span9">
+  <h1>Documentation</h1>
+
+	<br />
+	<ul>
+		<li><a href="/docs/web">Website documentation</a></li>
+		<li><a href="/docs/api">API documentation</a></li>
+		<!--li>Reference documentation</li-->
+	</ul>
+	<br />
+  
+	<p>
+	SicsthSense is based on the concept of <i>resources</i>, representing some type of 
+	device or source of informtion. Data is then pulled or pushed from these resources
+	to create streams of data. This data is stored by SicsthSense and made available for 
+	further processing by youa and others.
+	<i>Resources</i> provide a definition of how
+	some data is accessed, and then <i>streams</i> of data points are populated
+	from this resource (e.g. poll or post).  
+	<p>
+	The first step is to <a href="">create an account</a>. You can then add your own data resources
+	and start collecting their data.  You can even track other people's resources.
+	</p>
+	<br />
+
+	<h2>Web Interface</h2>
+	<p>
+	The easiest and quickest way to interact with Sics<sup>th</sup>Sense is through the web interface. 
+	You can add resources, define how to parse your data and view graphs of the data that collects in your data streams.
+	</p>
+
+	<br />
+
+	<h2>Programatic API</h2>
+	<p>
+	You can also access all of Sics<sup>th</sup>Sense through a <a href="/docs/api">simple RESTful API</a> (i.e., using GET, POST on URLs).
+	This manner of access is best for programmers and other computing devices that may be wanted to access your stored data. 
+	</p>
+
+			<!--h2>Reference Documentation</h2>
+			If you are considering contributing or forking Sics<sup>th</sup>Sense, please have a look at this documentation. 
+					-->
+
+	<br /> <br />
+  </div>
+</div>
+
+}
