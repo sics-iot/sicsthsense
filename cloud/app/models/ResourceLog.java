@@ -135,6 +135,8 @@ public class ResourceLog extends Model {
 			this.resource = resource;
 			this.isPoll = false;
 			if (request != null) {
+				body = getRequestBody(request);
+				/*
 				body = "" + request.body().asText();
 				try {
 					JsonNode jn = request.body().asJson();
@@ -142,19 +144,18 @@ public class ResourceLog extends Model {
 						body += jn.toString();
 					}
 				} catch (Exception e) {
-
-				}
+				}*/
 				// String requestHeader = "" + rpl.request.headers().keySet() +
 				// rpl.request.headers().values().toArray(String[] )
 				method = request.method();
 				host = request.host();
 				uri = request.uri();
 				headers = HeaderNames.CONTENT_TYPE + " "
-						+ request.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
-						+ HeaderNames.CONTENT_ENCODING + " "
-						+ request.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
-						+ HeaderNames.CONTENT_LENGTH + " "
-						+ request.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
+					+ request.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
+					+ HeaderNames.CONTENT_ENCODING + " "
+					+ request.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
+					+ HeaderNames.CONTENT_LENGTH + " "
+					+ request.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
 			}
 			setCreationTimestamp(creationTimestamp);
 			// String parsed = (parsedSuccessfully) ? "Could be parsed\n"
@@ -274,6 +275,23 @@ public class ResourceLog extends Model {
 		}
 		return false;
 	}
+
+	public static String getRequestBody(Request request) {
+    String body = "";
+    if (request.getHeader("Content-Type").equals("text/plain")) {
+      // XXX: asText() does not work unless ContentType is // "text/plain"
+      body = request.body().asText();
+    } else if (request.getHeader("Content-Type").equals("application/json")) {
+      body = (request.body().asJson() != null) ? request.body().asJson().toString() : "";
+    } else {
+      Logger.error("[CtrlResource] request() did not have a recognised Content-Type");
+      body = "";
+    }
+    Logger.info("[Resources] post received from URI: " + request.uri() 
+      + ", content type: " + request.getHeader("Content-Type") 
+      + ", payload: " + body);
+    return body;
+  }
 
 	// trim strings longer than maximum length
 	public void verify() {

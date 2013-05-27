@@ -96,8 +96,14 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 			After creating the resource, the system will provide a <code id="keyHelp">key</code> that should be used for posting to the URL:
 			<pre> @sicsthSenseURL()@{routes.CtrlResource.postByKey("key")}</pre>
 		</li>
+
+			<li>
+			<pre>curl --url http://sense.sics.se/api/streams/[key] -d "0.5" --verbose --header "Content-Type:text/plain"
+			</pre>
+		</li>
 	</ul>
-	<em>PS</em> It is not possible to post to non-existing resources or streams.	
+
+	<em>PS</em> It is not possible to post to non-existing resources.	
 
 	<br /> <br />
   <h1>Getting data</h1>

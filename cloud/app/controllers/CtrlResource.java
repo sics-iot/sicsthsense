@@ -28,6 +28,8 @@ package controllers;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import models.DataPoint;
 import models.FileSystem;
@@ -105,6 +107,76 @@ public class CtrlResource extends Controller {
 
 		return redirect(routes.CtrlResource.resources());
 	}
+
+	// convert the top level primitive fields of a json to a HashMap
+	public static HashMap jsonToMap(JsonNode root) {
+		HashMap<String,String> map = new HashMap<String,String>();
+		Iterator<String> nodeIt = root.getFieldNames();
+		while (nodeIt.hasNext()) {
+			String field = nodeIt.next();
+			// Logger.info("field: "+field);
+			JsonNode n = root.get(field);
+			if (n.isValueNode()) {
+				// this will cooerce numbers to strings as well
+				map.put(field.toLowerCase(),n.getValueAsText());
+			}
+		}
+		return map;
+	}
+
+	// check the JSON describes a new Resource sufficiently
+	// and instantite it to be stored
+	public static boolean validateResourceJson(JsonNode root) {
+		Logger.info("[CtrlResource] validating and creating");
+		final User currentUser = User.getByEmail("test@test.net");//Secured.getCurrentUser();
+		if (currentUser==null) {return false;}
+		HashMap map = jsonToMap(root);
+		Resource resource = new Resource(currentUser);
+		// ensure the resource has a lbel
+		if (map.get("label")==null) {return false;}
+		resource.label = (String)map.get("label");
+		// add any optional attributes
+		if (map.get("url")!=null) {
+			resource.setPollingUrl((String)map.get("url"));
+		} else {
+			resource.setPollingUrl("");
+		}
+		if (map.get("period")!=null)    {
+			resource.pollingPeriod = Long.parseLong( (String)map.get("period") );
+		}
+		Logger.info("[CtrlResource] period: "+(String)map.get("period")); 
+
+		if (map.get("description")!=null) {resource.description=(String)map.get("description");}
+
+		//Logger.info("[CtrlResource] save new resource");
+		// save the defined resource
+		Resource.create(resource);
+		return true;
+	}
+
+	/*
+	 * Parse a JSON object and create Resource
+	 */
+//	@Security.Authenticated(Secured.class)
+	public static Result createPost() {
+		JsonNode root;
+		String body = "";
+		Logger.info("[CtrlResource] making Resource from JSON");
+		try { // recusively parse JSON and add() all fields
+			body = request().body().asText();
+			root = request().body().asJson();
+		} catch (Exception e) { // nevermind, move on...
+			Logger.warn("[CtrlResource] had problems parsing JSON to make Resource:"+body);
+			return badRequest("[CtrlResource] had problems parsing JSON to make Resource: "+body);
+		}
+		if (!validateResourceJson(root)) {
+			Logger.error("JSON does not sufficiently describe Resource: "+body);
+			return badRequest("JSON does not sufficiently describe Resource: "+body);
+		}
+
+		return ok("Made the resource!");
+	}
+
 
 	@Security.Authenticated(Secured.class)
 	public static Result modify(Long id) {
@@ -377,24 +449,41 @@ public class CtrlResource extends Controller {
 	}
 
 	/*
-	 * Is this actually used?
 	 * */
-	@Security.Authenticated(Secured.class)
+	//@Security.Authenticated(Secured.class)
 	public static Result addParser(Long resourceId, String inputParser,
 			String inputType, String streamPath, String timeformat, int dataGroup,
 			int timeGroup, int numberOfPoints) {
-		Resource resource = Resource.get(resourceId, Secured.getCurrentUser());
+		Resource resource = Resource.getById(resourceId);
 		StreamParser parser = null;
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
 
-		Logger.error("[CtrlResource]: StreamParser trying to make parser!");
+		//Logger.error("[CtrlResource]: StreamParser trying to make parser: "+streamPath);
+
+		// check if stream path already exists
+		if (FileSystem.fileExists(resource.owner,streamPath)) {
+			Logger.error("[CtrlResource]: Stream path already exists!");
+			streamPath = streamPath +" - " +Utils.dateFormatter(Utils.currentTime());
+	 	}
+		
+		if (resource==null) {
+			Logger.error("[CtrlResource]: Resource is null!!");
+			return notFound("No resource found");
+	 	}
+
 		try {
 			parser = new StreamParser(resource, inputParser, inputType,
 				streamPath, timeformat, dataGroup, timeGroup, numberOfPoints);
 		} catch (PatternSyntaxException e) {
+			Logger.error("StreamParser not made due to Regex parsing error! "+e.toString());
 			return badRequest("StreamParser not made due to Regex parsing error!");
 		} catch (Exception e) {
+			e.printStackTrace(pw);
+			Logger.error("StreamParser not made due to error! "+sw.toString());
 			return badRequest("StreamParser not made due to error!");
 		}
+		if (parser==null) {Logger.error("Parser is null!"); return badRequest("Problems making parser");}
 		parser = StreamParser.create(parser);
 		if (parser != null) {
 			Logger.info("[CtrlResource]: StreamParser created!");
@@ -449,15 +538,18 @@ public class CtrlResource extends Controller {
 					+ ", payload: " + requestBody);
 			// if first POST (and no poll's), auto make parsers
       if (resource.streamParsers.isEmpty() && resource.isUnused()) {
-        Logger.info("Automatically making parsers on empty unused Resource.");
+        //Logger.info("Automatically making parsers on empty unused Resource.");
         autoCreateParsers(resource,requestBody);
+				resource.update();
       }
+			// force recreation of resource to include streamparsers
+			resource = Resource.getById(resource.id);
+			resource.update();
 
 			parsedSuccessfully = resource.parseAndPost(request(), requestTime);
 			resourceLog.updateParsedSuccessfully(parsedSuccessfully);
 		} catch (Exception e) {
-			String msg = "[CtrlResource] Exception while receiving a post in Resource: "
-					+ resource.label
+			String msg = "[CtrlResource] Exception while receiving a post in Resource: "+resource.label
 					+ " Owner " + resource.owner.userName + "\n"
 					+ e.getMessage() + e.getStackTrace()[0].toString();
 			Logger.error(msg);
@@ -476,7 +568,7 @@ public class CtrlResource extends Controller {
     if (request().getHeader("Content-Type").equals("text/plain")) {
       // XXX: asText() does not work unless ContentType is // "text/plain"
       body = request().body().asText();
-    } else if (request().getHeader("Content-Type").equals("application/json")) {
+    } else if (request().getHeader("Content-Type").equals("application/json") || request().getHeader("Content-Type").equals("text/json")) {
       body = (request().body().asJson() != null) ? request().body().asJson().toString() : "";
     } else {
       Logger.error("[CtrlResource] request() did not have a recognised Content-Type");
@@ -495,17 +587,18 @@ public class CtrlResource extends Controller {
     Iterator<String> nodeIt = node.getFieldNames();
     while (nodeIt.hasNext()) {
       String field = nodeIt.next();
-      // Logger.info("field: "+field);
+      //Logger.info("field: "+field);
       JsonNode n = node.get(field);
       if (n.isValueNode()) {
         //Logger.info("value node: " + parents + "/" + field);
         // TODO: try to guess time format instead of defaulting to "unix"!
         String nodePath = parents+"/"+field;
-        //Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ nodePath);
+        //Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ resource.label+nodePath);
+				//Logger.info("Parser count: "+resource.streamParsers.size());
         addParser(resource.id, nodePath, "application/json", "/"+resource.label+nodePath, "unix", 1, 2, 1);
       } else {
         String fullNodeName = parents + "/" + field;
-        Logger.info("Node: " + fullNodeName);
+        //Logger.info("Node: " + fullNodeName);
         parseJsonNode(resource, n, fullNodeName);
       }
     }
@@ -514,9 +607,7 @@ public class CtrlResource extends Controller {
   // Parse Json into resource parsers
   //@Security.Authenticated(Secured.class)
   public static boolean createJsonParsers(Resource resource, String data) {
-    Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
-    User currentUser = Secured.getCurrentUser();
-
+    Logger.info("[CtrlResource] createJsonParsers() Trying to parse Json to then auto fill in StreamParsers!");
     try {
       // recusively parse JSON and add() all fields
       JsonNode root = Json.parse(data);
@@ -525,12 +616,13 @@ public class CtrlResource extends Controller {
       Logger.error("[CtrlResource] createJsonParsers() had problems parsing JSON: "+  data);
       return false;
     }
+    Logger.error("[CtrlResource] about to update resource");
     resource.update();
     return true;
   }
 
   // create parsers in the resource with the json body of a post/poll
-  @Security.Authenticated(Secured.class)
+  //@Security.Authenticated(Secured.class)
   private static boolean autoCreateParsers(Resource resource, String jsonBody) {
     if (!resource.streamParsers.isEmpty() || !resource.isUnused()) { return false; }
     createJsonParsers(resource,jsonBody);

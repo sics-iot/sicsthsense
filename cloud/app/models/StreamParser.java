@@ -328,7 +328,7 @@ public class StreamParser extends Model {
         String[] levels = inputParser.split("/");
         JsonNode node = root;
         for (int i = 1; i < levels.length; i++) {
-            Logger.info(levels[i]);
+            //Logger.info(levels[i]);
             node = node.get(levels[i]);
             if (node == null) {
                 return false;
@@ -336,7 +336,7 @@ public class StreamParser extends Model {
         }
 
         if (node.isValueNode()) { // it is a simple primitive
-            Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
+            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
             return stream.post(node.getDoubleValue(), Utils.currentTime());
 
         } else if (node.get("value") != null) { // it may be value:X
@@ -351,7 +351,7 @@ public class StreamParser extends Model {
                     currentTime = node.get("time").getLongValue();
                 }
             }
-            Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
+            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
             return stream.post(value, currentTime);
         }
 
@@ -390,7 +390,6 @@ public class StreamParser extends Model {
         Logger.error("[StreamParser] couldn't get or create a stream file in " + path);
         return null;
     }
-
 
     public static StreamParser create(StreamParser parser) {
         if (parser.resource != null && parser.inputParser != null) {
