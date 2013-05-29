@@ -90,6 +90,8 @@ DELETE     /streams/:id			    								controllers.CtrlStream.clear(id: Long)
 #POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
 # Resources
+POST			/api/resources/create							controllers.CtrlResource.createPost()
+POST			/api/streams/create								controllers.CtrlStream.createPost()
 GET			/resources/add												controllers.CtrlResource.addSimple()
 GET			/resources/addSub											controllers.CtrlResource.addSubResource()
 GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
@@ -137,7 +139,6 @@ GET				/api/files/$path<.*>							controllers.CtrlStream.getByPath(path: String,
 GET				/api/ext/:user/$path<.*>					controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST			/api/files/$path<.*>							controllers.CtrlStream.postByPath(path: String)
 # POST a JSON to create a Resource
-POST			/api/resource/create							controllers.CtrlResource.createPost()
 
 #Function 
 POST		/attachFunction/attach							controllers.CtrlFunction.attach()

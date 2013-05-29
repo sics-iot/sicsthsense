@@ -34,6 +34,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
 
@@ -118,4 +124,21 @@ public class Utils {
 			return "";
 		}
 	}
+
+	// convert the top level primitive fields of a json to a HashMap
+	public static HashMap jsonToMap(JsonNode root) {
+		HashMap<String,String> map = new HashMap<String,String>();
+		Iterator<String> nodeIt = root.getFieldNames();
+		while (nodeIt.hasNext()) {
+			String field = nodeIt.next();
+			// Logger.info("field: "+field);
+			JsonNode n = root.get(field);
+			if (n.isValueNode()) {
+				// this will cooerce numbers to strings as well
+				map.put(field.toLowerCase(),n.getValueAsText());
+			}
+		}
+		return map;
+	}
+
 }

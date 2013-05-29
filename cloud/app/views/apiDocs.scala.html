@@ -13,10 +13,48 @@
 	</div>
 	<div class="span9">
   <h1>API Documentation</h1>
+
+	This page describes how to interact with SicsthSense through the API rather than the webpage.
   
+	<br /> <br />
+  <h1 id='newResource'>Creating Resources</h1>
+
+	Once you have a user account, resources can also be made over the programmatic
+	API. Simply send a correctly formatted JSON file to the URL XXX and
+	SicsthSense will create the Resource that you specify. Of course, you should include
+	your HTTP authentication header in the request and correctly specify the Content-Type 
+	of your request ("application/json"). All fields are optional apart from "<i>label</i>".
+
+	<br /> 
+  <pre>
+  {
+    "label": "New Resource",
+    "url": "http://example.com/data",
+    "description": "New resource made through the API",
+    "period": 15
+  }</pre>
+
+	<br /> <br />
+  <h1 id='newParsers'>Creating Stream Parsers</h1>
+
+	Stream parsers can also be created for you resources, through exactly the same process
+	as Resources. Indeed, this can even be combined into a single step by including the parser
+	specification in the Resource creation request. Only the "<i>resourceID</i>", "<i>parser</i>" and "<i>filePath</i>" 
+	elements are required.
+
+	<br /> 
+  <pre>
+  {
+    "resourceID": 999,
+    "parser": "/json/node",
+    "timeFormat": "unix",
+    "Content-type": "application/json",
+    "filePath": "/path/to/stream"
+  }</pre>
+
 
 	<p>
-	When adding a resource, Sics<sup>th</sup>Sense can attempt to guess the
+	With a new resource, Sics<sup>th</sup>Sense can attempt to guess the
 	correct way to parse the data by probing the data resource URL. Json responses
 	are  parseable through simply specifying the path of any Json
 	elements to save and plot. For example, the <i>light</i> and <i>humidity</i>
@@ -36,6 +74,7 @@
   }</pre>
 
 Other data formats can be easily parsed by specifying a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> to capture relevant numbers from an external webpage.
+
 
 
 	<br /> <br />

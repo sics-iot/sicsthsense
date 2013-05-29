@@ -39,6 +39,7 @@ import models.Stream;
 import models.StreamParser;
 import models.User;
 import models.Vfile;
+import controllers.Utils;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -108,31 +109,17 @@ public class CtrlResource extends Controller {
 		return redirect(routes.CtrlResource.resources());
 	}
 
-	// convert the top level primitive fields of a json to a HashMap
-	public static HashMap jsonToMap(JsonNode root) {
-		HashMap<String,String> map = new HashMap<String,String>();
-		Iterator<String> nodeIt = root.getFieldNames();
-		while (nodeIt.hasNext()) {
-			String field = nodeIt.next();
-			// Logger.info("field: "+field);
-			JsonNode n = root.get(field);
-			if (n.isValueNode()) {
-				// this will cooerce numbers to strings as well
-				map.put(field.toLowerCase(),n.getValueAsText());
-			}
-		}
-		return map;
-	}
-
 	// check the JSON describes a new Resource sufficiently
 	// and instantite it to be stored
 	public static boolean validateResourceJson(JsonNode root) {
 		Logger.info("[CtrlResource] validating and creating");
-		final User currentUser = User.getByEmail("test@test.net");//Secured.getCurrentUser();
+		final User currentUser = Secured.getCurrentUser();
 		if (currentUser==null) {return false;}
-		HashMap map = jsonToMap(root);
+
+		HashMap map = Utils.jsonToMap(root);
 		Resource resource = new Resource(currentUser);
-		// ensure the resource has a lbel
+
+		// ensure the resource has a label
 		if (map.get("label")==null) {return false;}
 		resource.label = (String)map.get("label");
 		// add any optional attributes
@@ -141,23 +128,20 @@ public class CtrlResource extends Controller {
 		} else {
 			resource.setPollingUrl("");
 		}
-		if (map.get("period")!=null)    {
+		if (map.get("period")!=null) {
 			resource.pollingPeriod = Long.parseLong( (String)map.get("period") );
 		}
-		Logger.info("[CtrlResource] period: "+(String)map.get("period")); 
-
 		if (map.get("description")!=null) {resource.description=(String)map.get("description");}
 
 		//Logger.info("[CtrlResource] save new resource");
-		// save the defined resource
-		Resource.create(resource);
+		Resource.create(resource); // save the defined resource
 		return true;
 	}
 
 	/*
 	 * Parse a JSON object and create Resource
 	 */
-//	@Security.Authenticated(Secured.class)
+	@Security.Authenticated(Secured.class)
 	public static Result createPost() {
 		JsonNode root;
 		String body = "";
@@ -494,6 +478,9 @@ public class CtrlResource extends Controller {
 
 	public static Result postByKey(String key) {
 		Resource resource = Resource.getByKey(key);
+		if (resource==null) {
+			Logger.error("Resource with key "+key+" does not exist!");
+		}
 		return post(resource.owner, resource.id);
 	}
 
