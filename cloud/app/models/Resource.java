@@ -68,7 +68,6 @@ public class Resource extends Operator {
 
     @Id
     public Long id;
-
     @ManyToOne
     public User owner;
     @Required
@@ -151,6 +150,7 @@ public class Resource extends Operator {
     }
 
     public void setPollingUrl(String pollingUrl) {
+			if (pollingUrl==null) {Logger.warn("Trying to set URL to null!"); return;}
 			if (pollingUrl.endsWith("/")) {
 				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
 			}
@@ -185,6 +185,7 @@ public class Resource extends Operator {
 //            }
 					path = parent.getUrl();
         }
+				if (getPollingUrl()==null) {return null;}
         path += getPollingUrl();
 
         if (!path.equalsIgnoreCase("") && !path.startsWith("http://")
@@ -330,15 +331,18 @@ public class Resource extends Operator {
 
 
     public boolean parseAndPost(Request req, Long currentTime) throws Exception {
+				//Logger.info("Parsing and Posting");
         boolean result = false;
 
         if (streamParsers != null) {
-            for (StreamParser sp : streamParsers) {
-                // Logger.info("handing request to stream parser");
-                final List<DataPoint> data =
-                        sp.parse(req.body().asText(), req.getHeader("Content-Type"));
-                result |= sp.stream.post(data, currentTime);
-            }
+					for (StreamParser sp : streamParsers) {
+						//Logger.info("Applying to parser: ");
+						if (sp != null) {
+							//Logger.info("handing request to stream parser:");
+							// Logger.info("New request: " + req.body().asText());
+							result |= sp.parseRequest(req, currentTime);
+						}
+					}
         }
 				this.lastPosted = Utils.currentTime();
         return result;

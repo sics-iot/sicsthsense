@@ -30,6 +30,7 @@
 package controllers;
 
 import java.util.List;
+import java.util.HashMap;
 
 import models.DataPoint;
 import models.FileSystem;
@@ -37,6 +38,7 @@ import models.Resource;
 import models.Stream;
 import models.User;
 import models.Vfile;
+import controllers.CtrlResource;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -80,11 +82,74 @@ public class CtrlStream extends Controller {
 		return ok(streamPage.render(currentUser.streamList, stream, streamForm, ""));
 	}
 
+	/*
+	 * Parse a JSON object and create stream
+	 */
+	@Security.Authenticated(Secured.class)
+	public static Result createPost() {
+		JsonNode root;
+		String body = "";
+		Logger.info("[CtrlResource] making Resource from JSON");
+		try { // recusively parse JSON and add() all fields
+			body = request().body().asText();
+			root = request().body().asJson();
+		} catch (Exception e) { // nevermind, move on...
+			Logger.warn("[CtrlResource] had problems parsing JSON to make Resource:"+body);
+			return badRequest("[CtrlResource] had problems parsing JSON to make Resource: "+body);
+		}
+		if (!validateStreamJson(root)) {
+			Logger.error("JSON does not sufficiently describe Resource: "+body);
+			return badRequest("JSON does not sufficiently describe Resource: "+body);
+		}
+
+		return ok("Made the parser!");
+	}
+
+
+	// check the JSON describes a new Resource sufficiently
+	// and instantite it to be stored
+	public static boolean validateStreamJson(JsonNode root) {
+		Logger.info("[CtrlStream] validating and creatingi a stream parser");
+		final User currentUser = Secured.getCurrentUser();
+		if (currentUser==null) {return false;}
+		String resourceID="";
+		String parser    ="";
+		String filePath  ="";
+		//optional attributes:
+		String contentType="application/json";
+		String timeFormat ="unix";
+
+		HashMap map = Utils.jsonToMap(root);
+
+		if (map.get("resourceid")==null) {
+			Logger.error("[CtrlStream] not set resource ID!");
+			return false;
+		} else { resourceID=(String)map.get("resourceid" ); }
+		if (map.get("parser")==null) {
+			Logger.error("[CtrlStream] not set parser!");
+			return false;
+		} else { parser=(String)map.get("parser" ); }
+		if (map.get("filepath")==null) {
+			Logger.error("[CtrlStream] not set file path!");
+			return false;
+		} else { filePath=(String)map.get("filepath" ); }
+		if (map.get("timeFormat") !=null) {timeFormat=(String)map.get("timeFormat" );}
+		if (map.get("contentType")!=null) {contentType=(String)map.get("contenttype");}
+
+		Long rID = Long.parseLong(resourceID); // should error check!
+		if (Resource.getById(rID)==null) {
+			Logger.error("[CtrlStream] Resource ID "+rID+" does not exist!");
+			return false;
+		}
+		//Logger.info("[CtrlStream] save new parser");
+    CtrlResource.addParser(rID, parser, contentType, filePath, timeFormat, 1, 2, 1);
+		// create the new parser
+		return true;
+	}
+
 	@Security.Authenticated(Secured.class)
 	public static Result modify(Long id) {
-		
 		Form<Stream> theForm = streamForm.bindFromRequest();
-
 		if (theForm.hasErrors()) {
 			return badRequest("Bad request: " + theForm.errorsAsJson().toString());
 		} else {
@@ -361,7 +426,7 @@ public class CtrlStream extends Controller {
 	
 	@Security.Authenticated(Secured.class)
 	public static Result regenerateKey(Long id) {
-		User currentUser = Secured.getCurrentUser();
+		final User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
 		if (stream == null || stream.owner.id != currentUser.id) {
 			return badRequest("Stream does not exist: " + id);

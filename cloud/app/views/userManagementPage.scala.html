@@ -6,7 +6,6 @@
     <!-- Docs nav
     ================================================== -->
 	<div class="span2 bs-docs-sidebar">
-		<h4></h4>
 		<ul class="unstyled">
 		</ul>
 	  </div>
@@ -19,7 +18,13 @@
 				<li><a href="/accounts/@user.userName">@user.userName</a></li>
 			}
 		</ul>
+		<br />
 
+			<legend>Swap User:</legend>
+				@helper.form(action = routes.Login.swapUser()) {
+					<input type="text" name="newUser" value="" placeholder="New Username"/>
+					<input type="submit" class="btn btn-primary" value="Swap" /><br/><br/>
+				}
 
 		<br /> <br />
     </div>

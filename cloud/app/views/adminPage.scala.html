@@ -35,7 +35,7 @@
 					<input type="radio" name="openidLogin" value="true" /> Enabled<br/>
 					<input type="radio" name="openidLogin" value="false" checked/> Disabled &nbsp;&nbsp;
 				}
-					<input type="submit" class="btn" value="Update" />
+					<input type="submit" class="btn btn-primary" value="Update" />
 				}
 			</li>
 
@@ -48,9 +48,14 @@
 					<input type="radio" name="passwordLogin" value="true" /> Enabled<br/>
 					<input type="radio" name="passwordLogin" value="false" checked /> Disabled &nbsp;&nbsp;
 				}
-					<input type="submit" class="btn" value="Update" /><br/><br/>
+					<input type="submit" class="btn btn-primary" value="Update" /><br/><br/>
 				}
 			</li>
+			<li>Swap User:<br/>
+				@helper.form(action = routes.Login.swapUser()) {
+					<input type="text" name="newUser" value="" placeholder="New Username"/>
+					<input type="submit" class="btn btn-primary" value="Swap" /><br/><br/>
+				}
 			<li>To be implemented:</li>
 			<li><a href="/admin/statistics">Statistics page</a></li>
 			<li><a href="/admin/reindex">Reindex Search Database</a></li>

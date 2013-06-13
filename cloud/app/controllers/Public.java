@@ -38,5 +38,18 @@ public class Public extends Controller {
   public static Result about() {
     return ok(aboutPage.render());
   }
+
+  public static Result docs() {
+    return ok(docsPage.render());
+  }
+
+  public static Result web() {
+    return ok(webDocs.render());
+  }
+
+  public static Result api() {
+    return ok(apiDocs.render());
+  }
+    
     
 }

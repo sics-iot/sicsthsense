@@ -1,0 +1,96 @@
+@import helper._
+
+@layout("Docs", "", session) {
+
+<div class="row-fluid">
+	<div class="span2 bs-docs-sidebar">
+		<div class="alert alert-info">
+  		<strong>New!</strong><br/> You can poll resources that use COAP protocol now!
+		</div>
+		<div class="alert alert-warning">
+  		<strong>Supported browsers</strong><br/> To ensure better compatibility of the webpages, please upgrade to Chrome (v26+) or Firefox (v20+) browsers.  
+		</div>
+	</div>
+	<div class="span9">
+<h1>Website Documentation</h1>
+
+<br /> 
+<p>
+The first step is to create an account. You can then add your data resources
+and start collecting their data.  
+
+<p>
+<i>Resources</i> provide a definition of where and how
+a source of data (e.g. a device or a website) is accessed. Data is then parsed
+and recorded from this resource to populate<i>streams</i> of data points.
+The resource can either be <a href="">polled by SicsthSense via an HTTP GET</a> on a specified URL, or the resource
+pushes the data itself, via an <a href="#posting">HTTP POST to SicsthSense
+	using the resource's key</a>.
+</p>
+<br />
+
+<legend>Adding a resource</legend>
+
+<p>
+When adding a resource, all that is required is a unique <i>label</i>, so that the resource can
+be uniquely named. If you would like SicsthSense to pull data from the resource, then you should also give it an URL to GET.
+The interface looks as below, giving a simple form to create a new resoruce and a synopsis of already created resources.
+</p>
+
+<img class="screenshot" src="/assets/images/docs/Resources.png" />
+<br /> 
+
+<br /> 
+<legend>Configuring a resource</legend>
+
+<p>
+Sics<sup>th</sup>Sense will attempt to parse a resource's data into useful information.
+This can be performed automatically if the data is in JSON format and Content-Type.
+After adding a resource, you can either click the "Auto add parsers" button, and the resource will
+probe its polling URL and create a stream for each valid JSON primitive data type. These streams will
+be hierarchically  organised into your <a href="">Streams</a> filesystem.
+The same process will be performed upon the first POST to a resource's, if it does not yet contain any
+parsers or data.
+</p>
+
+
+<br /> 
+<img class="screenshot" src="/assets/images/docs/Resource.png" />
+<br /> 
+
+<p>
+For example, the <i>light</i> and <i>humidity</i>
+of the following resource would be stored by specifying the parsers
+"<i>/sensors/light</i>" and "<i>/sensors/humidity</i>".  The values can
+be either sent as an integer or float.
+</p>
+  <pre>
+  {
+    "name": "New device",
+    "sensors": {
+      "light": 4.3,
+      "temperature": 15,
+      "humidity": 45
+    }
+  }</pre>
+
+Other data formats can be easily parsed by specifying a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> to capture relevant numbers from an external webpage.
+
+
+	<br /> <br />
+  <h1 id='pollingDataHelp'>Polling data</h1>
+	<a name="polling"></a>
+  
+	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
+	This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
+  After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
+  The data will soon appear in graphs, and be available through our RESTful API.
+
+
+	
+	<br /> <br />
+	<br /> <br />
+  </div>
+</div>
+
+}

@@ -23,9 +23,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-/* Description:
- * TODO:
- * */
+/*
+ * Description: TODO:
+ */
 
 package models;
 
@@ -315,11 +315,16 @@ public class StreamParser extends Model {
         JsonNode node = root;
 
         for (int i = 1; i < levels.length; i++) {
-            node = node.path(levels[i]);
+            //Logger.info(levels[i]);
+            node = node.get(levels[i]);
+            if (node == null) {
+                return false;
+            }
         }
 
-        if (node.isMissingNode()) {
-            // Do nothing
+        if (node.isValueNode()) { // it is a simple primitive
+            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
+            return stream.post(node.getDoubleValue(), Utils.currentTime());
 
         } else if (node.isValueNode()) { // it is a simple primitive
             data.add(new DataPointDouble(node.getDoubleValue(), currentTime));
@@ -336,8 +341,8 @@ public class StreamParser extends Model {
                     currentTime = node.get("time").getLongValue();
                 }
             }
-
-            data.add(new DataPointDouble(value, currentTime));
+            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
+            return stream.post(value, currentTime);
         }
 
         return data;
@@ -375,7 +380,6 @@ public class StreamParser extends Model {
         Logger.error("[StreamParser] couldn't get or create a stream file in " + path);
         return null;
     }
-
 
     public static StreamParser create(StreamParser parser) {
         if (parser.resource != null && parser.inputParser != null) {

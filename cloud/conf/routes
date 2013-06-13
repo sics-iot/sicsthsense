@@ -8,6 +8,7 @@ GET        /authenticatePassword                controllers.Login.authenticatePa
 GET        /signup															controllers.Login.signup()
 POST       /registerPassword										controllers.Login.registerPassword()
 GET        /openIDCallback                      controllers.Login.openIDCallback()
+GET        /swapUser														controllers.Login.swapUser()
 GET        /																		controllers.Application.home()
 GET        /logout                              controllers.Login.logout()
 GET        /admin																controllers.Application.admin()
@@ -16,7 +17,13 @@ GET        /streams                             controllers.Application.streams(
 GET        /explore                             controllers.Application.explore()
 GET        /resources													 	controllers.CtrlResource.resources()
 GET        /attachFunction											controllers.Application.attachFunction()
-GET        /API                                 controllers.Public.about()
+
+# deprecated
+GET        /API																	controllers.Public.about()
+
+GET        /docs                                controllers.Public.docs()
+GET        /docs/web                            controllers.Public.web()
+GET        /docs/api                            controllers.Public.api()
 GET        /files					                      controllers.Application.files()
 GET        /sitemap															controllers.Application.sitemap()
 
@@ -83,9 +90,11 @@ DELETE   /streams/:id                     controllers.CtrlStream.clear(id: Long)
 #POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
 
 # Resources
-GET      /resources/add                   controllers.CtrlResource.addSimple()
-GET      /resources/addSub                controllers.CtrlResource.addSubResource()
-GET      /resources/autoParsers/:id       controllers.CtrlResource.autoParser(id: Long)
+POST			/api/resources/create							controllers.CtrlResource.createPost()
+POST			/api/streams/create								controllers.CtrlStream.createPost()
+GET			/resources/add												controllers.CtrlResource.addSimple()
+GET			/resources/addSub											controllers.CtrlResource.addSubResource()
+GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
 
 #deprecated
 GET      /resources/addLegacy             controllers.CtrlResource.add()
@@ -129,7 +138,7 @@ GET      /api/streams/:key                controllers.CtrlStream.getByKey(key: S
 GET				/api/files/$path<.*>							controllers.CtrlStream.getByPath(path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 GET				/api/ext/:user/$path<.*>					controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST			/api/files/$path<.*>							controllers.CtrlStream.postByPath(path: String)
-
+# POST a JSON to create a Resource
 
 #Function 
 POST     /attachFunction/attach           controllers.CtrlFunction.attach()
