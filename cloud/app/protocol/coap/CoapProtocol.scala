@@ -178,6 +178,7 @@ private object RequestStore {
         val req = CoapProtocol.createRequest(request)
         req.removeOptions(OptionNumberRegistry.OBSERVE)
         req.execute()
+        req.getResponse()
       }
     }
   }
