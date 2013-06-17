@@ -224,14 +224,20 @@ public class Resource extends Operator {
         params.putAll(queryString);
 
         // Create the Request
-        final Request request = new GenericRequest(uri, method, headers, params, body);
+        final Request req = new GenericRequest(uri, method, headers, params, body);
+        
+        return request(req);
+    }
+    
+    public Promise<Response> request(Request req) {
+        final URI uri = req.uri();
 
         // Create connection depending on protocol
         if (uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https")) {
-            final Future<Response> promise = HttpProtocol.request(request);
+            final Future<Response> promise = HttpProtocol.request(req);
             return new Promise<Response>(promise);
         } else if (uri.getScheme().equalsIgnoreCase("coap")) {
-            final Future<Response> promise = CoapProtocol.request(request);
+            final Future<Response> promise = CoapProtocol.request(req);
             return new Promise<Response>(promise);
         } else {
             throw new IllegalStateException("Unknown protocol in uri: " + getUrl());
