@@ -1,27 +1,23 @@
 /*
- * Copyright (c) 2013, Swedish Institute of Computer Science
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of The Swedish Institute of Computer Science nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ * Copyright (c) 2013, Swedish Institute of Computer Science All rights reserved. Redistribution and
+ * use in source and binary forms, with or without modification, are permitted provided that the
+ * following conditions are met: * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer. * Redistributions in binary form
+ * must reproduce the above copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the distribution. * Neither the name of
+ * The Swedish Institute of Computer Science nor the names of its contributors may be used to
+ * endorse or promote products derived from this software without specific prior written permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
+ * COMPUTER SCIENCE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ */
 
 /*
  * Description: TODO:
@@ -39,7 +35,6 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -129,20 +124,20 @@ public class StreamParser extends Model {
     public StreamParser(Resource resource, String inputParser, String inputType, String path,
             String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
         super();
-				setInputParser(inputParser);
-				this.inputType = inputType;
-				this.resource = resource;
-				this.streamVfilePath = path;
-				this.timeformat = timeformat;
-				this.dataGroup = dataGroup;
-				this.timeGroup = timeGroup;
-				this.numberOfPoints = numberOfPoints;
-				Vfile f = FileSystem.readFile(resource.owner, path);
-				this.stream = (f != null) ? f.linkedStream : null;
+        setInputParser(inputParser);
+        this.inputType = inputType;
+        this.resource = resource;
+        this.streamVfilePath = path;
+        this.timeformat = timeformat;
+        this.dataGroup = dataGroup;
+        this.timeGroup = timeGroup;
+        this.numberOfPoints = numberOfPoints;
+        Vfile f = FileSystem.readFile(resource.owner, path);
+        this.stream = (f != null) ? f.linkedStream : null;
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, Stream stream,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints)  throws Exception {
+            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
         super();
         setInputParser(inputParser);
         this.inputType = inputType;
@@ -160,7 +155,7 @@ public class StreamParser extends Model {
     public boolean setInputParser(String inputParser) throws Exception {
         this.inputParser = inputParser;
         if (inputParser != null) {
-		         regexPattern = Pattern.compile(inputParser);
+            regexPattern = Pattern.compile(inputParser);
             if (this.id != null) {
                 this.update();
             }
@@ -315,17 +310,11 @@ public class StreamParser extends Model {
         JsonNode node = root;
 
         for (int i = 1; i < levels.length; i++) {
-            //Logger.info(levels[i]);
-            node = node.get(levels[i]);
-            if (node == null) {
-                return false;
-            }
+            node = node.path(levels[i]);
         }
 
-        if (node.isValueNode()) { // it is a simple primitive
-            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
-            return stream.post(node.getDoubleValue(), Utils.currentTime());
-
+        if (node.isMissingNode()) {
+            // Do nothing
         } else if (node.isValueNode()) { // it is a simple primitive
             data.add(new DataPointDouble(node.getDoubleValue(), currentTime));
 
@@ -341,8 +330,8 @@ public class StreamParser extends Model {
                     currentTime = node.get("time").getLongValue();
                 }
             }
-            //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
-            return stream.post(value, currentTime);
+
+            data.add(new DataPointDouble(value, currentTime));
         }
 
         return data;
@@ -411,5 +400,9 @@ public class StreamParser extends Model {
 
     public static void delete(Long id) {
         find.ref(id).delete();
+    }
+
+    public static List<StreamParser> forResource(Resource res) {
+        return find.where().eq("resource", res.id).findList();
     }
 }

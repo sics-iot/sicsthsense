@@ -4,6 +4,7 @@ import controllers.Utils
 import models.Resource
 import play.api.Logger
 import rx.Observer
+import rx.Observable
 
 class StoringObserver(resourceId: Long) extends Observer[Response] {
   def onNext(response: Response) {

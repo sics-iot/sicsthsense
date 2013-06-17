@@ -27,6 +27,7 @@ package models;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,11 +50,12 @@ import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 import play.libs.F;
 import play.libs.F.Promise;
-import play.mvc.Http.Request;
+import protocol.Request;
 import protocol.Response;
 import protocol.GenericRequest;
 import protocol.coap.CoapProtocol;
 import protocol.http.HttpProtocol;
+import rx.Observable;
 import scala.concurrent.Future;
 
 import com.avaje.ebean.Ebean;
@@ -62,8 +64,8 @@ import controllers.ScalaUtils;
 import controllers.Utils;
 
 @Entity
-@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id", "parent_id",
-        "label"})})
+@Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id",
+        "parent_id", "label"})})
 public class Resource extends Operator {
 
     @Id
@@ -72,6 +74,7 @@ public class Resource extends Operator {
     public User owner;
     @Required
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
+    public UpdateMode updateMode = UpdateMode.Push;
     public Long pollingPeriod = 0L;
     public Long lastPolled = 0L;
     public Long lastPosted = 0L;
@@ -140,21 +143,26 @@ public class Resource extends Operator {
     }
 
 
-		public boolean isUnused() {
-			if (lastPolled==0 && lastPosted==0) { return true; }
-			return false;
-		}
+    public boolean isUnused() {
+        if (lastPolled == 0 && lastPosted == 0) {
+            return true;
+        }
+        return false;
+    }
 
     public String getPollingUrl() {
         return pollingUrl;
     }
 
     public void setPollingUrl(String pollingUrl) {
-			if (pollingUrl==null) {Logger.warn("Trying to set URL to null!"); return;}
-			if (pollingUrl.endsWith("/")) {
-				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
-			}
-			this.pollingUrl = pollingUrl;
+        if (pollingUrl == null) {
+            Logger.warn("Trying to set URL to null!");
+            return;
+        }
+        if (pollingUrl.endsWith("/")) {
+            pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
+        }
+        this.pollingUrl = pollingUrl;
     }
 
     /** Call to create, or update an access token */
@@ -178,14 +186,16 @@ public class Resource extends Operator {
     public String getUrl() {
         String path = "";
         if (parent != null && parent.hasUrl()) {
-//            if (parent.getUrl().endsWith("/")) {
-//                path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
-//            } else {
-//                path = parent.getUrl();
-//            }
-					path = parent.getUrl();
+            // if (parent.getUrl().endsWith("/")) {
+            // path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
+            // } else {
+            // path = parent.getUrl();
+            // }
+            path = parent.getUrl();
         }
-				if (getPollingUrl()==null) {return null;}
+        if (getPollingUrl() == null) {
+            return null;
+        }
         path += getPollingUrl();
 
         if (!path.equalsIgnoreCase("") && !path.startsWith("http://")
@@ -202,25 +212,45 @@ public class Resource extends Operator {
 
     public Promise<Response> request(String method, Map<String, String[]> headers,
             Map<String, String[]> queryString, String body) {
+        if (method == null) throw new IllegalArgumentException();
+        if (headers == null) headers = Collections.<String, String[]>emptyMap();
+        if (queryString == null) queryString = Collections.<String, String[]>emptyMap();
+
         // Get Url and parse default parameters
-        final String url = getUrl();
-        final Map<String, String[]> params = ScalaUtils.parseQueryString(url);
+        final URI uri = URI.create(getUrl());
+        final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery());
 
         // Update default parameters with parameters passed in as argument
         params.putAll(queryString);
 
-        // Create connection depending on protocol
-        if (url.startsWith("http") || url.startsWith("https")) {
-            final Future<Response> promise =
-                    HttpProtocol.request(new GenericRequest(URI.create(url), method, headers, params, body));
-            return new Promise<Response>(promise);
-        } else if (url.startsWith("coap")) {
-            final Future<Response> promise =
-                    CoapProtocol.request(new GenericRequest(URI.create(url), method, headers, params, body));
-            return new Promise<Response>(promise);
-        }
+        // Create the Request
+        final Request request = new GenericRequest(uri, method, headers, params, body);
 
-        return null;
+        // Create connection depending on protocol
+        if (uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https")) {
+            final Future<Response> promise = HttpProtocol.request(request);
+            return new Promise<Response>(promise);
+        } else if (uri.getScheme().equalsIgnoreCase("coap")) {
+            final Future<Response> promise = CoapProtocol.request(request);
+            return new Promise<Response>(promise);
+        } else {
+            throw new IllegalStateException("Unknown protocol in uri: " + getUrl());
+        }
+    }
+
+    public Observable<Response> observe() {
+        // Get Url and parse default parameters
+        final URI uri = URI.create(getUrl());
+        final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery());
+
+        // Create connection depending on protocol
+        if (uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https")) {
+            return HttpProtocol.observe(uri, params);
+        } else if (uri.getScheme().equalsIgnoreCase("coap")) {
+            return CoapProtocol.observe(uri, params);
+        } else {
+            throw new IllegalStateException("Unknown protocol in uri: " + getUrl());
+        }
     }
 
     // register asychronous polling of data
@@ -329,25 +359,6 @@ public class Resource extends Operator {
         return result;
     }
 
-
-    public boolean parseAndPost(Request req, Long currentTime) throws Exception {
-				//Logger.info("Parsing and Posting");
-        boolean result = false;
-
-        if (streamParsers != null) {
-					for (StreamParser sp : streamParsers) {
-						//Logger.info("Applying to parser: ");
-						if (sp != null) {
-							//Logger.info("handing request to stream parser:");
-							// Logger.info("New request: " + req.body().asText());
-							result |= sp.parseRequest(req, currentTime);
-						}
-					}
-        }
-				this.lastPosted = Utils.currentTime();
-        return result;
-    }
-
     public void updateResource(Resource resource) {
         this.label = resource.label;
         // this.key = resource.getKey();
@@ -426,7 +437,9 @@ public class Resource extends Operator {
     }
 
     public static Resource getByUserLabel(User user, Resource parent, String label) {
-        Resource resource = find.select("id, owner, label, parent").where().eq("owner", user).eq("parent", parent).eq("label", label).findUnique();
+        Resource resource =
+                find.select("id, owner, label, parent").where().eq("owner", user)
+                        .eq("parent", parent).eq("label", label).findUnique();
         return resource;
     }
 

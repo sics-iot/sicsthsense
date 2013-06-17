@@ -43,14 +43,17 @@ create table resources (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
   label                     varchar(255),
+  update_mode               integer,
   polling_period            bigint,
   last_polled               bigint,
+  last_posted               bigint,
+  parent_id                 bigint,
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
   description               varchar(255),
-  parent_id                 bigint,
   secret_key                varchar(255),
   version                   integer not null,
+  constraint ck_resources_update_mode check (update_mode in (0,1,2)),
   constraint uq_resources_1 unique (owner_id,parent_id,label),
   constraint pk_resources primary key (id))
 ;

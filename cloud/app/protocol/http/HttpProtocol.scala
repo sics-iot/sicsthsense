@@ -13,6 +13,7 @@ import protocol.Request
 import protocol.Response
 import java.net.URI
 import scala.io.Codec
+import rx.Observable
 
 object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Response] {
   def createUrl(url: String): URL = ???
@@ -42,6 +43,8 @@ object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Res
 
     promise.map(translateResponse)
   }
+
+  def observe(uri: URI, params: java.util.Map[String, Array[String]]): Observable[Response] = ???
 
   def translateRequest(request: play.mvc.Http.Request): Request = new HttpRequest(request)
 

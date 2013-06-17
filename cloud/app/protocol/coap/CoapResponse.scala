@@ -32,6 +32,8 @@ class CoapResponse(response: coap.Response) extends Response {
     if (ct == null) ""
     else ct.getCharset().name()
   override def contentLength: Long = body.length
+  
+  override def receivedAt: Long = response.getTimestamp()
 
   // Body
   override def body: String = CoapTranslator.getContent(response)

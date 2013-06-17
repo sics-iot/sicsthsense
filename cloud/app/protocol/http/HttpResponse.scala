@@ -6,6 +6,7 @@ import java.net.URI
 import scala.collection.JavaConversions.{ mapAsJavaMap, mapAsScalaMap }
 import org.apache.http.entity.ContentType
 import protocol.Request
+import controllers.Utils
 
 class HttpResponse(response: ws.Response) extends Response {
   override def request: Request = ???
@@ -32,6 +33,8 @@ class HttpResponse(response: ws.Response) extends Response {
   override def contentType: String = ct.getMimeType()
   override def contentLength: Long = body.length()
   override def contentEncoding: String = ct.getCharset().displayName()
+  
+  override val receivedAt: Long = Utils.currentTime
 
   override def body: String = response.body
 }

@@ -5,7 +5,6 @@ package protocol.coap
 
 import java.net.URI
 import java.util.Date
-
 import scala.collection.JavaConversions.mapAsScalaMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -16,7 +15,6 @@ import scala.concurrent.stm.atomic
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import ch.ethz.inf.vs.californium.coap
 import ch.ethz.inf.vs.californium.coap.DELETERequest
 import ch.ethz.inf.vs.californium.coap.GETRequest
@@ -34,6 +32,7 @@ import rx.Observable
 import rx.Observer
 import rx.subscriptions.Subscriptions
 import rx.util.functions.Action0
+import java.util.Collections
 
 object CoapProtocol extends Protocol[coap.Message, coap.Response] {
 
@@ -108,12 +107,8 @@ object CoapProtocol extends Protocol[coap.Message, coap.Response] {
     case _     => executeRequest(createRequest(request))
   }
 
-  def observe(
-    url: String,
-    headers: java.util.Map[String, Array[String]],
-    queryString: java.util.Map[String, Array[String]],
-    body: String): Observable[Response] =
-    RequestStore.getOrCreateObserve(GetRequest(URI.create(url), headers, queryString, body))
+  def observe(uri: URI, queryString: java.util.Map[String, Array[String]]): Observable[Response] =
+    RequestStore.getOrCreateObserve(GetRequest(uri, Collections.emptyMap[String, Array[String]], queryString, ""))
 
   def translateRequest(request: coap.Message): Request = new CoapRequest(request)
 
