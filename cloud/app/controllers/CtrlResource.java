@@ -25,25 +25,21 @@
 
 package controllers;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import java.util.regex.PatternSyntaxException;
 
-import models.DataPoint;
+import logic.ResourceHub;
 import models.FileSystem;
 import models.Resource;
 import models.ResourceLog;
-import models.Stream;
 import models.StreamParser;
 import models.User;
-import models.Vfile;
-import controllers.Utils;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -55,9 +51,9 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import protocol.Response;
+import protocol.http.HttpProtocol;
 import views.html.resourcePage;
 import views.html.resourcesPage;
-import java.util.regex.PatternSyntaxException;
 
 public class CtrlResource extends Controller {
 
@@ -173,42 +169,30 @@ public class CtrlResource extends Controller {
          * TODO: Create source from Form or update existing Create a parser from an embedded form
          * and associate the parser with the new source
          */
+        final User currentUser = Secured.getCurrentUser();
         final Form<SkeletonResource> theForm = skeletonResourceForm.bindFromRequest();
+
+        if (!Resource.hasAccess(id, currentUser)) {
+            return unauthorized();
+        }
 
         if (theForm.hasErrors()) { // validate form
             return badRequest("Bad request: " + theForm.errorsAsJson().toString());
-        } else {
-            SkeletonResource skeleton = theForm.get();
-            final User currentUser = Secured.getCurrentUser();
-            final Resource resource = Resource.get(id, currentUser);
+        }
 
-            if (resource == null) {
+        final SkeletonResource skeleton = theForm.get();
+        final Resource changes = skeleton.getResource();
+
+        logic.Result<Resource> result = ResourceHub.updateResource(id, changes);
+
+        switch (result.code()) {
+            case Ok:
+                return redirect(routes.CtrlResource.getById(id));
+            case NotFound:
                 return badRequest("Resource does not exist: " + id);
-            }
-
-            Resource submitted = skeleton.getResource(currentUser);
-            submitted.parent = resource.parent;
-            Logger.info("Submitted resource url: " + submitted.getUrl());
-            List<StreamParser> spList = skeleton.getStreamParsers(submitted);
-            try {
-                resource.updateResource(submitted);
-                if (spList != null) {
-                    for (StreamParser sp : spList) {
-                        if (sp.id != null) {
-                            sp.update();
-                        } else {
-                            StreamParser.create(sp);
-                        }
-                    }
-                } // else { Ebean.delete( source.streamParsers ); }
-            } catch (Exception e) {
-                Logger.error("CtrlResource: " + e.getMessage() + " Stack trace:\n"
-                        + e.getStackTrace()[0].toString());
-                return ok(views.html.resourcePage
-                        .render(currentUser.resourceList, theForm, true,
-                                "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
-            }
-            return redirect(routes.CtrlResource.getById(id));
+            case InternalError:
+            default:
+                return internalServerError();
         }
     }
 
@@ -321,55 +305,6 @@ public class CtrlResource extends Controller {
         Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
         return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew,
                 true, "Regex parser assumed."));
-    }
-
-    // create the source and corresponding StreamParser objects
-    @Deprecated
-    @Security.Authenticated(Secured.class)
-    public static Result add() {
-        Form<SkeletonResource> theForm;
-        try { // error check for the bind, bad encoding?
-            theForm = skeletonResourceForm.bindFromRequest();
-        } catch (Exception e) {
-            return badRequest("Bad parsing of form");
-        }
-        if (theForm.hasErrors()) {
-            return badRequest("Bad request");
-        } else {
-            SkeletonResource skeleton = theForm.get();
-            if (skeleton.streamParserWrapers != null && skeleton.streamParserWrapers.get(0) != null) {
-                Logger.info("Adding parser: " + "inputParser: "
-                        + skeleton.streamParserWrapers.get(0).inputParser + "vfilePath: "
-                        + skeleton.streamParserWrapers.get(0).vfilePath + "inputType: "
-                        + skeleton.streamParserWrapers.get(0).inputType);
-            }
-            User currentUser = Secured.getCurrentUser();
-            if (currentUser == null) {
-                Logger.error("[CtrlResource.add] currentUser is null!");
-            }
-            // Logger.warn("Submit type: "+ skeletonResourceForm.get("poll") );
-
-            Resource submitted = skeleton.getResource(currentUser);
-            submitted.id = null;
-            submitted = Resource.create(submitted);
-            List<StreamParser> spList = skeleton.getStreamParsers(submitted);
-            if (spList != null) {
-                for (StreamParser sp : spList) {
-                    if (sp != null) {
-                        sp.id = null;
-                        StreamParser.create(sp);
-                    }
-                }
-            }
-            currentUser.sortStreamList(); // reorder streams
-
-            if (submitted != null && submitted.id != null) { // go to
-                // successfully
-                // added Resource
-                return redirect(routes.CtrlResource.getById(submitted.id));
-            }
-            return redirect(routes.CtrlResource.resources());
-        }
     }
 
     @Security.Authenticated(Secured.class)
@@ -526,7 +461,9 @@ public class CtrlResource extends Controller {
         boolean parsedSuccessfully = false;
         String requestBody = getRequestBody();
         try {
-            resourceLog = new ResourceLog(resource, request(), requestTime);
+            resourceLog =
+                    ResourceLog.fromRequest(resource, HttpProtocol.translateRequest(request()),
+                            requestTime);
             resourceLog = ResourceLog.createOrUpdate(resourceLog);
 
             Logger.info("[Resources] post received from URI: " + request().uri()
@@ -542,7 +479,8 @@ public class CtrlResource extends Controller {
             resource = Resource.getById(resource.id);
             resource.update();
 
-            parsedSuccessfully = resource.parseAndStore(request().body().asText(), null, requestTime);
+            parsedSuccessfully =
+                    resource.parseAndStore(request().body().asText(), null, requestTime);
             resourceLog.updateParsedSuccessfully(parsedSuccessfully);
         } catch (Exception e) {
             String msg =
@@ -657,85 +595,6 @@ public class CtrlResource extends Controller {
         return ok(resourcePage.render(currentUser.resourceList, myForm, false, ""));
     }
 
-    private static Result getData(String ownerName, String path, Long tail, Long last, Long since) {
-        final User user = Secured.getCurrentUser();
-        final User owner = User.getByUserName(ownerName);
-        // if(user == null) return notFound();
-        return getData(user, owner, path, tail, last, since);
-    }
-
-    private static Result getDataById(Long id, Long tail, Long last, Long since) {
-        final User user = Secured.getCurrentUser();
-        // if(user == null) return notFound();
-        Stream stream = Stream.get(id);
-        if (stream == null) {
-            Logger.warn("Stream not found!");
-            return notFound();
-        }
-        return getData(user, stream, tail, last, since);
-    }
-
-    private static Result getDataByUserKey(String user_token, String path, Long tail, Long last,
-            Long since) {
-        final User user = Secured.getCurrentUser();
-        final User owner = User.getByToken(user_token);
-        if (user == null) return notFound();
-        return getData(user, owner, path, tail, last, since);
-    }
-
-    // @Security.Authenticated(Secured.class)
-    private static Result getData(User currentUser, User owner, String path, Long tail, Long last,
-            Long since) {
-        Vfile f = FileSystem.readFile(owner, path);
-        if (f == null) {
-            return notFound();
-        }
-
-        Stream stream = f.getLink();
-        if (stream == null) {
-            return notFound();
-        }
-
-        return getData(currentUser, stream, tail, last, since);
-
-    }
-
-    private static Result getData(User currentUser, Stream stream, Long tail, Long last, Long since) {
-        if (stream == null) {
-            return notFound();
-        }
-        if (!stream.canRead(currentUser)) {
-            return unauthorized("Private stream!");
-        }
-
-        List<? extends DataPoint> dataSet = null;
-        if (tail < 0 && last < 0 && since < 0) {
-            tail = 1L;
-        }
-        if (tail >= 0) {
-            dataSet = stream.getDataPointsTail(tail);
-        } else if (last >= 0) {
-            dataSet = stream.getDataPointsLast(last);
-        } else if (since >= 0) {
-            dataSet = stream.getDataPointsSince(since);
-        } else {
-            throw new RuntimeException("This cannot happen!");
-        }
-
-        ObjectNode result = Json.newObject();
-        ArrayNode time = result.putArray("time");
-        ArrayNode data = result.putArray("data");
-
-        for (DataPoint dataPoint : dataSet) {
-            time.add(dataPoint.timestamp);
-            if (stream.getType() == Stream.StreamType.DOUBLE) {
-                data.add((Double) dataPoint.getData());
-            }
-        }
-
-        return ok(result);
-    }
-
     private static StringBuffer exploreResourceTree(User user, StringBuffer sb,
             Resource parentResource) {
         String parentResourceId = (parentResource == null) ? "null" : parentResource.id.toString();
@@ -774,40 +633,5 @@ public class CtrlResource extends Controller {
         // return ok("Resource key reset successfully: " + id + " New key: " + key);
         return ok(key);
     }
-
-    /*
-     * poll the source data and fill the stream definition form // with default sensible parameters
-     * for the user to confirm
-     * 
-     * @Security.Authenticated(Secured.class) public static Result initialise() { Form<Resource>
-     * theForm = resourceForm.bindFromRequest(); if(theForm.hasErrors()) { return
-     * badRequest("Bad request"); } else { User currentUser = Secured.getCurrentUser(); Resource
-     * submitted = theForm.get(); StringBuffer returnBuffer = new StringBuffer(); BufferedReader
-     * serverResponse;
-     * 
-     * if(submitted.getPollingUrl() != null && !"".equalsIgnoreCase(submitted.getPollingUrl())) {
-     * //fudge URL, should check HTTP if (!submitted.getPollingUrl().startsWith("http://") &&
-     * !submitted.getPollingUrl().startsWith("https://") &&
-     * !submitted.getPollingUrl().startsWith("coap://") && submitted.parent == null) {
-     * submitted.setPollingUrl("http://"+submitted.getPollingUrl()); } // get data HttpURLConnection
-     * connection = submitted.probe(); String contentType = connection.getContentType();
-     * Logger.warn("Probed and found contentType: "+contentType); try { serverResponse = new
-     * BufferedReader( new InputStreamReader( connection.getInputStream() ) ); String line; while (
-     * (line=serverResponse.readLine())!=null ) {returnBuffer.append(line);} } catch (IOException
-     * ioe) { Logger.error(ioe.toString() + "\nStack trace:\n" + ioe.getStackTrace()[0].toString());
-     * return badRequest("Error collecting data from the resource URL."); //return
-     * ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true,
-     * "Error: Problem collecting data from the resource URL.")); } // decide to how to parse this
-     * data if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-     * Logger.info("json file!"); return parseJson(returnBuffer.toString(), submitted); } else if
-     * (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
-     * Logger.info("html file!"); return parseHTML(returnBuffer.toString(), submitted); // } else if
-     * (contentType.matches("text/csv.*")) { // Logger.info("csv file!"); // return
-     * parseCSV(returnBuffer.toString(), submitted); } else { Logger.warn("Unknown content type!");
-     * } } SkeletonResource skeleton = new SkeletonResource(submitted); Form<SkeletonResource>
-     * skeletonResourceFormNew = skeletonResourceForm.fill(skeleton); return
-     * ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew, true,
-     * "Resource initialised")); } }
-     */
 
 }

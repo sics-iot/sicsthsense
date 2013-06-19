@@ -97,7 +97,7 @@ GET			/resources/addSub											controllers.CtrlResource.addSubResource()
 GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
 
 #deprecated
-GET      /resources/addLegacy             controllers.CtrlResource.add()
+#GET      /resources/addLegacy             controllers.CtrlResource.add()
 #GET			/resources/initialise									controllers.CtrlResource.initialise()
 GET      /resources/regenerateKey/:id     controllers.CtrlResource.regenerateKey(id: Long)
 POST     /resources/modify/:id            controllers.CtrlResource.modify(id: Long)

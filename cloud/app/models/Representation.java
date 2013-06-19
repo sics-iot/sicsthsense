@@ -1,25 +1,20 @@
 package models;
 
-import java.util.regex.Pattern;
-
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.elasticsearch.common.regex.Regex;
-
-import controllers.Utils;
 
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 import protocol.Request;
 import protocol.Response;
+import controllers.Utils;
 
 public class Representation extends Model {
     /**
      * 
      */
     private static final long serialVersionUID = -1198020774968640869L;
-    
+
     @Id
     public long id;
     @Required
@@ -59,26 +54,28 @@ public class Representation extends Model {
     public Resource getParent() {
         return parent;
     }
-    
-    public static Representation fromRequest(Request req) {
+
+    public static Representation fromRequest(Request req, Resource parent) {
         Representation repr = new Representation();
-        
+
         repr.content = req.body();
         repr.contentType = req.contentType();
         repr.expires = 0;
         repr.timestamp = Utils.currentTime();
-        
+        repr.parent = parent;
+
         return repr;
     }
-    
-    public static Representation fromResponse(Response res) {
+
+    public static Representation fromResponse(Response res, Resource parent) {
         Representation repr = new Representation();
-        
+
         repr.content = res.body();
         repr.contentType = res.contentType();
         repr.expires = res.expires();
         repr.timestamp = res.receivedAt();
-        
+        repr.parent = parent;
+
         return repr;
     }
 

@@ -75,9 +75,9 @@ public class Resource extends Operator {
     @Required
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
     public UpdateMode updateMode = UpdateMode.Push;
-    public Long pollingPeriod = 0L;
-    public Long lastPolled = 0L;
-    public Long lastPosted = 0L;
+    public long pollingPeriod = 0L;
+    public long lastPolled = 0L;
+    public long lastPosted = 0L;
     @ManyToOne
     public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
@@ -110,7 +110,7 @@ public class Resource extends Operator {
     public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(Long.class,
             Resource.class);
 
-    public Resource(Resource parent, User owner, String label, Long pollingPeriod,
+    public Resource(Resource parent, User owner, String label, long pollingPeriod,
             String pollingUrl, String pollingAuthenticationKey, String description) {
         super();
         this.parent = parent;
@@ -124,12 +124,12 @@ public class Resource extends Operator {
         this.description = description;
     }
 
-    public Resource(User owner, String label, Long pollingPeriod, String pollingUrl,
+    public Resource(User owner, String label, long pollingPeriod, String pollingUrl,
             String pollingAuthenticationKey) {
         this(null, owner, label, pollingPeriod, pollingUrl, pollingAuthenticationKey, "");
     }
 
-    public Resource(String label, Long pollingPeriod, String pollingUrl,
+    public Resource(String label, long pollingPeriod, String pollingUrl,
             String pollingAuthenticationKey) {
         this(null, null, label, pollingPeriod, pollingUrl, pollingAuthenticationKey, "");
     }
@@ -210,6 +210,18 @@ public class Resource extends Operator {
         return (Utils.isValidURL(getUrl()));
     }
 
+    public Promise<Response> request() {
+        // Get Url and parse default parameters
+        final URI uri = URI.create(getUrl());
+        final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery());
+
+        // Create the Request
+        final Request req =
+                new GenericRequest(uri, "GET", Collections.<String, String[]>emptyMap(), params, "");
+
+        return request(req);
+    }
+
     public Promise<Response> request(String method, Map<String, String[]> headers,
             Map<String, String[]> queryString, String body) {
         if (method == null) throw new IllegalArgumentException();
@@ -225,10 +237,10 @@ public class Resource extends Operator {
 
         // Create the Request
         final Request req = new GenericRequest(uri, method, headers, params, body);
-        
+
         return request(req);
     }
-    
+
     public Promise<Response> request(Request req) {
         final URI uri = req.uri();
 
@@ -278,7 +290,7 @@ public class Resource extends Operator {
                 // + textBody);
                 // Stream parsers should handle data parsing and response type
                 // checking..
-                Long currentTime = Utils.currentTime();
+                long currentTime = Utils.currentTime();
 
                 boolean parsedSuccessfully = false;
                 String msgs = "";
@@ -296,7 +308,7 @@ public class Resource extends Operator {
                 }
                 // Logger.info("[asynchPoll] before resourceLog");
                 ResourceLog resourceLog =
-                        new ResourceLog(thisResource, response, thisResource.lastPolled,
+                        ResourceLog.fromResponse(thisResource, response, thisResource.lastPolled,
                                 currentTime);
                 // Logger.info("[asynchPoll] after resourceLog");
 
@@ -346,11 +358,11 @@ public class Resource extends Operator {
         return null;
     }
 
-    public void setPeriod(Long period) {
+    public void setPeriod(long period) {
         this.pollingPeriod = period;
     }
 
-    public boolean parseAndStore(String text, String contentType, Long currentTime)
+    public boolean parseAndStore(String text, String contentType, long currentTime)
             throws Exception {
         boolean result = false;
 
@@ -369,12 +381,13 @@ public class Resource extends Operator {
         this.label = resource.label;
         // this.key = resource.getKey();
         this.pollingPeriod = resource.pollingPeriod;
-        this.lastPolled = resource.lastPolled;
-        this.lastPosted = resource.lastPosted;
+        // this.lastPolled = resource.lastPolled;
+        // this.lastPosted = resource.lastPosted;
         this.pollingUrl = resource.getPollingUrl();
-        this.parent = resource.parent;
+        // this.parent = resource.parent;
         this.description = resource.description;
-        this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+        // this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+        this.updateMode = (resource.pollingPeriod > 0) ? UpdateMode.Poll : UpdateMode.Push;
         if (key == null || "".equalsIgnoreCase(key)) {
             updateKey();
         }
@@ -420,21 +433,26 @@ public class Resource extends Operator {
         super.delete();
     }
 
-    public static Resource getById(Long id) {
+    public static Resource getById(long id) {
         Resource resource = find.byId(id);
         return resource;
     }
 
-    public static Resource get(Long id, String key) {
+    public static Resource get(long id, String key) {
         Resource resource = find.byId(id);
         if (resource != null && resource.checkKey(key)) return resource;
         return null;
     }
 
-    public static Resource get(Long id, User user) {
+    public static Resource get(long id, User user) {
         Resource resource = find.byId(id);
         if (resource != null && resource.owner.equals(user)) return resource;
         return null;
+    }
+    
+    public static boolean hasAccess(long id, User user) {
+        Resource resource = find.byId(id);
+        return resource != null && resource.owner.equals(user);
     }
 
     public static Resource getByKey(String key) {
@@ -489,7 +507,7 @@ public class Resource extends Operator {
         return null;
     }
 
-    public static void delete(Long id) {
+    public static void delete(long id) {
         Resource resource = find.ref(id);
         if (resource != null) resource.delete();
 

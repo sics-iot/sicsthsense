@@ -122,7 +122,7 @@ public class StreamParser extends Model {
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, String path,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
+            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
         super();
         setInputParser(inputParser);
         this.inputType = inputType;
@@ -152,7 +152,7 @@ public class StreamParser extends Model {
         }
     }
 
-    public boolean setInputParser(String inputParser) throws Exception {
+    public boolean setInputParser(String inputParser) {
         this.inputParser = inputParser;
         if (inputParser != null) {
             regexPattern = Pattern.compile(inputParser);
@@ -162,6 +162,21 @@ public class StreamParser extends Model {
             return true;
         }
         return false;
+    }
+    
+    public StreamParser updateStreamParser(StreamParser changes) {
+        this.inputParser = changes.inputParser;
+        this.inputType = changes.inputType;
+        this.dataGroup = changes.dataGroup;
+        this.numberOfPoints = changes.numberOfPoints;
+        this.regexPattern = changes.regexPattern;
+        this.streamVfilePath = changes.streamVfilePath;
+        this.timeformat = changes.timeformat;
+        this.timeGroup = changes.timeGroup;
+        
+        update();
+        
+        return this;
     }
 
     public List<DataPoint> parse(String body, String contentType) throws Exception {
@@ -371,31 +386,32 @@ public class StreamParser extends Model {
     }
 
     public static StreamParser create(StreamParser parser) {
-        if (parser.resource != null && parser.inputParser != null) {
-            if (parser.stream == null) {
-                if (parser.streamVfilePath == null) {
-                    parser.streamVfilePath =
-                            "/" + parser.resource.label + "/newstream_"
-                                    + (new Random(new Date().getTime()).nextInt(10000));
-                } else if (!parser.streamVfilePath.startsWith("/")) {
-                    parser.streamVfilePath = "/" + parser.streamVfilePath;
-                }
-                parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
-            }
-            parser.save();
-            return parser;
-        } else {
+        if (parser.resource == null) {
             Logger.warn("[StreamParser] Could not create parser for " + parser.resource.label
-                    + ", resource or input bad");
-            if (parser.resource == null) {
-                Logger.warn("[StreamParser] resource null");
-            }
-            if (parser.inputParser == null) {
-                Logger.warn("[StreamParser] input parser null");
-            }
+                    + ". Resource null.");
+            return null;
         }
-        Logger.warn("[StreamParser] Could not create parser for " + parser.resource.label);
-        return null;
+        
+        if (parser.inputParser == null) {
+            Logger.warn("[StreamParser] Could not create parser for " + parser.resource.label
+                    + ". Input parser null");
+            return null;
+        }
+
+        if (parser.stream == null) {
+            if (parser.streamVfilePath == null) {
+                parser.streamVfilePath =
+                        "/" + parser.resource.label + "/newstream_"
+                                + (new Random(new Date().getTime()).nextInt(10000));
+            } else if (!parser.streamVfilePath.startsWith("/")) {
+                parser.streamVfilePath = "/" + parser.streamVfilePath;
+            }
+            parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
+        }
+        
+        parser.save();
+        
+        return parser;
     }
 
     public static void delete(Long id) {

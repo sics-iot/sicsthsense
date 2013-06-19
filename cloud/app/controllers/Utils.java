@@ -38,14 +38,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
 
 public class Utils {
 
-	public static long currentTime() {
+    public static long currentTime() {
 		// return System.currentTimeMillis();
 		return new Date().getTime();
 	}

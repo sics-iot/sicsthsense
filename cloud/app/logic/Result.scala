@@ -28,11 +28,11 @@ object Default {
   implicit def forAny[A <: Any]: Default[A] = new ScalaDefault[A]
 }
 
-class Result[T](val code: ResultCode.Type, val message: String, val data: T, val exception: Throwable) {
+class Result[T](val code: ResultCode, val message: String, val data: T, val exception: Throwable) {
   def isSuccess: Boolean = code == ResultCode.Ok
   def isFailure: Boolean = !isSuccess
 
-  def fold[U](onFailure: (ResultCode.Type, String, Throwable) => U, onSuccess: T => U) =
+  def fold[U](onFailure: (ResultCode, String, Throwable) => U, onSuccess: T => U) =
     if (isSuccess)
       onSuccess(data)
     else
@@ -47,11 +47,11 @@ object Result {
   def apply[T](ex: Throwable): Result[T] = new Result[T](ResultCode.InternalError, ex.getMessage(), default[T], ex)
   def apply[T](ex: Throwable, msg: String): Result[T] = new Result[T](ResultCode.InternalError, msg, default[T], ex)
 
-  def apply[T](code: ResultCode.Type, ex: Throwable): Result[T] = new Result[T](code, ex.getMessage(), default[T], ex)
-  def apply[T](code: ResultCode.Type, ex: Throwable, msg: String): Result[T] = new Result[T](code, msg, default[T], ex)
+  def apply[T](code: ResultCode, ex: Throwable): Result[T] = new Result[T](code, ex.getMessage(), default[T], ex)
+  def apply[T](code: ResultCode, ex: Throwable, msg: String): Result[T] = new Result[T](code, msg, default[T], ex)
 
-  def apply[T](code: ResultCode.Type): Result[T] = new Result[T](code, code.toString(), default[T], null)
-  def apply[T](code: ResultCode.Type, msg: String): Result[T] = new Result[T](code, msg, default[T], null)
+  def apply[T](code: ResultCode): Result[T] = new Result[T](code, code.toString(), default[T], null)
+  def apply[T](code: ResultCode, msg: String): Result[T] = new Result[T](code, msg, default[T], null)
 
   def apply[T](action: Try[T]): Result[T] = action match {
     case Success(data) => Result(data)
