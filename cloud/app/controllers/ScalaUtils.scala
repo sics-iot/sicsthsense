@@ -1,7 +1,5 @@
 package controllers
 
-import scala.Array.canBuildFrom
-import scala.collection.JavaConversions.mapAsJavaMap
 import play.core.parsers.FormUrlEncodedParser
 import rx.Observable
 import scala.concurrent.Future
@@ -28,9 +26,13 @@ object ScalaUtils {
     val promise = Promise[A]
 
     observable.take(1).subscribe(new Observer[A] {
-      def onNext(value: A) { promise.success(value) }
+      def onNext(value: A) {
+        promise.success(value)
+      }
 
-      def onError(e: Exception) { promise.failure(e) }
+      def onError(e: Exception) {
+        promise.failure(e)
+      }
 
       def onCompleted() {
         if (!promise.isCompleted)

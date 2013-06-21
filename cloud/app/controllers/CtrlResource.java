@@ -7,7 +7,7 @@
  * in the documentation and/or other materials provided with the distribution. * Neither the name of
  * The Swedish Institute of Computer Science nor the names of its contributors may be used to
  * endorse or promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
@@ -34,6 +34,7 @@ import java.util.regex.PatternSyntaxException;
 
 import logic.ResourceHub;
 import models.FileSystem;
+import models.Representation;
 import models.Resource;
 import models.ResourceLog;
 import models.StreamParser;
@@ -428,11 +429,6 @@ public class CtrlResource extends Controller {
 
     @Security.Authenticated(Secured.class)
     private static Result postByLabel(String user, String labelPath) {
-        User owner = User.getByUserName(user);
-        Resource parent = null;
-        labelPath = Utils.decodePath(labelPath);
-        Resource resource = Resource.getByUserLabel(owner, null, labelPath);
-        // return post(owner, resource.id);
         return TODO;
     }
 
@@ -456,65 +452,19 @@ public class CtrlResource extends Controller {
         if (resource == null) {
             return notFound();
         }
-        ResourceLog resourceLog = null;
-        Long requestTime = Utils.currentTime();
-        boolean parsedSuccessfully = false;
-        String requestBody = getRequestBody();
-        try {
-            resourceLog =
-                    ResourceLog.fromRequest(resource, HttpProtocol.translateRequest(request()),
-                            requestTime);
-            resourceLog = ResourceLog.createOrUpdate(resourceLog);
 
-            Logger.info("[Resources] post received from URI: " + request().uri()
-                    + ", content type: " + request().getHeader("Content-Type") + ", payload: "
-                    + requestBody);
-            // if first POST (and no poll's), auto make parsers
-            if (resource.streamParsers.isEmpty() && resource.isUnused()) {
-                // Logger.info("Automatically making parsers on empty unused Resource.");
-                autoCreateParsers(resource, requestBody);
-                resource.update();
-            }
-            // force recreation of resource to include streamparsers
-            resource = Resource.getById(resource.id);
-            resource.update();
+        logic.Result<Representation> result =
+                ResourceHub.post(resource, HttpProtocol.translateRequest(request()));
 
-            parsedSuccessfully =
-                    resource.parseAndStore(request().body().asText(), null, requestTime);
-            resourceLog.updateParsedSuccessfully(parsedSuccessfully);
-        } catch (Exception e) {
-            String msg =
-                    "[CtrlResource] Exception while receiving a post in Resource: "
-                            + resource.label + " Owner " + resource.owner.userName + "\n"
-                            + e.getMessage() + e.getStackTrace()[0].toString();
-            Logger.error(msg);
-            if (resourceLog != null) {
-                resourceLog.updateMessages(msg);
-            }
-            return badRequest("Bad request: Error! " + msg);
+        switch(result.code()) {
+            case Ok:
+                return ok();
+            case NotFound:
+                return notFound();
+            case InternalError:
+            default:
+                return internalServerError();
         }
-        if (!parsedSuccessfully) {
-            Logger.info("[CtrlResource] Bad request: Not parsed successfully! " + requestBody);
-            return badRequest("Bad request: not parsed successfully! " + requestBody);
-        }
-        return ok("ok");
-    }
-
-    public static String getRequestBody() {
-        String body = "";
-        if (request().getHeader("Content-Type").equals("text/plain")) {
-            // XXX: asText() does not work unless ContentType is // "text/plain"
-            body = request().body().asText();
-        } else if (request().getHeader("Content-Type").equals("application/json")
-                || request().getHeader("Content-Type").equals("text/json")) {
-            body = (request().body().asJson() != null) ? request().body().asJson().toString() : "";
-        } else {
-            Logger.error("[CtrlResource] request() did not have a recognised Content-Type");
-            body = "";
-        }
-        Logger.info("[Resources] post received from URI: " + request().uri() + ", content type: "
-                + request().getHeader("Content-Type") + ", payload: " + body);
-        return body;
     }
 
     // Walk Json tree creating resource parsers
@@ -543,43 +493,8 @@ public class CtrlResource extends Controller {
         }
     }
 
-    // Parse Json into resource parsers
-    // @Security.Authenticated(Secured.class)
-    public static boolean createJsonParsers(Resource resource, String data) {
-        Logger.info("[CtrlResource] createJsonParsers() Trying to parse Json to then auto fill in StreamParsers!");
-        try {
-            // recusively parse JSON and add() all fields
-            JsonNode root = Json.parse(data);
-            parseJsonNode(resource, root, "");
-        } catch (Exception e) { // nevermind, move on...
-            Logger.error("[CtrlResource] createJsonParsers() had problems parsing JSON: " + data);
-            return false;
-        }
-        Logger.error("[CtrlResource] about to update resource");
-        resource.update();
-        return true;
-    }
-
-    // create parsers in the resource with the json body of a post/poll
-    // @Security.Authenticated(Secured.class)
-    private static boolean autoCreateParsers(Resource resource, String jsonBody) {
-        if (!resource.streamParsers.isEmpty() || !resource.isUnused()) {
-            return false;
-        }
-        createJsonParsers(resource, jsonBody);
-        return true;
-    }
-
     @Security.Authenticated(Secured.class)
     private static Result getByLabel(String user, String labelPath) {
-        User owner = User.getByUserName(user);
-        labelPath = Utils.decodePath(labelPath);
-        Resource parent = null;
-        Resource resource = Resource.getByUserLabel(owner, null, labelPath);
-        if (resource == null) {
-            Logger.warn("Resource not found!");
-            return notFound();
-        }
         return TODO;
     }
 

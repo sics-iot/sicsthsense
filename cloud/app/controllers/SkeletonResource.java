@@ -25,11 +25,9 @@
 package controllers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import play.Logger;
-import play.data.validation.Constraints;
 
 import models.*;
 
@@ -41,19 +39,19 @@ public class SkeletonResource {
     public String description = null;
     public Long pollingPeriod = 0L;
     public String pollingAuthenticationKey = null;
-    public List<StreamParserWraper> streamParserWrapers;
+    public List<StreamParserWrapper> streamParserWrappers = new ArrayList<StreamParserWrapper>();
 
     public SkeletonResource(String label, String key, Long pollingPeriod, String pollingUrl,
-            String pollingAuthenticationKey, List<StreamParserWraper> streamParserWrapers) {
+            String pollingAuthenticationKey, List<StreamParserWrapper> streamParserWrappers) {
         this.label = label;
         this.key = key;
         this.pollingPeriod = pollingPeriod;
         this.pollingUrl = pollingUrl;
         this.pollingAuthenticationKey = pollingAuthenticationKey;
-        this.streamParserWrapers = streamParserWrapers;
+        this.streamParserWrappers = streamParserWrappers;
     }
 
-    public SkeletonResource(Resource resource, List<StreamParserWraper> streamParserWrapers) {
+    public SkeletonResource(Resource resource, List<StreamParserWrapper> streamParserWrappers) {
         if (resource != null) {
             this.id = resource.id;
             this.key = resource.getKey();
@@ -63,7 +61,7 @@ public class SkeletonResource {
             this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
             this.description = resource.description;
         }
-        this.streamParserWrapers = streamParserWrapers;
+        this.streamParserWrappers = streamParserWrappers;
     }
 
     public SkeletonResource(Resource resource) {
@@ -76,16 +74,16 @@ public class SkeletonResource {
             this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
             this.description = resource.description;
             if (resource.streamParsers != null) {
-                streamParserWrapers =
-                        new ArrayList<StreamParserWraper>(resource.streamParsers.size() + 1);
+                streamParserWrappers =
+                        new ArrayList<StreamParserWrapper>(resource.streamParsers.size() + 1);
                 for (StreamParser sp : resource.streamParsers) {
-                    streamParserWrapers.add(new StreamParserWraper(sp));
+                    streamParserWrappers.add(new StreamParserWrapper(sp));
                 }
             }
         }
     }
 
-    public SkeletonResource(Resource resource, StreamParserWraper... spws) {
+    public SkeletonResource(Resource resource, StreamParserWrapper... spws) {
         if (resource != null) {
             this.id = resource.id;
             this.key = resource.getKey();
@@ -95,23 +93,23 @@ public class SkeletonResource {
             this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
             this.description = resource.description;
         }
-        this.streamParserWrapers = new ArrayList<StreamParserWraper>(spws.length + 1);
-        for (StreamParserWraper spw : spws) {
-            this.streamParserWrapers.add(spw);
+        this.streamParserWrappers = new ArrayList<StreamParserWrapper>(spws.length + 1);
+        for (StreamParserWrapper spw : spws) {
+            this.streamParserWrappers.add(spw);
         }
     }
 
     public SkeletonResource(Long id, String label, String key, Long pollingPeriod,
-            String pollingUrl, String pollingAuthenticationKey, StreamParserWraper... spws) {
+            String pollingUrl, String pollingAuthenticationKey, StreamParserWrapper... spws) {
         this.id = id;
         this.label = label;
         this.key = key;
         this.pollingPeriod = pollingPeriod;
         this.pollingUrl = pollingUrl;
         this.pollingAuthenticationKey = pollingAuthenticationKey;
-        this.streamParserWrapers = new ArrayList<StreamParserWraper>();
-        for (StreamParserWraper spw : spws) {
-            this.streamParserWrapers.add(spw);
+        this.streamParserWrappers = new ArrayList<StreamParserWrapper>();
+        for (StreamParserWrapper spw : spws) {
+            this.streamParserWrappers.add(spw);
         }
     }
 
@@ -125,7 +123,7 @@ public class SkeletonResource {
 
         src.streamParsers = new ArrayList<StreamParser>();
 
-        for (StreamParserWraper spw : streamParserWrapers) {
+        for (StreamParserWrapper spw : streamParserWrappers) {
             if (spw.vfilePath != null) {
                 StreamParser sp = spw.getStreamParser(src);
                 // if (sp != null) { // ignore bad parsers (probably regex failure)
@@ -153,96 +151,19 @@ public class SkeletonResource {
         return false;
     }
 
-    public void addStreamParser(StreamParserWraper spw) {
-        streamParserWrapers.add(spw);
+    public void addStreamParser(StreamParserWrapper spw) {
+        streamParserWrappers.add(spw);
     }
 
     public void addStreamParser(String vfilePath, String inputParser, String inputType,
             String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
-        streamParserWrapers.add(new StreamParserWraper(vfilePath, inputParser, inputType,
+        streamParserWrappers.add(new StreamParserWrapper(vfilePath, inputParser, inputType,
                 timeformat, dataGroup, timeGroup, numberOfPoints));
     }
 
     public void addStreamParser(String vfilePath, String inputParser, String inputType,
             String timeformat) {
-        streamParserWrapers.add(new StreamParserWraper(vfilePath, inputParser, inputType,
+        streamParserWrappers.add(new StreamParserWrapper(vfilePath, inputParser, inputType,
                 timeformat, 1, 2, 1));
-    }
-
-    public static class StreamParserWraper {
-        public Long parserId;
-        @Constraints.Required
-        public String vfilePath;
-        // @Constraints.Required
-        /** RegEx, Xpath, JSON path */
-        public String inputParser;
-        /**
-         * JSON, HTML, text, XML, ... to override MIME contentType of input Right now, it could be
-         * defined as application/json, otherwise, request's content is handled as text
-         */
-        public String inputType;
-
-        public String timeformat;
-
-        /**
-         * The number of the field containing the value of datapoint (mainly used in parsing CSV ^
-         * RegEx) Starts from 1
-         */
-        int dataGroup = 1;
-
-        /**
-         * The number of the field containing the value of datapoint (mainly used in parsing CSV &
-         * RegEx) Starts from 1
-         */
-        int timeGroup = 2;
-
-        /**
-         * How many points to match? values <= 0 mean parsing all possible matches
-         */
-        int numberOfPoints = 1;
-
-        public StreamParserWraper(Long id, String vfilePath, String inputParser, String inputType,
-                String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
-            this.parserId = id;
-            this.vfilePath = vfilePath;
-            this.inputType = inputType;
-            this.inputParser = inputParser;
-            this.timeformat = timeformat;
-            this.dataGroup = dataGroup;
-            this.timeGroup = timeGroup;
-            this.numberOfPoints = numberOfPoints;
-        }
-
-        public StreamParserWraper(String vfilePath, String inputParser, String inputType,
-                String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
-            this(null, vfilePath, inputParser, inputType, timeformat, dataGroup, timeGroup,
-                    numberOfPoints);
-        }
-
-        public StreamParserWraper(StreamParser sp) {
-            try {
-                this.vfilePath = sp.stream.file.getPath();
-                this.inputType = sp.inputType;
-                this.inputParser = sp.inputParser;
-                this.parserId = sp.id;
-                this.timeformat = sp.timeformat;
-                this.dataGroup = sp.dataGroup;
-                this.timeGroup = sp.timeGroup;
-                this.numberOfPoints = sp.numberOfPoints;
-            } catch (Exception e) {
-                Logger.error("Error creating StreamParserWraper from StreamParser: "
-                        + e.getMessage() + "Stack trace:\n" + e.getStackTrace()[0].toString());
-            }
-        }
-
-        public StreamParserWraper() {}
-
-        public StreamParser getStreamParser(Resource resource) {
-            StreamParser sp =
-                    new StreamParser(resource, inputParser, inputType, vfilePath, timeformat,
-                            dataGroup, timeGroup, numberOfPoints);
-            sp.id = parserId;
-            return sp;
-        }
     }
 }

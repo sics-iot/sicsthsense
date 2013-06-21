@@ -5,7 +5,7 @@
 
 @tbField(field: Field, label: String, className: String="", typeName: String ="text", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false, value: String=null) = {
 	@if(field != null) {
-	@if(label != null && label != "") { 
+	@if(label != null && label != "") {
 		<div class="control-group">
 			<label class="control-label" for="@field.id">@label</label>
 			<div class="controls">
@@ -76,7 +76,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
     ================================================== -->
     <div class="row-fluid">
       <div class="span2 bs-docs-sidebar">
-			@manage.navigationMenu() 
+			@manage.navigationMenu()
 			<script type="text/javascript">
 			$('#resourcelist-sidenav').find('[data-resourceId="'+@myForm("id").value+'"]').addClass('selectedResourceListItem');
 			</script>
@@ -108,19 +108,19 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 		      <p><strong>Oops</strong> Please fix all errors</p>
 	      </div>
 	      }
-	      
+
   <h1>@title</h1>
-     
+
 	@helper.form(action = resourceFormAction, 'id -> resourceFormId) {
 	      <fieldset>
 		      <legend>Parameters
 						<span class="pull-right">
 						@if(!autoParserForm) {
-						<span class="btn-group">	
+						<span class="btn-group">
 							<a href="#confirmDeleteResourceModal" role="button" class="btn btn-danger btn-small" data-toggle="modal"><i class="icon-trash icon-white"></i> Delete</a>
 						</span>
 						}
-						<span class="btn-group">	
+						<span class="btn-group">
 							<a href="@routes.CtrlResource.resources()" class="btn btn-small"><i class="icon-remove"></i></a>
 							<button type="submit" name="update" class="btn btn-primary btn-small" id="updateResource" form="@resourceFormId"><i class="icon-ok icon-white"></i> Save</button>
 	      		</span>
@@ -160,29 +160,29 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Resource description..." >@myForm("description").value</textarea>
 				</div>
 				<br />
-			} 
+			}
 				</fieldset>
 			<!-- end modify resource-->
   }
-  
+
 	@if(!autoParserForm) {
 		@interactWithResource(myForm("id").value.toLong, thisResource.getUrl())
 	}
-	
+
 	<!-- Parsers -->
 
 <fieldset>
-		      <legend>Parsers 
+		      <legend>Parsers
 <span class="pull-right">
 <a class="addParser btn btn-success btn-small"><span class="icon-plus icon-white"></span></a>
 </span></legend>
 		      <div id="parsers" resourceId="@myForm("id").value">
-						
+
 						@streamParserGroupLabels(numberOfParsers <= 0)
 			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
 			        @streamParserGroup(spw, className="", modifyStreamPath= autoParserForm, deleteParser= !autoParserForm)
 			      }
-						
+
 			      @**
 			      * Keep an hidden block that will be used as template for Javascript copy code
 			      **@
@@ -216,7 +216,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				<div class="row-fluid"><span class="span1">Proxy</span><span class="span11">@interactWithResource(resource.id,resource.getUrl(),showHeader=false)</span></div>
 				}
 				**@
-			} 
+			}
 			</div>
 <fieldset>
 </div></div>
@@ -243,12 +243,11 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
   <!-- Log view --->
 	     @if(!autoParserForm) {
   			<br /><br />
-				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), false),"Log of last post")
-				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()), true),"Log of last poll")
+				@logViewPage(ResourceLog.getByResource(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser())), "Last Log")
 			}
-			
+
   </div>
-  
+
 </div>
 
 }

@@ -11,18 +11,20 @@ import models.Representation
 import models.Resource
 import models.ResourceLog
 import models.StreamParser
-import models.UpdateMode
 import play.api.Logger
+import models.Resource.UpdateMode
 
 sealed trait PollingMessage
 case class Poll(id: Long) extends PollingMessage
 
 class Poller extends Actor {
+  private val logger = Logger(this.getClass)
+
   def receive = {
     case p @ Poll(id) =>
       val resource = Resource.getById(id)
 
-      Logger.debug(s"Polling $id, ${resource.getUrl()}, ${resource.updateMode}")
+      logger.debug(s"Polling $id, ${resource.getUrl()}, ${resource.updateMode}")
 
       val response = for {
         // Only to enter Future monad
@@ -33,28 +35,32 @@ class Poller extends Actor {
 
         requestTime = Utils.currentTime()
 
-        _ = Logger.info(s"Requesting representation from resource $id")
+        _ = logger.info(s"Requesting representation from resource $id")
 
         res <- resource.request().getWrappedPromise()
       } yield {
-        Logger.info(s"Received response from resource $id")
+        logger.info(s"Received response from resource $id")
 
         val repr = Representation.fromResponse(res, resource)
         repr.save()
+        logger.debug(s"Stored Representation for resource $id")
 
         val log = ResourceLog.fromResponse(resource, res, requestTime, Utils.currentTime())
         log.save()
+        logger.debug(s"Stored ResourceLog for resource $id")
 
         for (sp <- StreamParser.forResource(resource)) {
           val data = sp.parse(res.body, res.contentType)
           sp.stream.post(data, Utils.currentTime())
         }
+        logger.debug(s"Updated Streams for resource $id")
 
         resource.lastPolled = Utils.currentTime()
         resource.save()
+        logger.debug(s"Updated resource $id")
       }
 
-      response.onFailure { case t => Logger.error("Error while polling", t) }
+      response.onFailure { case t => logger.error("Error while polling", t) }
       response.onComplete { _ => context.system.scheduler.scheduleOnce(resource.pollingPeriod.seconds, self, p) }
   }
 }

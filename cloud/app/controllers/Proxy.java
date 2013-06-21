@@ -7,7 +7,7 @@
  * in the documentation and/or other materials provided with the distribution. * Neither the name of
  * The Swedish Institute of Computer Science nor the names of its contributors may be used to
  * endorse or promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
@@ -40,6 +40,8 @@ import play.mvc.Security;
 import protocol.Response;
 
 public class Proxy extends Controller {
+    private final static Logger.ALogger logger = Logger.of(Proxy.class);
+
     /*** Request timeout (in ms) **/
     public final static Long REQUEST_TIMEOUT = 30000L; // 30 seconds
 
@@ -100,52 +102,13 @@ public class Proxy extends Controller {
                 }
 
                 long contentLength = response.contentLength();
-                Logger.info("[Proxy] got response for: " + method + ", to: " + resource.getUrl()
+                logger.info("Got response for: " + method + " " + resource.getUrl()
                         + ", encoding: " + encoding + ", content-type: " + contentType
                         + ", body length: " + contentLength + " bytes");
-                // String body="GZIP does not work!";
-                // if(encoding != null && encoding.contains("gzip")) {
-                // String charSet = (
-                // contentType.indexOf("charset=")!=-1 &&
-                // contentType.indexOf("charset=") + 8 <
-                // contentType.length() ) ? contentType.substring(
-                // contentType.indexOf("charset=")+8 ).toUpperCase() :
-                // "UTF-8";
-                // body = gzipDeflator(response.getBody().getBytes(),
-                // contentLength, charSet);
-                // } else {
-                // body = response.getBody();
-                // }
                 return status(response.status(), response.body());
             }
         });
 
         return async(resultPromise);
     }
-
-    // trying gzip deflating ... --> incorrect header check
-    // private static String gzipDeflator(byte [] input, int
-    // compressedDataLength, String charset) throws
-    // java.io.UnsupportedEncodingException, java.util.zip.DataFormatException {
-    // String outputString=null;
-    // // try {
-    // // Decompress the bytes
-    // Inflater decompresser = new Inflater();
-    // decompresser.setInput(input, 0, compressedDataLength);
-    // byte[] result = new byte[10*compressedDataLength];
-    // int resultLength = decompresser.inflate(result);
-    // decompresser.end();
-    // // Decode the bytes into a String
-    // outputString = new String(result, 0, resultLength, charset); //charset
-    // "UTF-8"
-    // // } catch(java.io.UnsupportedEncodingException e) {
-    // //
-    // Logger.info("[Proxy gzipDeflator UnsupportedEncodingException] failed: "
-    // + e.getMessage());
-    // // } catch (java.util.zip.DataFormatException e) {
-    // // Logger.info("[Proxy gzipDeflator DataFormatException] failed: " +
-    // e.getMessage());
-    // // }
-    // return outputString;
-    // }
 }

@@ -1,30 +1,40 @@
 package models;
 
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
+import controllers.Utils;
+import logic.Argument;
+import logic.State;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 import protocol.Request;
 import protocol.Response;
-import controllers.Utils;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "representations")
 public class Representation extends Model {
+    private static final int BODY_MAX_LENGTH = 8 * 1024;
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -1198020774968640869L;
 
     @Id
     public long id;
+
     @Required
     public long timestamp;
+
     @Required
     public long expires;
+
     @Required
     public String contentType;
+
     @Required
+    @Column(length = BODY_MAX_LENGTH)
     public String content;
+
     @ManyToOne
     public Resource parent = null;
 
@@ -55,6 +65,12 @@ public class Representation extends Model {
         return parent;
     }
 
+    private void normalize() {
+        State.notNull(content);
+
+        content = content.substring(0, Math.min(BODY_MAX_LENGTH, content.length()));
+    }
+
     public static Representation fromRequest(Request req, Resource parent) {
         Representation repr = new Representation();
 
@@ -63,6 +79,8 @@ public class Representation extends Model {
         repr.expires = 0;
         repr.timestamp = Utils.currentTime();
         repr.parent = parent;
+
+        repr.normalize();
 
         return repr;
     }
@@ -75,6 +93,8 @@ public class Representation extends Model {
         repr.expires = res.expires();
         repr.timestamp = res.receivedAt();
         repr.parent = parent;
+
+        repr.normalize();
 
         return repr;
     }

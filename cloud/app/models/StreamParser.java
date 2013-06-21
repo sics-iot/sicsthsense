@@ -7,7 +7,7 @@
  * in the documentation and/or other materials provided with the distribution. * Neither the name of
  * The Swedish Institute of Computer Science nor the names of its contributors may be used to
  * endorse or promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
@@ -25,29 +25,20 @@
 
 package models;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import controllers.Utils;
+import logic.Argument;
 import org.codehaus.jackson.JsonNode;
-
 import play.Logger;
 import play.db.ebean.Model;
 import play.libs.Json;
-import controllers.Utils;
+
+import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "parsers")
@@ -79,7 +70,9 @@ public class StreamParser extends Model {
     @Transient
     public String streamVfilePath;
 
-    /** RegEx, Xpath, JSON path, CSV separator */
+    /**
+     * RegEx, Xpath, JSON path, CSV separator
+     */
     public String inputParser;
 
     /**
@@ -111,9 +104,6 @@ public class StreamParser extends Model {
      */
     public int numberOfPoints = 1;
 
-    @Transient
-    public Pattern regexPattern;
-
     public static Model.Finder<Long, StreamParser> find = new Model.Finder<Long, StreamParser>(
             Long.class, StreamParser.class);
 
@@ -122,8 +112,12 @@ public class StreamParser extends Model {
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, String path,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+                        String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
         super();
+
+        Argument.notNull(resource);
+        Argument.notEmpty(path);
+
         setInputParser(inputParser);
         this.inputType = inputType;
         this.resource = resource;
@@ -132,13 +126,20 @@ public class StreamParser extends Model {
         this.dataGroup = dataGroup;
         this.timeGroup = timeGroup;
         this.numberOfPoints = numberOfPoints;
-        Vfile f = FileSystem.readFile(resource.owner, path);
-        this.stream = (f != null) ? f.linkedStream : null;
+
+        if (resource.owner != null) {
+            Vfile f = FileSystem.readFile(resource.owner, path);
+            this.stream = (f != null) ? f.linkedStream : null;
+
+        }
     }
 
     public StreamParser(Resource resource, String inputParser, String inputType, Stream stream,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
+                        String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
         super();
+
+        Argument.notNull(resource);
+
         setInputParser(inputParser);
         this.inputType = inputType;
         this.resource = resource;
@@ -155,7 +156,6 @@ public class StreamParser extends Model {
     public boolean setInputParser(String inputParser) {
         this.inputParser = inputParser;
         if (inputParser != null) {
-            regexPattern = Pattern.compile(inputParser);
             if (this.id != null) {
                 this.update();
             }
@@ -163,19 +163,18 @@ public class StreamParser extends Model {
         }
         return false;
     }
-    
+
     public StreamParser updateStreamParser(StreamParser changes) {
         this.inputParser = changes.inputParser;
         this.inputType = changes.inputType;
         this.dataGroup = changes.dataGroup;
         this.numberOfPoints = changes.numberOfPoints;
-        this.regexPattern = changes.regexPattern;
         this.streamVfilePath = changes.streamVfilePath;
         this.timeformat = changes.timeformat;
         this.timeGroup = changes.timeGroup;
-        
+
         update();
-        
+
         return this;
     }
 
@@ -246,7 +245,8 @@ public class StreamParser extends Model {
                 } catch (IllegalArgumentException iae) {
                     try {
                         timeString = matcher.group(timeGroup);
-                    } catch (IndexOutOfBoundsException iob) {}
+                    } catch (IndexOutOfBoundsException iob) {
+                    }
                 }
 
                 // if there is a match for time, parse it; otherwise, use the system time (provided
@@ -366,10 +366,12 @@ public class StreamParser extends Model {
             f = FileSystem.addFile(resource.owner, path);
         } else if (f.getType() == Vfile.Filetype.DIR) {
             int i = 0;
+            String fileName;
+
             do {
-                f = FileSystem.addFile(resource.owner, path + "\\newstream" + Integer.toString(i));
-            } while (!FileSystem.fileExists(resource.owner,
-                    path + "\\newstream" + Integer.toString(i++)));
+                fileName = path + "\\newstream" + Integer.toString(i);
+                f = FileSystem.addFile(resource.owner, fileName);
+            } while (!FileSystem.fileExists(resource.owner, fileName));
         }
         if (f.getType() == Vfile.Filetype.FILE) {
             Stream stream = f.getLink();
@@ -386,17 +388,8 @@ public class StreamParser extends Model {
     }
 
     public static StreamParser create(StreamParser parser) {
-        if (parser.resource == null) {
-            Logger.warn("[StreamParser] Could not create parser for " + parser.resource.label
-                    + ". Resource null.");
-            return null;
-        }
-        
-        if (parser.inputParser == null) {
-            Logger.warn("[StreamParser] Could not create parser for " + parser.resource.label
-                    + ". Input parser null");
-            return null;
-        }
+        Argument.notNull(parser.resource);
+        Argument.notNull(parser.inputParser);
 
         if (parser.stream == null) {
             if (parser.streamVfilePath == null) {
@@ -408,9 +401,9 @@ public class StreamParser extends Model {
             }
             parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
         }
-        
+
         parser.save();
-        
+
         return parser;
     }
 
@@ -419,6 +412,6 @@ public class StreamParser extends Model {
     }
 
     public static List<StreamParser> forResource(Resource res) {
-        return find.where().eq("resource", res.id).findList();
+        return find.where().eq("resource", res).findList();
     }
 }
