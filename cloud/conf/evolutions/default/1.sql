@@ -34,11 +34,6 @@ create table functions (
   constraint pk_functions primary key (id))
 ;
 
-create table operators (
-  id                        bigint auto_increment not null,
-  constraint pk_operators primary key (id))
-;
-
 create table representations (
   id                        bigint auto_increment not null,
   timestamp                 bigint,
@@ -216,8 +211,6 @@ drop table data_point_string;
 drop table functions;
 
 drop table functions_streams;
-
-drop table operators;
 
 drop table representations;
 

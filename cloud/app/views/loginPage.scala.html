@@ -4,33 +4,7 @@
 
 @layout("Log In", message, null) {
 
-		<!--
-  ~ Copyright (c) 2013, Swedish Institute of Computer Science
-  ~ All rights reserved.
-  ~ Redistribution and use in source and binary forms, with or without
-  ~ modification, are permitted provided that the following conditions are met:
-  ~     * Redistributions of source code must retain the above copyright
-  ~       notice, this list of conditions and the following disclaimer.
-  ~     * Redistributions in binary form must reproduce the above copyright
-  ~       notice, this list of conditions and the following disclaimer in the
-  ~       documentation and/or other materials provided with the distribution.
-  ~     * Neither the name of The Swedish Institute of Computer Science nor the
-  ~       names of its contributors may be used to endorse or promote products
-  ~       derived from this software without specific prior written permission.
-  ~
-  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ~ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  ~ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  ~ DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
-  ~ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  ~ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  ~ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  ~ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  -->
-
-<br />
+		<br />
        <legend>Welcome to SicsthSense!</legend>
 		SicsthSense is a new cloud platform that makes connecting sensors, actuators, smart phones and online services easier than ever. Through this new platform, users can gather their sensor data, share it in a secure way, look for other’s data, set triggers and interact with objects or services.
 		<br />
@@ -53,7 +27,7 @@
           <p>OpenID is service that allows you to sign in to many different websites using a single identity.
           Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
       </fieldset>
-    </form>
+    </form>    
 		}
 		<br />
 		@if(Application.canPasswordLogin()) {
@@ -68,13 +42,13 @@
 				<dd><input type="password" name="password" value="" /></dd>
 				<dt></dt>
 				<dd>
-				<input class="btn btn-primary" type="submit" name="signtype" value="Sign in" />
+				<input class="btn btn-primary" type="submit" name="signtype" value="Sign in" /> 
 				&nbsp;
 				&nbsp;
-				or
+				or 
 				&nbsp;
 				&nbsp;
-				<input class="btn" type="submit" name="signtype" value="Sign up" />
+				<input class="btn" type="submit" name="signtype" value="Sign up" /> 
 			</dd>
 			</fieldset>
 		}

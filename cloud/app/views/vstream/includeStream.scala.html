@@ -8,39 +8,13 @@
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
 @if(stream != null) {
-<!--
-  ~ Copyright (c) 2013, Swedish Institute of Computer Science
-  ~ All rights reserved.
-  ~ Redistribution and use in source and binary forms, with or without
-  ~ modification, are permitted provided that the following conditions are met:
-  ~     * Redistributions of source code must retain the above copyright
-  ~       notice, this list of conditions and the following disclaimer.
-  ~     * Redistributions in binary form must reproduce the above copyright
-  ~       notice, this list of conditions and the following disclaimer in the
-  ~       documentation and/or other materials provided with the distribution.
-  ~     * Neither the name of The Swedish Institute of Computer Science nor the
-  ~       names of its contributors may be used to endorse or promote products
-  ~       derived from this software without specific prior written permission.
-  ~
-  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ~ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  ~ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  ~ DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
-  ~ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  ~ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  ~ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  ~ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  -->
-
 <div id="streamblock@{stream.id}">
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
 <div class="stream_header_block @if(!displayHeader){hidden}">
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
 			Stream
-		} else {
+		} else { 
 			Unnamed Stream
 		}
 		<a href="@routes.Application.viewStream(stream.id)" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
@@ -59,9 +33,9 @@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate key</button>
-			}
+			}	
 			<input class="span7" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
-		}
+		}	
 	<span id="streamconfig@{stream.id}" class="span3 form-inline pull-right">
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
@@ -69,7 +43,7 @@
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
 	</span>
 </div>
-	</div>
+	</div>	
 @if(displayOverview || displayPlot){
 	<div class="plot-container">
 		<div class="row-fluid">
@@ -98,7 +72,7 @@
 			// init Flot plot
 			streamplot@{stream.id}.plot = $.plot($("#streamplot@{stream.id}"), [ streamplot@{stream.id}.points ], StreamPlots.options);
 			streamplot@{stream.id}.overview = $.plot($("#overview@{stream.id}"), [ streamplot@{stream.id}.points ], StreamPlots.overview_options);
-
+			
 			// setup config form
 			$("input:radio[name='streamwindow@{stream.id}']").filter('[value="@WIN_1D"]').attr('checked', true);
 			$("input:radio[name='streamwindow@{stream.id}']").change( function(){
@@ -112,7 +86,7 @@
 	} else {
 	@if(displayHeader){
 		<div id="streamtitle@{stream.id}" class="streamtitle">
-			Stream
+			Stream 
 			@if( stream.canRead(Secured.getCurrentUser()) ) {
 			<a href="@routes.Application.viewStream(stream.id)">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 			} else {
@@ -130,10 +104,10 @@
 			<div class="row-fluid controls controls-row">
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
-			}
+			}	
 			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		</div>
-		}
+		}	
 		<div class="streamNoDataLine">
 		 <span style="color: #888; padding-left: 10px;">No data currently available.</span>
 		</div>
