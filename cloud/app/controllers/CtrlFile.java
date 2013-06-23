@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -29,13 +30,11 @@
 
 package controllers;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import models.FileSystem;
+import logic.FileSystem;
 import models.User;
 import models.Vfile;
 import play.Logger;
@@ -54,10 +53,10 @@ public class CtrlFile extends Controller {
 		for(Vfile vf : vfiles) {
 			vf.getPath();
 		}
-		
-		return TODO; 
+
+		return TODO;
 	}
-	
+
 	/** Generates a path listing
 	 * @param path: the folder to explore
 	 * @param full: whether to generate the full html page or only the table body
@@ -71,7 +70,7 @@ public class CtrlFile extends Controller {
 			return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
 					""));
 		}
-		
+
 		Vfile vfile = FileSystem.readFile(currentUser, path);
 		if(vfile == null) {
 			return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
@@ -109,7 +108,7 @@ public class CtrlFile extends Controller {
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
 		}
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result delete(String path) {
 		User currentUser = Secured.getCurrentUser();
@@ -163,7 +162,7 @@ public class CtrlFile extends Controller {
 		else
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
 	}
-	
+
 	private static void parsePath(Vfile vfile) {
 		String path = vfile.getPath();
 		User user = vfile.getOwner();
@@ -184,7 +183,7 @@ public class CtrlFile extends Controller {
 			}
 		}
 	}
-	
+
 
 
 }

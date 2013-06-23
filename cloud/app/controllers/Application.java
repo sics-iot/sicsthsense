@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -34,7 +35,7 @@ import index.Indexer;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.FileSystem;
+import logic.FileSystem;
 import models.Resource;
 import models.Stream;
 import models.User;
@@ -52,7 +53,6 @@ import views.html.adminPage;
 import views.html.attachFunctionPage;
 import views.html.filesPage;
 import views.html.homePage;
-import views.html.resourcesPage;
 import views.html.searchPage;
 import views.html.statisticsPage;
 import views.html.streamPage;
@@ -68,13 +68,13 @@ public class Application extends Controller {
 
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
 	static private Form<Stream> streamForm = Form.form(Stream.class);
-  
+
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
   	List<Stream> lastUpdatedPublic = Stream.getLastUpdatedStreams(currentUser, 10);
     return ok(homePage.render(currentUser.followedStreams, lastUpdatedPublic, ""));
   }
-  
+
   public static Result search() {
   	User currentUser = Secured.getCurrentUser();
 		DynamicForm dynamicForm = Form.form().bindFromRequest();
@@ -102,13 +102,13 @@ public class Application extends Controller {
 		//Resources.availableResources(currentUser);
     return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q, ""));
   }
-  
+
   public static Result explore() {
   	User currentUser = Secured.getCurrentUser();
 		List<Resource> available = Resource.availableResources(currentUser);
     return ok(searchPage.render(available,Stream.availableStreams(currentUser),null, ""));
   }
-  
+
   public static Result streams() {
   	User currentUser = Secured.getCurrentUser();
     return ok(streamsPage.render(currentUser.streamList, ""));
@@ -125,21 +125,21 @@ public class Application extends Controller {
   	User currentUser = Secured.getCurrentUser();
     return ok(filesPage.render(FileSystem.lsDir(currentUser,"/"), "/", ""));
   }
-  
+
   public static Result viewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
 		Form<Stream> form = streamForm.fill(stream);
     return ok(streamPage.render(currentUser.streamList, stream, form, ""));
   }
-  
+
   protected static Result ajaxViewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
 		Form<Stream> form = streamForm.fill(stream);
     return ok(views.html.vstream.viewStreamMainDiv.render(currentUser.streamList, stream, form, ""));
   }
-  
+
   public static Result attachFunction() {
   	User currentUser = Secured.getCurrentUser();
     return ok(attachFunctionPage.render(currentUser.resourceList, ""));
@@ -152,7 +152,7 @@ public class Application extends Controller {
 		if (!currentUser.isAdmin()) { return redirect(routes.Application.home()); }
 		return ok(adminPage.render(""));
   }
-  
+
   public static Result statistics() {
   	User currentUser = Secured.getCurrentUser();
 		// check user has rights - Very Important!
@@ -266,7 +266,7 @@ public class Application extends Controller {
 		}
 		return setting.val;
 	}
-  
+
   // -- Javascript routing
   public static Result javascriptRoutes() {
       response().setContentType("text/javascript");

@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -58,7 +59,7 @@ import play.db.ebean.Model;
 @Table(name = "users")
 public class User extends Model implements Comparable<User> { //PathBindable<User>,
 	/** User class, contains all personal information
-	 */	
+	 */
 	private static final long serialVersionUID = 5178587449713353935L;
 
 	@Id
@@ -75,23 +76,23 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.Required
 	@Formats.NonEmpty
 	public String userName;
-	
+
 	public String password; // only for username/password login
-	
+
 	public String firstName;
 	public String lastName;
-	
+
 	@Column(length = 2*1024)
 	@Constraints.MaxLength(2*1024)
 	public String description = "";
-	
+
 	public Double latitude = 0.0;
 	public Double longitude = 0.0;
 
 	@Column(nullable = false)
 	public Date creationDate;
 	public Date lastLogin;
-	
+
 	@OneToMany(mappedBy = "owner")
 	public List<Resource> resourceList = new ArrayList<Resource>();
 	@OneToMany(mappedBy = "owner")
@@ -100,10 +101,10 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public List<Actuator> actuatorList = new ArrayList<Actuator>();
 	@OneToMany(mappedBy = "owner")
 	public List<Vfile> fileList = new ArrayList<Vfile>();
-	
+
   @ManyToMany
   public List<Stream> followedStreams = new ArrayList<Stream>();
-	
+
 	/** Secret token for session authentication */
 	@Transient
 	public String currentSessionToken;
@@ -116,7 +117,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
   // for concurrency protection
   private int version;
 
-	
+
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
 	// constructor userd by OpenID callback
@@ -196,11 +197,11 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		verify();
 		super.update();
 	}
-	
+
 	public int compareTo(User user) {
 		return token.compareTo(user.token);
 	}
-	
+
 	public boolean equals(User user) {
 		return user!=null && token.equals(user.token) && this.id == user.id;
 	}
@@ -211,18 +212,18 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
     }
     this.saveManyToManyAssociations("followedStreams");
   }
-  
+
   public void unfollowStream(Stream stream) {
     if(stream != null && stream.id > 0L) {
       followedStreams.remove(stream);
     }
     this.saveManyToManyAssociations("followedStreams");
   }
-  
+
   public boolean isfollowingStream(Stream stream) {
    return (stream != null) && followedStreams.contains(stream);
   }
-  
+
   public List<Stream> followedStreams() {
   	return followedStreams;
   }
@@ -237,8 +238,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public static String hash(String toHash) {
 		return DigestUtils.md5Hex(toHash);
 	}
-  
-	public static User create(User user) {		
+
+	public static User create(User user) {
 		user.generateToken();
 		user.save();
 		// is this necessary? -YES!
@@ -266,7 +267,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public static User get(Long id) {
 		return (id==null) ? null : find.byId(id);
 	}
-	
+
 	public static User getByEmail(String email) {
 		return find.where().eq("email", email).findUnique();
 	}

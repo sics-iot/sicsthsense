@@ -24,8 +24,34 @@ stream.file.getParentPath()
 }
 
 @if(own || shared || publicAccess) {
-				
+
 @**
+<!--
+  ~ Copyright (c) 2013, Swedish Institute of Computer Science
+  ~ All rights reserved.
+  ~ Redistribution and use in source and binary forms, with or without
+  ~ modification, are permitted provided that the following conditions are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in the
+  ~       documentation and/or other materials provided with the distribution.
+  ~     * Neither the name of The Swedish Institute of Computer Science nor the
+  ~       names of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ~ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  ~ DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
+  ~ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  ~ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  ~ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ~ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
 <span class="btn-group">
 		<!-- display stream plot -->
 		<span class="dropdown-submenu">
@@ -35,17 +61,17 @@ stream.file.getParentPath()
 		  @vstream.includeStream(stream)
 	    </ul>
 	  </span>
-		
+
 	 @if(stream.lastUpdated > 0) {
 		<span class="sideinfo">[Last update: @Utils.timeStr(stream.lastUpdated)]</span>
 		} else {
 		<span class="sideinfo">[Never]</span>
 		}
 		<a href="#confirmDeleteResourceModal" role="button" class="btn btn-small btn-danger" data-toggle="modal"><i class="icon-trash icon-white"></i></a>
-</span>	
+</span>
 **@
 
-	<span class="btn-group">  
+	<span class="btn-group">
 	@vstream.followIcon(stream, "rlist_toolbar", "", "", "btn btn-small", "btn-success")
 	@if(own) {
     <!-- 		 publicAccessIcon -->
@@ -59,7 +85,7 @@ stream.file.getParentPath()
 		  <a class="btn btn-small set_public_search_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Make searchable" inactive_title="Hide from search"><i class="icon-eye-open"></i></a>
 		} else {
 		  <a class="btn btn-small disabled btn-success remove_public_search_stream" data-parent_id="@stream.id" href="#" rel="tooltip" title="Hide from search" inactive_title="Make searchable"><i class="icon-eye-open"></i></a>
-		}  
+		}
 		</span>
 		<span class="btn-group">
 		@if(stream.hasData()) {
@@ -70,7 +96,7 @@ stream.file.getParentPath()
 		<span class="btn-group">
 			<a href="#confirmClearStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Clear"><i class="icon-remove-sign icon-white"></i></a>
 			<a href="#confirmDeleteStreamModal@stream.id" class="btn btn-small btn-danger" role="button" data-toggle="modal" data-parent_id="@stream.id" rel="tooltip" title="Delete"><i class="icon-trash icon-white"></i></a>
-		</span>	 
+		</span>
 	} else {
 	</span>
 	}
@@ -107,5 +133,5 @@ stream.file.getParentPath()
   </div>
 </div>
 
-}				
+}
 

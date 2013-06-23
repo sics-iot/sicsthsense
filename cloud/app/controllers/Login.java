@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -47,7 +48,7 @@ import views.html.registerPage;
 
 public class Login extends Controller {
 	static private Form<User> registerForm = Form.form(User.class);
-	
+
 	public static Result authenticate(String openid_identifier) {
 		if (!Application.canOpenIDLogin()) {return notFound("This feature is disabled.");}
 		Map<String, String> attributes = new HashMap<String, String>();
@@ -68,11 +69,11 @@ public class Login extends Controller {
 //			return ok("Not online for OpenID verification, consider username/password authentication");
 //		}
 	}
-	
+
   public static Result signup() {
     return ok(registerPage.render(null,""));
   }
-  
+
 	public static Result authenticatePassword(String username, String password, String signtype) {
 		if (!Application.canPasswordLogin()) {return notFound("This feature is disabled.");}
 
@@ -147,7 +148,7 @@ public class Login extends Controller {
 			return CtrlUser.resetToken(true);
 		return redirect(destination);
 	}
-	
+
 //	private static String loginApplicationSecret = "SecretKey";
 //	private static String generateSessionToken(User user) {
 //		String secret = user.getEmail() + Long.toString(user.lastLogin.getTime()) + Login.loginApplicationSecret;
@@ -173,7 +174,7 @@ public class Login extends Controller {
 		Call destination = routes.Application.home();
 		return doLogin(user, destination);
 	}
-	
+
 	public static Result logout() {
 		session().clear();
 		return redirect(routes.Application.home());

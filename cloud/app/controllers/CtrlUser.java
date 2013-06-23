@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -84,7 +85,7 @@ public class CtrlUser extends Controller {
 			return redirect(routes.CtrlUser.get());
 		}
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result resetToken(Boolean confirmed) {
 		User currentUser = Secured.getCurrentUser();
@@ -95,7 +96,7 @@ public class CtrlUser extends Controller {
 		}
 		return ok(accountPage.render(getUser(), userForm, "", "Token not reset"));
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result resetPassword(Boolean confirmed) {
 		User currentUser = Secured.getCurrentUser();
@@ -108,7 +109,7 @@ public class CtrlUser extends Controller {
 		return ok(accountPage.render(getUser(), userForm, "", "Password has not been reset"));
 
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result followStream(Long id, Boolean follow) {
 		Logger.info("Follow stream request: " + follow);
@@ -123,7 +124,7 @@ public class CtrlUser extends Controller {
 		Logger.info("Follow stream result: " + user.isfollowingStream(stream));
 		return ok(Boolean.toString(user.isfollowingStream(stream)));
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result isFollowingStream(Long id) {
 		final User user = Secured.getCurrentUser();

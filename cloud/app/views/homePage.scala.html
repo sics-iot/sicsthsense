@@ -3,6 +3,32 @@
 @import helper._
 
 @layout("Home", message, session) {
+<!--
+  ~ Copyright (c) 2013, Swedish Institute of Computer Science
+  ~ All rights reserved.
+  ~ Redistribution and use in source and binary forms, with or without
+  ~ modification, are permitted provided that the following conditions are met:
+  ~     * Redistributions of source code must retain the above copyright
+  ~       notice, this list of conditions and the following disclaimer.
+  ~     * Redistributions in binary form must reproduce the above copyright
+  ~       notice, this list of conditions and the following disclaimer in the
+  ~       documentation and/or other materials provided with the distribution.
+  ~     * Neither the name of The Swedish Institute of Computer Science nor the
+  ~       names of its contributors may be used to endorse or promote products
+  ~       derived from this software without specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ~ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  ~ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  ~ DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
+  ~ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  ~ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  ~ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ~ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
 <div class="row-fluid">
     <!-- Docs nav
     ================================================== -->
@@ -20,14 +46,14 @@
 		<!-- Stream listing and visualizing -->
 		<legend>Starred streams</legend>
 		@if(followedStreams.length > 0) {
-			@for(stream <- followedStreams) {					
+			@for(stream <- followedStreams) {
 				@vstream.includeStream(stream)
 				<hr class="dashed" />
 			}
 		} else {
-			You have not starred any stream! 
+			You have not starred any stream!
 			<br />
-			Add some Resource's to your dashboard through the <a href="@routes.CtrlResource.resources()">Resources page</a> and star them in the <a href="/streams">Streams</a> page. 
+			Add some Resource's to your dashboard through the <a href="@routes.CtrlResource.resources()">Resources page</a> and star them in the <a href="/streams">Streams</a> page.
 			Alternatively Search for public Streams in the toolbar at the top of the page.
 			<br />
 			<br />
@@ -35,8 +61,8 @@
 		@if(lastUpdatedStreams.length > 0) {
 			<section>
 			<legend>Public streams</legend>
-			@for(stream <- lastUpdatedStreams) {					
-				@vstream.includeStream(stream)				
+			@for(stream <- lastUpdatedStreams) {
+				@vstream.includeStream(stream)
 			}
 			</section>
 		}

@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -36,10 +37,10 @@ import play.db.ebean.Model;
 public class Location extends Model {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1968322834503672949L;
-    
+
     @Id
 	public Long id;
 	private double lat;
@@ -81,7 +82,7 @@ public class Location extends Model {
 	public void setLatLon(String lat, String lon) {
 		setLatLon(Double.parseDouble(lat),Double.parseDouble(lon));
 	}
-	
+
 	public void setSphere(double angle, double azimuth) {
 		this.angle = angle;
 		this.azimuth = azimuth;
@@ -95,7 +96,7 @@ public class Location extends Model {
 		double lonDelta = this.lon - lon;
 		return Math.sqrt( Math.pow(latDelta,2) + Math.pow(lonDelta,2));
 	}
-	
+
 	public String toString() {
 		return String.valueOf(lat)+","+String.valueOf(lon);
 	}

@@ -11,17 +11,18 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 /* Description:
  * TODO:
@@ -33,12 +34,11 @@ import java.util.List;
 import java.util.HashMap;
 
 import models.DataPoint;
-import models.FileSystem;
+import logic.FileSystem;
 import models.Resource;
 import models.Stream;
 import models.User;
 import models.Vfile;
-import controllers.CtrlResource;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -65,7 +65,7 @@ public class CtrlStream extends Controller {
 	}
 
 	// do we push simple handlers down to the Ctrls? or keep in Application?
-	/*@Security.Authenticated(Secured.class) 
+	/*@Security.Authenticated(Secured.class)
 	public static Result streams() {
   	User currentUser = Secured.getCurrentUser();
     return ok(resourcesPage.render(currentUser.streamList, ""));
@@ -180,12 +180,12 @@ public class CtrlStream extends Controller {
 		final User currentUser = Secured.getCurrentUser();
 		final Stream stream = Stream.get(id);
 		final List<? extends DataPoint> dataSet = stream.getDataPoints();
-		
+
 		if (stream.canRead(currentUser)) {
 			final String streamName = "# SicsthSense "+currentUser.userName+" "+stream.file.getPath()+"\n";
 			response().setContentType("text/plain");
 			response().setHeader("Content-Disposition", "attachment; filename="+stream.resource.label+"-Stream.txt");
-			
+
 			Chunks<String> chunks = new StringChunks() {
 				// Called when the stream is ready
 				public void onReady(Chunks.Out<String> out) {
@@ -197,7 +197,7 @@ public class CtrlStream extends Controller {
 					for (DataPoint dp: dataSet) {
 						out.write(dp.toTSV()+"\n");
 					}
-					
+
 					out.close();
 				}
 			};
@@ -222,7 +222,7 @@ public class CtrlStream extends Controller {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null) {
 			return notFound();
-		} 
+		}
 		stream.delete();
 		return ok();
 	}
@@ -238,12 +238,12 @@ public class CtrlStream extends Controller {
 		}
 		return unauthorized();
 	}
-	
+
 	public static Result clearByKey(String key) {
 		final Stream stream = Stream.getByKey(key);
 		if (stream == null) {
 			return notFound();
-		} 
+		}
 		stream.clearStream();
 		return ok();
 	}
@@ -276,7 +276,7 @@ public class CtrlStream extends Controller {
 		}
 		return unauthorized();
 	}
-	
+
 //@Security.Authenticated(Secured.class)
 	public static Result isPublicSearch(Long id) {
 		Stream stream = Stream.get(id);
@@ -379,7 +379,7 @@ public class CtrlStream extends Controller {
 		}
 		return unauthorized();
 	}
-	
+
 	private static boolean parseJsonResponse(Stream stream, JsonNode root,
 			Long currentTime) {
 		// TODO check concat path against inputParser, get the goal and stop
@@ -423,7 +423,7 @@ public class CtrlStream extends Controller {
 		Stream stream = Stream.get(id);
 		return getData(user, stream, tail, last, since);
 	}
-	
+
 	@Security.Authenticated(Secured.class)
 	public static Result regenerateKey(Long id) {
 		final User currentUser = Secured.getCurrentUser();
