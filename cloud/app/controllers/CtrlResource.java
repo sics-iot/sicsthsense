@@ -30,22 +30,12 @@
 
 package controllers;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.PatternSyntaxException;
-
-import logic.ResourceHub;
 import logic.FileSystem;
+import logic.ResourceHub;
 import models.Representation;
 import models.Resource;
 import models.StreamParser;
 import models.User;
-
-import org.codehaus.jackson.JsonNode;
-
 import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -60,6 +50,9 @@ import protocol.http.HttpProtocol;
 import views.html.resourcePage;
 import views.html.resourcesPage;
 
+import java.util.List;
+import java.util.regex.PatternSyntaxException;
+
 public class CtrlResource extends Controller {
     private final static Logger.ALogger logger = Logger.of(CtrlResource.class);
 
@@ -70,102 +63,68 @@ public class CtrlResource extends Controller {
     // Form.form(ResourceLogView.class);
 
     @Security.Authenticated(Secured.class)
-    public static Result addSimple() {
-        Form<Resource> theForm;
-
-        // error check
-        try {
-            theForm = resourceForm.bindFromRequest();
-        } catch (Exception e) {
-            return badRequest("Bad parsing of form");
-        }
+    public static Result addForm() {
+        final Form<Resource> theForm = resourceForm.bindFromRequest();
 
         // validate form
         if (theForm.hasErrors()) {
-            return badRequest("Bad request");
-        } else {
-            Resource submitted = theForm.get();
-            Logger.info("preurl" + submitted.getPollingUrl());
-
-            if (submitted != null) {
-                final User currentUser = Secured.getCurrentUser();
-
-                if (currentUser == null) {
-                    Logger.error("[CtrlResource.add] currentUser is null!");
-                }
-
-                submitted.id = null;
-                submitted.owner = currentUser;
-                submitted.pollingPeriod = 0L;
-                submitted = Resource.create(submitted);
-
-                Logger.info("Adding a new resource: " + "Label: " + submitted.label + " URL: "
-                        + submitted.getUrl());
-                // if(submitted != null && submitted.id != null) {
-                // return redirect(routes.CtrlResource.getById(submitted.id));
-                // }
-            }
+            return badRequest(theForm.errorsAsJson());
         }
 
-        return redirect(routes.CtrlResource.resources());
-    }
-
-    // check the JSON describes a new Resource sufficiently
-    // and instantite it to be stored
-    public static boolean validateResourceJson(JsonNode root) {
-        Logger.info("[CtrlResource] validating and creating");
         final User currentUser = Secured.getCurrentUser();
+
         if (currentUser == null) {
-            return false;
+            logger.error("Cannot create resource because there is no user logged in");
+            return unauthorized();
         }
 
-        HashMap map = Utils.jsonToMap(root);
-        Resource resource = new Resource(currentUser);
+        Resource submitted = theForm.get();
 
-        // ensure the resource has a label
-        if (map.get("label") == null) {
-            return false;
-        }
-        resource.label = (String) map.get("label");
-        // add any optional attributes
-        if (map.get("url") != null) {
-            resource.setPollingUrl((String) map.get("url"));
-        } else {
-            resource.setPollingUrl("");
-        }
-        if (map.get("period") != null) {
-            resource.pollingPeriod = Long.parseLong((String) map.get("period"));
-        }
-        if (map.get("description") != null) {
-            resource.description = (String) map.get("description");
-        }
+        logger.info("Creating new resource " + submitted.label + " for url " + submitted.getPollingUrl());
 
-        // Logger.info("[CtrlResource] save new resource");
-        Resource.create(resource); // save the defined resource
-        return true;
+        submitted.id = null;
+        submitted.owner = currentUser;
+
+        logic.Result<Resource> result = ResourceHub.createResource(submitted);
+
+        switch (result.code()) {
+            case Ok:
+                return redirect(routes.CtrlResource.resources());
+            case InternalError:
+            default:
+                return internalServerError();
+        }
     }
 
     /*
      * Parse a JSON object and create Resource
      */
     @Security.Authenticated(Secured.class)
-    public static Result createPost() {
-        JsonNode root;
-        String body = "";
-        Logger.info("[CtrlResource] making Resource from JSON");
-        try { // recusively parse JSON and add() all fields
-            body = request().body().asText();
-            root = request().body().asJson();
-        } catch (Exception e) { // nevermind, move on...
-            Logger.warn("[CtrlResource] had problems parsing JSON to make Resource:" + body);
-            return badRequest("[CtrlResource] had problems parsing JSON to make Resource: " + body);
-        }
-        if (!validateResourceJson(root)) {
-            Logger.error("JSON does not sufficiently describe Resource: " + body);
-            return badRequest("JSON does not sufficiently describe Resource: " + body);
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result addJson() {
+        final User currentUser = Secured.getCurrentUser();
+
+        if (currentUser == null) {
+            logger.error("Cannot create resource because there is no user logged in");
+            return unauthorized();
         }
 
-        return ok("Made the resource!");
+        Resource submitted = Json.fromJson(request().body().asJson(), Resource.class);
+
+        logger.info("Creating new resource " + submitted.label + " for url " + submitted.getPollingUrl());
+
+        submitted.id = null;
+        submitted.owner = currentUser;
+
+        logic.Result<Resource> result = ResourceHub.createResource(submitted);
+
+        switch (result.code()) {
+            case Ok:
+                return redirect(routes.CtrlResource.resources());
+            case InternalError:
+            default:
+                return internalServerError();
+        }
     }
 
 
@@ -209,108 +168,57 @@ public class CtrlResource extends Controller {
         final User currentUser = Secured.getCurrentUser();
         final Resource resource = Resource.getById(id);
 
-        if (resource == null) {
-            return notFound("Error getting resource");
+        if (currentUser == null) {
+            return unauthorized();
         }
 
-        if (resource.hasUrl()) {
-            // fudge URL, should check HTTP
-            // get data
-            Response response = null;
-            String contentType = null;
-            try {
-                Promise<Response> promise =
-                        resource.request("GET", new HashMap<String, String[]>(),
-                                new HashMap<String, String[]>(), null);
-                response = promise.get();
-                contentType = response.contentType();
-            } catch (Exception e) { // Auto parser failed
-                Logger.error("Auto add parser failed: " + e.toString());
-                SkeletonResource skeleton = new SkeletonResource(resource);
-                Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
-                return ok(resourcePage.render(currentUser.resourceList, myForm, false,
-                        "Error polling resource URL: " + resource.getPollingUrl()));
-            }
-
-            Logger.warn("Probed and found contentType: " + contentType);
-
-            // decide to how to parse this data
-            if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-                Logger.info("json file!");
-                return parseJson(response.body(), resource);
-            } else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
-                Logger.info("html file!");
-                return parseJson(response.body(), resource);
-                // } else if (contentType.matches("text/csv.*")) {
-                // Logger.info("csv file!");
-                // return parseCSV(returnBuffer.toString(), resource);
-            } else {
-                Logger.warn("Unknown content type!");
-            }
+        if (resource == null) {
+            return notFound("Resource does not exist: " + id);
         }
 
         final SkeletonResource skeleton = new SkeletonResource(resource);
+
+        if (!resource.hasUrl()) {
+            Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
+            return ok(resourcePage.render(currentUser.resourceList, myForm, false, "The resource has no polling url defined"));
+        }
+
+        // fudge URL, should check HTTP
+        // get data
+        Response response;
+        String contentType;
+
+        try {
+            Promise<Response> promise = resource.request();
+            response = promise.get();
+            contentType = response.contentType();
+        } catch (Exception e) { // Auto parser failed
+            logger.error("Auto add parser failed", e);
+
+            Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
+            return ok(resourcePage.render(currentUser.resourceList, myForm, false,
+                    "Error polling resource URL: " + resource.getPollingUrl()));
+        }
+
+        logger.info("Probed and found contentType: " + contentType);
+
+        // decide to how to parse this data
+        if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
+            for (StreamParser sp : ResourceHub.parsersFromJson(response.body())) {
+                skeleton.streamParserWrappers.add(new StreamParserWrapper(sp));
+            }
+        } else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
+            for (StreamParser sp : ResourceHub.parsersFromPlain(response.body())) {
+                skeleton.streamParserWrappers.add(new StreamParserWrapper(sp));
+            }
+        } else {
+            Logger.warn("Unknown content type!");
+        }
+
         final Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
 
         return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew,
                 false, "Parsers automatically added."));
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static void parseJsonNode(JsonNode node, SkeletonResource skeleton, String parents) {
-        // descend to all nodes to find all primitive element paths...
-        Iterator<String> nodeIt = node.getFieldNames();
-        while (nodeIt.hasNext()) {
-            String field = nodeIt.next();
-            // Logger.info("field: "+field);
-            JsonNode n = node.get(field);
-            if (n.isValueNode()) {
-                Logger.info("value node: " + parents + "/" + field);
-                // TODO: try to guess time format instead of defaulting to
-                // "unix"!
-                skeleton.addStreamParser("/" + skeleton.label + parents + "/" + field, parents
-                        + "/" + field, "application/json", "unix");
-            } else {
-                String fullNodeName = parents + "/" + field;
-                Logger.info("Node: " + fullNodeName);
-                parseJsonNode(n, skeleton, fullNodeName);
-            }
-        }
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static Result parseJson(String data, Resource submitted) {
-        Logger.info("Trying to parse Json to then auto fill in StreamParsers!");
-        User currentUser = Secured.getCurrentUser();
-        SkeletonResource skeleton = new SkeletonResource(submitted);
-
-        try {
-            // recusively parse JSON and add() all fields
-            JsonNode root = Json.parse(data);
-            parseJsonNode(root, skeleton, "");
-        } catch (Exception e) {
-            // nevermind, move on...
-            Logger.warn("CtrlResource had problems parsing JSON...");
-        }
-
-        Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-        return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew,
-                true, "Parsers automatically filled in."));
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static Result parseHTML(String data, Resource submitted) {
-        Logger.info("Adding single default Regex StreamPaser to HTML input");
-        User currentUser = Secured.getCurrentUser();
-        SkeletonResource skeleton = new SkeletonResource(submitted);
-        // TODO: try to guess time format instead of defaulting to
-        // "yy-mm-dd kk:mm:ss"!
-        skeleton.addStreamParser("/" + skeleton.label + "/" + "regex1", "(.*)", "text/html",
-                "yy-mm-dd kk:mm:ss");
-
-        Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm.fill(skeleton);
-        return ok(views.html.resourcePage.render(currentUser.resourceList, skeletonResourceFormNew,
-                true, "Regex parser assumed."));
     }
 
     @Security.Authenticated(Secured.class)
@@ -353,106 +261,97 @@ public class CtrlResource extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result post(Long id) {
-        User currentUser = Secured.getCurrentUser();
-        return post(currentUser, id);
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static Result edit() {
-        return TODO; // ok(accountPage.render(getUser(), userForm));
-    }
-
-    @Security.Authenticated(Secured.class)
     public static Result delete(Long id) {
         User currentUser = Secured.getCurrentUser();
-        // check permission?
+
+        if (Resource.hasAccess(id, currentUser)) {
+            return notFound();
+        }
+
         Resource.delete(id);
+
         return redirect(routes.CtrlResource.resources());
+    }
+
+    /*
+     * */
+    // @Security.Authenticated(Secured.class)
+    public static Result addParser(Long resourceId, String inputParser, String inputType,
+                                   String streamPath, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+        Resource resource = Resource.getById(resourceId);
+
+        if (resource == null) {
+            return notFound("Resource with id " + resourceId + " does not exist");
+        }
+
+        // check if stream path already exists
+        if (FileSystem.fileExists(resource.owner, streamPath)) {
+            logger.error("Stream path already exists!");
+            streamPath = streamPath + " - " + Utils.dateFormatter(Utils.currentTime());
+        }
+
+        StreamParser parser;
+
+        try {
+            parser = new StreamParser(resource, inputParser, inputType, streamPath, timeformat, dataGroup, timeGroup, numberOfPoints);
+        } catch (PatternSyntaxException e) {
+            logger.error("StreamParser not made due to Regex parsing error! ", e);
+            return badRequest("StreamParser not made due to Regex parsing error!");
+        } catch (Exception e) {
+            logger.error("StreamParser not made due to error!", e);
+            return badRequest("StreamParser not made due to error!");
+        }
+
+        parser = StreamParser.create(parser);
+
+        if (parser != null) {
+            Logger.info("StreamParser created!");
+            return ok("StreamParser created!");
+        }
+
+        return badRequest("StreamParser not made due to undefined error!");
     }
 
     @Security.Authenticated(Secured.class)
     public static Result deleteParser(Long id) {
+        StreamParser sp = StreamParser.find.byId(id);
+
+        if (sp == null || !Resource.hasAccess(sp.resource.id, Secured.getCurrentUser())) {
+            return notFound("A streamparser for id " + id + " does not exist");
+        }
+
         StreamParser.delete(id);
-        return ok("true");
+
+        return ok();
     }
 
-    /*
-	 * */
-    // @Security.Authenticated(Secured.class)
-    public static Result addParser(Long resourceId, String inputParser, String inputType,
-            String streamPath, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
-        Resource resource = Resource.getById(resourceId);
-        StreamParser parser = null;
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-
-        // Logger.error("[CtrlResource]: StreamParser trying to make parser: "+streamPath);
-
-        // check if stream path already exists
-        if (FileSystem.fileExists(resource.owner, streamPath)) {
-            Logger.error("[CtrlResource]: Stream path already exists!");
-            streamPath = streamPath + " - " + Utils.dateFormatter(Utils.currentTime());
+    @Security.Authenticated(Secured.class)
+    public static Result postById(Long id) {
+        if (!Resource.hasAccess(id, Secured.getCurrentUser())) {
+            return unauthorized();
         }
+
+        Resource resource = Resource.getById(id);
 
         if (resource == null) {
-            Logger.error("[CtrlResource]: Resource is null!!");
-            return notFound("No resource found");
+            return notFound("Resource with id " + id + " does not exist!");
         }
 
-        try {
-            parser =
-                    new StreamParser(resource, inputParser, inputType, streamPath, timeformat,
-                            dataGroup, timeGroup, numberOfPoints);
-        } catch (PatternSyntaxException e) {
-            Logger.error("StreamParser not made due to Regex parsing error! " + e.toString());
-            return badRequest("StreamParser not made due to Regex parsing error!");
-        } catch (Exception e) {
-            e.printStackTrace(pw);
-            Logger.error("StreamParser not made due to error! " + sw.toString());
-            return badRequest("StreamParser not made due to error!");
-        }
-        if (parser == null) {
-            Logger.error("Parser is null!");
-            return badRequest("Problems making parser");
-        }
-        parser = StreamParser.create(parser);
-        if (parser != null) {
-            Logger.info("[CtrlResource]: StreamParser created!");
-            return ok("[CtrlResource]: StreamParser created!");
-        }
-        return badRequest("StreamParser not made due to undefined error!");
+        return postByResource(resource);
     }
 
     public static Result postByKey(String key) {
         Resource resource = Resource.getByKey(key);
+
         if (resource == null) {
-            Logger.error("Resource with key " + key + " does not exist!");
+            return notFound("Resource with key " + key + " does not exist!");
         }
-        return post(resource.owner, resource.id);
-    }
 
-    @Security.Authenticated(Secured.class)
-    private static Result postByLabel(String user, String labelPath) {
-        return TODO;
-    }
+        // No security check because the device is not logged in and only knows the key.
 
-    private static Result post(User user, Long id) {
-        // rightnow only owner can post
-        Resource resource = Resource.get(id, user);
-        // resolve device from device list
-        // if public: good
-        // if this currentUser.username is in ACL: good
-        // else error message
         return postByResource(resource);
     }
 
-    public static Result postByResourceKey(Long id, String key) {
-        Resource resource = Resource.get(id, key);
-        return postByResource(resource);
-    }
-
-    @BodyParser.Of(BodyParser.TolerantText.class)
     private static Result postByResource(Resource resource) {
         if (resource == null) {
             return notFound();
@@ -461,7 +360,7 @@ public class CtrlResource extends Controller {
         logic.Result<Representation> result =
                 ResourceHub.post(resource, HttpProtocol.translateRequest(request()));
 
-        switch(result.code()) {
+        switch (result.code()) {
             case Ok:
                 return ok();
             case NotFound:
@@ -470,37 +369,6 @@ public class CtrlResource extends Controller {
             default:
                 return internalServerError();
         }
-    }
-
-    // Walk Json tree creating resource parsers
-    // @Security.Authenticated(Secured.class)
-    public static void parseJsonNode(Resource resource, JsonNode node, String parents) {
-        // descend to all nodes to find all primitive element paths...
-        Iterator<String> nodeIt = node.getFieldNames();
-        while (nodeIt.hasNext()) {
-            String field = nodeIt.next();
-            // Logger.info("field: "+field);
-            JsonNode n = node.get(field);
-            if (n.isValueNode()) {
-                // Logger.info("value node: " + parents + "/" + field);
-                // TODO: try to guess time format instead of defaulting to "unix"!
-                String nodePath = parents + "/" + field;
-                // Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+
-                // resource.label+nodePath);
-                // Logger.info("Parser count: "+resource.streamParsers.size());
-                addParser(resource.id, nodePath, "application/json", "/" + resource.label
-                        + nodePath, "unix", 1, 2, 1);
-            } else {
-                String fullNodeName = parents + "/" + field;
-                // Logger.info("Node: " + fullNodeName);
-                parseJsonNode(resource, n, fullNodeName);
-            }
-        }
-    }
-
-    @Security.Authenticated(Secured.class)
-    private static Result getByLabel(String user, String labelPath) {
-        return TODO;
     }
 
     @Security.Authenticated(Secured.class)
@@ -516,7 +384,7 @@ public class CtrlResource extends Controller {
     }
 
     private static StringBuffer exploreResourceTree(User user, StringBuffer sb,
-            Resource parentResource) {
+                                                    Resource parentResource) {
         String parentResourceId = (parentResource == null) ? "null" : parentResource.id.toString();
         List<Resource> subResources =
                 Resource.find.select("id, owner, label, parent").where().eq("owner", user)
@@ -545,12 +413,19 @@ public class CtrlResource extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result regenerateKey(Long id) {
         User currentUser = Secured.getCurrentUser();
-        Resource resource = Resource.get(id, currentUser);
-        if (resource == null) {
-            return badRequest("Resource does not exist: " + id);
+
+        if (!Resource.hasAccess(id, currentUser)) {
+            return notFound("Resource does not exist: " + id);
         }
+
+        Resource resource = Resource.get(id, currentUser);
+
+        if (resource == null) {
+            return notFound("Resource does not exist: " + id);
+        }
+
         String key = resource.updateKey();
-        // return ok("Resource key reset successfully: " + id + " New key: " + key);
+
         return ok(key);
     }
 

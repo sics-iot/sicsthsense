@@ -74,7 +74,6 @@ GET      /user/followStream/:id/:follow   controllers.CtrlUser.followStream(id: 
 GET      /user/isFollowingStream/:id      controllers.CtrlUser.isFollowingStream(id: Long)
 GET      /user/:ownerName/$path<.*>       controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
-#GET		   	 /streams/view/:id										controllers.CtrlStream.getById(id: Long)
 GET      /streams/view/:id                controllers.Application.viewStream(id: Long)
 GET      /streams/regenerateKey/:id       controllers.CtrlStream.regenerateKey(id: Long)
 POST     /streams/modify/:id              controllers.CtrlStream.modify(id: Long)
@@ -87,18 +86,17 @@ GET      /streams/publicAccess/:id        controllers.CtrlStream.isPublicAccess(
 GET      /streams/publicSearch/:id        controllers.CtrlStream.isPublicSearch(id: Long)
 GET      /streams/:id                     controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 DELETE   /streams/:id                     controllers.CtrlStream.clear(id: Long)
-#POST    	 /streams/:id			    								controllers.CtrlStream.post(id: Long)
+POST     /api/streams/create			  controllers.CtrlStream.createPost()
 
 # Resources
-POST			/api/resources/create							controllers.CtrlResource.createPost()
-POST			/api/streams/create								controllers.CtrlStream.createPost()
-GET			/resources/add												controllers.CtrlResource.addSimple()
-GET			/resources/addSub											controllers.CtrlResource.addSubResource()
-GET			/resources/autoParsers/:id							controllers.CtrlResource.autoParser(id: Long)
+POST	 /api/resources/create		      controllers.CtrlResource.addJson()
+GET		 /resources/add				      controllers.CtrlResource.addForm()
+GET		 /resources/addSub			      controllers.CtrlResource.addSubResource()
+GET		 /resources/autoParsers/:id	      controllers.CtrlResource.autoParser(id: Long)
 
 #deprecated
-#GET      /resources/addLegacy             controllers.CtrlResource.add()
-#GET			/resources/initialise									controllers.CtrlResource.initialise()
+#GET     /resources/addLegacy             controllers.CtrlResource.add()
+#GET	 /resources/initialise	          controllers.CtrlResource.initialise()
 GET      /resources/regenerateKey/:id     controllers.CtrlResource.regenerateKey(id: Long)
 POST     /resources/modify/:id            controllers.CtrlResource.modify(id: Long)
 GET      /resources/delete/:id            controllers.CtrlResource.delete(id: Long)
@@ -107,7 +105,7 @@ GET      /resources/deleteParser/:id      controllers.CtrlResource.deleteParser(
 POST     /resources/deleteParser/:id      controllers.CtrlResource.deleteParser(id: Long)
 POST     /resources/addParser             controllers.CtrlResource.addParser(resourceId: Long, inputParser: String, inputType: String, streamPath: String, timeformat: String, dataGroup: Integer ?= 1, timeGroup: Integer ?= 2, numberOfPoints: Integer ?= 1)
 GET      /resources/:id                   controllers.CtrlResource.getById(id: Long)
-POST     /resources/:id                   controllers.CtrlResource.post(id: Long)
+POST     /resources/:id                   controllers.CtrlResource.postById(id: Long)
 
 # Proxy
 GET      /proxy/:id                       controllers.Proxy.forwardById(id: Long, arguments: String)
@@ -140,7 +138,7 @@ GET				/api/ext/:user/$path<.*>					controllers.CtrlStream.getByUserPath(user: S
 POST			/api/files/$path<.*>							controllers.CtrlStream.postByPath(path: String)
 # POST a JSON to create a Resource
 
-#Function 
+#Function
 POST     /attachFunction/attach           controllers.CtrlFunction.attach()
 
 # Javascript Routes

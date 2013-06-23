@@ -27,11 +27,12 @@ package controllers;
 
 import models.Resource;
 import models.StreamParser;
-import play.Logger;
 import play.data.validation.Constraints;
 
 public class StreamParserWrapper {
+
     public Long parserId;
+
     @Constraints.Required
     public String vfilePath;
     // @Constraints.Required
@@ -83,18 +84,16 @@ public class StreamParserWrapper {
     }
 
     public StreamParserWrapper(StreamParser sp) {
-        try {
+        this.inputType = sp.inputType;
+        this.inputParser = sp.inputParser;
+        this.parserId = sp.id;
+        this.timeformat = sp.timeformat;
+        this.dataGroup = sp.dataGroup;
+        this.timeGroup = sp.timeGroup;
+        this.numberOfPoints = sp.numberOfPoints;
+
+        if (sp.stream != null && sp.stream.file != null) {
             this.vfilePath = sp.stream.file.getPath();
-            this.inputType = sp.inputType;
-            this.inputParser = sp.inputParser;
-            this.parserId = sp.id;
-            this.timeformat = sp.timeformat;
-            this.dataGroup = sp.dataGroup;
-            this.timeGroup = sp.timeGroup;
-            this.numberOfPoints = sp.numberOfPoints;
-        } catch (Exception e) {
-            Logger.error("Error creating StreamParserWrapper from StreamParser: " + e.getMessage()
-                    + "Stack trace:\n" + e.getStackTrace()[0].toString());
         }
     }
 

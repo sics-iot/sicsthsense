@@ -3,7 +3,7 @@
 
 @tbField(field: Field, label: String, className: String="", typeName: String ="text", readOnly: Boolean = false, placeHolder: String = "", required: Boolean = false, value: String=null) = {
 	@if(field != null) {
-	@if(label != null && label != "") { 
+	@if(label != null && label != "") {
 		<div class="control-group">
 			<label class="control-label" for="@field.id">@label</label>
 			<div class="controls">
@@ -15,7 +15,7 @@
 		}
 	}
 }
-	
+
 @layout("Resources", message, session) {
 
     <!-- Docs nav
@@ -23,7 +23,7 @@
 	<div class="row-fluid">
   	<div class="span2 bs-docs-sidebar" >
 			@** should pass theses parameters(resources, extStreams) **@
-			@manage.navigationMenu() 
+			@manage.navigationMenu()
     </div>
 
     <div id="mainPane" class="span9">
@@ -31,7 +31,7 @@
 
 	<!-- Small add resource form -->
 <div class="row-fluid">
-	@helper.form(action = routes.CtrlResource.addSimple(), 'class -> "controls-row") {
+	@helper.form(action = routes.CtrlResource.addForm(), 'class -> "controls-row") {
 	<fieldset>
 		<legend>Add a new resource</legend>
 		@tbField(myForm("id"), "", "", "hidden")
@@ -58,7 +58,7 @@
 				<div class="row-fluid"><span class="span1">Proxy</span><span class="span11">@interactWithResource(resource.id,resource.getUrl(),showHeader=false)</span></div>
 				}
 				<hr class="dashed" />
-			} 
+			}
 				</div>
 			<fieldset>
 		</div></div>

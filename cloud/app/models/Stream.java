@@ -73,7 +73,8 @@ public class Stream extends Model implements Comparable<Stream> {
         // @EnumValue("L")
         // LONG,
         @EnumValue("S")
-        STRING, @EnumValue("U")
+        STRING,
+        @EnumValue("U")
         UNDEFINED
     }
 

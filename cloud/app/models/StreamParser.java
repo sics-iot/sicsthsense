@@ -30,9 +30,11 @@
 
 package models;
 
+import com.avaje.ebean.annotation.Transactional;
 import controllers.Utils;
 import logic.Argument;
 import logic.FileSystem;
+import logic.State;
 import org.codehaus.jackson.JsonNode;
 import play.Logger;
 import play.db.ebean.Model;
@@ -49,6 +51,7 @@ import java.util.regex.Pattern;
 @Entity
 @Table(name = "parsers")
 public class StreamParser extends Model {
+    private final static Logger.ALogger logger = Logger.of(StreamParser.class);
 
     /**
      * The serialization runtime associates with each serializable class a version number, called a
@@ -72,9 +75,6 @@ public class StreamParser extends Model {
 
     @ManyToOne
     public Stream stream;
-
-    @Transient
-    public String streamVfilePath;
 
     /**
      * RegEx, Xpath, JSON path, CSV separator
@@ -124,10 +124,9 @@ public class StreamParser extends Model {
         Argument.notNull(resource);
         Argument.notEmpty(path);
 
-        setInputParser(inputParser);
+        this.inputParser = inputParser;
         this.inputType = inputType;
         this.resource = resource;
-        this.streamVfilePath = path;
         this.timeformat = timeformat;
         this.dataGroup = dataGroup;
         this.timeGroup = timeGroup;
@@ -140,46 +139,15 @@ public class StreamParser extends Model {
         }
     }
 
-    public StreamParser(Resource resource, String inputParser, String inputType, Stream stream,
-                        String timeformat, int dataGroup, int timeGroup, int numberOfPoints) throws Exception {
-        super();
-
-        Argument.notNull(resource);
-
-        setInputParser(inputParser);
-        this.inputType = inputType;
-        this.resource = resource;
-        this.stream = stream;
-        this.timeformat = timeformat;
-        this.dataGroup = dataGroup;
-        this.timeGroup = timeGroup;
-        this.numberOfPoints = numberOfPoints;
-        if (stream != null && stream.file != null) {
-            this.streamVfilePath = stream.file.path;
-        }
-    }
-
-    public boolean setInputParser(String inputParser) {
-        this.inputParser = inputParser;
-        if (inputParser != null) {
-            if (this.id != null) {
-                this.update();
-            }
-            return true;
-        }
-        return false;
-    }
-
     public StreamParser updateStreamParser(StreamParser changes) {
         this.inputParser = changes.inputParser;
         this.inputType = changes.inputType;
         this.dataGroup = changes.dataGroup;
         this.numberOfPoints = changes.numberOfPoints;
-        this.streamVfilePath = changes.streamVfilePath;
         this.timeformat = changes.timeformat;
         this.timeGroup = changes.timeGroup;
 
-        update();
+        save();
 
         return this;
     }
@@ -203,9 +171,7 @@ public class StreamParser extends Model {
         try {
             result = df.parse(input).getTime();
         } catch (ParseException e) {
-            Logger.info("[StreamParser] Exception " + e.getMessage()
-                    + e.getStackTrace()[0].toString());
-            Logger.info("[StreamParser] Exception timeformat: " + timeformat + "input: " + input);
+            logger.error("Error while parsing timeformat: " + timeformat + ", input: " + input, e);
         }
         return result;
     }
@@ -358,39 +324,39 @@ public class StreamParser extends Model {
         return data;
     }
 
+    @Transactional
     private Vfile getOrCreateStreamFile(String path) {
-        if (resource == null || (resource != null && resource.owner == null)) {
-            Logger.error("[StreamParser] user does not exist.");
-            return null;
-        }
-        if (path == null) {
-            Logger.error("[Path] Null.");
-            return null;
-        }
+        Argument.notEmpty(path);
+
+        State.notNull(resource);
+        State.notNull(resource.owner);
+
         Vfile f = FileSystem.readFile(resource.owner, path);
+
         if (f == null) {
             f = FileSystem.addFile(resource.owner, path);
         } else if (f.getType() == Vfile.Filetype.DIR) {
-            int i = 0;
             String fileName;
 
-            do {
+            for (int i = 0; ; ++i) {
                 fileName = path + "\\newstream" + Integer.toString(i);
-                f = FileSystem.addFile(resource.owner, fileName);
-            } while (!FileSystem.fileExists(resource.owner, fileName));
-        }
-        if (f.getType() == Vfile.Filetype.FILE) {
-            Stream stream = f.getLink();
-            if (stream == null) {
-                stream = Stream.create(new Stream(resource.owner, this.resource));
-                f.setLink(stream);
-                Logger.info("[StreamParser] Creating stream at: " + resource.owner.getUserName()
-                        + path);
+
+                if (!FileSystem.fileExists(resource.owner, fileName))
+                    break;
             }
-            return f;
+
+            f = FileSystem.addFile(resource.owner, fileName);
         }
-        Logger.error("[StreamParser] couldn't get or create a stream file in " + path);
-        return null;
+
+        Stream stream = f.getLink();
+
+        if (stream == null) {
+            stream = Stream.create(new Stream(resource.owner, resource));
+            f.setLink(stream);
+            logger.info("Creating stream for user: " + resource.owner.getUserName() + ",at: " + path);
+        }
+
+        return f;
     }
 
     public static StreamParser create(StreamParser parser) {
@@ -398,14 +364,14 @@ public class StreamParser extends Model {
         Argument.notNull(parser.inputParser);
 
         if (parser.stream == null) {
-            if (parser.streamVfilePath == null) {
-                parser.streamVfilePath =
-                        "/" + parser.resource.label + "/newstream_"
-                                + (new Random(new Date().getTime()).nextInt(10000));
-            } else if (!parser.streamVfilePath.startsWith("/")) {
-                parser.streamVfilePath = "/" + parser.streamVfilePath;
+            int random = (new Random(new Date().getTime()).nextInt(10000));
+            String streamVfilePath = "/" + parser.resource.label + "/newstream_" + random;
+
+            parser.stream = parser.getOrCreateStreamFile(streamVfilePath).linkedStream;
+
+            if (parser.stream.type == Stream.StreamType.UNDEFINED) {
+                parser.stream.type = Stream.StreamType.DOUBLE;
             }
-            parser.stream = parser.getOrCreateStreamFile(parser.streamVfilePath).linkedStream;
         }
 
         parser.save();

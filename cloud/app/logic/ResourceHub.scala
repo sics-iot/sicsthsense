@@ -29,6 +29,7 @@ package logic
 import controllers.Utils
 import models.Representation
 import models.Resource
+import models.Resource.UpdateMode
 import models.ResourceLog
 import models.StreamParser
 import play.api.Logger
@@ -45,6 +46,7 @@ import play.api.libs.json.Json
 import protocol.Request
 import scala.Option.option2Iterable
 import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.collection.JavaConversions.seqAsJavaList
 import scala.util.Try
 
 
@@ -90,8 +92,20 @@ object ResourceHub {
     repr
   })
 
+  def createResource(res: Resource): Result[Resource] = Result(Try {
+    val stored = Resource.create(res)
+
+    if (stored.updateMode == UpdateMode.Poll && stored.pollingPeriod > 0) {
+      Poller.schedulePoll(stored.id, stored.pollingPeriod)
+    }
+
+    stored
+  })
+
   def updateResource(id: Long, changes: Resource): Result[Resource] = Result(Try {
     val res = Resource.getById(id)
+    val oldMode = res.updateMode
+    val oldTime = res.pollingPeriod
 
     res.updateResource(changes)
 
@@ -102,6 +116,11 @@ object ResourceHub {
       } else {
         StreamParser.find.byId(id).updateStreamParser(sp)
       }
+    }
+
+    if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
+      && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
+      Poller.schedulePoll(res.id, res.pollingPeriod)
     }
 
     res
@@ -127,17 +146,27 @@ object ResourceHub {
   }
 
   private def createParsersFromJson(resource: Resource, request: Request): Seq[StreamParser] = {
-    logger.info("Trying to parse Json to then auto fill in StreamParsers!");
+    logger.info("Trying to parse Json to then auto fill in StreamParsers!")
 
-    val json = Json.parse(request.body)
-
-    for {
-      sp <- getParsers("/", json)
-      if !FileSystem.fileExists(resource.owner, sp.streamVfilePath)
+    val parsers = for {
+      sp <- parsersFromJson(request.body)
+      if !FileSystem.fileExists(resource.owner, sp.inputParser)
     } yield {
       sp.resource = resource
       sp.save()
       sp
     }
+
+    parsers.to[Seq]
+  }
+
+  def parsersFromJson(text: String): java.util.List[StreamParser] = {
+    val json = Json.parse(text)
+
+    getParsers("/", json)
+  }
+
+  def parsersFromPlain(text: String): java.util.List[StreamParser] = {
+    Seq(new StreamParser(null, "(.*)", "text/plain", "/", "unix", 1, 2, 1))
   }
 }

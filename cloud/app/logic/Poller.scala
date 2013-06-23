@@ -26,34 +26,37 @@
 
 package logic
 
+import akka.actor.{Props, Cancellable, Actor}
+import controllers.Utils
+import models.Representation
+import models.Resource
+import models.Resource.UpdateMode
+import models.ResourceLog
+import models.StreamParser
+import play.api.Logger
+import play.api.libs.concurrent.Akka
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
+import scala.collection.JavaConversions.asScalaIterator
 
-import akka.actor.Actor
-import controllers.Utils
-import models.Representation
-import models.Resource
-import models.ResourceLog
-import models.StreamParser
-import play.api.Logger
-import models.Resource.UpdateMode
 
 sealed trait PollingMessage
+
 case class Poll(id: Long) extends PollingMessage
 
 class Poller extends Actor {
   private val logger = Logger(this.getClass)
 
   def receive = {
-    case p @ Poll(id) =>
+    case p@Poll(id) =>
       val resource = Resource.getById(id)
 
       logger.debug(s"Polling $id, ${resource.getUrl()}, ${resource.updateMode}")
 
       val response = for {
-        // Only to enter Future monad
+      // Only to enter Future monad
         _ <- Future()
 
         if resource.updateMode == UpdateMode.Poll
@@ -86,7 +89,32 @@ class Poller extends Actor {
         logger.debug(s"Updated resource $id")
       }
 
-      response.onFailure { case t => logger.error("Error while polling", t) }
-      response.onComplete { _ => context.system.scheduler.scheduleOnce(resource.pollingPeriod.seconds, self, p) }
+      response.onFailure { case t => logger.error("Error while polling", t)}
+      response.onComplete { _ => context.system.scheduler.scheduleOnce(resource.pollingPeriod.seconds, self, p)}
+  }
+}
+
+object Poller {
+  private lazy val system = Akka.system(play.api.Play.current)
+  private lazy val scheduler = system.scheduler
+  private lazy val poller = system.actorOf(Props[Poller])
+
+  def initialize: Unit = synchronized {
+    val pollResources = Resource.find.where()
+      .gt("pollingPeriod", 0)
+      .select("id, pollingPeriod")
+      .findIterate()
+    var count = 0
+
+    for (res <- pollResources) {
+      schedulePoll(res.id, res.pollingPeriod)
+      count += 1
+    }
+
+    Logger.info(s"Started polling on $count resources")
+  }
+
+  def schedulePoll(id: Long, seconds: Long): Cancellable = {
+    scheduler.scheduleOnce(seconds.seconds, poller, Poll(id))
   }
 }

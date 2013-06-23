@@ -29,12 +29,13 @@
  */
 package controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import logic.Argument;
+import models.Resource;
+import models.StreamParser;
 import play.Logger;
 
-import models.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkeletonResource {
     private final static Logger.ALogger logger = Logger.of(SkeletonResource.class);
@@ -49,7 +50,7 @@ public class SkeletonResource {
     public List<StreamParserWrapper> streamParserWrappers = null;
 
     public SkeletonResource(String label, String key, Long pollingPeriod, String pollingUrl,
-            String pollingAuthenticationKey, List<StreamParserWrapper> streamParserWrappers) {
+                            String pollingAuthenticationKey, List<StreamParserWrapper> streamParserWrappers) {
         this.label = label;
         this.key = key;
         this.pollingPeriod = pollingPeriod;
@@ -59,47 +60,49 @@ public class SkeletonResource {
     }
 
     public SkeletonResource(Resource resource, List<StreamParserWrapper> streamParserWrappers) {
-        if (resource != null) {
-            this.id = resource.id;
-            this.key = resource.getKey();
-            this.label = resource.label;
-            this.pollingPeriod = resource.pollingPeriod;
-            this.pollingUrl = resource.getPollingUrl();
-            this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
-            this.description = resource.description;
-        }
+        Argument.notNull(resource);
+
+        this.id = resource.id;
+        this.key = resource.getKey();
+        this.label = resource.label;
+        this.pollingPeriod = resource.pollingPeriod;
+        this.pollingUrl = resource.getPollingUrl();
+        this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+        this.description = resource.description;
         this.streamParserWrappers = streamParserWrappers;
     }
 
     public SkeletonResource(Resource resource) {
-        if (resource != null) {
-            this.id = resource.id;
-            this.label = resource.label;
-            this.key = resource.getKey();
-            this.pollingPeriod = resource.pollingPeriod;
-            this.pollingUrl = resource.getPollingUrl();
-            this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
-            this.description = resource.description;
-            if (resource.streamParsers != null) {
-                streamParserWrappers =
-                        new ArrayList<StreamParserWrapper>(resource.streamParsers.size() + 1);
-                for (StreamParser sp : resource.streamParsers) {
-                    streamParserWrappers.add(new StreamParserWrapper(sp));
-                }
+        Argument.notNull(resource);
+
+        this.id = resource.id;
+        this.label = resource.label;
+        this.key = resource.getKey();
+        this.pollingPeriod = resource.pollingPeriod;
+        this.pollingUrl = resource.getPollingUrl();
+        this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+        this.description = resource.description;
+
+        if (resource.streamParsers != null) {
+            streamParserWrappers = new ArrayList<StreamParserWrapper>(resource.streamParsers.size() + 1);
+
+            for (StreamParser sp : resource.streamParsers) {
+                streamParserWrappers.add(new StreamParserWrapper(sp));
             }
         }
     }
 
     public SkeletonResource(Resource resource, StreamParserWrapper... spws) {
-        if (resource != null) {
-            this.id = resource.id;
-            this.key = resource.getKey();
-            this.label = resource.label;
-            this.pollingPeriod = resource.pollingPeriod;
-            this.pollingUrl = resource.getPollingUrl();
-            this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
-            this.description = resource.description;
-        }
+        Argument.notNull(resource);
+
+        this.id = resource.id;
+        this.key = resource.getKey();
+        this.label = resource.label;
+        this.pollingPeriod = resource.pollingPeriod;
+        this.pollingUrl = resource.getPollingUrl();
+        this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
+        this.description = resource.description;
+
         this.streamParserWrappers = new ArrayList<StreamParserWrapper>(spws.length + 1);
         for (StreamParserWrapper spw : spws) {
             this.streamParserWrappers.add(spw);
@@ -107,7 +110,7 @@ public class SkeletonResource {
     }
 
     public SkeletonResource(Long id, String label, String key, Long pollingPeriod,
-            String pollingUrl, String pollingAuthenticationKey, StreamParserWrapper... spws) {
+                            String pollingUrl, String pollingAuthenticationKey, StreamParserWrapper... spws) {
         this.id = id;
         this.label = label;
         this.key = key;
@@ -120,7 +123,8 @@ public class SkeletonResource {
         }
     }
 
-    public SkeletonResource() {}
+    public SkeletonResource() {
+    }
 
 
     public Resource getResource() {
@@ -145,11 +149,5 @@ public class SkeletonResource {
         }
 
         return src;
-    }
-
-    public void addStreamParser(String vfilePath, String inputParser, String inputType,
-            String timeformat) {
-        streamParserWrappers.add(new StreamParserWrapper(vfilePath, inputParser, inputType,
-                timeformat, 1, 2, 1));
     }
 }
