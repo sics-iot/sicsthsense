@@ -37,6 +37,8 @@ import play.Logger;
 import models.*;
 
 public class SkeletonResource {
+    private final static Logger.ALogger logger = Logger.of(SkeletonResource.class);
+
     public Long id;
     public String label = null;
     public String key = null;
@@ -44,7 +46,7 @@ public class SkeletonResource {
     public String description = null;
     public Long pollingPeriod = 0L;
     public String pollingAuthenticationKey = null;
-    public List<StreamParserWrapper> streamParserWrappers = new ArrayList<StreamParserWrapper>();
+    public List<StreamParserWrapper> streamParserWrappers = null;
 
     public SkeletonResource(String label, String key, Long pollingPeriod, String pollingUrl,
             String pollingAuthenticationKey, List<StreamParserWrapper> streamParserWrappers) {
@@ -128,6 +130,9 @@ public class SkeletonResource {
 
         src.streamParsers = new ArrayList<StreamParser>();
 
+        if (streamParserWrappers == null)
+            return src;
+
         for (StreamParserWrapper spw : streamParserWrappers) {
             if (spw.vfilePath != null) {
                 StreamParser sp = spw.getStreamParser(src);
@@ -135,35 +140,11 @@ public class SkeletonResource {
                 src.streamParsers.add(sp); // add null streamparsers, to give feedback
                 // }
             } else {
-                Logger.warn("Got a null vfilePath");
+                logger.warn("Got a null vfilePath");
             }
         }
 
         return src;
-    }
-
-    public boolean FillFromResource(Resource resource) {
-        if (resource != null) {
-            this.id = resource.id;
-            this.key = resource.key;
-            this.label = resource.label;
-            this.pollingPeriod = resource.pollingPeriod;
-            this.pollingUrl = resource.getPollingUrl();
-            this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
-            this.description = resource.description;
-            return true;
-        }
-        return false;
-    }
-
-    public void addStreamParser(StreamParserWrapper spw) {
-        streamParserWrappers.add(spw);
-    }
-
-    public void addStreamParser(String vfilePath, String inputParser, String inputType,
-            String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
-        streamParserWrappers.add(new StreamParserWrapper(vfilePath, inputParser, inputType,
-                timeformat, dataGroup, timeGroup, numberOfPoints));
     }
 
     public void addStreamParser(String vfilePath, String inputParser, String inputType,

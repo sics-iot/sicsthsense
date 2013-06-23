@@ -6,17 +6,17 @@ var resourceRegenerateKey;
 var browseResourceList, loadResourceList;
 var fileRowClick, fileRowRightClick, fileMenuButtonHandlers, fileListFolderClick;
 var renameConfirmBox, findAndReplaceInSideTree, utilShowPath;
-var deleteStreamButton, renumberParsers, streamParsersToDelete, removeParser, deleteParser, deleteFileButton, removeSelection, updateResource, insertParser, createParser; 
+var deleteStreamButton, renumberParsers, streamParsersToDelete, removeParser, deleteParser, deleteFileButton, removeSelection, updateResource, insertParser, createParser;
 var resourceStreamPath, addResourceFunction, resourceButtonsHandler;
 
 	showHidePlots = function (e) {
 			var $showHidePlotsButton= $('#showHidePlotsButton');
-	
-		$('.streamconfig').toggle(); 
-		$('.streamplot_overview').toggle(); 
+
+		$('.streamconfig').toggle();
+		$('.streamplot_overview').toggle();
 		$('.streamplot').toggle();
 		$('.streamNoDataLine').toggle();
-		
+
 		if($showHidePlotsButton.hasClass("ShowGraphs")) {
 			StreamPlots.restartActivePlots();
 		} else {
@@ -26,21 +26,21 @@ var resourceStreamPath, addResourceFunction, resourceButtonsHandler;
 
 		var currentTitle = $showHidePlotsButton.text();
 		console.debug("currentTitle: " + currentTitle);
-		
+
 		var nextTitle = $showHidePlotsButton.attr('data-nextTitle');
 				console.debug("nextTitle: " + nextTitle);
-		
+
 		$showHidePlotsButton.text(nextTitle);
 		$showHidePlotsButton.attr('data-nextTitle', currentTitle);
 		// $showHidePlotsButton.on("click", showHidePlots);
 	}
 	$('#showHidePlotsButton').on("click", showHidePlots);
-	
+
 	showAlert = function (type, msg) {
 	$('#container-errormsg').html('<div class="alert ' + type + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div>').show().fadeOut(20000);
 	// $('.container').after('<div class="container-errormsg><div class="' + type
 	// + '"><a class="close" data-dismiss="alert">×</a>' + msg + '</div></div>');
-}	
+}
 
 toggleFollowStreamButton = function (event){
 		var $this_button=$(this);
@@ -71,7 +71,7 @@ toggleFollowStreamButton = function (event){
 
 	    		$this_button.removeClass("btn-success disabled unfollow_stream");
 	    		$this_button.addClass("follow_stream");
-	    	} 
+	    	}
 	    },
 	    error: function(emsg) {
 	    	// $('div.container-errormsg').html('<strong>Error
@@ -89,7 +89,7 @@ toggleFollowStreamButton = function (event){
 	  	    	} else if(fmsg=="false") {
 	  	    		$this_button.removeClass("btn-success disabled unfollow_stream");
 	  	    		$this_button.addClass("follow_stream");
-	  	    	} 
+	  	    	}
 	  	    },
 	  	    error: function(fmsg) {
 	  	    	// $('div.container-errormsg').html('<strong>Error!</strong>'+fmsg);
@@ -112,7 +112,7 @@ toggleFollowStreamButton = function (event){
 		return false;
 	};
 	$('.hide_streams').unbind('click').on("click", hideStreamList);
-	
+
 	// controllers.CtrlStream.setPublicAccess(id: Long, pub: Boolean)
 	togglePublicAccessStreamButton = function (event){
 		var $this_button=$(this);
@@ -132,7 +132,7 @@ toggleFollowStreamButton = function (event){
 	    	} else if(fmsg=="false") {
 	    		$this_button.removeClass("btn-success disabled remove_public_access_stream");
 	    		$this_button.addClass("set_public_access_stream");
-	    	} 
+	    	}
 // $this_button.attr('title', next_tooltip_title);
 // $this_button.attr('inactive_title', current_tooltip_title);
 	    	// event.stopImmediatePropagation();
@@ -154,7 +154,7 @@ toggleFollowStreamButton = function (event){
 	  	    	} else if(fmsg=="false") {
 	  	    		$this_button.removeClass("btn-success disabled remove_public_access_stream");
 	  	    		$this_button.addClass("set_public_access_stream");
-	  	    	} 
+	  	    	}
 	  	    },
 	  	    error: function(fmsg) {
 	  				console.debug("PublicAccess: Still: Error! " + my_stream_id + fmsg);
@@ -169,7 +169,7 @@ toggleFollowStreamButton = function (event){
 	};
 	$('.set_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
 	$('.remove_public_access_stream').unbind('click').on("click", togglePublicAccessStreamButton);
-	
+
 	// controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
 	togglePublicSearchStreamButton = function (event){
 		var $this_button=$(this);
@@ -211,7 +211,7 @@ toggleFollowStreamButton = function (event){
 	  	    	} else if(fmsg=="false") {
 	  	    		$this_button.removeClass("btn-success disabled remove_public_search_stream");
 	  	    		$this_button.addClass("set_public_search_stream");
-	  	    	} 
+	  	    	}
 	  	    },
 	  	    error: function(fmsg) {
 	  				console.debug("PublicSearch: Still: Error! " + my_stream_id + fmsg);
@@ -226,7 +226,7 @@ toggleFollowStreamButton = function (event){
 	};
 	$('.set_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
 	$('.remove_public_search_stream').unbind('click').on("click", togglePublicSearchStreamButton);
-	
+
 // controllers.CtrlStream.clear(stream.id)
 	clearStreamButton = function (event){
 		var $this_button=$(this);
@@ -278,7 +278,7 @@ toggleFollowStreamButton = function (event){
 	  // return false;
 	};
 	$('.deleteStreamButton').unbind('click').on("click", deleteStreamButton);
-	
+
 	streamButtonsHandler = function (e) {
 		$('.deleteStreamButton').unbind('click').on("click", deleteStreamButton);
 		$('.clearStreamButton').unbind('click').on("click", clearStreamButton);
@@ -293,8 +293,8 @@ toggleFollowStreamButton = function (event){
 
   // Rename fields to have a coherent payload like:
   //
-  // streamParserWrapers[0].label
-  // streamParserWrapers[0].inputParser
+  // streamParserWrappers[0].label
+  // streamParserWrappers[0].inputParser
   // ...
   //
   // This is probably not the easiest way to do it. A jQuery plugin would help.
@@ -305,12 +305,12 @@ toggleFollowStreamButton = function (event){
 			console.debug("renumbering parser " + i + $(this).attr('class'));
 			$(this).find('input').each(function(j) {
 				console.debug("renumbering field " + $(this).attr('name'));
-				$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+				$(this).attr('name', $(this).attr('name').replace(/streamParserWrappers\[.+?\]/g, 'streamParserWrappers[' + i + ']'));
 				console.debug("to " + $(this).attr('name'));
 			});
 			$(this).find('select').each(function(j) {
 				console.debug("renumbering field " + $(this).attr('name'));
-				$(this).attr('name', $(this).attr('name').replace(/streamParserWrapers\[.+?\]/g, 'streamParserWrapers[' + i + ']'));
+				$(this).attr('name', $(this).attr('name').replace(/streamParserWrappers\[.+?\]/g, 'streamParserWrappers[' + i + ']'));
 				console.debug("to " + $(this).attr('name'));
 			});
     });
@@ -342,12 +342,12 @@ toggleFollowStreamButton = function (event){
   		console.debug("Parser " + dataparserId + " request delete false --> true");
  		} else if(dataparserId <= 0 || typeof dataparserId === 'undefined'){
  		// delete form field only
-			var streamParserWrapers = $(this).parents('.parsers');
+			var streamParserWrappers = $(this).parents('.parsers');
 			$(this).parent().remove();
 			renumberParsers();
 		  $('.removeParser').unbind('click').on("click", removeParser);
  		}
- 		for (var i=0; i<streamParsersToDelete.length; i++) { 
+ 		for (var i=0; i<streamParsersToDelete.length; i++) {
   		console.debug(streamParsersToDelete[i]);
   	}
 		// deleteParser(dataparserId);
@@ -368,7 +368,7 @@ toggleFollowStreamButton = function (event){
 	    	console.debug(msgToShow);
 				showAlert("alert-error", msgToShow);
 	    }
-	  });	
+	  });
   };
   $('.removeParser').unbind('click').on("click", removeParser);
 
@@ -389,7 +389,7 @@ toggleFollowStreamButton = function (event){
 	  		console.debug(smsg);
 				showAlert("alert-error", smsg);
 	    }
-	  });	
+	  });
   };
   // insert streamParser form field
 
@@ -402,21 +402,21 @@ toggleFollowStreamButton = function (event){
 		// bind button functionality
 	  $('.removeParser').unbind('click').on("click", removeParser);
   };
-  
+
   $('.addParser').unbind('click').on("click", insertParser);
-  
+
   resourceStreamPath = function (e) {
   	 if(!($(this).hasClass('resourceStreamPath'))) {
        this.select();
        return false;
      }
-  	 
+
   	if( $(this).attr('readonly') ) {
   		var path = $(this).val();
     	var myID = $(this).attr('id');
     	var debugMsg = myID + " Browsing: " + path;
     	console.debug(debugMsg);
-    	
+
   		jsRoutes.controllers.CtrlFile.miniBrowse(path).ajax({
   	    success: function(msg) {
         	StreamPlots.stopActivePlots();
@@ -442,7 +442,7 @@ toggleFollowStreamButton = function (event){
   		return false;
   	}
   };
-  
+
   $('input[readonly]').unbind('click').on('click', resourceStreamPath);
 
    updateResource = function (e) {
@@ -475,15 +475,15 @@ toggleFollowStreamButton = function (event){
 // console.debug(msg);
 // showAlert("alert-success", msg);
 // });
-  addResourceFunction = function(e) {  	
+  addResourceFunction = function(e) {
   	$('.parsers_template').remove();
 		renumberParsers();
 		var msg = "Adding new resource.";
 		console.debug(msg);
-		showAlert("alert-success", msg);			
+		showAlert("alert-success", msg);
 };
   $('#addResource').unbind('click').on("click", addResourceFunction);
-  
+
 	resourceButtonsHandler = function (e) {
 	  $('.removeParser').unbind('click').on("click", removeParser);
 	  $('input[readonly]').unbind('click').on('click', resourceStreamPath);
@@ -494,7 +494,7 @@ toggleFollowStreamButton = function (event){
 	  $('.resourceRegenerateKey').unbind('click').on('click', resourceRegenerateKey);
 
 	};
- 
+
   deleteFileButton = function(event){
 		var $this_button=$(this);
 		var my_file_path=$this_button.attr('data-filepath');
@@ -525,24 +525,24 @@ toggleFollowStreamButton = function (event){
 	  // return false;
 	};
 	$('.deleteFileButton').on("click", deleteFileButton);
-	
-	
+
+
 	removeSelection = function(e) {
 		var sel;
 		if(document.selection && document.selection.empty) {
-			document.selection.empty(); 
+			document.selection.empty();
 			}
 		else {
 			if(window.getSelection) {
 				sel = window.getSelection();
-				try { 
+				try {
 					sel.removeAllRanges();
 					// sel.collapse();
 				} catch (err) { }
 			}
 		}
 	}
-	
+
 	browseFolder = function(event, data) {
 		if( $(this).hasClass('fileNode') )
 			return false;
@@ -568,8 +568,8 @@ toggleFollowStreamButton = function (event){
   	// event.preventDefault();
   	event.stopPropagation();
   	return false;
-	};  
-	
+	};
+
 	browseFile = function(event, data) {
 		// event.stopPropagation();
 		// removeSelection();
@@ -578,7 +578,7 @@ toggleFollowStreamButton = function (event){
 		// should test if myID is undefined
   	var debugMsg = myID + " Browsing: " + path;
   	console.debug(debugMsg);
-  	
+
 		jsRoutes.controllers.CtrlFile.miniBrowse(path).ajax({
 	    success: function(msg) {
       	StreamPlots.stopActivePlots();
@@ -603,7 +603,7 @@ toggleFollowStreamButton = function (event){
   	event.stopPropagation();
 		return false;
 	};
-	
+
 	hideFolderFunction = function(event) {
 		// removeSelection();
 		if( $(this).hasClass('fileNode') || $(this).hasClass('jstree-leaf')) {
@@ -620,13 +620,13 @@ toggleFollowStreamButton = function (event){
 		return false;
 		// $(this).toggle();
 	};
-	
+
 	hideAllFolderFunction = function(event) {
 		removeSelection();
 		if(! $(this).hasClass('showRoot')) {
 			$(this).addClass('showRoot')
 			$('#vfileTree').find('.hideFolder').each(function(event) {
-				$(this).removeClass('icon-folder-open'); 
+				$(this).removeClass('icon-folder-open');
 				$(this).siblings('span').removeClass('selectedFile');
 				if( !($(this).hasClass('icon-folder-close')) ) {
 					$(this).addClass('icon-folder-close');
@@ -637,7 +637,7 @@ toggleFollowStreamButton = function (event){
 		} else {
 			$(this).removeClass('showRoot');
 			$('#vfileTree').find('.hideFolder').each(function(event) {
-				$(this).removeClass('icon-folder-close'); 
+				$(this).removeClass('icon-folder-close');
 				$(this).siblings('span').removeClass('selectedFile');
 				if( !($(this).hasClass('icon-folder-open')) ) {
 					$(this).addClass('icon-folder-open');
@@ -649,9 +649,9 @@ toggleFollowStreamButton = function (event){
 		return false;
 		// $(this).toggle();
 	};
-	
+
 	utilShowPath = function(event, path, root) {
-		$('#vfileTree').find("[data-filepath='"+path+"']").each( function(e) { 
+		$('#vfileTree').find("[data-filepath='"+path+"']").each( function(e) {
 			$(this).parent().children().find('li').show();
 			$(this).parent().find('.icon-folder-close').toggleClass('icon-folder-open icon-folder-close');
 			if(root) {
@@ -669,11 +669,11 @@ toggleFollowStreamButton = function (event){
 			}
 		});
 	}
-			
+
 	selectPathInTree = function(event, path) {
 		$('.hideRoot').siblings('span').removeClass('selectedFile');
 		$('#vfileTree').find('.hideFolder').each(function(event) {
-			$(this).removeClass('icon-folder-open'); 
+			$(this).removeClass('icon-folder-open');
 			$(this).siblings('span').removeClass('selectedFile');
 			if( !($(this).hasClass('icon-folder-close')) ) {
 				$(this).addClass('icon-folder-close');
@@ -684,7 +684,7 @@ toggleFollowStreamButton = function (event){
 		});
 		utilShowPath(event, path, true);
 		};
-	
+
   fileMenuButtonHandlers = function(e) {
   	// unbind first then bind again so the event does not fire twice and the
 		// handlers get reassociated
@@ -696,13 +696,13 @@ toggleFollowStreamButton = function (event){
 	  $('.folder-list-button').unbind('click').on("click", fileListFolderClick);
 	  $('.rowlink').unbind('click').on('click', fileRowClick);
 	  $('.rowlink').unbind('contextmenu').on('contextmenu', fileRowRightClick);
-		$('.dirNode').unbind('click').on('click', browseFolder);  
+		$('.dirNode').unbind('click').on('click', browseFolder);
 		$('.fileNode').unbind('click').on('click', browseFile);
 		$('.file-list-button').unbind('click').on('click', browseFile);
-		$('.hideFolder').unbind('click').on('click', hideFolderFunction); 
+		$('.hideFolder').unbind('click').on('click', hideFolderFunction);
 		$('.hideRoot').unbind('click').on('click', hideAllFolderFunction);
   }
- 
+
   fileRowRightClick = function(event) {
   // console.debug("fileRowRightClick: ");
     $(this).find('.dropdown-toggle').dropdown();
@@ -719,18 +719,18 @@ fileRowClick = function(e) {
   $(this).find('.dropdown').removeClass('open');
 };
 
-  fileListFolderClick = function (e) {  	
+  fileListFolderClick = function (e) {
   	var path = $(this).attr('data-folderpath');
   	var myID = $(this).attr('id');
   	var debugMsg = myID + " Browsing: " + path;
   	console.debug(debugMsg);
   	// alert(debugMsg);
   	jsRoutes.controllers.CtrlFile.miniBrowse(path).ajax({
-      success: function(msg) {  
+      success: function(msg) {
       	// stop active plots
       	StreamPlots.stopActivePlots();
       	// load file list
-      	$('#mainPane').html(msg);       
+      	$('#mainPane').html(msg);
       	selectPathInTree(null, path.substring(0,path.length-1));
       	fileMenuButtonHandlers();
       },
@@ -741,14 +741,14 @@ fileRowClick = function(e) {
   	// return false;
   };
   fileMenuButtonHandlers();
-  
+
   findAndReplaceInSideTree = function(oldPath, newPath, newName) {
-		$('#vfileTree').find("[data-filepath='"+oldPath+"']").each( function(e) { 
+		$('#vfileTree').find("[data-filepath='"+oldPath+"']").each( function(e) {
 			$(this).attr("data-filepath", newPath);
 			var oldName = $(this).html(" "+ newName);
 		});
   };
-  
+
 	renameConfirmBox = function (e){
    // confirmMessage = confirmMessage || '';
 		var $this_button=$(this);
@@ -757,7 +757,7 @@ fileRowClick = function(e) {
 		var my_file_path=my_file_parentpath+"/"+my_file_name;
    // $('#renameBox').modal({show:true, backdrop:false, keyboard: false,});
    // $('#confirmMessage').html(confirmMessage);
-    $('#renameConfirmTrue').click(function(){   
+    $('#renameConfirmTrue').click(function(){
       	var newFileName=$('#renameInputBox').val();
     		var new_file_path=my_file_parentpath+"/"+newFileName;
     		console.debug("Trying: RenameFile! " + my_file_path + " to: "+new_file_path);
@@ -788,13 +788,13 @@ fileRowClick = function(e) {
         $('#renameBox').modal('hide');
     });
 };
-loadResourceList = function(msg, resId) {  
+loadResourceList = function(msg, resId) {
 	// load
-	//.replace(/<!DOCTYPE html>[\r\n\s]*.*<div id="mainContainer"/igm, '<div id="mainContainer"').replace(/(<\/body>.*<\/html>)/igm, '');      	
+	//.replace(/<!DOCTYPE html>[\r\n\s]*.*<div id="mainContainer"/igm, '<div id="mainContainer"').replace(/(<\/body>.*<\/html>)/igm, '');
 	//alert(msg)
 	msg = $.trim(msg);
 	msg = $("#mainPane",$('<div></div>').append(msg));
-	$('#mainPane').html(msg.html());   
+	$('#mainPane').html(msg.html());
 	$('.selectedResourceListItem').each(function(e){$(this).removeClass('selectedResourceListItem');});
 	$('#resourcelist-sidenav').find('[data-resourceId="'+resId+'"]').addClass('selectedResourceListItem');
   resourceButtonsHandler();
@@ -859,7 +859,7 @@ $('.streamRegenerateKey').unbind('click').on('click', streamRegenerateKey);
 // var add_resource_form = document.getElementById("add_resource_form");
 // add_resource_form.addEventListener("submit", add_resource_form_handler,
 // false);
-  
+
 // -----------jsTree
 
 // $("#vfileTree").jstree();

@@ -61,6 +61,7 @@ import views.html.resourcePage;
 import views.html.resourcesPage;
 
 public class CtrlResource extends Controller {
+    private final static Logger.ALogger logger = Logger.of(CtrlResource.class);
 
     static private Form<SkeletonResource> skeletonResourceForm = Form.form(SkeletonResource.class);
     static private Form<Resource> resourceForm = Form.form(Resource.class);

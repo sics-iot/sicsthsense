@@ -30,6 +30,8 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 
+import play.api.Logger
+
 trait Default[A] {
   def value: A
 }
@@ -55,6 +57,10 @@ object Default {
 }
 
 class Result[T](val code: ResultCode, val message: String, val data: T, val exception: Throwable) {
+  private val logger = Logger(this.getClass())
+
+  if (logger.isDebugEnabled && exception != null) logger.debug("Error Result", exception)
+
   def isSuccess: Boolean = code == ResultCode.Ok
   def isFailure: Boolean = !isSuccess
 

@@ -106,17 +106,17 @@ object FileSystem {
     Argument.notNull(user)
     Argument.notEmpty(path)
 
-    Argument.requireNot(path.endsWith("/"), "Path must not end in '/'")
+    Argument.requireNot(path.endsWith("/"), s"Path '$path' must not end in '/'")
 
     // Fancy way to write old school for (;;), Scala does not support this
-    for (sep <- Stream.iterate(2)(sep => path.indexOf('/', sep + 1)).takeWhile(_ > -1)) {
+    for (sep <- Stream.iterate(2)(sep => path.indexOf('/', sep + 1)).drop(1).takeWhile(_ > -1)) {
       val ancestors: String = path.substring(0, sep)
 
       if (!fileExists(user, ancestors)) {
         addDirectory(user, ancestors)
       }
       else if (isFile(user, ancestors)) {
-        Logger.error("Path already exists as a file: " + ancestors)
+        Logger.error(s"Path '$path' already exists as a file: $ancestors")
       }
       else if (isDir(user, ancestors)) {
       }
@@ -135,8 +135,8 @@ object FileSystem {
     Argument.notNull(user)
     Argument.notEmpty(path)
 
-    Argument.require(path.endsWith("/"), "Path must end in '/'")
-    Argument.requireNot(fileExists(user, path), "Path should not exist")
+    Argument.require(path.endsWith("/"), s"Path '$path' must end in '/'")
+    Argument.requireNot(fileExists(user, path), s"'$path' Path should not exist")
 
     val lastSlash = path.lastIndexOf('/') // get parent path
     val parent = path.substring(0, lastSlash) // excludes last slash
@@ -144,7 +144,7 @@ object FileSystem {
     if (!fileExists(user, parent)) {
       addDirectory(user, parent)
     } else if (isFile(user, parent)) {
-      Logger.error("Path already exists as a file: " + parent)
+      Logger.error(s"Path '$path' already exists as a file: $parent")
     } else if (isDir(user, parent)) {
     }
 
@@ -227,7 +227,7 @@ object FileSystem {
       else if (file.isDir)
         file.delete()
       else
-        throw new IllegalStateException("Deleting non existing file")
+        throw new IllegalStateException(s"Deleting non existing file '$path' ")
 
     val f: Vfile = readFile(user, path)
     if (f != null) {
@@ -258,7 +258,7 @@ object FileSystem {
     f.setPath(newPath)
     f.update
 
-    Logger.info("Main file moved from:: " + path + " ::to:: " + newPath)
+    Logger.info(s"File moved from '$path' to '$newPath'")
 
     children.map { child =>
       moveFile(user, child.getPath, child.getPath.replaceAll(s"^$path", newPath))

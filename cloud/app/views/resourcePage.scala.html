@@ -40,14 +40,14 @@
 <a href="@routes.Public.about()#@apiLocation" class="helptooltip" data-toggle="tooltip" title="@text"><i class="icon-question-sign"></i></a>
 }
 
-@numberOfParsers = @{myForm("streamParserWrapers").indexes().length}
+@numberOfParsers = @{myForm("streamParserWrappers").indexes().length}
 
 @streamParserGroupLabels(hidden: Boolean, className: String = "") = {
 <div class="@if(hidden){hidden} row-fluid @className controls controls-row streamParsersLabels">
-<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Stream Path @helpMark("File path for generated stream","postingDataHelp")</span>
-<span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
-<span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format @helpMark("Required if extracting timestamp information along with data","parserHelp")</span>
-<span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type @helpMark("Internet media type for incoming data","parserHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrappers")("vfilePath").id}">Stream Path @helpMark("File path for generated stream","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrappers")("inputParser").id}">Parser (Regex/JSON) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrappers")("timeformat").id}">Date/Time format @helpMark("Required if extracting timestamp information along with data","parserHelp")</span>
+<span class="span2" for="@{myForm("streamParserWrappers")("inputType").id}">Content-type @helpMark("Internet media type for incoming data","parserHelp")</span>
 </div>
 <div class="@if(!hidden){hidden} streamParsersLabelsAddParserText">
 Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span></a> to add parsers.
@@ -179,7 +179,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 		      <div id="parsers" resourceId="@myForm("id").value">
 
 						@streamParserGroupLabels(numberOfParsers <= 0)
-			      @repeat(myForm("streamParserWrapers"), min=0) { spw =>
+			      @repeat(myForm("streamParserWrappers"), min=0) { spw =>
 			        @streamParserGroup(spw, className="", modifyStreamPath= autoParserForm, deleteParser= !autoParserForm)
 			      }
 
@@ -187,7 +187,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 			      * Keep an hidden block that will be used as template for Javascript copy code
 			      **@
 						<div class="parsers_template">
-			      	@streamParserGroup( myForm("streamParserWrapers[x]"), className = "", modifyStreamPath=true, deleteParser=false )
+			      	@streamParserGroup( myForm("streamParserWrappers[x]"), className = "", modifyStreamPath=true, deleteParser=false )
 			      </div>
 		      </div>
 
