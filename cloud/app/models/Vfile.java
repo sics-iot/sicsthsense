@@ -31,10 +31,12 @@
 package models;
 
 import com.avaje.ebean.annotation.EnumValue;
-import play.Logger;
+import logic.Argument;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
-import play.db.ebean.Model.Finder;
+import scala.Option;
+import scalax.file.Path;
+import scalax.file.defaultfs.DefaultPath;
 
 import javax.persistence.*;
 
@@ -46,13 +48,6 @@ public class Vfile extends Model {
 
     private static final long serialVersionUID = 1766439519493690841L;
 
-    public static enum Filetype {
-        @EnumValue("F")
-        FILE,
-        @EnumValue("D")
-        DIR
-    }
-
     /* should this be a UUID instead?*/
     @Id
     public Long id;
@@ -61,20 +56,23 @@ public class Vfile extends Model {
     @Constraints.Required
     String path;
 
-    @Column(name = "owner_id", nullable = false)
+    @Column(name = "owner_id")
     @Constraints.Required
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     User owner;
 
-    public User getOwner() {
-        return owner;
+    public static enum Filetype {
+        @EnumValue("F")
+        FILE,
+        @EnumValue("D")
+        DIR
     }
 
     @Column(nullable = false)
     @Constraints.Required
     public Filetype type;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.ALL})
     Stream linkedStream;
 
     public static Finder<Long, Vfile> find = new Finder<Long, Vfile>(Long.class, Vfile.class);
@@ -89,7 +87,6 @@ public class Vfile extends Model {
 
     public Vfile() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public Vfile(User user, String path, Filetype type) {
@@ -97,12 +94,12 @@ public class Vfile extends Model {
     }
 
     public static Vfile create(Vfile file) {
-        if (file.owner != null) {
-            file.save();
-            return file;
-        }
-        Logger.error("Could not create file because owner is null: " + file.path);
-        return null;
+        Argument.notNull(file);
+        Argument.notNull(file.owner);
+
+        file.save();
+
+        return file;
     }
 
     public Filetype getType() {
@@ -125,30 +122,36 @@ public class Vfile extends Model {
         return type == Filetype.DIR;
     }
 
+    public User getOwner() {
+        return owner;
+    }
 
     public String getName() {
         if (path == null) {
             return null;
         }
-        String[] subPaths = path.split("/");
-        int i = subPaths.length - 1;
-        if (i < 0) return "";
-        return subPaths[i];
+
+        return Path.fromString(path).name();
     }
 
     public String getParentPath() {
         if (path == null) {
             return null;
         }
-        int i = path.lastIndexOf("/" + getName());
-        if (i < 0) return "";
-        return path.substring(0, i);
+
+        Option<DefaultPath> parent = Path.fromString(path).parent();
+
+        if (parent.isDefined()) {
+            return parent.get().path();
+        } else {
+            return "";
+        }
     }
 
     public void setLink(Stream linkedStream) {
         this.linkedStream = linkedStream;
         if (id != null) {
-            this.update();
+            this.save();
         }
     }
 
@@ -158,7 +161,7 @@ public class Vfile extends Model {
 
     //remove invalid characters
     public void verify() {
-        this.path = path.replaceAll("[\\:\"*?<>|']+", "");
+        this.path = path.replaceAll("[:\"*?<>|']+", "");
     }
 
     @Override
@@ -171,40 +174,5 @@ public class Vfile extends Model {
     public void save() {
         verify();
         super.save();
-    }
-
-    public void delete() {
-        //TODO: Check dependencies
-        //this.linkedStream.file = null;
-        super.delete();
-    }
-
-    public static String extractUpperLevelPath(String path) {
-        if (path == null) {
-            return "";
-        }
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-        String[] subPaths = path.split("/");
-        if (subPaths.length <= 0) {
-            return "";
-        }
-        String name = subPaths[subPaths.length - 1];
-        int i = path.lastIndexOf("/" + name);
-        if (i <= 0) {
-            return "";
-        } else {
-            return path.substring(0, i);
-        }
-    }
-
-    public static String extractParentUpperLevelPath(String path) {
-        int j = extractUpperLevelPath(path).lastIndexOf('/');
-        if (j < 0) {
-            return "";
-        } else {
-            return path.substring(0, j);
-        }
     }
 }

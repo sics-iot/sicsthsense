@@ -369,11 +369,15 @@ public class StreamParser extends Model {
         Argument.notNull(parser.resource);
         Argument.notNull(parser.inputParser);
 
-        if (parser.stream == null) {
-            int random = (new Random(new Date().getTime()).nextInt(10000));
-            String streamVfilePath = "/" + parser.resource.label + "/newstream_" + random;
+        return create("/" + parser.resource.label, parser);
+    }
 
-            parser.stream = parser.getOrCreateStreamFile(streamVfilePath).linkedStream;
+    public static StreamParser create(String streamPath, StreamParser parser) {
+        Argument.notNull(parser.resource);
+        Argument.notNull(parser.inputParser);
+
+        if (parser.stream == null) {
+            parser.stream = parser.getOrCreateStreamFile(streamPath).linkedStream;
 
             if (parser.stream.type == Stream.StreamType.UNDEFINED) {
                 parser.stream.type = Stream.StreamType.DOUBLE;

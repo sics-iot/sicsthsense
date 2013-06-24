@@ -30,7 +30,6 @@
 
 package controllers;
 
-import logic.FileSystem;
 import logic.ResourceHub;
 import models.Representation;
 import models.Resource;
@@ -50,6 +49,7 @@ import protocol.http.HttpProtocol;
 import views.html.resourcePage;
 import views.html.resourcesPage;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
@@ -147,8 +147,11 @@ public class CtrlResource extends Controller {
 
         final SkeletonResource skeleton = theForm.get();
         final Resource changes = skeleton.getResource();
+        final List<StreamParserWrapper> parsers = skeleton.streamParserWrappers == null
+                ? Collections.<StreamParserWrapper>emptyList()
+                : skeleton.streamParserWrappers;
 
-        logic.Result<Resource> result = ResourceHub.updateResource(id, changes);
+        logic.Result<Resource> result = ResourceHub.updateResource(id, changes, parsers);
 
         switch (result.code()) {
             case Ok:
@@ -273,21 +276,13 @@ public class CtrlResource extends Controller {
         return redirect(routes.CtrlResource.resources());
     }
 
-    /*
-     * */
-    // @Security.Authenticated(Secured.class)
+    @Security.Authenticated(Secured.class)
     public static Result addParser(Long resourceId, String inputParser, String inputType,
                                    String streamPath, String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
         Resource resource = Resource.getById(resourceId);
 
-        if (resource == null) {
+        if (resource == null || !Resource.hasAccess(resourceId, Secured.getCurrentUser())) {
             return notFound("Resource with id " + resourceId + " does not exist");
-        }
-
-        // check if stream path already exists
-        if (FileSystem.exists(resource.owner, streamPath)) {
-            logger.error("Stream path already exists!");
-            streamPath = streamPath + " - " + Utils.dateFormatter(Utils.currentTime());
         }
 
         StreamParser parser;
@@ -390,13 +385,14 @@ public class CtrlResource extends Controller {
                 Resource.find.select("id, owner, label, parent").where().eq("owner", user)
                         .eq("parent", parentResource).orderBy("label asc").findList();
         if (subResources != null && subResources.size() > 0) {
-            sb.append("\n<ul data-parentResourceId='" + parentResourceId + "' >");
+            sb.append("\n<ul data-parentResourceId='").append(parentResourceId).append("' >");
+
             for (Resource sr : subResources) {
-                sb.append("<li><span class='resourceListItem' data-resourceId='" + sr.id.toString()
-                        + "'> " + sr.label + "</span>"); // give node name
+                sb.append("<li><span class='resourceListItem' data-resourceId='").append(sr.id.toString()).append("'> ").append(sr.label).append("</span>"); // give node name
                 sb = exploreResourceTree(user, sb, sr);
                 sb.append("</li>");
             }
+
             sb.append("\n</ul>");
         }
         return sb;

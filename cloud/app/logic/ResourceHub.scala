@@ -26,7 +26,7 @@
 
 package logic
 
-import controllers.Utils
+import controllers.{StreamParserWrapper, Utils}
 import models.Representation
 import models.Resource
 import models.Resource.UpdateMode
@@ -102,29 +102,35 @@ object ResourceHub {
     stored
   })
 
-  def updateResource(id: Long, changes: Resource): Result[Resource] = Result(Try {
-    val res = Resource.getById(id)
-    val oldMode = res.updateMode
-    val oldTime = res.pollingPeriod
+  def updateResource(
+    id: Long,
+    changes: Resource,
+    parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
+    Result(Try {
+      val res = Resource.getById(id)
+      val oldMode = res.updateMode
+      val oldTime = res.pollingPeriod
 
-    res.updateResource(changes)
+      res.updateResource(changes)
 
-    for (sp <- changes.streamParsers) {
-      if (sp.id == null) {
-        sp.resource = res
-        StreamParser.create(sp)
-      } else {
-        StreamParser.find.byId(id).updateStreamParser(sp)
+      for (sp <- parsers) {
+        val parser = sp.getStreamParser(res)
+
+        if (parser.id == null) {
+          parser.resource = res
+          StreamParser.create(sp.vfilePath, parser)
+        } else {
+          StreamParser.find.byId(id).updateStreamParser(parser)
+        }
       }
-    }
 
-    if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
-      && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
-      Poller.schedulePoll(res.id, res.pollingPeriod)
-    }
+      if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
+        && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
+        Poller.schedulePoll(res.id, res.pollingPeriod)
+      }
 
-    res
-  })
+      res
+    })
 
   private def newParser(prefix: String, node: JsValue): Option[StreamParser] = node match {
     case JsBoolean(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
