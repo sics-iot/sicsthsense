@@ -115,7 +115,7 @@ public class CtrlUser extends Controller {
 		Logger.info("Follow stream request: " + follow);
 		final User user = Secured.getCurrentUser();
 		// if(user == null) return notFound();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (follow) {
 			user.followStream(stream);
 		} else {
@@ -129,7 +129,7 @@ public class CtrlUser extends Controller {
 	public static Result isFollowingStream(Long id) {
 		final User user = Secured.getCurrentUser();
 		if(user == null) return notFound();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		return ok(Boolean.toString(user.isfollowingStream(stream)));
 	}
 

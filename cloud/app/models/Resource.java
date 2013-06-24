@@ -58,7 +58,7 @@ public class Resource extends Model {
     @Id
     public Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     public User owner;
 
     @Required
@@ -78,7 +78,8 @@ public class Resource extends Model {
     public long pollingPeriod = 0L;
     public long lastPolled = 0L;
     public long lastPosted = 0L;
-    @ManyToOne
+
+    @ManyToOne(cascade = {CascadeType.ALL})
     public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
     // never use field access. Always use getter...
@@ -282,20 +283,11 @@ public class Resource extends Model {
         return null;
     }
 
-    public void setPeriod(long period) {
-        this.pollingPeriod = period;
-    }
-
     public void updateResource(Resource resource) {
         this.label = resource.label;
-        // this.key = resource.getKey();
         this.pollingPeriod = resource.pollingPeriod;
-        // this.lastPolled = resource.lastPolled;
-        // this.lastPosted = resource.lastPosted;
         this.pollingUrl = resource.getPollingUrl();
-        // this.parent = resource.parent;
         this.description = resource.description;
-        // this.pollingAuthenticationKey = resource.pollingAuthenticationKey;
         this.updateMode = (resource.pollingPeriod > 0) ? UpdateMode.Poll : UpdateMode.Push;
         if (key == null || "".equalsIgnoreCase(key)) {
             updateKey();
@@ -319,27 +311,6 @@ public class Resource extends Model {
     public void save() {
         verify();
         super.save();
-    }
-
-    @Override
-    public void delete() {
-        this.pollingPeriod = 0L;
-        // remove references
-        Stream.dattachResource(this);
-        ResourceLog.deleteByResource(this);
-        // Indexer thisIndexer = Indexer.find.byId(id.toString());
-        // if(thisIndexer != null) {
-        // thisIndexer.deleteAsync();
-        // //TODO: check for success
-        // }
-        // delete sub resources and their sub resources, etc...
-        List<Resource> subResList =
-                Ebean.find(Resource.class).select("id, parent, pollingPeriod").where()
-                        .eq("parent_id", this.id).findList();
-        for (Resource sub : subResList) {
-            sub.delete();
-        }
-        super.delete();
     }
 
     public static Resource getById(Long id) {
@@ -436,6 +407,7 @@ public class Resource extends Model {
 
         // Liam: need to delete index for this resource
         // Beshr: Maybe in the resource.delete()?
+        // TODO: Adrian: Or here because I deleted resource.delete()
     }
 
 }

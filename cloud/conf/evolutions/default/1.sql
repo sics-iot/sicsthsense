@@ -40,13 +40,13 @@ create table representations (
   expires                   bigint,
   content_type              varchar(255),
   content                   varchar(8192),
-  parent_id                 bigint,
+  parent_id                 bigint not null,
   constraint pk_representations primary key (id))
 ;
 
 create table resources (
   id                        bigint auto_increment not null,
-  owner_id                  bigint,
+  owner_id                  bigint not null,
   label                     varchar(255),
   update_mode               varchar(1),
   polling_period            bigint,
@@ -65,7 +65,7 @@ create table resources (
 
 create table resource_log (
   id                        bigint auto_increment not null,
-  resource_id               bigint,
+  resource_id               bigint not null,
   creation_timestamp        bigint,
   response_timestamp        bigint,
   interaction_type          varchar(1),
@@ -88,7 +88,7 @@ create table streams (
   id                        bigint auto_increment not null,
   type                      varchar(1),
   latitude                  double,
-  longtitude                double,
+  longitude                 double,
   description               varchar(255),
   public_access             tinyint(1) default 0,
   public_search             tinyint(1) default 0,
@@ -96,7 +96,7 @@ create table streams (
   history_size              bigint,
   last_updated              bigint,
   secret_key                varchar(255),
-  owner_id                  bigint,
+  owner_id                  bigint not null,
   resource_id               bigint,
   version                   integer not null,
   constraint ck_streams_type check (type in ('U','D','S')),
@@ -105,8 +105,8 @@ create table streams (
 
 create table parsers (
   id                        bigint auto_increment not null,
-  resource_id               bigint,
-  stream_id                 bigint,
+  resource_id               bigint not null,
+  stream_id                 bigint not null,
   input_parser              varchar(255),
   input_type                varchar(255),
   timeformat                varchar(255),

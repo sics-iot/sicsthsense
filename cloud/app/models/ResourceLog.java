@@ -57,8 +57,7 @@ public class ResourceLog extends Model {
     @Id
     public Long id;
 
-    @ManyToOne
-    @Column(nullable = false)
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     public Resource resource;
 
     @Constraints.Required
@@ -118,6 +117,7 @@ public class ResourceLog extends Model {
                     HeaderNames.CONTENT_TYPE + " " + request.header(HeaderNames.CONTENT_TYPE) + "\n" +
                             HeaderNames.CONTENT_ENCODING + " " + request.header(HeaderNames.CONTENT_ENCODING) + "\n" +
                             HeaderNames.CONTENT_LENGTH + " " + request.header(HeaderNames.CONTENT_LENGTH) + "\n";
+            log.interactionType = InteractionType.Push;
 
             log.setCreationTimestamp(creationTimestamp);
         } catch (Exception e) {
@@ -144,6 +144,7 @@ public class ResourceLog extends Model {
                             + " " + response.contentEncoding() + "\n"
                             + HeaderNames.CONTENT_LENGTH + " " + response.contentLength()
                             + "\n";
+            log.interactionType = InteractionType.Pull;
 
             log.setCreationTimestamp(creationTimestamp);
             log.setResponseTimestamp(responseTimestamp);
@@ -194,11 +195,7 @@ public class ResourceLog extends Model {
     }
 
     public static void delete(Long id) {
-        find.ref(id).delete();
+        ResourceLog log = find.ref(id);
+        if (log != null) log.delete();
     }
-
-    public static void deleteByResource(Resource resource) {
-        Ebean.delete(find.where().eq("resource_id", resource.id).findList());
-    }
-
 }

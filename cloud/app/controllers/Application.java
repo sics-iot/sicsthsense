@@ -128,14 +128,14 @@ public class Application extends Controller {
 
   public static Result viewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		Form<Stream> form = streamForm.fill(stream);
     return ok(streamPage.render(currentUser.streamList, stream, form, ""));
   }
 
   protected static Result ajaxViewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		Form<Stream> form = streamForm.fill(stream);
     return ok(views.html.vstream.viewStreamMainDiv.render(currentUser.streamList, stream, form, ""));
   }

@@ -27,15 +27,17 @@
 package logic
 
 import com.avaje.ebean.Expr
-import java.util.Collections
 import models.User
 import models.Vfile
-import play.Logger
+import play.api.Logger
 import play.db.ebean.Transactional
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.mutable
+import scalax.file.Path
 
 object FileSystem {
+  private val logger = Logger(this.getClass)
+
   def createError {
   }
 
@@ -48,7 +50,7 @@ object FileSystem {
   /** LS into a dir */
   def lsDir(user: User, path: String): java.util.List[Vfile] = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
     val p =
       if (path.endsWith("/")) path
@@ -73,88 +75,124 @@ object FileSystem {
     Argument.notNull(user)
 
     val sb: StringBuffer = new StringBuffer
-    var prevdepth: Int = 0
-    var prevdirs: Array[String] = Array()
     val files: mutable.Buffer[Vfile] = Vfile.find.where.eq("owner_id", user.id).orderBy("path asc").findList
 
-    for (f <- files) {
+    var prevdepth: Int = 0
+    var prevdirs: Array[String] = Array()
+
+    // Loop through all files and directories but ignore the root
+    for { f <- files if f.getPath != "/" } {
+      // Split the path segments and calculate the depth of the file
       val dirs: Array[String] = f.getPath.split("/")
       val depth: Int = dirs.length - 1
 
+      // Count how many path segments the current file shares with the previous one
       val sharedAncestors = (dirs, prevdirs).zipped.takeWhile {
-                                                                case (a, b) => a == b
-                                                              }.size
+        case (a, b) => a == b
+      }.size
 
-      for (i <- sharedAncestors to prevdepth) {
+      // For all segments that the previous file had more than we, close the <li>
+      for (i <- sharedAncestors until prevdepth) {
         sb.append("</ul></li>\n")
       }
 
+      // Remember current stats for the next iteration
       prevdirs = dirs
       prevdepth = depth
+
+      // If the current file is a directory then create a new directory node with its name
       if (f.isDir) {
-        sb.append("<li class='jstree-open'><i class='icon-folder-open hideFolder'></i><span class='dirNode' data-filepath='" + f.getPath + "'> " + dirs(dirs.length - 1) + "</span>\n<ul class='folderNodeUL'>\n")
-      }
-      else {
+        sb.append("<li class='jstree-open'><i class='icon-folder-open hideFolder'></i><span class='dirNode' data-filepath='")
+        sb.append(f.getPath)
+        sb.append("'> ")
+        sb.append(dirs(depth))
+        sb.append("</span>\n<ul class='folderNodeUL'>\n")
+      } else {
+        // If the current file is a file then decrement the depth for the next iteration so
+        // that it does not assume this file was a directory.
         prevdepth -= 1
-        sb.append("<li class='jstree-leaf'><i class='icon-file'></i><span class='fileNode' data-filepath='" + f.getPath + "'> " + dirs(dirs.length - 1) + "</span></li>\n")
+        sb.append("<li class='jstree-leaf'><i class='icon-file'></i><span class='fileNode' data-filepath='")
+        sb.append(f.getPath)
+        sb.append("'> ")
+        sb.append(dirs(depth))
+        sb.append("</span></li>\n")
       }
     }
+
     return sb.toString
   }
 
-  def addFile(user: User, path: String): Vfile = {
+  @Transactional
+  private def ensurePath(user: User, path: String): Unit = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
-    Argument.requireNot(path.endsWith("/"), s"Path '$path' must not end in '/'")
+    val p = Path.fromString(path)
 
-    // Fancy way to write old school for (;;), Scala does not support this
-    for (sep <- Stream.iterate(2)(sep => path.indexOf('/', sep + 1)).drop(1).takeWhile(_ > -1)) {
-      val ancestors: String = path.substring(0, sep)
+    logger.info(s"Creating path $path")
 
-      if (!fileExists(user, ancestors)) {
-        addDirectory(user, ancestors)
+    for (parent <- p.parents.reverse :+ p) {
+      if (!exists(user, parent.path)) {
+        Vfile.create(new Vfile(user, parent.path, Vfile.Filetype.DIR))
+      } else {
+        val file = read(user, parent.path)
+
+        if (file.isDir) {
+          // Do nothing, everything is fine
+        } else if (file.isFile) {
+          throw new IllegalArgumentException(
+            s"Path $path could not be created because the parent ${parent.path} already exists and is a File"
+          )
+        } else {
+          throw new IllegalStateException(
+            s"The FileSystem is broken, path ${parent.path} exists but is neither file nor directory"
+          )
+        }
       }
-      else if (isFile(user, ancestors)) {
-        Logger.error(s"Path '$path' already exists as a file: $ancestors")
-      }
-      else if (isDir(user, ancestors)) {
-      }
-      else {
-        Logger.info("File system broke! " + ancestors)
-      }
+    }
+  }
+
+  @Transactional
+  def createFile(user: User, path: String): Vfile = {
+    Argument.notNull(user)
+    Argument.absolutePath(path)
+
+    Path.fromString(path).parent match {
+      case Some(parent) => ensurePath(user, parent.path)
+      case None => // Do nothing, the parent is root
     }
 
     val f: Vfile = Vfile.create(new Vfile(user, path, Vfile.Filetype.FILE))
-    Logger.info("add file: " + path)
+    logger.info("add file: " + path)
 
     return f
   }
 
-  @Transactional def addDirectory(user: User, path: String): Vfile = {
+  @Transactional
+  def createDirectory(user: User, path: String): Vfile = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
+    Argument.requireNot(exists(user, path), s"Path '$path' should not exist")
 
-    Argument.require(path.endsWith("/"), s"Path '$path' must end in '/'")
-    Argument.requireNot(fileExists(user, path), s"'$path' Path should not exist")
+    ensurePath(user, path)
 
-    val lastSlash = path.lastIndexOf('/') // get parent path
-    val parent = path.substring(0, lastSlash) // excludes last slash
-
-    if (!fileExists(user, parent)) {
-      addDirectory(user, parent)
-    } else if (isFile(user, parent)) {
-      Logger.error(s"Path '$path' already exists as a file: $parent")
-    } else if (isDir(user, parent)) {
-    }
-
-    val dir: Vfile = Vfile.create(new Vfile(user, path, Vfile.Filetype.DIR))
-    return dir
+    return read(user, path)
   }
 
-  def fileExists(user: User, path: String): Boolean = {
+  def read(user: User, path: String): Vfile = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
+
+    return Vfile.find
+      .where
+      .eq("owner_id", user.id)
+      .eq("path", path)
+      .findUnique()
+  }
+
+  def exists(user: User, path: String): Boolean = {
+    Argument.notNull(user)
+    Argument.absolutePath(path)
 
     return Vfile.find
       .where.eq("owner_id", user.id)
@@ -164,7 +202,7 @@ object FileSystem {
 
   def isDir(user: User, path: String): Boolean = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
     return Vfile.find
       .where
@@ -176,7 +214,7 @@ object FileSystem {
 
   def isEmptyDir(user: User, path: String): Boolean = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
     if (!isDir(user, path)) {
       return false
@@ -191,7 +229,7 @@ object FileSystem {
 
   def isFile(user: User, path: String): Boolean = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
     return Vfile.find
       .where
@@ -201,67 +239,60 @@ object FileSystem {
       .findRowCount() == 1
   }
 
-  def readFile(user: User, path: String): Vfile = {
+  @Transactional
+  def deleteFile(user: User, path: String): Boolean = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
-
-    val p =
-      if (path.endsWith("/")) path.substring(0, path.length - 1)
-      else path
-
-    return Vfile.find
-      .where
-      .eq("owner_id", user.id)
-      .eq("path", p)
-      .findUnique()
-  }
-
-  @Transactional def deleteFile(user: User, path: String): Boolean = {
-    Argument.notNull(user)
-    Argument.notEmpty(path)
+    Argument.absolutePath(path)
 
     def delete(file: Vfile): Unit =
       if (file.isDir)
         for (child <- lsDir(user, file.getPath))
           delete(child)
-      else if (file.isDir)
+      else if (file.isFile)
         file.delete()
       else
         throw new IllegalStateException(s"Deleting non existing file '$path' ")
 
-    val f: Vfile = readFile(user, path)
+    val f: Vfile = read(user, path)
     if (f != null) {
       delete(f)
 
       return true
     }
     else {
-      Logger.warn("Vfile path to delete does not exist:: " + path)
+      logger.warn("Vfile path to delete does not exist:: " + path)
 
       return false
     }
   }
 
-  @Transactional def moveFile(user: User, path: String, newPath: String): Boolean = {
+  @Transactional
+  def moveFile(user: User, path: String, newPath: String): Boolean = {
     Argument.notNull(user)
-    Argument.notEmpty(path)
-    Argument.notEmpty(newPath)
+    Argument.absolutePath(path)
+    Argument.absolutePath(newPath)
 
-    Argument.require(fileExists(user, path), s"Source path $path must exist to move file")
-    Argument.requireNot(fileExists(user, newPath), s"Target path $newPath must not exist to move file")
+    Argument.require(exists(user, path), s"Source path $path must exist to move file")
+    Argument.requireNot(exists(user, newPath), s"Target path $newPath must not exist to move file")
 
-    val f = readFile(user, path)
-    val children =
-      if (f.isDir) lsDir(user, path)
-      else Collections.emptyList[Vfile]
+    Path.fromString(newPath).parent match {
+      case Some(parent) => ensurePath(user, parent.path)
+      case None => // Do nothing
+    }
 
-    f.setPath(newPath)
-    f.update
+    val file = read(user, path)
 
-    Logger.info(s"File moved from '$path' to '$newPath'")
+    file.setPath(newPath)
+    file.save
 
-    children.map { child =>
-      moveFile(user, child.getPath, child.getPath.replaceAll(s"^$path", newPath))
-    }.fold(true)(_ && _)
+    logger.info(s"File moved from '$path' to '$newPath'")
+
+    if (file.isDir) {
+      lsDir(user, path).map { child =>
+        moveFile(user, child.getPath, child.getPath.replaceAll(s"^$path", newPath))
+      }.fold(true)(_ && _)
+    } else {
+      true
+    }
   }
 }

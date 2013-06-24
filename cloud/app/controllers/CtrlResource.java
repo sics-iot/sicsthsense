@@ -264,7 +264,7 @@ public class CtrlResource extends Controller {
     public static Result delete(Long id) {
         User currentUser = Secured.getCurrentUser();
 
-        if (Resource.hasAccess(id, currentUser)) {
+        if (!Resource.hasAccess(id, currentUser)) {
             return notFound();
         }
 
@@ -285,7 +285,7 @@ public class CtrlResource extends Controller {
         }
 
         // check if stream path already exists
-        if (FileSystem.fileExists(resource.owner, streamPath)) {
+        if (FileSystem.exists(resource.owner, streamPath)) {
             logger.error("Stream path already exists!");
             streamPath = streamPath + " - " + Utils.dateFormatter(Utils.currentTime());
         }

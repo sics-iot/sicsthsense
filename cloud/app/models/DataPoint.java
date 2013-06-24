@@ -32,6 +32,7 @@ package models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -45,7 +46,7 @@ import play.db.ebean.Model;
 public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
     @Column(name = "stream_id", nullable = false)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     public Stream stream;
 
     @Id

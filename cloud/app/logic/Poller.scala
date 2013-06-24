@@ -28,6 +28,7 @@ package logic
 
 import akka.actor.{Props, Cancellable, Actor}
 import controllers.Utils
+import java.util.NoSuchElementException
 import models.Representation
 import models.Resource
 import models.Resource.UpdateMode
@@ -35,22 +36,24 @@ import models.ResourceLog
 import models.StreamParser
 import play.api.Logger
 import play.api.libs.concurrent.Akka
+import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
-import scala.collection.JavaConversions.asScalaIterator
+import scala.util.Failure
+import scala.util.Success
 
 
 sealed trait PollingMessage
 
-case class Poll(id: Long) extends PollingMessage
+case class Poll(id: Long, period: Long) extends PollingMessage
 
 class Poller extends Actor {
   private val logger = Logger(this.getClass)
 
   def receive = {
-    case p@Poll(id) =>
+    case p@Poll(id, period) =>
       val resource = Resource.getById(id)
 
       logger.debug(s"Polling $id, ${resource.getUrl()}, ${resource.updateMode}")
@@ -60,6 +63,7 @@ class Poller extends Actor {
         _ <- Future()
 
         if resource.updateMode == UpdateMode.Poll
+        if resource.pollingPeriod == period
         if resource.hasUrl()
 
         requestTime = Utils.currentTime()
@@ -89,8 +93,15 @@ class Poller extends Actor {
         logger.debug(s"Updated resource $id")
       }
 
-      response.onFailure { case t => logger.error("Error while polling", t)}
-      response.onComplete { _ => context.system.scheduler.scheduleOnce(resource.pollingPeriod.seconds, self, p)}
+      response.onComplete {
+        case Success(_) =>
+          Poller.schedulePoll(resource.id, resource.pollingPeriod)
+        case Failure(_: NoSuchElementException) =>
+        // ignore, a filter triggered in the for comprehension
+        case Failure(t) =>
+          logger.error("Error while polling", t)
+          Poller.schedulePoll(resource.id, resource.pollingPeriod)
+      }
   }
 }
 
@@ -104,17 +115,13 @@ object Poller {
       .gt("pollingPeriod", 0)
       .select("id, pollingPeriod")
       .findIterate()
-    var count = 0
 
-    for (res <- pollResources) {
-      schedulePoll(res.id, res.pollingPeriod)
-      count += 1
-    }
+    val count = pollResources.map { res => schedulePoll(res.id, res.pollingPeriod)}.size
 
     Logger.info(s"Started polling on $count resources")
   }
 
   def schedulePoll(id: Long, seconds: Long): Cancellable = {
-    scheduler.scheduleOnce(seconds.seconds, poller, Poll(id))
+    scheduler.scheduleOnce(seconds.seconds, poller, Poll(id, seconds))
   }
 }

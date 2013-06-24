@@ -127,9 +127,9 @@ object ResourceHub {
   })
 
   private def newParser(prefix: String, node: JsValue): Option[StreamParser] = node match {
-    case JsBoolean(v) => Some(new StreamParser(null, prefix, "application/json", prefix, "unix", 1, 2, 1))
-    case JsNumber(v) => Some(new StreamParser(null, prefix, "application/json", prefix, "unix", 1, 2, 1))
-    case JsString(v) => Some(new StreamParser(null, prefix, "application/json", prefix, "unix", 1, 2, 1))
+    case JsBoolean(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
+    case JsNumber(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
+    case JsString(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
     case _ => None
   }
 
@@ -150,7 +150,7 @@ object ResourceHub {
 
     val parsers = for {
       sp <- parsersFromJson(request.body)
-      if !FileSystem.fileExists(resource.owner, sp.inputParser)
+      if !FileSystem.exists(resource.owner, sp.inputParser)
     } yield {
       sp.resource = resource
       sp.save()
@@ -167,6 +167,6 @@ object ResourceHub {
   }
 
   def parsersFromPlain(text: String): java.util.List[StreamParser] = {
-    Seq(new StreamParser(null, "(.*)", "text/plain", "/", "unix", 1, 2, 1))
+    Seq(new StreamParser("(.*)", "text/plain", "/", "unix", 1, 2, 1))
   }
 }

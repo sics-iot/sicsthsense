@@ -74,7 +74,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (stream== null) {
 			return badRequest("Stream does not exist: " + id);
 		}
@@ -155,14 +155,14 @@ public class CtrlStream extends Controller {
 		} else {
 			Stream submitted = theForm.get();
 			User currentUser = Secured.getCurrentUser();
-			Stream stream = Stream.get(id);
+			Stream stream = Stream.getById(id);
 			if (stream  == null || !stream.canWrite(currentUser)) {
 				return unauthorized("Unauthorized!");
 			}
 
 			// probably not the correct way to do it
 			if (submitted.latitude != 0.0) {
-				//String lon = streamForm.field("longtitude").value();
+				//String lon = streamForm.field("longitude").value();
 				//String lat = streamForm.field("latitude").value();
 				//Logger.error("form latlon: "+lat+","+lon);
 				//Location location = new Location(lon,lat);
@@ -178,7 +178,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result download(Long id) {
 		final User currentUser = Secured.getCurrentUser();
-		final Stream stream = Stream.get(id);
+		final Stream stream = Stream.getById(id);
 		final List<? extends DataPoint> dataSet = stream.getDataPoints();
 
 		if (stream.canRead(currentUser)) {
@@ -209,7 +209,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result delete(Long id) {
 		final User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (canWrite(currentUser, stream)) {
 			stream.delete();
 			currentUser.sortStreamList(); // reorder streams
@@ -231,7 +231,7 @@ public class CtrlStream extends Controller {
 	public static Result clear(Long id) {
 		final User user = Secured.getCurrentUser();
 		// if(user == null) return notFound();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (canWrite(user, stream)) {
 			stream.clearStream();
 			return ok();
@@ -251,7 +251,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result setPublicAccess(Long id, Boolean pub) {
 		final User user = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (canWrite(user, stream)) {
 			return ok(Boolean.toString(stream.setPublicAccess(pub)));
 		}
@@ -260,7 +260,7 @@ public class CtrlStream extends Controller {
 
 //	@Security.Authenticated(Secured.class)
 	public static Result isPublicAccess(Long id) {
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if(stream == null) {
 			return notFound();
 		}
@@ -270,7 +270,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result setPublicSearch(Long id, Boolean pub) {
 		final User user = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (canWrite(user, stream)) {
 			return ok(Boolean.toString(stream.setPublicSearch(pub)));
 		}
@@ -279,7 +279,7 @@ public class CtrlStream extends Controller {
 
 //@Security.Authenticated(Secured.class)
 	public static Result isPublicSearch(Long id) {
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if(stream == null) {
 			return notFound();
 		}
@@ -341,7 +341,7 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result post(Long id) {
 		final User user = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if(stream == null) {
 			return notFound();
 		}
@@ -420,14 +420,14 @@ public class CtrlStream extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		return getData(user, stream, tail, last, since);
 	}
 
 	@Security.Authenticated(Secured.class)
 	public static Result regenerateKey(Long id) {
 		final User currentUser = Secured.getCurrentUser();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (stream == null || stream.owner.id != currentUser.id) {
 			return badRequest("Stream does not exist: " + id);
 		}
@@ -439,7 +439,7 @@ public class CtrlStream extends Controller {
 	// @Security.Authenticated(Secured.class)
 	private static Result getData(User currentUser, User owner, String path,
 			Long tail, Long last, Long since) {
-		Vfile f = FileSystem.readFile(owner, path);
+		Vfile f = FileSystem.read(owner, path);
 		if (f == null) {
 			return notFound();
 		}

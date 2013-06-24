@@ -30,52 +30,53 @@
 
 package models;
 
-import java.util.List;
-
-import javax.persistence.*;
-
 import play.Logger;
 import play.db.ebean.Model;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "functions")
 //@Inheritance
 //@DiscriminatorValue("operators")
 public class Function extends Model {
-	@Id
-	public Long id;
+    @Id
+    public Long id;
 
-	@ManyToOne
-	public User owner;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    public User owner;
 
-	@ManyToMany(cascade=CascadeType.ALL)
-	public List<Stream> outputStreams;
+    @ManyToMany(cascade = {CascadeType.ALL})
+    public List<Stream> outputStreams;
 
-	@ManyToMany(cascade=CascadeType.ALL)
-	public List<Stream> inputStreams;
+    @ManyToMany(cascade = {CascadeType.ALL})
+    public List<Stream> inputStreams;
 
-	public Function() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public Function() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	public Function(User user, String output, String inputStream1, String inputStream2) {
-		this.owner = user;
-		Logger.warn("Operator() "+output+" "+inputStream1+" "+inputStream2);
-	}
+    public Function(User user, String output, String inputStream1, String inputStream2) {
+        this.owner = user;
+        Logger.warn("Operator() " + output + " " + inputStream1 + " " + inputStream2);
+    }
 
-	public static Function create(User user, String output, String inputStream1, String inputStream2) {
-		Logger.warn("Function.create() "+output+" "+inputStream1+" "+inputStream2);
-		Function function = new Function(user,output,inputStream1,inputStream2);
-		try { function.save(); }
-		catch (Exception e) {}
-		return function;
-	}
+    public static Function create(User user, String output, String inputStream1, String inputStream2) {
+        Logger.warn("Function.create() " + output + " " + inputStream1 + " " + inputStream2);
+        Function function = new Function(user, output, inputStream1, inputStream2);
+        try {
+            function.save();
+        } catch (Exception e) {
+        }
+        return function;
+    }
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5004038592549122787L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5004038592549122787L;
 
-	public static Model.Finder<Long,Function> find = new Model.Finder<Long, Function>(Long.class, Function.class);
+    public static Model.Finder<Long, Function> find = new Model.Finder<Long, Function>(Long.class, Function.class);
 }

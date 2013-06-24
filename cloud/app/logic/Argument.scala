@@ -85,13 +85,27 @@ trait Require {
 
   def positive(i: Int): Unit = {
     if (i < 0) {
-      thr("Number is negative")
+      thr(s"Number $i is negative")
     }
   }
 
   def positive(i: Long): Unit = {
     if (i < 0) {
-      thr("Number is negative")
+      thr(s"Number $i is negative")
+    }
+  }
+
+  def absolutePath(path: String): Unit = {
+    if (Utils.isNullOrWhitespace(path)) {
+      thr("String is empty")
+    }
+
+    if (!path.startsWith("/")) {
+      thr(s"Path $path is not an absolute path because it does not start with '/'")
+    }
+
+    if (path.length > 1 && path.endsWith("/")) {
+      thr(s"Path $path is not a correct, absolute path because it ends with '/'")
     }
   }
 

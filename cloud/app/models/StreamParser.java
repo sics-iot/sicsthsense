@@ -58,22 +58,14 @@ public class StreamParser extends Model {
      * serialVersionUID
      */
     private static final long serialVersionUID = 2972078391685154152L;
-    // public static enum parserType {
-    // @EnumValue("R")
-    // REGEX,
-    // @EnumValue("J")
-    // JSON,
-    // @EnumValue("X")
-    // XPATH
-    // };
 
     @Id
     public Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     public Resource resource;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     public Stream stream;
 
     /**
@@ -117,6 +109,20 @@ public class StreamParser extends Model {
         super();
     }
 
+    public StreamParser(String inputParser, String inputType, String path,
+                        String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
+        super();
+
+        Argument.notEmpty(path);
+
+        this.inputParser = inputParser;
+        this.inputType = inputType;
+        this.timeformat = timeformat;
+        this.dataGroup = dataGroup;
+        this.timeGroup = timeGroup;
+        this.numberOfPoints = numberOfPoints;
+    }
+
     public StreamParser(Resource resource, String inputParser, String inputType, String path,
                         String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
         super();
@@ -133,7 +139,7 @@ public class StreamParser extends Model {
         this.numberOfPoints = numberOfPoints;
 
         if (resource.owner != null) {
-            Vfile f = FileSystem.readFile(resource.owner, path);
+            Vfile f = FileSystem.read(resource.owner, path);
             this.stream = (f != null) ? f.linkedStream : null;
 
         }
@@ -331,21 +337,21 @@ public class StreamParser extends Model {
         State.notNull(resource);
         State.notNull(resource.owner);
 
-        Vfile f = FileSystem.readFile(resource.owner, path);
+        Vfile f = FileSystem.read(resource.owner, path);
 
         if (f == null) {
-            f = FileSystem.addFile(resource.owner, path);
+            f = FileSystem.createFile(resource.owner, path);
         } else if (f.getType() == Vfile.Filetype.DIR) {
             String fileName;
 
             for (int i = 0; ; ++i) {
                 fileName = path + "\\newstream" + Integer.toString(i);
 
-                if (!FileSystem.fileExists(resource.owner, fileName))
+                if (!FileSystem.exists(resource.owner, fileName))
                     break;
             }
 
-            f = FileSystem.addFile(resource.owner, fileName);
+            f = FileSystem.createFile(resource.owner, fileName);
         }
 
         Stream stream = f.getLink();

@@ -112,7 +112,7 @@ public class CtrlFunction extends Controller {
 	public static Result getDataById(Long id, Long tail, Long last, Long since) {
 		final User user = Secured.getCurrentUser();
 		// if(user == null) return notFound();
-		Stream stream = Stream.get(id);
+		Stream stream = Stream.getById(id);
 		if (stream == null) {
 			return notFound();
 		}
@@ -130,7 +130,7 @@ public class CtrlFunction extends Controller {
 	// @Security.Authenticated(Secured.class)
 	private static Result getData(User currentUser, User owner, String path,
 			Long tail, Long last, Long since) {
-		Vfile f = FileSystem.readFile(owner, path);
+		Vfile f = FileSystem.read(owner, path);
 		if (f == null) {
 			return notFound();
 		}

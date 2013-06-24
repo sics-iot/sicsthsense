@@ -71,7 +71,7 @@ public class CtrlFile extends Controller {
 					""));
 		}
 
-		Vfile vfile = FileSystem.readFile(currentUser, path);
+		Vfile vfile = FileSystem.read(currentUser, path);
 		if(vfile == null) {
 			return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
 					"Not found!"));
@@ -96,7 +96,7 @@ public class CtrlFile extends Controller {
 		if( path.trim().equalsIgnoreCase("") || path.trim().equalsIgnoreCase("/")) {
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
 		}
-		Vfile vfile = FileSystem.readFile(currentUser, path);
+		Vfile vfile = FileSystem.read(currentUser, path);
 		if(vfile == null) {
 			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
 		}
@@ -137,7 +137,7 @@ public class CtrlFile extends Controller {
 	public static Result createDir(String path) {
 		User currentUser = Secured.getCurrentUser();
 		path = Utils.decodePath(path);
-		boolean success = (FileSystem.addDirectory(currentUser, path) != null);
+		boolean success = (FileSystem.createDirectory(currentUser, path) != null);
 		if (success)
 			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
 					currentUser, Vfile.extractUpperLevelPath(path)),Vfile.extractUpperLevelPath(path)));
@@ -152,8 +152,8 @@ public class CtrlFile extends Controller {
 		path = Utils.decodePath(path);
 		boolean success = false;
 		Vfile f = null;
-		if (!FileSystem.fileExists(currentUser, path)) {
-			f = FileSystem.addFile(currentUser, path);
+		if (!FileSystem.exists(currentUser, path)) {
+			f = FileSystem.createFile(currentUser, path);
 			success = ( f != null );
 		}
 		if (success)
@@ -172,7 +172,7 @@ public class CtrlFile extends Controller {
 			String ancestors = path.substring(0, sep);
 			if (FileSystem.isDir(user, ancestors)) { // if parent is a dir
 				//create dir
-				FileSystem.addDirectory(user, ancestors);
+				FileSystem.createDirectory(user, ancestors);
 			} else if (FileSystem.isFile(user, path)) { // if it is a file
 				// complain
 				Logger.info("Path already exists as a file: "+path);

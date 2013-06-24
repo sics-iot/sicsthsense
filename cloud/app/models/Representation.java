@@ -27,7 +27,6 @@
 package models;
 
 import controllers.Utils;
-import logic.Argument;
 import logic.State;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
@@ -61,7 +60,7 @@ public class Representation extends Model {
     @Column(length = BODY_MAX_LENGTH)
     public String content;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     public Resource parent = null;
 
     public static final Model.Finder<Long, Representation> find =
