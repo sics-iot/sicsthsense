@@ -1,168 +1,165 @@
 @(vfiles : List[Vfile], path : String)
-@upPathLoc={@Vfile.extractUpperLevelPath(path)}
-@parentPath(pathlist : Array[String], depth: Int) = {@for(dir <- 1 to depth) {/@pathlist(dir)}/}
-
-@fullpathNavigation() = {
-<span id='filePathBreadCrumb' class="breadcrumb">
-	<a href="#path=/" class="folder-list-button" data-folderpath="/">Drive</a> 
-	@{val patharray = path.split("/")}
-	@for( ii <- 1 to path.split("/").length -1) {
-	 <span class="divider">/</span> <a href="#path=@{parentPath(path.split("/"),ii)}" class="folder-list-button" data-folderpath="@parentPath(path.split("/"),ii)">@{path.split("/")(ii)}</a> 
-	}
-	@**<span class="divider">/</span>**@
-</span>
-}
 
 @confirmDeleteStreamDialog(filePath : String, fileName : String) = {
 <!-- Modal confirmDeleteStream -->
 <div id="confirmDeleteStreamModal@fileName" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteStreamModalLabel@fileName" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3 id="confirmDeleteStreamModalLabel@fileName">Delete Stream <em>@fileName</em></h3>
-  </div>
-  <div class="modal-body">
-    <p>Deleting <em>@fileName</em> implies removing the associated stream(s).</p>
-    <p>Are you sure you want to delete <em>@fileName</em>?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
-		<button class="btn btn-danger deleteFileButton" data-filepath="@filePath" data-filename="@fileName" role="button" data-dismiss="modal" aria-hidden="true"><i class="icon-trash icon-white"></i> Yes, delete everything</button>
-  </div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="confirmDeleteStreamModalLabel@fileName">Delete Stream <em>@fileName</em></h3>
+    </div>
+    <div class="modal-body">
+        <p>Deleting <em>@fileName</em> implies removing the associated stream(s).</p>
+        <p>Are you sure you want to delete <em>@fileName</em>?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+        <button class="btn btn-danger deleteFileButton" data-filepath="@filePath" data-filename="@fileName" role="button" data-dismiss="modal" aria-hidden="true"><i class="icon-trash icon-white"></i> Yes, delete everything</button>
+    </div>
 </div>
 }
 
 @confirmClearStreamDialog(streamId : Long, streamTitle : String) = {
 <!-- Modal confirmClearStream -->
 <div id="confirmClearStreamModal@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
-  </div>
-  <div class="modal-body">
-    <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
-    <p>Are you sure you want to clear the stream's contents?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
-		<button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
-  </div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
+    </div>
+    <div class="modal-body">
+        <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
+        <p>Are you sure you want to clear the stream's contents?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+        <button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
+    </div>
 </div>
 }
 
 @renameFileDialog(streamId : Long, streamTitle : String) = {
 <!-- Modal renameFileDialog -->
 <div id="renameFileDialog@streamId" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="confirmClearStreamModalLabel@streamId" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
-  </div>
-  <div class="modal-body">
-    <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
-    <p>Are you sure you want to clear the stream's contents?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
-		<button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
-  </div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="confirmClearStreamModalLabel@streamId">Clear Stream <em>@streamTitle</em></h3>
+    </div>
+    <div class="modal-body">
+        <p>Clearing the stream <em>@streamTitle</em> implies removing all the datapoints, while keeping the file and the associated URL.</p>
+        <p>Are you sure you want to clear the stream's contents?</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">No, go back</button>
+        <button class="btn btn-danger clearStreamButton" role="button" data-dismiss="modal" aria-hidden="true" data-parent_id="@streamId"><i class="icon-remove-sign icon-white"></i> Yes, clear data</button>
+    </div>
 </div>
+}
+
+@fullpathNavigation() = {
+<span id='filePathBreadCrumb' class="breadcrumb">
+	<a href="#path=/" class="folder-list-button" data-folderpath="/">Drive</a>
+    @defining(path.split("/")) { pathArray =>
+    @for(i <- 1 until pathArray.length) {
+        @defining(pathArray.take(i + 1).mkString("/")) { fullPath =>
+        <span class="divider">/ </span><a href="#path=@fullPath" class="folder-list-button" data-folderpath="@fullPath">@pathArray(i)</a>
+        }
+    }
+    }
+</span>
 }
 
 @fileRow(vfile:Vfile)={
 <tr id="fileRow@vfile.getName()">
-    	  <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
-				@if(vfile.getType() == Vfile.Filetype.FILE) { 
-					@if(vfile.getLink() != null) {
-					<td style="padding-left: 20px;" class="rowlink"><a href="#path=@vfile.getPath()" class="file-list-button" data-filepath="@vfile.getPath()"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
-					<td>@vstream.includeStream(vfile.getLink(), false, false)</td>
-					<td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
-					@confirmClearStreamDialog(vfile.getLink().id, vfile.getName())
-					} else {
-					<td class="rowlink"><i class="icon-file"></i> @vfile.getName() @fileMenu(vfile)</td>
-					<td>No stream attached...</td>
-					<td>-</td>
-					}
-				} else {
-					<td style="padding-left: 20px;"  class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()/" href="#path=@vfile.getPath()/"> @vfile.getName()</a>@fileMenu(vfile)</td>
-					<td><!--[Folder tools]--></td>
-					<td>-</td>
-				}
-				@confirmDeleteStreamDialog(vfile.getPath(), vfile.getName())
-    	</tr>
+    <!-- td><input type="checkbox" name="file_name" value="file.path"/></td -->
+    @if(vfile.getType() == Vfile.Filetype.FILE) {
+        @if(vfile.getLink() != null) {
+        <td style="padding-left: 20px;" class="rowlink"><a href="#path=@vfile.getPath()" class="file-list-button" data-filepath="@vfile.getPath()"><i class="icon-file"></i> @vfile.getName()</a>@fileMenu(vfile)</td>
+        <td>@vstream.includeStream(vfile.getLink(), false, false)</td>
+        <td>@controllers.Utils.dateFormatter( vfile.getLink().lastUpdated )</td>
+        @confirmClearStreamDialog(vfile.getLink().id, vfile.getName())
+        } else {
+        <td class="rowlink"><i class="icon-file"></i> @vfile.getName() @fileMenu(vfile)</td>
+        <td>No stream attached...</td>
+        <td>-</td>
+        }
+    } else {
+        <td style="padding-left: 20px;"  class="rowlink"><i class="icon-folder-close"></i><a class="folder-list-button" id="ID@vfile.getPath()" data-folderpath="@vfile.getPath()" href="#path=@vfile.getPath()"> @vfile.getName()</a>@fileMenu(vfile)</td>
+        <td><!--[Folder tools]--></td>
+        <td>-</td>
+    }
+    @confirmDeleteStreamDialog(vfile.getPath(), vfile.getName())
+</tr>
 }
 
 @fileMenu(vfile : Vfile)={
 <div class="dropdown">
-  <a href="#" class="rowlink dropdown-toggle" data-toggle="dropdown"></a>
-  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-	  <!-- li><a tabindex="-1" href="#"><i calss="icon-play"></i> Open</a></li -->
-		@if(vfile.getLink() != null) {
-	  <li>@vstream.followIcon(vfile.getLink(), "fileMenu", "Star", "Star", "", "btn-success")</li>
-	  <li><a href="@routes.CtrlStream.download(vfile.getLink().id)" tabindex="-1" class="" role="button"><i class="icon-download-alt"></i> Download</a></li>
-	  <li class="divider"></li>
-	  }
-	  <!-- li><a tabindex="-1" href="#"><i class="icon-share"></i> Move ...</a></li -->
-		<li><a tabindex="-1"  href="#renameBox" class="renameMenuButton" data-toggle="modal" rel="tooltip" title="Change the name" data-fileParentPath="@vfile.getParentPath()" data-filename="@vfile.getName()"><i class="icon-edit"></i> Rename ...</a></li>
-	  <li class="divider"></li>
-		@if(vfile.getLink() != null) {
-		<li><a tabindex="-1" href="#confirmClearStreamModal@vfile.getLink().id" class="" data-toggle="modal" rel="tooltip" title="Clear contents">
-			<i class="icon-remove-sign"></i>
-			Clear</a></li>
-			}		
-			<li><a tabindex="-1" href="#confirmDeleteStreamModal@vfile.getName()" class="" data-toggle="modal" rel="tooltip" title="Delete file">
-			<i class="icon-trash"></i>
-			Delete</a></li>
-	</ul>
+    <a href="#" class="rowlink dropdown-toggle" data-toggle="dropdown"></a>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <!-- li><a tabindex="-1" href="#"><i calss="icon-play"></i> Open</a></li -->
+        @if(vfile.getLink() != null) {
+            <li>@vstream.followIcon(vfile.getLink(), "fileMenu", "Star", "Star", "", "btn-success")</li>
+            <li><a href="@routes.CtrlStream.download(vfile.getLink().id)" tabindex="-1" class="" role="button"><i class="icon-download-alt"></i> Download</a></li>
+            <li class="divider"></li>
+        }
+        <!-- li><a tabindex="-1" href="#"><i class="icon-share"></i> Move ...</a></li -->
+        <li><a tabindex="-1"  href="#renameBox" class="renameMenuButton" data-toggle="modal" rel="tooltip" title="Change the name" data-fileParentPath="@vfile.getParentPath()" data-filename="@vfile.getName()"><i class="icon-edit"></i> Rename ...</a></li>
+        <li class="divider"></li>
+        @if(vfile.getLink() != null) {
+            <li><a tabindex="-1" href="#confirmClearStreamModal@vfile.getLink().id" class="" data-toggle="modal" rel="tooltip" title="Clear contents">
+                <i class="icon-remove-sign"></i>
+                Clear</a></li>
+        }
+        <li><a tabindex="-1" href="#confirmDeleteStreamModal@vfile.getName()" class="" data-toggle="modal" rel="tooltip" title="Delete file">
+            <i class="icon-trash"></i>
+            Delete</a></li>
+    </ul>
 </div>
 }
 
 @****************Contents******************@
-@** @fullpathNavigation() **@
 
-	<table class="table table-hover " id="fileTableBody">
-  <!--caption>File view</caption-->
-  <thead>
+<table class="table table-hover " id="fileTableBody">
+    <!--caption>File view</caption-->
+    <thead>
     <tr style="background-color: #f5f5f5;">
-      <!-- th>Select</th -->
-      <th class="span3">Label</th>
-			<th class="span5"></th>
-			<th class="span4">Modified</th>
+        <!-- th>Select</th -->
+        <th class="span3">Label</th>
+        <th class="span5"></th>
+        <th class="span4">Modified</th>
     </tr>
-  </thead>
-  <tbody id="folder=@path">
-	<tr style="background-color: #fcfcfc;">
-		<td><i class="icon-folder-open"></i>
-			@fullpathNavigation()
-		</td>
-		<td><!--[Folder tools]--></td>
-		<td>-</td>    	
-	</tr>
-	@if(vfiles.length > 0) {
-		@for(vfile <- vfiles) {
-			@if(vfile != null) {					
-    		@fileRow(vfile)
-    	}
+    </thead>
+    <tbody id="folder=@path">
+    <tr style="background-color: #fcfcfc;">
+        <td><i class="icon-folder-open"></i>@fullpathNavigation()</td>
+        <td><!--[Folder tools]--></td>
+        <td>-</td>
+    </tr>
+    @if(vfiles.length > 0) {
+        @for(vfile <- vfiles) {
+            @if(vfile != null && vfile.getPath != "/") {
+                @fileRow(vfile)
+            }
+        }
+    } else {
+    <tr>
+        <td>No files available! Start generating files and streams</td>
+        <td><a href="@routes.CtrlResource.resources()">Resources page</a></td>
+        <td></td>
+    </tr>
     }
-	} else {
-		<tr> 
-      	<td>No files available! Start generating files and streams</td>
-      	<td><a href="@routes.CtrlResource.resources()">Resources page</a></td>
-				<td></td>
- 	 </tr>
-	}
-  </tbody>
+    </tbody>
 </table>
 
 <div class="modal hide fade" id="renameBox" role="dialog" aria-labelledby="renameBoxModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3 id="renameBoxModalLabel">Rename file</h3>
-  </div>        
-<div class="modal-body">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="renameBoxModalLabel">Rename file</h3>
+    </div>
+    <div class="modal-body">
         <p id="renameConfirmMessage">Enter a new name:</p>
-  			<input id="renameInputBox" class="" type="text"  placeholder="Type a new name..." value="new2"></input>
-        </div>
-        <div class="modal-footer">
+        <input id="renameInputBox" class="" type="text"  placeholder="Type a new name..." value="new2"></input>
+    </div>
+    <div class="modal-footer">
         <button class="btn" id="renameConfirmFalse" data-dismiss="modal" aria-hidden="true">Cancel</button>
         <button class="btn btn-primary" id="renameConfirmTrue" >Rename</button>
-        </div>
     </div>
+</div>

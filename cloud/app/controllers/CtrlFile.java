@@ -30,10 +30,6 @@
 
 package controllers;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import logic.FileSystem;
 import models.User;
 import models.Vfile;
@@ -43,147 +39,149 @@ import play.mvc.Result;
 import play.mvc.Security;
 import views.html.filesPage;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class CtrlFile extends Controller {
 
-	@Security.Authenticated(Secured.class)
-	public static Result getFiles() {
-		User currentUser = Secured.getCurrentUser();
-		List<Vfile> vfiles = FileSystem.listFiles(currentUser);
-		Map<String, String> fileTree = new HashMap<String, String>(vfiles.size()+1);
-		for(Vfile vf : vfiles) {
-			vf.getPath();
-		}
+    @Security.Authenticated(Secured.class)
+    public static Result getFiles() {
+        User currentUser = Secured.getCurrentUser();
+        List<Vfile> vfiles = FileSystem.listFiles(currentUser);
+        Map<String, String> fileTree = new HashMap<String, String>(vfiles.size() + 1);
+        for (Vfile vf : vfiles) {
+            vf.getPath();
+        }
 
-		return TODO;
-	}
+        return TODO;
+    }
 
-	/** Generates a path listing
-	 * @param path: the folder to explore
-	 * @param full: whether to generate the full html page or only the table body
-	 * @returns: an html page representing the result
-	 * */
-	@Security.Authenticated(Secured.class)
-	public static Result browse(String path) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
-		if( path.trim().equalsIgnoreCase("") || path.trim().equalsIgnoreCase("/")) {
-			return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
-					""));
-		}
+    /**
+     * Generates a path listing
+     *
+     * @param path: the folder to explore
+     * @returns: an html page representing the result
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result browse(String path) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path).trim();
 
-		Vfile vfile = FileSystem.read(currentUser, path);
-		if(vfile == null) {
-			return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
-					"Not found!"));
-			}
-		if (vfile.isFile() && vfile.getLink() != null) {
-			return Application.viewStream(vfile.getLink().id);
-		} else if (vfile.isDir()) {
-			return ok(filesPage.render(FileSystem.lsDir(currentUser, path), path,
-					""));
-		} else {
-			return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/",
-					"Not found!"));
-		}
-	}
+        if (path.equalsIgnoreCase("") || path.equalsIgnoreCase("/")) {
+            return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", ""));
+        }
 
-	//gives partial page for ajax requests
-	@Security.Authenticated(Secured.class)
-	public static Result miniBrowse(String path) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
+        Vfile vfile = FileSystem.read(currentUser, path);
+        if (vfile == null) {
+            return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", "Not found!"));
+        }
+        if (vfile.isFile() && vfile.getLink() != null) {
+            return Application.viewStream(vfile.getLink().id);
+        } else if (vfile.isDir()) {
+            return ok(filesPage.render(FileSystem.lsDir(currentUser, path), path, ""));
+        } else {
+            return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", "Not found!"));
+        }
+    }
 
-		if( path.trim().equalsIgnoreCase("") || path.trim().equalsIgnoreCase("/")) {
-			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
-		}
-		Vfile vfile = FileSystem.read(currentUser, path);
-		if(vfile == null) {
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
-		}
-		if(vfile.isFile() && vfile.getLink() != null) {
-			return Application.ajaxViewStream(vfile.getLink().id);
-		} else if(vfile.isDir()) {
-	    return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,path), path));
-		} else {
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
-		}
-	}
+    //gives partial page for ajax requests
+    @Security.Authenticated(Secured.class)
+    public static Result miniBrowse(String path) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path).trim();
 
-	@Security.Authenticated(Secured.class)
-	public static Result delete(String path) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
-		boolean success = FileSystem.deleteFile(currentUser, path);
-		if (success)
-			return ok("true");
-		else
-			return notFound("false");
-	}
+        if (path.equalsIgnoreCase("") || path.equalsIgnoreCase("/")) {
+            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+        }
 
-	@Security.Authenticated(Secured.class)
-	public static Result move(String path, String newPath) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
-		boolean success = FileSystem.moveFile(currentUser, path, newPath);
-		if (success)
-			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, Vfile.extractUpperLevelPath(newPath)), Vfile.extractUpperLevelPath(newPath)));
-		else
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
-	}
+        Vfile vfile = FileSystem.read(currentUser, path);
+        if (vfile == null) {
+            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+        }
+        if (vfile.isFile() && vfile.getLink() != null) {
+            return Application.ajaxViewStream(vfile.getLink().id);
+        } else if (vfile.isDir()) {
+            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, path), path));
+        } else {
+            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+        }
+    }
 
-	@Security.Authenticated(Secured.class)
-	public static Result createDir(String path) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
-		boolean success = (FileSystem.createDirectory(currentUser, path) != null);
-		if (success)
-			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, Vfile.extractUpperLevelPath(path)),Vfile.extractUpperLevelPath(path)));
-		else
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, "/"), "/"));
-	}
+    @Security.Authenticated(Secured.class)
+    public static Result delete(String path) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path);
+        boolean success = FileSystem.deleteFile(currentUser, path);
+        if (success)
+            return ok("true");
+        else
+            return notFound("false");
+    }
 
-	@Security.Authenticated(Secured.class)
-	public static Result createFile(String path) {
-		User currentUser = Secured.getCurrentUser();
-		path = Utils.decodePath(path);
-		boolean success = false;
-		Vfile f = null;
-		if (!FileSystem.exists(currentUser, path)) {
-			f = FileSystem.createFile(currentUser, path);
-			success = ( f != null );
-		}
-		if (success)
-			return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-					currentUser, f.getParentPath()), f.getParentPath()));
-		else
-			return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser,"/"), "/"));
-	}
+    @Security.Authenticated(Secured.class)
+    public static Result move(String path, String newPath) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path);
+        boolean success = FileSystem.moveFile(currentUser, path, newPath);
+        if (success)
+            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+                    currentUser, Vfile.extractUpperLevelPath(newPath)), Vfile.extractUpperLevelPath(newPath)));
+        else
+            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+                    currentUser, Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
+    }
 
-	private static void parsePath(Vfile vfile) {
-		String path = vfile.getPath();
-		User user = vfile.getOwner();
-		int i=0;
-		int sep=2;
-		while ( (sep=path.indexOf('/',sep)) != -1 ) { // for each subdir into path
-			String ancestors = path.substring(0, sep);
-			if (FileSystem.isDir(user, ancestors)) { // if parent is a dir
-				//create dir
-				FileSystem.createDirectory(user, ancestors);
-			} else if (FileSystem.isFile(user, path)) { // if it is a file
-				// complain
-				Logger.info("Path already exists as a file: "+path);
-			} else if (FileSystem.isFile(user, ancestors)) {
-				// complain
-				Logger.error("Subpath already exists as a file: "+ancestors);
-				//return null;
-			}
-		}
-	}
+    @Security.Authenticated(Secured.class)
+    public static Result createDir(String path) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path);
+        boolean success = (FileSystem.createDirectory(currentUser, path) != null);
+        if (success)
+            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+                    currentUser, Vfile.extractUpperLevelPath(path)), Vfile.extractUpperLevelPath(path)));
+        else
+            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+                    currentUser, "/"), "/"));
+    }
 
+    @Security.Authenticated(Secured.class)
+    public static Result createFile(String path) {
+        User currentUser = Secured.getCurrentUser();
+        path = Utils.decodePath(path);
+        boolean success = false;
+        Vfile f = null;
+        if (!FileSystem.exists(currentUser, path)) {
+            f = FileSystem.createFile(currentUser, path);
+            success = (f != null);
+        }
+        if (success)
+            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+                    currentUser, f.getParentPath()), f.getParentPath()));
+        else
+            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+    }
+
+    private static void parsePath(Vfile vfile) {
+        String path = vfile.getPath();
+        User user = vfile.getOwner();
+        int i = 0;
+        int sep = 2;
+        while ((sep = path.indexOf('/', sep)) != -1) { // for each subdir into path
+            String ancestors = path.substring(0, sep);
+            if (FileSystem.isDir(user, ancestors)) { // if parent is a dir
+                //create dir
+                FileSystem.createDirectory(user, ancestors);
+            } else if (FileSystem.isFile(user, path)) { // if it is a file
+                // complain
+                Logger.info("Path already exists as a file: " + path);
+            } else if (FileSystem.isFile(user, ancestors)) {
+                // complain
+                Logger.error("Subpath already exists as a file: " + ancestors);
+                //return null;
+            }
+        }
+    }
 
 
 }
