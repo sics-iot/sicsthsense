@@ -31,8 +31,7 @@ import models.User
 import models.Vfile
 import play.api.Logger
 import play.db.ebean.Transactional
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.mutable
+import scala.collection.JavaConversions.iterableAsScalaIterable
 import scalax.file.Path
 
 object FileSystem {
@@ -75,49 +74,35 @@ object FileSystem {
     Argument.notNull(user)
 
     val sb: StringBuffer = new StringBuffer
-    val files: mutable.Buffer[Vfile] = Vfile.find.where.eq("owner_id", user.id).orderBy("path asc").findList
 
-    var prevdepth: Int = 0
-    var prevdirs: Array[String] = Array()
-
-    // Loop through all files and directories but ignore the root
-    for { f <- files if f.getPath != "/" } {
-      // Split the path segments and calculate the depth of the file
-      val dirs: Array[String] = f.getPath.split("/")
-      val depth: Int = dirs.length - 1
-
-      // Count how many path segments the current file shares with the previous one
-      val sharedAncestors = (dirs, prevdirs).zipped.takeWhile {
-        case (a, b) => a == b
-      }.size
-
-      // For all segments that the previous file had more than we, close the <li>
-      for (i <- sharedAncestors until prevdepth) {
-        sb.append("</ul></li>\n")
-      }
-
-      // Remember current stats for the next iteration
-      prevdirs = dirs
-      prevdepth = depth
-
-      // If the current file is a directory then create a new directory node with its name
-      if (f.isDir) {
+    def print(list: List[Vfile]): Unit = list match {
+      case f :: tail if f.getPath == "/" =>
+        // Ignore root folder
+        print(tail)
+      case f :: tail if f.isDir =>
         sb.append("<li class='jstree-open'><i class='icon-folder-open hideFolder'></i><span class='dirNode' data-filepath='")
         sb.append(f.getPath)
         sb.append("'> ")
-        sb.append(dirs(depth))
+        sb.append(f.getName)
         sb.append("</span>\n<ul class='folderNodeUL'>\n")
-      } else {
-        // If the current file is a file then decrement the depth for the next iteration so
-        // that it does not assume this file was a directory.
-        prevdepth -= 1
+
+        val (inside, rest) = tail.partition(_.getPath.startsWith(f.getPath))
+        print(inside)
+        sb.append("</ul></li>\n")
+
+        print(rest)
+      case f :: tail if f.isFile =>
         sb.append("<li class='jstree-leaf'><i class='icon-file'></i><span class='fileNode' data-filepath='")
         sb.append(f.getPath)
         sb.append("'> ")
-        sb.append(dirs(depth))
+        sb.append(f.getName)
         sb.append("</span></li>\n")
-      }
+
+        print(tail)
+      case _ => // ignore the rest
     }
+
+    print(Vfile.find.where.eq("owner_id", user.id).orderBy("path asc").findList().to[List])
 
     return sb.toString
   }
@@ -295,4 +280,17 @@ object FileSystem {
       true
     }
   }
+
+  def getName(path: String): String =
+    Option(path)
+      .map(Path.fromString)
+      .map(_.name)
+      .getOrElse("")
+
+  def getParentPath(path: String): String =
+    Option(path)
+      .map(Path.fromString)
+      .flatMap(_.parent)
+      .map(_.path)
+      .getOrElse("")
 }

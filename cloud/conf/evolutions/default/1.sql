@@ -139,7 +139,7 @@ create table users (
 create table vfiles (
   id                        bigint auto_increment not null,
   path                      varchar(255) not null,
-  owner_id                  bigint,
+  owner_id                  bigint not null,
   type                      varchar(1) not null,
   linked_stream_id          bigint,
   constraint ck_vfiles_type check (type in ('F','D')),

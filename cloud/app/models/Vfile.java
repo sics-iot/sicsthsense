@@ -32,6 +32,7 @@ package models;
 
 import com.avaje.ebean.annotation.EnumValue;
 import logic.Argument;
+import logic.FileSystem;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import scala.Option;
@@ -75,7 +76,7 @@ public class Vfile extends Model {
     @OneToOne(cascade = {CascadeType.ALL})
     Stream linkedStream;
 
-    public static Finder<Long, Vfile> find = new Finder<Long, Vfile>(Long.class, Vfile.class);
+    public static Model.Finder<Long, Vfile> find = new Model.Finder<Long, Vfile>(Long.class, Vfile.class);
 
     public Vfile(String path, User owner, Filetype type, Stream linkedStream) {
         super();
@@ -127,25 +128,11 @@ public class Vfile extends Model {
     }
 
     public String getName() {
-        if (path == null) {
-            return null;
-        }
-
-        return Path.fromString(path).name();
+        return FileSystem.getName(path);
     }
 
     public String getParentPath() {
-        if (path == null) {
-            return null;
-        }
-
-        Option<DefaultPath> parent = Path.fromString(path).parent();
-
-        if (parent.isDefined()) {
-            return parent.get().path();
-        } else {
-            return "";
-        }
+        return FileSystem.getParentPath(path);
     }
 
     public void setLink(Stream linkedStream) {
