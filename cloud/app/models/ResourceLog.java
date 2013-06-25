@@ -70,8 +70,10 @@ public class ResourceLog extends Model {
         Push,
         @EnumValue("D")
         Pull,
+        @EnumValue("P")
+        Proxy,
         @EnumValue("O")
-        Proxy
+        Observe
     }
 
     public InteractionType interactionType = InteractionType.Push;
@@ -120,6 +122,33 @@ public class ResourceLog extends Model {
             log.interactionType = InteractionType.Push;
 
             log.setCreationTimestamp(creationTimestamp);
+        } catch (Exception e) {
+            Logger.error(e.getMessage() + e.getStackTrace()[0].toString() + e.toString());
+        }
+
+        return log;
+    }
+
+    public static ResourceLog fromResponse(Resource resource, Response response) {
+        Argument.notNull(resource);
+        Argument.notNull(response);
+
+        ResourceLog log = new ResourceLog();
+
+        try {
+            log.resource = resource;
+            log.method = response.request().method();
+            log.uri = response.uri().toString();
+            log.headers =
+                    "Status " + response.statusText() + "\n" + HeaderNames.CONTENT_TYPE + " "
+                            + response.contentType() + "\n" + HeaderNames.CONTENT_ENCODING
+                            + " " + response.contentEncoding() + "\n"
+                            + HeaderNames.CONTENT_LENGTH + " " + response.contentLength()
+                            + "\n";
+            log.interactionType = InteractionType.Observe;
+
+            log.setCreationTimestamp(Utils.currentTime());
+            log.setResponseTimestamp(Utils.currentTime());
         } catch (Exception e) {
             Logger.error(e.getMessage() + e.getStackTrace()[0].toString() + e.toString());
         }

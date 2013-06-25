@@ -41,16 +41,41 @@ import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationLong
-import scala.util.Failure
-import scala.util.Success
+import scala.util.{Try, Failure, Success}
+import rx.Subscription
+import rx.subscriptions.Subscriptions
+import protocol.Response
 
 
-sealed trait PollingMessage
+sealed trait UpdateMessage
 
-case class Poll(id: Long, period: Long) extends PollingMessage
+case class Poll(id: Long, period: Long) extends UpdateMessage
 
-class Poller extends Actor {
+case class Observe(id: Long, failures: Int) extends UpdateMessage
+
+case class StopObserve(id: Long) extends UpdateMessage
+
+private case class Notification(id: Long, response: Response) extends UpdateMessage
+
+private case class NotificationError(id: Long, t: Throwable, failures: Int) extends UpdateMessage
+
+
+class Updater extends Actor {
+  private val MAX_FAILURES = 5
+
   private val logger = Logger(this.getClass)
+  private var observing = Map.empty[Long, Subscription]
+
+  override def postStop() {
+    for ((id, sub) <- observing) {
+      try {
+        logger.info(s"Updater is shutting down and thus stops observing resource '$id'")
+        sub.unsubscribe()
+      } catch {
+        case t: Throwable => logger.error(s"Error while stopping observe of resource '$id'", t)
+      }
+    }
+  }
 
   def receive = {
     case p@Poll(id, period) =>
@@ -95,20 +120,90 @@ class Poller extends Actor {
 
       response.onComplete {
         case Success(_) =>
-          Poller.schedulePoll(resource.id, resource.pollingPeriod)
+          Updater.schedulePoll(resource.id, resource.pollingPeriod)
         case Failure(_: NoSuchElementException) =>
         // ignore, a filter triggered in the for comprehension
         case Failure(t) =>
           logger.error("Error while polling", t)
-          Poller.schedulePoll(resource.id, resource.pollingPeriod)
+          Updater.schedulePoll(resource.id, resource.pollingPeriod)
+      }
+    case Observe(id, failures) =>
+      val resource = Resource.getById(id)
+
+      if (resource.updateMode == UpdateMode.Observe && !observing.contains(id)) {
+        logger.debug(s"Observing $id, ${resource.getUrl()}, ${resource.updateMode}")
+
+        val sub =
+          resource
+            .observe()
+            .subscribe(
+          {
+            (res: Response) => self ! Notification(id, res)
+          }, {
+            (err: Throwable) => self ! NotificationError(id, err, failures)
+          }
+          )
+
+        observing = observing.updated(id, sub)
+      }
+    case StopObserve(id) =>
+      val resource = Resource.getById(id)
+
+      if (resource.updateMode == UpdateMode.Observe && observing.contains(id)) {
+        observing(id).unsubscribe()
+        observing -= id
+
+        resource.updateMode =
+          if (resource.pollingPeriod > 0) UpdateMode.Poll
+          else UpdateMode.Push
+
+        logger.info(s"Stopping to observe resource '$id' and switching back to ${resource.updateMode} mode")
+
+        ResourceHub.updateResource(id, resource)
+      }
+    case Notification(id, res) =>
+      val resource = Resource.getById(id)
+
+      logger.info(s"Received notification from resource $id")
+
+      val repr = Representation.fromResponse(res, resource)
+      repr.save()
+      logger.debug(s"Stored Representation for resource $id")
+
+      val log = ResourceLog.fromResponse(resource, res)
+      log.save()
+      logger.debug(s"Stored ResourceLog for resource $id")
+
+      for (sp <- StreamParser.forResource(resource)) {
+        val data = sp.parse(res.body, res.contentType)
+        sp.stream.post(data, Utils.currentTime())
+      }
+      logger.debug(s"Updated Streams for resource $id")
+    case NotificationError(id, err, failures) =>
+      val resource = Resource.getById(id)
+
+      logger.warn(s"Resource '$id' has now $failures failures", err)
+      observing -= id
+
+      if (failures > MAX_FAILURES) {
+        resource.updateMode =
+          if (resource.pollingPeriod > 0) UpdateMode.Poll
+          else UpdateMode.Push
+
+        logger.warn(s"Resource '$id' had more than $MAX_FAILURES failures and is now switched back to ${resource.updateMode} mode")
+
+        ResourceHub.updateResource(id, resource)
+
+      } else {
+        self ! Observe(id, failures)
       }
   }
 }
 
-object Poller {
+object Updater {
   private lazy val system = Akka.system(play.api.Play.current)
   private lazy val scheduler = system.scheduler
-  private lazy val poller = system.actorOf(Props[Poller])
+  private lazy val poller = system.actorOf(Props[Updater])
 
   def initialize: Unit = synchronized {
     val pollResources = Resource.find.where()
@@ -116,12 +211,21 @@ object Poller {
       .select("id, pollingPeriod")
       .findIterate()
 
-    val count = pollResources.map { res => schedulePoll(res.id, res.pollingPeriod)}.size
+    val count = pollResources.map {
+      res => schedulePoll(res.id, res.pollingPeriod)
+    }.size
 
     Logger.info(s"Started polling on $count resources")
   }
 
   def schedulePoll(id: Long, seconds: Long): Cancellable = {
     scheduler.scheduleOnce(seconds.seconds, poller, Poll(id, seconds))
+  }
+
+  def observe(id: Long): Subscription = {
+    poller ! Observe(id, 0)
+    Subscriptions.create {
+      poller ! StopObserve(id)
+    }
   }
 }

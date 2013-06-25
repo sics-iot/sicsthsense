@@ -96,11 +96,27 @@ object ResourceHub {
     val stored = Resource.create(res)
 
     if (stored.updateMode == UpdateMode.Poll && stored.pollingPeriod > 0) {
-      Poller.schedulePoll(stored.id, stored.pollingPeriod)
+      Updater.schedulePoll(stored.id, stored.pollingPeriod)
     }
 
     stored
   })
+
+  def updateResource(id: Long, changes: Resource): Result[Resource] =
+    Result(Try {
+      val res = Resource.getById(id)
+      val oldMode = res.updateMode
+      val oldTime = res.pollingPeriod
+
+      res.updateResource(changes)
+
+      if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
+        && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
+        Updater.schedulePoll(res.id, res.pollingPeriod)
+      }
+
+      res
+    })
 
   def updateResource(
     id: Long,
@@ -126,7 +142,7 @@ object ResourceHub {
 
       if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
         && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
-        Poller.schedulePoll(res.id, res.pollingPeriod)
+        Updater.schedulePoll(res.id, res.pollingPeriod)
       }
 
       res

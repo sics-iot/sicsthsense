@@ -25,7 +25,7 @@
  */
 
 
-import logic.Poller
+import logic.Updater
 import play.api.Application
 import play.api.GlobalSettings
 import play.api.Logger
@@ -37,7 +37,7 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     Logger.info("Application has started")
 
-    Poller.initialize
+    Updater.initialize
 
     val coapServer = new CoapServer(app.configuration.getInt("coap.port").get)
     coapServer.start()
