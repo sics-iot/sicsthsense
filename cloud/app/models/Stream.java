@@ -35,6 +35,7 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.annotation.EnumValue;
 import controllers.Utils;
 import logic.Argument;
+import logic.FileSystem;
 import play.Logger;
 import play.db.ebean.Model;
 
@@ -110,19 +111,19 @@ public class Stream extends Model implements Comparable<Stream> {
     public Resource resource;
 
     // should this be a field in the table? (i.e. not mappedBy)?
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "linkedStream")
+    @OneToOne(optional = false, cascade = {CascadeType.ALL})
     public Vfile file;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
     public List<DataPointString> dataPointsString;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
     public List<DataPointDouble> dataPointsDouble;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
     public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "followedStreams")
+    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "followedStreams")
     public List<User> followingUsers = new ArrayList<User>();
 
     public Stream(User user, Resource resource, StreamType type) {
@@ -353,6 +354,14 @@ public class Stream extends Model implements Comparable<Stream> {
         return file.getPath().compareTo(other.file.getPath());
     }
 
+    @Override
+    public void delete() {
+        if (file != null) {
+            file.delete();
+        }
+        super.delete();
+    }
+
     /**
      * Create a persisted stream
      */
@@ -370,7 +379,36 @@ public class Stream extends Model implements Comparable<Stream> {
     public static Stream create(Stream stream) {
         Argument.notNull(stream);
         Argument.notNull(stream.owner);
+        Argument.notNull(stream.file);
 
+        stream.save();
+
+        return stream;
+    }
+
+    public static Stream create(String path, Stream stream) {
+        Argument.notNull(stream);
+        Argument.notNull(stream.owner);
+        Argument.absolutePath(path);
+
+        Vfile f = FileSystem.read(stream.owner, path);
+
+        if (f == null) {
+            f = FileSystem.createFile(stream.owner, path);
+        } else if (f.getType() == Vfile.Filetype.DIR) {
+            String fileName;
+
+            for (int i = 0; ; ++i) {
+                fileName = path + "\\newstream" + Integer.toString(i);
+
+                if (!FileSystem.exists(stream.owner, fileName))
+                    break;
+            }
+
+            f = FileSystem.createFile(stream.owner, fileName);
+        }
+
+        stream.file = f;
         stream.save();
 
         return stream;
@@ -386,17 +424,16 @@ public class Stream extends Model implements Comparable<Stream> {
         return find.where().eq("key", key).findUnique();
     }
 
-    public static Stream getByUserPath(String username, String path) {
-        User user = User.getByUserName(username);
-        if (user == null) {
-            Logger.warn("Can't find user: " + username);
-            return null;
-        }
-        Logger.warn(username + " " + user.id + " path " + path);
-        Vfile file = Vfile.find.where().eq("owner_id", user.id).eq("path", path).findUnique();
+    public static Stream getByUserPath(User user, String path) {
+        Argument.notNull(user);
+        Argument.absolutePath(path);
+
+        Vfile file = FileSystem.read(user, path);
+
         if (file == null) {
             return null;
         }
+
         return file.linkedStream;
     }
 

@@ -331,38 +331,19 @@ public class StreamParser extends Model {
     }
 
     @Transactional
-    private Vfile getOrCreateStreamFile(String path) {
-        Argument.notEmpty(path);
+    private Stream getOrCreateStream(String path) {
+        Argument.absolutePath(path);
 
         State.notNull(resource);
         State.notNull(resource.owner);
 
-        Vfile f = FileSystem.read(resource.owner, path);
+        Stream s = Stream.getByUserPath(resource.owner, path);
 
-        if (f == null) {
-            f = FileSystem.createFile(resource.owner, path);
-        } else if (f.getType() == Vfile.Filetype.DIR) {
-            String fileName;
-
-            for (int i = 0; ; ++i) {
-                fileName = path + "\\newstream" + Integer.toString(i);
-
-                if (!FileSystem.exists(resource.owner, fileName))
-                    break;
-            }
-
-            f = FileSystem.createFile(resource.owner, fileName);
+        if (s == null) {
+            Stream.create(path, new Stream(resource.owner, resource));
         }
 
-        Stream stream = f.getLink();
-
-        if (stream == null) {
-            stream = Stream.create(new Stream(resource.owner, resource));
-            f.setLink(stream);
-            logger.info("Creating stream for user: " + resource.owner.getUserName() + ",at: " + path);
-        }
-
-        return f;
+        return s;
     }
 
     public static StreamParser create(StreamParser parser) {
@@ -373,11 +354,12 @@ public class StreamParser extends Model {
     }
 
     public static StreamParser create(String streamPath, StreamParser parser) {
+        Argument.absolutePath(streamPath);
         Argument.notNull(parser.resource);
         Argument.notNull(parser.inputParser);
 
         if (parser.stream == null) {
-            parser.stream = parser.getOrCreateStreamFile(streamPath).linkedStream;
+            parser.stream = parser.getOrCreateStream(streamPath);
 
             if (parser.stream.type == Stream.StreamType.UNDEFINED) {
                 parser.stream.type = Stream.StreamType.DOUBLE;

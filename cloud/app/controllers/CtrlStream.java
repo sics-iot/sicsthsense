@@ -307,14 +307,14 @@ public class CtrlStream extends Controller {
 	public static Result getByUserPath(String username, String path, Long tail,
 			Long last, Long since) {
 		path=Utils.decodePath(path);
-		final Stream stream = Stream.getByUserPath(username,"/"+path);
-		final User owner = User.getByUserName(username);
-		final User currentUser = Secured.getCurrentUser();
-		if (stream == null) { return notFound(); }
-		if (!stream.canRead(currentUser)) {
+        final User currentUser = Secured.getCurrentUser();
+		final Stream stream = Stream.getByUserPath(currentUser,"/"+path);
+
+		if (stream == null || !stream.canRead(currentUser)) {
 			// don't reveal this stream exists
 			return notFound();
 		}
+
 		return getData(currentUser, stream, tail, last, since);
 	}
 
@@ -323,9 +323,8 @@ public class CtrlStream extends Controller {
 		if (user == null) {
 			return notFound();
 		}
-		String username = user.userName;
 		path = Utils.decodePath(path);
-		final Stream stream = Stream.getByUserPath(username, "/" + path);
+		final Stream stream = Stream.getByUserPath(user, "/" + path);
 		if (stream == null)
 			return notFound();
 		return post(user, stream);

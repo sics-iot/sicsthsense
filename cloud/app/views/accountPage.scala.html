@@ -1,86 +1,86 @@
-@(user: User, userForm: Form[User]=null, newPassword: String="", message: String="")
+@(user: User, userForm: Form[User] = null, newPassword: String = "", message: String = "")
 
-@import helper._
 
-@displayUser(user: User) = {
-   @forms.form(routes.CtrlUser.submit()) {
-	    @if(userForm!=null) { 
-	    <div class="controls controls-row">
-	     @forms.input(userForm!=null, "submit", "update", "", "Update","btn btn-primary")
-	   	 <a class="btn btn-danger" href="@routes.CtrlUser.resetToken(true)">Reset secret token!</a>
-	   	 <a class="btn" href="@routes.CtrlUser.get()">Cancel</a>
-			</div>
-	    } else { 
-	    <div class="controls controls-row">
-	   	 <a class="btn" href="@routes.CtrlUser.edit()">Edit</a>
-			</div>
-	    }
+    @displayUser(user: User) = {
+        @forms.form(routes.CtrlUser.submit()) {
+            @if(userForm != null) {
+                <div class="controls controls-row">
+                    @forms.input(userForm != null, "submit", "update", "", "Update", "btn btn-primary")
+                    <a class="btn btn-danger" href="@routes.CtrlUser.resetToken(true)">Reset secret token!</a>
+                    <a class="btn" href="@routes.CtrlUser.get()">Cancel</a>
+                </div>
+            } else {
+                <div class="controls controls-row">
+                    <a class="btn" href="@routes.CtrlUser.edit()">Edit</a>
+                </div>
+            }
 
-   	  <legend>Welcome @user.userName!</legend>
-   	  @forms.input(userForm!=null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
-	    @forms.input(userForm!=null, "text", "userName", "Username", user.userName)
-   	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(),"", true)
-	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
-	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
-	    @forms.textarea(userForm!=null, "", "description", "Description", user.description)
-	    
-			<fieldset>
-			<legend>Location</legend>
- 			@forms.inputdouble(userForm!=null, "number", "latitude",  "Latitude",  user.latitude.toString())   
-	    @forms.inputdouble(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString())
-			<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
-			<br />
-			<div class="row-fluid">
-			</div>
-			</fieldset>
-			<br />
-  }
- <script type="text/javascript">
+            <legend>Welcome @user.userName!</legend>
+            @forms.input(userForm != null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
+            @forms.input(userForm != null, "text", "userName", "Username", user.userName)
+            @forms.input(userForm != null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(), "", true)
+            @forms.input(userForm != null, "text", "firstName", "First name", user.firstName)
+            @forms.input(userForm != null, "text", "lastName", "Last name", user.lastName)
+            @forms.textarea(userForm != null, "", "description", "Description", user.description)
+
+            <fieldset>
+                <legend>Location</legend>
+                @forms.inputdouble(userForm != null, "number", "latitude", "Latitude", user.latitude.toString())
+                @forms.inputdouble(userForm != null, "number", "longitude", "Longitude", user.longitude.toString())
+                <div id="map-canvas" style="width: 600px; height: 300px; float: left; border: 1px solid black;"></div>
+                <br />
+                <div class="row-fluid">
+                </div>
+            </fieldset>
+            <br />
+        }
+        <script type="text/javascript">
 	     initializeMaps = function(e) {
-	        var mapOptions = {
-	          center: new google.maps.LatLng(@user.latitude, @user.longitude),
-						@if(user.latitude==0 && user.longitude==0) {
-							zoom: 1,
-						} else {
-							zoom: 7,
-						}
-	          mapTypeId: google.maps.MapTypeId.ROADMAP
-	        };
-	        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-					marker = new google.maps.Marker({
-						position: new google.maps.LatLng(@user.latitude, @user.longitude),
-						draggable:true,
-						animation:false,
-						map: map
-	      });
-				google.maps.event.addListener(marker, 'dragend', function(event) {
-	        document.getElementById("LatitudeID").value   = this.getPosition().lat(); 
-	        document.getElementById("LongitudeID").value = this.getPosition().lng();
-	       // $('.streamLat').val(this.getPosition().lat() );
-	        //$('.streamLong').val(this.getPosition().lng() );
-				});
-	}
-	      google.maps.event.addDomListener(window, 'load', initializeMaps);
-		</script>
-}
+            var mapOptions = {
+            center: new google.maps.LatLng(@user.latitude, @user.longitude),
+            @if(user.latitude == 0 && user.longitude == 0) {
+                zoom: 1,
+            } else {
+                zoom: 7,
+            }
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+            marker = new google.maps.Marker({
+            position: new google.maps.LatLng(@user.latitude, @user.longitude),
+            draggable:true,
+            animation:false,
+            map: map
+            });
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+            document.getElementById("LatitudeID").value   = this.getPosition().lat();
+            document.getElementById("LongitudeID").value = this.getPosition().lng();
+            // $('.streamLat').val(this.getPosition().lat() );
+            //$('.streamLong').val(this.getPosition().lng() );
+            });
+            }
+            google.maps.event.addDomListener(window, 'load', initializeMaps);
+        </script>
+    }
 
-@layout("Account", message, session) {
-<div class="row-fluid">
-	<div class="span2 bs-docs-sidebar">
-		
-	</div>
-	<div class="span9">
-  @displayUser(user)
-	<br />
-	@if(controllers.Application.canPasswordLogin()) {
-			@helper.form(action = routes.CtrlUser.resetPassword(true)) {
-			<legend>For local access:</legend>   	     	  
-			@if(newPassword!=null && newPassword!="") {
-				@forms.input(userForm!=null, "text", "newPassword", "New Password", newPassword,"", true)
-			}
-				<a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
-			}
-				</div>
-		}
-		<br />
-}
+    @layout("Account", message, session) {
+        <div class="row-fluid">
+            <div class="span2 bs-docs-sidebar">
+
+            </div>
+            <div class="span9">
+                @displayUser(user)
+                <br />
+                @if(controllers.Application.canPasswordLogin()) {
+                    @helper.form(action = routes.CtrlUser.resetPassword(true)) {
+                        <legend>For local access:</legend>
+                        @if(newPassword != null && newPassword != "") {
+                            @forms.input(userForm != null, "text", "newPassword", "New Password", newPassword, "", true)
+                        }
+                        <a class="btn btn-warning" href="@routes.CtrlUser.resetPassword(true)">Reset password!</a>
+                    }
+                </div>
+            }
+            <br />
+        </div>
+    }

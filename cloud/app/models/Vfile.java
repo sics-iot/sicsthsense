@@ -35,9 +35,6 @@ import logic.Argument;
 import logic.FileSystem;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
-import scala.Option;
-import scalax.file.Path;
-import scalax.file.defaultfs.DefaultPath;
 
 import javax.persistence.*;
 
@@ -53,11 +50,10 @@ public class Vfile extends Model {
     @Id
     public Long id;
 
-    @Column(nullable = false)
     @Constraints.Required
+    @Column(nullable = false)
     String path;
 
-    @Column(name = "owner_id")
     @Constraints.Required
     @ManyToOne(optional = false, cascade = {CascadeType.ALL})
     User owner;
@@ -69,11 +65,11 @@ public class Vfile extends Model {
         DIR
     }
 
-    @Column(nullable = false)
     @Constraints.Required
+    @Column(nullable = false)
     public Filetype type;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "file", cascade = {CascadeType.ALL})
     Stream linkedStream;
 
     public static Model.Finder<Long, Vfile> find = new Model.Finder<Long, Vfile>(Long.class, Vfile.class);

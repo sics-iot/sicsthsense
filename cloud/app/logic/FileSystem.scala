@@ -43,7 +43,7 @@ object FileSystem {
   def listFiles(user: User): java.util.List[Vfile] = {
     Argument.notNull(user)
 
-    return Vfile.find.where.eq("owner_id", user.id).orderBy("path").findList
+    return Vfile.find.where.eq("owner", user).orderBy("path").findList
   }
 
   /** LS into a dir */
@@ -58,7 +58,7 @@ object FileSystem {
     return Vfile.find
       .where(
       Expr.and(
-        Expr.eq("owner_id", user.id),
+        Expr.eq("owner", user),
         Expr.and(
           Expr.startsWith("path", p),
           Expr.not(Expr.like("path", p + "%/%"))
@@ -102,7 +102,7 @@ object FileSystem {
       case _ => // ignore the rest
     }
 
-    print(Vfile.find.where.eq("owner_id", user.id).orderBy("path asc").findList().to[List])
+    print(Vfile.find.where.eq("owner", user).orderBy("path asc").findList().to[List])
 
     return sb.toString
   }
@@ -170,7 +170,7 @@ object FileSystem {
 
     return Vfile.find
       .where
-      .eq("owner_id", user.id)
+      .eq("owner", user)
       .eq("path", path)
       .findUnique()
   }
@@ -180,7 +180,7 @@ object FileSystem {
     Argument.absolutePath(path)
 
     return Vfile.find
-      .where.eq("owner_id", user.id)
+      .where.eq("owner", user)
       .eq("path", path)
       .findRowCount() == 1
   }
@@ -191,7 +191,7 @@ object FileSystem {
 
     return Vfile.find
       .where
-      .eq("owner_id", user.id)
+      .eq("owner", user)
       .eq("path", path)
       .eq("type", Vfile.Filetype.DIR)
       .findRowCount() == 1
@@ -207,7 +207,7 @@ object FileSystem {
 
     return Vfile.find
       .where
-      .eq("owner_id", user.id)
+      .eq("owner", user)
       .startsWith("path", path)
       .findRowCount() == 0
   }
@@ -218,7 +218,7 @@ object FileSystem {
 
     return Vfile.find
       .where
-      .eq("owner_id", user.id)
+      .eq("owner", user)
       .eq("path", path)
       .eq("type", Vfile.Filetype.FILE)
       .findRowCount() == 1
