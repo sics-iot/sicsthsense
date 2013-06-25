@@ -340,7 +340,7 @@ public class StreamParser extends Model {
         Stream s = Stream.getByUserPath(resource.owner, path);
 
         if (s == null) {
-            Stream.create(path, new Stream(resource.owner, resource));
+            s = Stream.create(path, new Stream(resource.owner, resource));
         }
 
         return s;

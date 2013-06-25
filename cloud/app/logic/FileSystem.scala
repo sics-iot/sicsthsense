@@ -117,22 +117,20 @@ object FileSystem {
     logger.info(s"Creating path $path")
 
     for (parent <- p.parents.reverse :+ p) {
-      if (!exists(user, parent.path)) {
-        Vfile.create(new Vfile(user, parent.path, Vfile.Filetype.DIR))
-      } else {
-        val file = read(user, parent.path)
+      val file = read(user, parent.path)
 
-        if (file.isDir) {
-          // Do nothing, everything is fine
-        } else if (file.isFile) {
-          throw new IllegalArgumentException(
-            s"Path $path could not be created because the parent ${parent.path} already exists and is a File"
-          )
-        } else {
-          throw new IllegalStateException(
-            s"The FileSystem is broken, path ${parent.path} exists but is neither file nor directory"
-          )
-        }
+      if (file == null) {
+        Vfile.create(new Vfile(user, parent.path, Vfile.Filetype.DIR))
+      } else if (file.isDir) {
+        // Do nothing, everything is fine
+      } else if (file.isFile) {
+        throw new IllegalArgumentException(
+          s"Path $path could not be created because the parent ${parent.path} already exists and is a File"
+        )
+      } else {
+        throw new IllegalStateException(
+          s"The FileSystem is broken, path ${parent.path} exists but is neither file nor directory"
+        )
       }
     }
   }
@@ -273,8 +271,9 @@ object FileSystem {
     logger.info(s"File moved from '$path' to '$newPath'")
 
     if (file.isDir) {
-      lsDir(user, path).map { child =>
-        moveFile(user, child.getPath, child.getPath.replaceAll(s"^$path", newPath))
+      lsDir(user, path).map {
+        child =>
+          moveFile(user, child.getPath, child.getPath.replaceAll(s"^$path", newPath))
       }.fold(true)(_ && _)
     } else {
       true
