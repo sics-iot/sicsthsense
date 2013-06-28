@@ -81,7 +81,7 @@ class ResourcesResource(subpath: Option[String] = None) extends CoapResource("ap
 
     ResourceHub.post(res, req).fold(
       (code, msg, ex) => respond(request, CodeRegistry.RESP_INTERNAL_SERVER_ERROR, "Data could not be updated"),
-      repr => respond(request, CodeRegistry.RESP_CONTENT, repr.content)
+      repr => respond(request, CodeRegistry.RESP_VALID)
     )
   }
 

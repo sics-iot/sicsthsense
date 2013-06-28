@@ -32,28 +32,34 @@ trait Require {
   protected def thr(message: String): Unit
 
   case class Is[A: Ordering](value: A) {
-    private val num = Ordering[A]
+    private val ord = Ordering[A]
+
+    def equalTo(other: A): Unit = {
+      if (ord.equiv(value, other)) {
+        thr(s"$value is not equal to $other")
+      }
+    }
 
     def greaterThan(other: A): Unit = {
-      if (!num.gt(value, other)) {
+      if (!ord.gt(value, other)) {
         thr(s"$value is not greater than $other")
       }
     }
 
     def greaterThanEqual(other: A): Unit = {
-      if (!num.gteq(value, other)) {
+      if (!ord.gteq(value, other)) {
         thr(s"$value is not greater than $other")
       }
     }
 
     def lessThan(other: A): Unit = {
-      if (!num.lt(value, other)) {
+      if (!ord.lt(value, other)) {
         thr(s"$value is not greater than $other")
       }
     }
 
     def lessThanEqual(other: A): Unit = {
-      if (!num.lteq(value, other)) {
+      if (!ord.lteq(value, other)) {
         thr(s"$value is not greater than $other")
       }
     }

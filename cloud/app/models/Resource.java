@@ -64,17 +64,6 @@ public class Resource extends Model {
     @Required
     public String label = "NewResource" + Utils.timeStr(Utils.currentTime());
 
-    public static enum UpdateMode {
-        @EnumValue("U")
-        Push,
-        @EnumValue("D")
-        Poll,
-        @EnumValue("O")
-        Observe
-    }
-
-    public UpdateMode updateMode = UpdateMode.Push;
-
     public long pollingPeriod = 0L;
     public long lastPolled = 0L;
     public long lastPosted = 0L;
@@ -223,6 +212,18 @@ public class Resource extends Model {
         return request(req);
     }
 
+    public boolean isPoll() {
+        return pollingPeriod > 0;
+    }
+
+    public boolean isPush() {
+        return pollingPeriod == 0;
+    }
+
+    public boolean isObserve() {
+        return pollingPeriod == -1;
+    }
+
     public Promise<Response> request(String method, Map<String, String[]> headers,
                                      Map<String, String[]> queryString, String body) {
         if (method == null) throw new IllegalArgumentException();
@@ -288,7 +289,6 @@ public class Resource extends Model {
         this.pollingPeriod = resource.pollingPeriod;
         this.pollingUrl = resource.getPollingUrl();
         this.description = resource.description;
-        this.updateMode = (resource.pollingPeriod > 0) ? UpdateMode.Poll : UpdateMode.Push;
         if (key == null || "".equalsIgnoreCase(key)) {
             updateKey();
         }

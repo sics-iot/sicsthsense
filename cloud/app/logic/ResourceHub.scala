@@ -29,11 +29,8 @@ package logic
 import controllers.{StreamParserWrapper, Utils}
 import models.Representation
 import models.Resource
-import models.Resource.UpdateMode
-import models.ResourceLog
 import models.StreamParser
 import play.api.Logger
-import play.api.http.ContentTypes
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNull
@@ -51,7 +48,7 @@ import scala.util.Try
 
 
 object ResourceHub {
-  private lazy val logger = Logger(this.getClass())
+  private val logger = Logger(this.getClass())
 
   def get(res: Resource): Result[Representation] = Result(Try {
     var i = 0;
@@ -67,53 +64,24 @@ object ResourceHub {
     repr
   })
 
-  def post(resource: Resource, request: Request): Result[Representation] = Result(Try {
-    val requestTime = Utils.currentTime()
-
-    logger.info(s"Post received from URI: ${request.uri}, Content-Type: ${request.contentType}, Content: ${request.body}");
-
-    val resourceLog = ResourceLog.fromRequest(resource, request, requestTime)
-    ResourceLog.create(resourceLog)
-
-    // if first POST (and no poll's), auto make parsers
-    if (resource.streamParsers.isEmpty() && resource.isUnused() && request.contentType.equalsIgnoreCase(ContentTypes.JSON)) {
-      // Logger.info("Automatically making parsers on empty unused Resource.");
-      createParsersFromJson(resource, request)
-    }
-
-    val repr = Representation.fromRequest(request, resource)
-    repr.save()
-
-    for (sp <- StreamParser.forResource(resource)) {
-      val points = sp.parse(request.body, request.contentType)
-      sp.stream.post(points, Utils.currentTime())
-    }
-
-    repr
+  def post(resource: Resource, request: Request): Result[Unit] = Result(Try {
+    Updater.push(resource.id, request)
   })
 
   def createResource(res: Resource): Result[Resource] = Result(Try {
     val stored = Resource.create(res)
 
-    if (stored.updateMode == UpdateMode.Poll && stored.pollingPeriod > 0) {
-      Updater.schedulePoll(stored.id, stored.pollingPeriod)
-    }
+    checkMode(stored)
 
-    stored
+    res
   })
 
   def updateResource(id: Long, changes: Resource): Result[Resource] =
     Result(Try {
       val res = Resource.getById(id)
-      val oldMode = res.updateMode
-      val oldTime = res.pollingPeriod
 
       res.updateResource(changes)
-
-      if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
-        && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
-        Updater.schedulePoll(res.id, res.pollingPeriod)
-      }
+      checkMode(res)
 
       res
     })
@@ -124,8 +92,6 @@ object ResourceHub {
     parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
     Result(Try {
       val res = Resource.getById(id)
-      val oldMode = res.updateMode
-      val oldTime = res.pollingPeriod
 
       res.updateResource(changes)
 
@@ -140,13 +106,24 @@ object ResourceHub {
         }
       }
 
-      if (res.updateMode == UpdateMode.Poll && res.pollingPeriod > 0
-        && (oldMode != UpdateMode.Poll || oldTime != res.pollingPeriod)) {
-        Updater.schedulePoll(res.id, res.pollingPeriod)
-      }
+      res.updateResource(changes)
+      checkMode(res)
 
       res
     })
+
+  private def checkMode(res: Resource): Unit = {
+    val id = res.id
+
+    if (res.isPoll) {
+      Updater.poll(id, res.pollingPeriod)
+    } else if (res.isObserve) {
+      Updater.observe(id)
+    } else {
+      // Updater should automatically stop polling resources
+      Updater.stopObserve(id)
+    }
+  }
 
   private def newParser(prefix: String, node: JsValue): Option[StreamParser] = node match {
     case JsBoolean(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
@@ -167,7 +144,7 @@ object ResourceHub {
     case _ => Seq.empty
   }
 
-  private def createParsersFromJson(resource: Resource, request: Request): Seq[StreamParser] = {
+  def createParsersFromJson(resource: Resource, request: Request): Seq[StreamParser] = {
     logger.info("Trying to parse Json to then auto fill in StreamParsers!")
 
     val parsers = for {

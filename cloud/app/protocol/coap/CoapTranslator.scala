@@ -36,8 +36,8 @@ import scala.util.Try
 import org.apache.http.entity.ContentType
 import org.apache.http.impl.EnglishReasonPhraseCatalog
 
-import ch.ethz.inf.vs.californium.coap.{ Message => CoapMessage }
-import ch.ethz.inf.vs.californium.coap.{ Option => CoapOption }
+import ch.ethz.inf.vs.californium.coap.{Message => CoapMessage}
+import ch.ethz.inf.vs.californium.coap.{Option => CoapOption}
 import ch.ethz.inf.vs.californium.coap.registries.CodeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.MediaTypeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
@@ -46,8 +46,8 @@ import play.api.Play
 
 object CoapTranslator {
   private val KEY_COAP_CODE: String = "coap.response.code."
-  private val KEY_COAP_OPTION: String = "CoapMessage.option."
-  private val KEY_COAP_MEDIA: String = "CoapMessage.media."
+  private val KEY_COAP_OPTION: String = "coap.message.option."
+  private val KEY_COAP_MEDIA: String = "coap.message.media."
 
   private val KEY_HTTP_CODE: String = "http.response.code."
   private val KEY_HTTP_METHOD: String = "http.request.method."
@@ -80,75 +80,77 @@ object CoapTranslator {
 
       // get the option number
       // ignore the option if not recognized
-      optionNumber <- Try { optionCodeString.toInt }.toOption
+      optionNumber <- Try {
+        optionCodeString.toInt
+      }.toOption
 
       // ignore the content-type because it will be handled within the payload
       if optionNumber != OptionNumberRegistry.CONTENT_TYPE
 
     } yield optionNumber match {
-      case OptionNumberRegistry.ACCEPT =>
-        // iterate for each content-type indicated
-        val options = for {
-          value <- headerValues
+        case OptionNumberRegistry.ACCEPT =>
+          // iterate for each content-type indicated
+          val options = for {
+            value <- headerValues
 
-          // translate the content-type
-          coapContentTypes = if (value.contains("*"))
-            MediaTypeRegistry.parseWildcard(value).to[Vector]
-          else
-            Vector[Integer](MediaTypeRegistry.parse(value))
+            // translate the content-type
+            coapContentTypes = if (value.contains("*"))
+              MediaTypeRegistry.parseWildcard(value).to[Vector]
+            else
+              Vector[Integer](MediaTypeRegistry.parse(value))
 
-          // return present a conversions for the content-types
-          coapContentType <- coapContentTypes
+            // return present a conversions for the content-types
+            coapContentType <- coapContentTypes
 
-          if coapContentType != MediaTypeRegistry.UNDEFINED
-        } yield {
-          val opt = new CoapOption(optionNumber)
-          opt.setIntValue(coapContentType)
-          opt
-        }
-
-        options.to[Vector]
-      case OptionNumberRegistry.MAX_AGE =>
-        val option = if (headerValues.contains("no-cache")) {
-          val opt = new CoapOption(optionNumber)
-          opt.setIntValue(0)
-          Some(opt)
-        } else {
-          for {
-            headerValue <- headerValues.headOption
-
-            index = headerValue.indexOf('=')
-
-            if index >= 0
-
-            value <- Try {
-              headerValue.substring(index + 1).toInt
-            }.toOption
+            if coapContentType != MediaTypeRegistry.UNDEFINED
           } yield {
             val opt = new CoapOption(optionNumber)
-            opt.setIntValue(value)
+            opt.setIntValue(coapContentType)
             opt
           }
-        }
 
-        option.to[Vector]
-      case _ =>
-        val option = for {
-          headerValue <- headerValues.headOption
+          options.to[Vector]
+        case OptionNumberRegistry.MAX_AGE =>
+          val option = if (headerValues.contains("no-cache")) {
+            val opt = new CoapOption(optionNumber)
+            opt.setIntValue(0)
+            Some(opt)
+          } else {
+            for {
+              headerValue <- headerValues.headOption
 
-          opt = new CoapOption(optionNumber)
+              index = headerValue.indexOf('=')
 
-          _ <- Try {
-            OptionNumberRegistry.getFormatByNr(optionNumber) match {
-              case OptionNumberRegistry.optionFormats.INTEGER => opt.setIntValue(headerValue.toInt);
-              case OptionNumberRegistry.optionFormats.OPAQUE => opt.setValue(headerValue.getBytes(Codec.ISO8859.charSet));
-              case _ => opt.setStringValue(headerValue);
+              if index >= 0
+
+              value <- Try {
+                headerValue.substring(index + 1).toInt
+              }.toOption
+            } yield {
+              val opt = new CoapOption(optionNumber)
+              opt.setIntValue(value)
+              opt
             }
-          }.toOption
-        } yield opt
+          }
 
-        option.to[Vector]
-    }
+          option.to[Vector]
+        case _ =>
+          val option = for {
+            headerValue <- headerValues.headOption
+
+            opt = new CoapOption(optionNumber)
+
+            _ <- Try {
+              OptionNumberRegistry.getFormatByNr(optionNumber) match {
+                case OptionNumberRegistry.optionFormats.INTEGER => opt.setIntValue(headerValue.toInt);
+                case OptionNumberRegistry.optionFormats.OPAQUE => opt.setValue(headerValue.getBytes(Codec.ISO8859.charSet));
+                case _ => opt.setStringValue(headerValue);
+              }
+            }.toOption
+          } yield opt
+
+          option.to[Vector]
+      }
 
     options.flatten.to[Vector]
   }
@@ -204,15 +206,15 @@ object CoapTranslator {
         configuration.
           getString(KEY_COAP_MEDIA + coapContentType)
           .getOrElse {
-            val plain = MediaTypeRegistry.toString(coapContentType);
+          val plain = MediaTypeRegistry.toString(coapContentType);
 
-            // if the coap content-type is printable, it is needed to
-            // set the default charset (i.e., UTF-8)
-            if (MediaTypeRegistry.isPrintable(coapContentType))
-              plain + "; charset=UTF-8"
-            else
-              plain
-          }
+          // if the coap content-type is printable, it is needed to
+          // set the default charset (i.e., UTF-8)
+          if (MediaTypeRegistry.isPrintable(coapContentType))
+            plain + "; charset=UTF-8"
+          else
+            plain
+        }
 
       ContentType.parse(coapContentTypeString)
     }

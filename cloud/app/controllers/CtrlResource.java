@@ -31,7 +31,6 @@
 package controllers;
 
 import logic.ResourceHub;
-import models.Representation;
 import models.Resource;
 import models.StreamParser;
 import models.User;
@@ -352,7 +351,7 @@ public class CtrlResource extends Controller {
             return notFound();
         }
 
-        logic.Result<Representation> result =
+        logic.Result result =
                 ResourceHub.post(resource, HttpProtocol.translateRequest(request()));
 
         switch (result.code()) {

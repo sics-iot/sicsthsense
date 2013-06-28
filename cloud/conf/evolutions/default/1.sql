@@ -48,7 +48,6 @@ create table resources (
   id                        bigint auto_increment not null,
   owner_id                  bigint not null,
   label                     varchar(255),
-  update_mode               varchar(1),
   polling_period            bigint,
   last_polled               bigint,
   last_posted               bigint,
@@ -58,7 +57,6 @@ create table resources (
   description               varchar(255),
   secret_key                varchar(255),
   version                   integer not null,
-  constraint ck_resources_update_mode check (update_mode in ('D','O','U')),
   constraint uq_resources_1 unique (owner_id,parent_id,label),
   constraint pk_resources primary key (id))
 ;
@@ -72,7 +70,7 @@ create table resource_log (
   method                    varchar(255) not null,
   uri                       varchar(255),
   headers                   varchar(4096),
-  constraint ck_resource_log_interaction_type check (interaction_type in ('O','D','U')),
+  constraint ck_resource_log_interaction_type check (interaction_type in ('P','D','O','U')),
   constraint pk_resource_log primary key (id))
 ;
 
