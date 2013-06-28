@@ -362,12 +362,6 @@ public class StreamParser extends Model {
 
         if (parser.stream == null) {
             parser.stream = parser.getOrCreateStream(streamPath);
-
-            if (parser.stream.type == Stream.StreamType.UNDEFINED) {
-                parser.stream.type = Stream.StreamType.DOUBLE;
-            }
-
-            parser.stream.save();
         }
 
         parser.save();

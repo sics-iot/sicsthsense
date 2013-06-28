@@ -411,6 +411,10 @@ public class Stream extends Model implements Comparable<Stream> {
             f = FileSystem.createFile(stream.owner, fileName);
         }
 
+        if (stream.type == StreamType.UNDEFINED) {
+            stream.type = StreamType.DOUBLE;
+        }
+
         stream.file = f;
         stream.save();
 

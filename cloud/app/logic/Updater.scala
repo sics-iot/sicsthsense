@@ -200,7 +200,7 @@ class Updater extends Actor {
     case StopObserve(id) =>
       val resource = Resource.getById(id)
 
-      if (resource.isObserve && observing.contains(id)) {
+      if (!resource.isObserve && observing.contains(id)) {
         observing(id).unsubscribe()
         observing -= id
 
