@@ -28,7 +28,7 @@ package protocol
 
 import java.net.URI
 import scala.util.Try
-import controllers.Utils
+import play.Logger
 
 trait Response {
   /** Returns the request method, e.g. GET/POST/PUT/DELETE/... */
@@ -67,15 +67,15 @@ trait Response {
 
   def receivedAt: Long
 
-  private val maxAge = """max-age=(\\d+)""".r
+  private val maxAge = """max-age=(\d+)""".r
 
   def expires(): Long = {
     val ma = for {
       h <- Option(header("Cache-Control"))
       m <- maxAge.findFirstMatchIn(h)
 
-      if m.groupCount > 1
-      age <- Try(m.group(1).toLong).toOption
+      if m.subgroups.length > 0
+      age <- Try(m.subgroups(0).toLong).toOption
 
       if age > 0 && receivedAt > 0
     } yield age + receivedAt

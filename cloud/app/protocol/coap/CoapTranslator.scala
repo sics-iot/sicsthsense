@@ -41,10 +41,11 @@ import ch.ethz.inf.vs.californium.coap.{Option => CoapOption}
 import ch.ethz.inf.vs.californium.coap.registries.CodeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.MediaTypeRegistry
 import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
-import play.api.Configuration
-import play.api.Play
+import play.api.{Logger, Configuration, Play}
 
 object CoapTranslator {
+  private val logger = Logger(this.getClass())
+
   private val KEY_COAP_CODE: String = "coap.response.code."
   private val KEY_COAP_OPTION: String = "coap.message.option."
   private val KEY_COAP_MEDIA: String = "coap.message.media."
