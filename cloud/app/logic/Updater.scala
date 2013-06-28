@@ -100,7 +100,7 @@ class Updater extends Actor {
 
     for ((id, sub) <- observing) {
       try {
-        logger.info(s"Updater is shutting down and thus stops observing resource '$id'")
+        logger.info(s"Updater is restarting down and thus stops observing resource '$id'")
         sub.unsubscribe()
       } catch {
         case t: Throwable => logger.error(s"Error while stopping observe of resource '$id'", t)
@@ -109,17 +109,19 @@ class Updater extends Actor {
 
     for ((id, (_, cancelable)) <- polling) {
       try {
-        logger.info(s"Updater is shutting down and thus stops polling resource '$id'")
+        logger.info(s"Updater is restarting down and thus stops polling resource '$id'")
         cancelable.cancel()
       } catch {
-        case t: Throwable => logger.error(s"Error while stopping observe of resource '$id'", t)
+        case t: Throwable => logger.error(s"Error while stopping polling of resource '$id'", t)
       }
     }
   }
 
   def receive = {
-    case StartPoll(id, period) =>
+    case m@StartPoll(id, period) =>
       def startPolling() {
+        logger.info(s"Starting to poll resource '$id'")
+
         val cancel = context.system.scheduler.schedule(
           0.seconds, period.seconds, self, Poll(id)
         )
@@ -131,21 +133,23 @@ class Updater extends Actor {
         val (pPeriod, cancelable) = polling(id)
 
         if (pPeriod != period) {
+          logger.trace(s"Before polling resource '$id' the old polling schedule is canceled because the periods differ")
           cancelable.cancel()
 
           startPolling()
         } else {
+          logger.trace(s"Received $m but there is already polling scheduled for resource '$id' with the same period")
           // Do nothing, same period
         }
       } else {
         startPolling()
       }
-    case Poll(id) =>
+    case m@Poll(id) =>
       val resource = Resource.getById(id)
       val shouldUpdate = resource.isPoll && resource.hasUrl()
 
       if (shouldUpdate) {
-        logger.debug(s"Polling $id, ${resource.getUrl()}")
+        logger.trace(s"Polling resource '$id' URL: ${resource.getUrl()}")
 
         val requestTime = Utils.currentTime()
         val responseP = resource.request().getWrappedPromise()
@@ -154,8 +158,10 @@ class Updater extends Actor {
           case Success(res) =>
             self ! PollResponse(id, requestTime, Utils.currentTime(), res)
           case Failure(t) =>
-            logger.error("Error while polling", t)
+            logger.error(s"Error while polling resource '$id'", t)
         }
+      } else {
+        logger.trace(s"Received $m but resource '$id' is not in poll mode or has no url")
       }
     case PollResponse(id, reqT, resT, res) =>
       val resource = Resource.getById(id)
@@ -164,25 +170,25 @@ class Updater extends Actor {
 
       val repr = Representation.fromResponse(res, resource)
       repr.save()
-      logger.debug(s"Stored Representation for resource $id")
+      logger.trace(s"Stored Representation for resource $id")
 
       val log = ResourceLog.fromResponse(resource, res, reqT, resT)
       log.save()
-      logger.debug(s"Stored ResourceLog for resource $id")
+      logger.trace(s"Stored ResourceLog for resource $id")
 
       for (sp <- StreamParser.forResource(resource)) {
         val data = sp.parse(res.body, res.contentType)
         sp.stream.post(data, Utils.currentTime())
       }
-      logger.debug(s"Updated Streams for resource $id")
+      logger.trace(s"Updated Streams for resource $id")
 
       resource.lastPolled = Utils.currentTime()
       resource.save()
-    case StartObserve(id, failures) =>
+    case m@StartObserve(id, failures) =>
       val resource = Resource.getById(id)
 
       if (resource.isObserve && !observing.contains(id)) {
-        logger.debug(s"Observing $id, ${resource.getUrl()}")
+        logger.info(s"Starting to observe resource '$id'")
 
         val sub =
           resource
@@ -196,15 +202,23 @@ class Updater extends Actor {
           )
 
         observing = observing.updated(id, sub)
+      } else if (observing.contains(id)) {
+        logger.trace(s"Received $m but already observing '$id'")
+      } else {
+        logger.trace(s"Received $m but resource '$id' is not in observe mode")
       }
-    case StopObserve(id) =>
+    case m@StopObserve(id) =>
       val resource = Resource.getById(id)
 
       if (!resource.isObserve && observing.contains(id)) {
+        logger.info(s"Stopping to observe '$id'")
+
         observing(id).unsubscribe()
         observing -= id
-
-        logger.info(s"Stopping to observe resource '$id'")
+      } else if (!observing.contains(id)) {
+        logger.trace(s"Received $m but already stopped observing '$id'")
+      } else {
+        logger.trace(s"Received $m but resource '$id' is still in observe mode")
       }
     case Push(id, request) =>
       val resource = Resource.getById(id)
@@ -213,6 +227,11 @@ class Updater extends Actor {
 
       val resourceLog = ResourceLog.fromRequest(resource, request, Utils.currentTime())
       ResourceLog.create(resourceLog)
+      logger.trace(s"Stored ResourceLog for resource $id")
+
+      val repr = Representation.fromRequest(request, resource)
+      Representation.create(repr)
+      logger.trace(s"Stored Representation for resource $id")
 
       // if first POST (and no poll's), auto make parsers
       if (resource.streamParsers.isEmpty() && resource.isUnused() && request.contentType.equalsIgnoreCase(ContentTypes.JSON)) {
@@ -220,31 +239,29 @@ class Updater extends Actor {
         ResourceHub.createParsersFromJson(resource, request)
       }
 
-      val repr = Representation.fromRequest(request, resource)
-      repr.save()
-
       for (sp <- StreamParser.forResource(resource)) {
         val points = sp.parse(request.body, request.contentType)
         sp.stream.post(points, Utils.currentTime())
       }
+      logger.trace(s"Updated Streams for resource $id")
     case Notification(id, res) =>
       val resource = Resource.getById(id)
 
       logger.info(s"Received notification from resource $id")
 
-      val repr = Representation.fromResponse(res, resource)
-      repr.save()
-      logger.debug(s"Stored Representation for resource $id")
-
       val log = ResourceLog.fromResponse(resource, res)
-      log.save()
-      logger.debug(s"Stored ResourceLog for resource $id")
+      ResourceLog.create(log)
+      logger.trace(s"Stored ResourceLog for resource $id")
+
+      val repr = Representation.fromResponse(res, resource)
+      Representation.create(repr)
+      logger.trace(s"Stored Representation for resource $id")
 
       for (sp <- StreamParser.forResource(resource)) {
         val data = sp.parse(res.body, res.contentType)
         sp.stream.post(data, Utils.currentTime())
       }
-      logger.debug(s"Updated Streams for resource $id")
+      logger.trace(s"Updated Streams for resource $id")
     case NotificationError(id, err, failures) =>
       observing -= id
       logger.warn(s"Resource '$id' has now $failures failures", err)

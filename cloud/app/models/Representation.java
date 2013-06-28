@@ -66,28 +66,8 @@ public class Representation extends Model {
     public static final Model.Finder<Long, Representation> find =
             new Model.Finder<Long, Representation>(Long.class, Representation.class);
 
-    public long getId() {
-        return id;
-    }
-
     public long getTimestamp() {
         return timestamp;
-    }
-
-    public long getExpires() {
-        return expires;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public Resource getParent() {
-        return parent;
     }
 
     private void normalize() {
@@ -126,5 +106,10 @@ public class Representation extends Model {
 
     public static Representation getByResourceId(long id) {
         return find.where().eq("resource", id).findUnique();
+    }
+
+    public static Representation create(Representation repr) {
+        repr.save();
+        return repr;
     }
 }
