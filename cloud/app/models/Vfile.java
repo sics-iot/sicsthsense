@@ -55,7 +55,7 @@ public class Vfile extends Model {
     String path;
 
     @Constraints.Required
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false)
     User owner;
 
     public static enum Filetype {
@@ -69,17 +69,17 @@ public class Vfile extends Model {
     @Column(nullable = false)
     public Filetype type;
 
-    @OneToOne(mappedBy = "file", cascade = {CascadeType.ALL})
-    Stream linkedStream;
+    @OneToOne(optional = true)
+    Stream stream;
 
     public static Model.Finder<Long, Vfile> find = new Model.Finder<Long, Vfile>(Long.class, Vfile.class);
 
-    public Vfile(String path, User owner, Filetype type, Stream linkedStream) {
+    public Vfile(String path, User owner, Filetype type, Stream stream) {
         super();
         this.path = path;
         this.owner = owner;
         this.type = type;
-        this.linkedStream = linkedStream;
+        this.stream = stream;
     }
 
     public Vfile() {
@@ -132,14 +132,14 @@ public class Vfile extends Model {
     }
 
     public void setLink(Stream linkedStream) {
-        this.linkedStream = linkedStream;
-        if (id != null) {
+        this.stream = linkedStream;
+        if (id != 0) {
             this.save();
         }
     }
 
     public Stream getLink() {
-        return linkedStream;
+        return stream;
     }
 
     //remove invalid characters

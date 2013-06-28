@@ -68,7 +68,7 @@ class StreamsResource(subpath: Option[String] = None) extends CoapResource("api/
       val tail = qs.get("tail").flatMap(v => Try(Integer.parseInt(v.mkString)).toOption)
 
       if (tail.isDefined) {
-        return respond(request, DataPoint.getTail(stream, tail.get))
+        return respond(request, stream.getDataPointsTail(tail.get))
       } else {
         return respond(request, CodeRegistry.RESP_BAD_REQUEST, "Query parameter 'tail' is maleformed.'")
       }
@@ -76,7 +76,7 @@ class StreamsResource(subpath: Option[String] = None) extends CoapResource("api/
       val last = qs.get("last").flatMap(v => Try(Integer.parseInt(v.mkString)).toOption)
 
       if (last.isDefined) {
-        return respond(request, DataPoint.getLast(stream, last.get))
+        return respond(request, stream.getDataPointsTail(last.get))
       } else {
         return respond(request, CodeRegistry.RESP_BAD_REQUEST, "Query parameter 'last' is maleformed.'")
       }
@@ -84,13 +84,13 @@ class StreamsResource(subpath: Option[String] = None) extends CoapResource("api/
       val since = qs.get("since").flatMap(v => Try(Integer.parseInt(v.mkString)).toOption)
 
       if (since.isDefined) {
-        return respond(request, DataPoint.getSince(stream, since.get))
+        return respond(request, stream.getDataPointsTail(since.get))
       } else {
         return respond(request, CodeRegistry.RESP_BAD_REQUEST, "Query parameter 'since' is maleformed.'")
       }
     }
 
-    return respond(request, DataPoint.getTail(stream, 50))
+    return respond(request, stream.getDataPointsTail(50))
   }
 
   override def performPOST(request: POSTRequest): Unit =

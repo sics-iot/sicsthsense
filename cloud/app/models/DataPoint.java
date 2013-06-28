@@ -30,45 +30,39 @@
 
 package models;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import controllers.Utils;
-
 import play.db.ebean.Model;
 
-/** T could be any comparable type; i.e. Long, Double, String, etc. */
-@javax.persistence.MappedSuperclass
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+
+/**
+ * T could be any comparable type; i.e. Long, Double, String, etc.
+ */
+@MappedSuperclass
 public abstract class DataPoint extends Model implements Comparable<DataPoint> {
 
-    @Column(name = "stream_id", nullable = false)
-    @ManyToOne(cascade = CascadeType.ALL)
-    public Stream stream;
+    /**
+     */
+    private static final long serialVersionUID = 2919758328697338009L;
 
     @Id
     public Long id;
 
-    /**
-	 */
-    private static final long serialVersionUID = 2919758328697338009L;
+    @ManyToOne
+    public Stream stream;
 
-    /** T could be any comparable type; i.e. Long, Double, String, etc. */
-    // @Column(unique = true, nullable = false)
-    // @Id
-    public Long timestamp;
+    public long timestamp;
 
     public abstract DataPoint add();
 
+    /**
+     * T could be any comparable type; i.e. Long, Double, String, etc.
+     */
     public abstract Object getData();
 
     public abstract String toTSV();
-
-    public static final Model.Finder<Long, DataPoint> find = new Model.Finder<Long, DataPoint>(
-            Long.class, DataPoint.class);
 
     public DataPoint() {
         super();
@@ -78,41 +72,4 @@ public abstract class DataPoint extends Model implements Comparable<DataPoint> {
     public int compareTo(DataPoint point) {
         return Long.valueOf(this.timestamp).compareTo(point.timestamp);
     }
-
-    public static List<? extends DataPoint> getTail(Stream stream, long tail) {
-        return find
-                .where().eq("stream_id", stream.id)
-                .orderBy("timestamp desc")
-                .setMaxRows((int) tail)
-                .findList();
-    }
-
-    public static List<? extends DataPoint> getLast(Stream stream, long duration) {
-        return find
-                .where().eq("stream_id", stream.id)
-                .ge("timestamp", Utils.currentTime() - duration)
-                .orderBy("timestamp desc")
-                .findList();
-    }
-
-    public static List<? extends DataPoint> getSince(Stream stream, long timestamp) {
-        return find
-                .where().eq("stream_id", stream.id)
-                .ge("timestamp", timestamp)
-                .orderBy("timestamp desc")
-                .findList();
-    }
-    // public abstract long getCount();
-    //
-    //
-    // public abstract List<? extends DataPoint> getByStream(Stream stream);
-    //
-    // public abstract List<? extends DataPoint> getByStreamTail(Stream stream, long tail);
-    //
-    // public abstract List<? extends DataPoint> getByStreamLast(Stream stream, long last);
-    //
-    // public abstract List<? extends DataPoint> getByStreamSince(Stream stream, long since);
-    //
-    // public abstract void deleteByStream(Stream stream);
-
 }

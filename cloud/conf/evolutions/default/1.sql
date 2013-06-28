@@ -96,7 +96,6 @@ create table streams (
   secret_key                varchar(255),
   owner_id                  bigint not null,
   resource_id               bigint,
-  file_id                   bigint not null,
   version                   integer not null,
   constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
@@ -140,6 +139,7 @@ create table vfiles (
   path                      varchar(255) not null,
   owner_id                  bigint not null,
   type                      varchar(1) not null,
+  stream_id                 bigint,
   constraint ck_vfiles_type check (type in ('F','D')),
   constraint uq_vfiles_1 unique (owner_id,path),
   constraint pk_vfiles primary key (id))
@@ -177,14 +177,14 @@ alter table streams add constraint fk_streams_owner_9 foreign key (owner_id) ref
 create index ix_streams_owner_9 on streams (owner_id);
 alter table streams add constraint fk_streams_resource_10 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
 create index ix_streams_resource_10 on streams (resource_id);
-alter table streams add constraint fk_streams_file_11 foreign key (file_id) references vfiles (id) on delete restrict on update restrict;
-create index ix_streams_file_11 on streams (file_id);
-alter table parsers add constraint fk_parsers_resource_12 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
-create index ix_parsers_resource_12 on parsers (resource_id);
-alter table parsers add constraint fk_parsers_stream_13 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
-create index ix_parsers_stream_13 on parsers (stream_id);
-alter table vfiles add constraint fk_vfiles_owner_14 foreign key (owner_id) references users (id) on delete restrict on update restrict;
-create index ix_vfiles_owner_14 on vfiles (owner_id);
+alter table parsers add constraint fk_parsers_resource_11 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
+create index ix_parsers_resource_11 on parsers (resource_id);
+alter table parsers add constraint fk_parsers_stream_12 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_parsers_stream_12 on parsers (stream_id);
+alter table vfiles add constraint fk_vfiles_owner_13 foreign key (owner_id) references users (id) on delete restrict on update restrict;
+create index ix_vfiles_owner_13 on vfiles (owner_id);
+alter table vfiles add constraint fk_vfiles_stream_14 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+create index ix_vfiles_stream_14 on vfiles (stream_id);
 
 
 

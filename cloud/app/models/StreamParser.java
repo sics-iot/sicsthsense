@@ -62,10 +62,12 @@ public class StreamParser extends Model {
     @Id
     public Long id;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    // A Resource can have many StreamParsers attached
+    @ManyToOne(optional = false)
     public Resource resource;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    // A Stream can be posted to from many
+    @ManyToOne(optional = false)
     public Stream stream;
 
     /**
@@ -140,7 +142,7 @@ public class StreamParser extends Model {
 
         if (resource.owner != null) {
             Vfile f = FileSystem.read(resource.owner, path);
-            this.stream = (f != null) ? f.linkedStream : null;
+            this.stream = (f != null) ? f.stream : null;
 
         }
     }
@@ -364,6 +366,8 @@ public class StreamParser extends Model {
             if (parser.stream.type == Stream.StreamType.UNDEFINED) {
                 parser.stream.type = Stream.StreamType.DOUBLE;
             }
+
+            parser.stream.save();
         }
 
         parser.save();

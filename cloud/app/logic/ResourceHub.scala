@@ -102,11 +102,10 @@ object ResourceHub {
           parser.resource = res
           StreamParser.create(sp.vfilePath, parser)
         } else {
-          StreamParser.find.byId(id).updateStreamParser(parser)
+          Option(StreamParser.find.byId(id)).foreach(_.updateStreamParser(parser))
         }
       }
 
-      res.updateResource(changes)
       checkMode(res)
 
       res
@@ -152,8 +151,7 @@ object ResourceHub {
       if !FileSystem.exists(resource.owner, sp.inputParser)
     } yield {
       sp.resource = resource
-      sp.save()
-      sp
+      StreamParser.create(sp)
     }
 
     parsers.to[Seq]

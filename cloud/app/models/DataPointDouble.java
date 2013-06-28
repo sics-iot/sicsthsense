@@ -30,49 +30,43 @@
 
 package models;
 
-import java.util.List;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import play.db.ebean.Model;
-
-import com.avaje.ebean.Ebean;
-
-import controllers.Utils;
-
 @Entity
 @Table(name = "data_point_double", uniqueConstraints = {@UniqueConstraint(columnNames = {
         "stream_id", "timestamp"})})
 public class DataPointDouble extends DataPoint {
-
-    public DataPointDouble() {
-        this(null, null, null);
-        // TODO Auto-generated constructor stub
-    }
-
-    public static Model.Finder<Long, DataPointDouble> find =
-            new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
     /**
 	 *
 	 */
     private static final long serialVersionUID = -6502881310122879601L;
 
-    public Double data;
+    public double data;
 
-    public DataPointDouble(Double data, Long timestamp) {
+    public DataPointDouble() {
+        this(null, 0, 0);
+        // TODO Auto-generated constructor stub
+    }
+
+    public DataPointDouble(double data, long timestamp) {
         super();
         this.data = data;
         this.timestamp = timestamp;
     }
 
-    public DataPointDouble(Stream stream, Double data, Long timestamp) {
+    public DataPointDouble(Stream stream, double data, long timestamp) {
         super();
         this.stream = stream;
         this.data = data;
         this.timestamp = timestamp;
     }
+
+    public static Model.Finder<Long, DataPointDouble> find =
+            new Model.Finder<Long, DataPointDouble>(Long.class, DataPointDouble.class);
 
     public DataPointDouble add() {
         if (stream != null) {

@@ -30,8 +30,6 @@
 
 package models;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.annotation.EnumValue;
 import controllers.ScalaUtils;
 import controllers.Utils;
 import logic.Argument;
@@ -58,7 +56,7 @@ public class Resource extends Model {
     @Id
     public Long id;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false)
     public User owner;
 
     @Required
@@ -82,13 +80,16 @@ public class Resource extends Model {
     @Column(name = "secret_key")
     public String key; // key is a reserved keyword in mysql
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    public List<Representation> representations = new ArrayList<Representation>();
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     public List<Resource> subResources = new ArrayList<Resource>();
 
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
     public List<StreamParser> streamParsers = new ArrayList<StreamParser>();
 
-    @OneToMany(mappedBy = "resource")
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
     public List<Stream> streams = new ArrayList<Stream>();
 
     @Version
@@ -289,10 +290,13 @@ public class Resource extends Model {
         this.pollingPeriod = resource.pollingPeriod;
         this.pollingUrl = resource.getPollingUrl();
         this.description = resource.description;
+
         if (key == null || "".equalsIgnoreCase(key)) {
             updateKey();
         }
-        update();
+
+        save();
+
         // update indexes
         Resource.index(this);
     }
@@ -402,7 +406,7 @@ public class Resource extends Model {
     }
 
     public static void delete(Long id) {
-        Resource resource = find.ref(id);
+        Resource resource = find.byId(id);
         if (resource != null) resource.delete();
 
         // Liam: need to delete index for this resource

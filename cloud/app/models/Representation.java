@@ -45,7 +45,7 @@ public class Representation extends Model {
     private static final long serialVersionUID = -1198020774968640869L;
 
     @Id
-    public long id;
+    public Long id;
 
     @Required
     public long timestamp;
@@ -60,7 +60,7 @@ public class Representation extends Model {
     @Column(length = BODY_MAX_LENGTH)
     public String content;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     public Resource parent = null;
 
     public static final Model.Finder<Long, Representation> find =

@@ -67,7 +67,7 @@ POST               /dummy/:id/actuators/print                                   
 ## TODO move all functions that read streams to CtrlStream
 GET                /user/followStream/:id/:follow                                           controllers.CtrlUser.followStream(id: Long, follow: Boolean)
 GET                /user/isFollowingStream/:id                                              controllers.CtrlUser.isFollowingStream(id: Long)
-GET                /user/:ownerName/$path<.*>                                               controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long           ?=-1,     since:     Long           ?=           -1)
+GET                /user/:ownerName/$path<.*>                                               controllers.CtrlStream.getData(ownerName: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 
 GET                /streams/view/:id                                                        controllers.Application.viewStream(id: Long)
 GET                /streams/regenerateKey/:id                                               controllers.CtrlStream.regenerateKey(id: Long)
@@ -79,7 +79,7 @@ GET                /streams/publicAccess/:id/:pub                               
 GET                /streams/publicSearch/:id/:pub                                           controllers.CtrlStream.setPublicSearch(id: Long, pub: Boolean)
 GET                /streams/publicAccess/:id                                                controllers.CtrlStream.isPublicAccess(id: Long)
 GET                /streams/publicSearch/:id                                                controllers.CtrlStream.isPublicSearch(id: Long)
-GET                /streams/:id                                                             controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long           ?=-1,     since:     Long           ?=           -1)
+GET                /streams/:id                                                             controllers.CtrlStream.getDataById(id: Long, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 DELETE             /streams/:id                                                             controllers.CtrlStream.clear(id: Long)
 POST               /api/streams/create                                                      controllers.CtrlStream.createPost()
 
@@ -118,10 +118,10 @@ POST               /api/resources/:key                                          
 GET                /api/streams/delete/:key                                                 controllers.CtrlStream.deleteByKey(key: String)
 GET                /api/streams/clearData/:key                                              controllers.CtrlStream.clearByKey(key: String)
 POST               /api/streams/:key                                                        controllers.CtrlStream.postByKey(key: String)
-GET                /api/streams/:key                                                        controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long           ?=-1,     since:     Long           ?=           -1)
+GET                /api/streams/:key                                                        controllers.CtrlStream.getByKey(key: String, tail: Long ?= -1, last: Long ?= -1, since: Long ?= -1)
 
-GET                /api/files/$path<.*>                                                     controllers.CtrlStream.getByPath(path: String, tail: Long ?= -1, last: Long           ?=-1,     since:     Long           ?=           -1)
-GET                /api/ext/:user/$path<.*>                                                 controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long           ?=-1,     since:     Long           ?=           -1)
+GET                /api/files/$path<.*>                                                     controllers.CtrlStream.getByPath(path: String, tail: Long ?= -1, last: Long ?= -1, since: Long ?= -1)
+GET                /api/ext/:user/$path<.*>                                                 controllers.CtrlStream.getByUserPath(user: String, path: String, tail: Long ?= -1, last: Long ?=-1, since: Long ?= -1)
 POST               /api/files/$path<.*>                                                     controllers.CtrlStream.postByPath(path: String)
 # POST a JSON to create a Resource
 

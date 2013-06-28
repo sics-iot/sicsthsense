@@ -67,7 +67,7 @@ public class Setting extends Model {
 
 	public void delete() {
 		//TODO: Check dependencies
-		//this.linkedStream.file = null;
+		//this.stream.file = null;
 		super.delete();
 	}
 

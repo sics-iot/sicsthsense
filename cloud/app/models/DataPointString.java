@@ -30,19 +30,13 @@
 
 package models;
 
-import java.util.List;
+import com.avaje.ebean.validation.Length;
+import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-
-import play.db.ebean.Model;
-
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.validation.Length;
-
-import controllers.Utils;
 
 @Entity
 @Table(name = "data_point_string", uniqueConstraints = {@UniqueConstraint(columnNames = {
@@ -55,22 +49,23 @@ public class DataPointString extends DataPoint {
 
     @Transient
     public final static int maxLength = 160;
+
     @Length(min = 1, max = maxLength)
     public String data;
 
-    public static Model.Finder<Long, DataPointString> find =
-            new Model.Finder<Long, DataPointString>(Long.class, DataPointString.class);
-
     public DataPointString() {
-        this(null, null, null);
+        this(null, null, 0);
         // TODO Auto-generated constructor stub
     }
 
-    public DataPointString(Stream stream, String data, Long timestamp) {
+    public DataPointString(Stream stream, String data, long timestamp) {
         this.stream = stream;
         this.data = data;
         this.timestamp = timestamp;
     }
+
+    public static Model.Finder<Long, DataPointString> find =
+            new Model.Finder<Long, DataPointString>(Long.class, DataPointString.class);
 
     public DataPointString add() {
         // DataPointDouble dataPoint = new DataPoint(stream, data, timestamp);

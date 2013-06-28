@@ -33,6 +33,7 @@ package models;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.annotation.EnumValue;
+import com.avaje.ebean.annotation.Transactional;
 import controllers.Utils;
 import logic.Argument;
 import logic.FileSystem;
@@ -47,6 +48,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "streams")
 public class Stream extends Model implements Comparable<Stream> {
+    private final static Logger.ALogger logger = Logger.of(Stream.class);
+
     /**
      *
      */
@@ -104,26 +107,25 @@ public class Stream extends Model implements Comparable<Stream> {
     // key is a reserved keyword in mysql
     private String key;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false)
     public User owner;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne()
     public Resource resource;
 
-    // should this be a field in the table? (i.e. not mappedBy)?
-    @OneToOne(optional = false, cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "stream", cascade = CascadeType.ALL)
     public Vfile file;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
-    public List<DataPointString> dataPointsString;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+    public List<DataPointString> dataPointsString = new ArrayList<DataPointString>();
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
-    public List<DataPointDouble> dataPointsDouble;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stream")
+    public List<DataPointDouble> dataPointsDouble = new ArrayList<DataPointDouble>();
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "stream", orphanRemoval = true)
     public List<StreamParser> streamparsers = new ArrayList<StreamParser>();
 
-    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "followedStreams")
+    @ManyToMany(mappedBy = "followedStreams")
     public List<User> followingUsers = new ArrayList<User>();
 
     public Stream(User user, Resource resource, StreamType type) {
@@ -386,6 +388,7 @@ public class Stream extends Model implements Comparable<Stream> {
         return stream;
     }
 
+    @Transactional
     public static Stream create(String path, Stream stream) {
         Argument.notNull(stream);
         Argument.notNull(stream.owner);
@@ -411,6 +414,8 @@ public class Stream extends Model implements Comparable<Stream> {
         stream.file = f;
         stream.save();
 
+        f.setLink(stream);
+
         return stream;
     }
 
@@ -434,22 +439,12 @@ public class Stream extends Model implements Comparable<Stream> {
             return null;
         }
 
-        return file.linkedStream;
+        return file.stream;
     }
 
     public static void delete(Long id) {
-        Stream stream = find.ref(id);
+        Stream stream = find.byId(id);
         if (stream != null) stream.delete();
-    }
-
-    public static void dattachResource(Resource resource) {
-        Argument.notNull(resource);
-
-        List<Stream> list = find.where().eq("resource", resource).findList();
-        for (Stream stream : list) {
-            stream.resource = null;
-            stream.save();
-        }
     }
 
     public static List<Stream> availableStreams(User currentUser) {
