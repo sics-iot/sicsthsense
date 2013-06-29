@@ -44,7 +44,7 @@ import protocol.{Request, Response}
 import play.api.http.ContentTypes
 
 
-sealed trait UpdateMessage
+private sealed trait UpdateMessage
 
 private case class Push(id: Long, request: Request) extends UpdateMessage
 
@@ -65,7 +65,7 @@ private case class Notification(id: Long, response: Response) extends UpdateMess
 private case class NotificationError(id: Long, t: Throwable, failures: Int) extends UpdateMessage
 
 
-class Updater extends Actor {
+private class Updater extends Actor {
   private val MAX_FAILURES = 5
 
   private val logger = Logger(this.getClass)
@@ -275,6 +275,8 @@ class Updater extends Actor {
 }
 
 object Updater {
+  private val logger = Logger(this.getClass)
+
   private def system = Akka.system(play.api.Play.current)
 
   private def updater = system.actorFor("/user/updater")
@@ -282,7 +284,7 @@ object Updater {
   // Instant
   def initialize() {
     system.actorOf(Props[Updater], "updater")
-    Logger.debug(s"$updater")
+    logger.trace(s"Created $updater actor")
   }
 
   def push(id: Long, request: Request) {

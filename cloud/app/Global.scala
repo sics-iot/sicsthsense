@@ -31,6 +31,7 @@ import play.api.GlobalSettings
 import play.api.Logger
 import play.libs.Akka
 import protocol.coap.CoapServer
+import protocol.http.HttpObserver
 
 object Global extends GlobalSettings {
 
@@ -38,6 +39,7 @@ object Global extends GlobalSettings {
     Logger.info("Application has started")
 
     Updater.initialize
+    HttpObserver.initialize
 
     val coapServer = new CoapServer(app.configuration.getInt("coap.port").get)
     coapServer.start()

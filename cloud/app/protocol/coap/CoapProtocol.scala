@@ -51,7 +51,6 @@ import rx.subscriptions.Subscriptions
 import java.util.Collections
 import rx.util.functions.Action0
 import play.api.Logger
-import scala.collection.JavaConversions.iterableAsScalaIterable
 
 object CoapProtocol extends Protocol[coap.Message, coap.Response] {
   private val logger = Logger(this.getClass)
