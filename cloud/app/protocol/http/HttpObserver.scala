@@ -87,7 +87,7 @@ object HttpObserver {
   // Instant
   def initialize() {
     system.actorOf(Props[HttpObserver], "httpObserver")
-    logger.trace(s"Created $observer actor")
+    logger.debug(s"Created $observer actor")
   }
 
   def observe(req: Request): Observable[Response] = {

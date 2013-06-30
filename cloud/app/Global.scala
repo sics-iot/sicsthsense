@@ -25,7 +25,7 @@
  */
 
 
-import logic.Updater
+import logic.{Collector, Updater}
 import play.api.Application
 import play.api.GlobalSettings
 import play.api.Logger
@@ -40,6 +40,7 @@ object Global extends GlobalSettings {
 
     Updater.initialize
     HttpObserver.initialize
+    Collector.initialize
 
     val coapServer = new CoapServer(app.configuration.getInt("coap.port").get)
     coapServer.start()

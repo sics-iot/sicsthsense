@@ -45,6 +45,8 @@ import scala.Option.option2Iterable
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.util.Try
+import play.api.db.DB
+import play.api.Play.current
 
 
 object ResourceHub {
@@ -87,9 +89,9 @@ object ResourceHub {
     })
 
   def updateResource(
-    id: Long,
-    changes: Resource,
-    parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
+                      id: Long,
+                      changes: Resource,
+                      parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
     Result(Try {
       val res = Resource.getById(id)
 
@@ -165,5 +167,31 @@ object ResourceHub {
 
   def parsersFromPlain(text: String): java.util.List[StreamParser] = {
     Seq(new StreamParser("(.*)", "text/plain", "/", "unix", 1, 2, 1))
+  }
+
+  def deleteOldRepresentations {
+    DB.withConnection { implicit c =>
+      val sql =
+        """
+          DELETE
+          FROM representations
+          WHERE id IN (
+          	SELECT repr.id
+          	FROM representations AS repr
+          	JOIN (
+          		SELECT r.parent_id, MAX(r.expires) AS max_expires, MAX(r.timestamp) AS max_timestamp
+          		FROM representations AS r
+          		GROUP BY r.parent_id
+          	) AS newest ON newest.parent_id = repr.parent_id
+          				AND newest.max_expires > repr.expires
+                  OR newest.max_timestamp > repr.timestamp
+          )
+        """.stripMargin
+
+      val statement = c.createStatement()
+      val affectedRows = statement.executeUpdate(sql)
+
+      logger.debug(s"Successfully deleted $affectedRows old Representations from the database")
+    }
   }
 }
