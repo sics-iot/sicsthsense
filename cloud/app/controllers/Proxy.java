@@ -30,9 +30,6 @@
 
 package controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import models.Resource;
 import models.User;
 import play.Logger;
@@ -43,6 +40,7 @@ import play.mvc.Http.HeaderNames;
 import play.mvc.Result;
 import play.mvc.Security;
 import protocol.Response;
+import scala.collection.immutable.Map;
 
 public class Proxy extends Controller {
     private final static Logger.ALogger logger = Logger.of(Proxy.class);
@@ -74,19 +72,18 @@ public class Proxy extends Controller {
         return forward(resource, params);
     }
 
-    private static Result forward(final Resource resource,
-            final Map<String, String[]> queryParameters) {
+    private static Result forward(final Resource resource, final Map<String, String[]> queryParameters) {
 
         final String method = request().method();
-        final Map<String, String[]> headers = new HashMap<String, String[]>(request().headers());
-        final Map<String, String[]> queryString = request().queryString();
+        Map<String, String[]> headers = ScalaUtils.toScalaMap(request().headers());
+        final Map<String, String[]> queryString = ScalaUtils.toScalaMap(request().queryString());
         final String body = request().body().asText();
 
-        if (headers.containsKey(ACCEPT_ENCODING)) {
-            headers.put(ACCEPT_ENCODING, new String[0]);
+        if (headers.contains(ACCEPT_ENCODING)) {
+            headers = headers.updated(ACCEPT_ENCODING, new String[0]);
         }
-        if (headers.containsKey(HOST)) {
-            headers.put(HOST, new String[] {headers.get(HeaderNames.HOST)[0]});
+        if (headers.contains(HOST)) {
+            headers = headers.updated(HOST, new String[] {headers.apply(HeaderNames.HOST)[0]});
         }
 
         Promise<Response> responsePromise = resource.request(method, headers, queryString, body);

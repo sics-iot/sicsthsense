@@ -36,6 +36,7 @@ import protocol.{GetRequest, Protocol, Request, Response}
 import java.net.URI
 import rx.Observable
 import java.util.Collections
+import controllers.ScalaUtils
 
 object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Response] {
   def createUrl(url: String): URL = ???
@@ -66,8 +67,8 @@ object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Res
     promise.map(translateResponse(_, request))
   }
 
-  def observe(uri: URI, params: java.util.Map[String, Array[String]]): Observable[Response] =
-    HttpObserver.observe(GetRequest(uri, Collections.emptyMap[String, Array[String]], params, ""))
+  def observe(uri: URI, params: Map[String, Array[String]]): Observable[Response] =
+    HttpObserver.observe(GetRequest(uri, Map.empty, params, ""))
 
   def translateRequest(request: play.mvc.Http.Request): Request = new HttpRequest(request)
 

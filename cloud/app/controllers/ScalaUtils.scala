@@ -31,21 +31,27 @@ import rx.Observable
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import rx.Observer
+import scala.collection.JavaConversions.asScalaSet
 
 object ScalaUtils {
-  def parseQueryString(queryString: String): java.util.Map[String, Array[String]] = {
-    val map = new java.util.HashMap[String, Array[String]]
+  def parseQueryString(queryString: String): Map[String, Array[String]] = {
+    val builder = Map.newBuilder[String, Array[String]]
 
     if (queryString == null || queryString == "")
-      return map;
+      return builder.result
 
     val qs = queryString.split('?').last
 
     for ((key, values) <- FormUrlEncodedParser.parse(qs)) {
-      map.put(key, values.toArray)
+      builder += ((key, values.toArray))
     }
 
-    map
+    builder.result
+  }
+
+  def parseQueryString(queryString: String, defaults: Map[String, Array[String]]): Map[String, Array[String]] = {
+    val params = parseQueryString(queryString)
+    params ++ defaults
   }
 
   def observableToFuture[A](observable: Observable[A]): Future[A] = {
@@ -68,4 +74,11 @@ object ScalaUtils {
 
     promise.future
   }
+
+  def toScalaMap[K, V](map: java.util.Map[K, V]): Map[K, V] =
+    map.entrySet()
+      .map { entry => (entry.getKey, entry.getValue)}
+      .toMap[K, V]
+
+  def emptyMap[K, V]: Map[K, V] = Map.empty[K, V]
 }

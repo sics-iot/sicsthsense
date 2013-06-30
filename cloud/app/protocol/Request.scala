@@ -28,94 +28,100 @@ package protocol
 
 import java.net.URI
 import scala.util.Try
+import org.apache.http.entity.ContentType
+import controllers.ScalaUtils
 
-trait Request {
+trait Request extends Message {
   /** Returns the request method, e.g. GET/POST/PUT/DELETE/... */
   def method: String
 
-  /** Returns the request [[java.net.URI]]. */
-  def uri: URI
-
   /**
-   * Returns the string value of the header,
-   *  concatenates multiple values with ",",
-   *  raises Exception of header is not found.
-   */
-  def header(key: String): String =
-    headers.get(key).mkString(",")
-
-  /** Returns a map of all headers. */
-  def headers: java.util.Map[String, Array[String]]
-
-  /**
-   * Returns the string value of the querystring parameter,
-   *  concatenates multiple values with ",",
-   *  raises Exception of header is not found.
+   * Returns the querystring parameter concatenated,
+   * @param key the parameter key
+   * @return the values of the querystring concatenated with ',' or "" if the key is not found
    */
   def param(key: String): String =
-    params.get(key).mkString("[", ",", "]")
+    headers.get(key)
+      .map(_.mkString(","))
+      .getOrElse(null)
 
-  /** Returns a map of all query string parameters. */
-  def params: java.util.Map[String, Array[String]]
+  /**
+   * Returns the querystring parameter converted to an integer,
+   * @param key the parameter key
+   * @param default the default value returned if the parameter is not found or conversion fails
+   * @return the converted querystring parameter or default
+   */
+  def intParam(key: String, default: Int): Int =
+    Option(header(key)).flatMap(v => Try(v.toInt).toOption).getOrElse(default)
 
-  /** Returns the Content-Type header or application/octetstream as default. */
-  def contentType: String =
-    Try(header("Content-Type")).getOrElse("application/octetstream")
-  /** Returns the length of the body. */
-  def contentLength: Long =
-    body.length
-  /** Returns the Content-Encoding header or null. */
-  def contentEncoding: String =
-    Try(header("Content-Encoding")).getOrElse(null)
+  /**
+   * Returns the querystring parameter converted to a long,
+   * @param key the parameter key
+   * @param default the default value returned if the parameter is not found or conversion fails
+   * @return the converted querystring parameter or default
+   */
+  def longParam(key: String, default: Long): Long =
+    Option(header(key)).flatMap(v => Try(v.toLong).toOption).getOrElse(default)
 
-  /** Returns the request body decoded using contentEncoding. */
-  def body: String
+  /** Returns a map of all headers. */
+  def params: Map[String, Array[String]]
+
+  private lazy val ct =
+    Option(header("Content-Type"))
+      .map(ContentType.create)
+      .getOrElse(ContentType.APPLICATION_OCTET_STREAM)
+
+  override def contentType: String = ct.getMimeType()
+
+  override def contentLength: Long = body.length()
 }
 
 object Request {
-  def apply(
-    uri: URI,
-    method: String,
-    headers: java.util.Map[String, Array[String]],
-    params: java.util.Map[String, Array[String]],
-    body: String): Request = GenericRequest(uri, method, headers, params, body)
+  def apply(uri: URI,
+            method: String,
+            headers: java.util.Map[String, Array[String]],
+            params: java.util.Map[String, Array[String]],
+            body: String): Request =
+    GenericRequest(uri, method, ScalaUtils.toScalaMap(headers), ScalaUtils.toScalaMap(params), body)
+
+  def apply(uri: URI,
+            method: String,
+            headers: Map[String, Array[String]],
+            params: Map[String, Array[String]],
+            body: String): Request =
+    GenericRequest(uri, method, headers, params, body)
 }
 
-case class GenericRequest(
-  uri: URI,
-  method: String,
-  headers: java.util.Map[String, Array[String]],
-  params: java.util.Map[String, Array[String]],
-  body: String) extends Request
+case class GenericRequest(uri: URI,
+                          method: String,
+                          headers: Map[String, Array[String]],
+                          params: Map[String, Array[String]],
+                          body: String) extends Request
 
-case class GetRequest(
-    uri: URI,
-    headers: java.util.Map[String, Array[String]],
-    params: java.util.Map[String, Array[String]],
-    body: String) extends Request {
+case class GetRequest(uri: URI,
+                      headers: Map[String, Array[String]],
+                      params: Map[String, Array[String]],
+                      body: String) extends Request {
   val method = "GET"
 }
 
-case class PostRequest(
-    uri: URI,
-    headers: java.util.Map[String, Array[String]],
-    params: java.util.Map[String, Array[String]],
-    body: String) extends Request {
+case class PostRequest(uri: URI,
+                       headers: Map[String, Array[String]],
+                       params: Map[String, Array[String]],
+                       body: String) extends Request {
   val method = "POST"
 }
 
-case class PutRequest(
-    uri: URI,
-    headers: java.util.Map[String, Array[String]],
-    params: java.util.Map[String, Array[String]],
-    body: String) extends Request {
+case class PutRequest(uri: URI,
+                      headers: Map[String, Array[String]],
+                      params: Map[String, Array[String]],
+                      body: String) extends Request {
   val method = "PUT"
 }
 
-case class DeleteRequest(
-    uri: URI,
-    headers: java.util.Map[String, Array[String]],
-    params: java.util.Map[String, Array[String]],
-    body: String) extends Request {
+case class DeleteRequest(uri: URI,
+                         headers: Map[String, Array[String]],
+                         params: Map[String, Array[String]],
+                         body: String) extends Request {
   val method = "DELETE"
 }

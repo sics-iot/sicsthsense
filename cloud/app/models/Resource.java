@@ -43,6 +43,7 @@ import protocol.Response;
 import protocol.coap.CoapProtocol;
 import protocol.http.HttpProtocol;
 import rx.Observable;
+import scala.collection.immutable.Map;
 import scala.concurrent.Future;
 
 import javax.persistence.*;
@@ -204,11 +205,12 @@ public class Resource extends Model {
     public Promise<Response> request() {
         // Get Url and parse default parameters
         final URI uri = URI.create(getUrl());
+        final Map<String, String[]> headers =  ScalaUtils.emptyMap();
         final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery());
 
         // Create the Request
         final Request req =
-                new GenericRequest(uri, "GET", Collections.<String, String[]>emptyMap(), params, "");
+                new GenericRequest(uri, "GET", headers, params, "");
 
         return request(req);
     }
@@ -228,15 +230,12 @@ public class Resource extends Model {
     public Promise<Response> request(String method, Map<String, String[]> headers,
                                      Map<String, String[]> queryString, String body) {
         if (method == null) throw new IllegalArgumentException();
-        if (headers == null) headers = Collections.<String, String[]>emptyMap();
-        if (queryString == null) queryString = Collections.<String, String[]>emptyMap();
+        if (headers == null) headers = ScalaUtils.emptyMap();
+        if (queryString == null) queryString = ScalaUtils.emptyMap();
 
-        // Get Url and parse default parameters
+        // Get Url and parse parameters
         final URI uri = URI.create(getUrl());
-        final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery());
-
-        // Update default parameters with parameters passed in as argument
-        params.putAll(queryString);
+        final Map<String, String[]> params = ScalaUtils.parseQueryString(uri.getQuery(), queryString);
 
         // Create the Request
         final Request req = new GenericRequest(uri, method, headers, params, body);

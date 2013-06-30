@@ -26,7 +26,6 @@
 
 package protocol.coap
 
-import scala.collection.JavaConversions.mapAsScalaMap
 import scala.util.Try
 
 import ch.ethz.inf.vs.californium.coap.DELETERequest
@@ -36,7 +35,6 @@ import ch.ethz.inf.vs.californium.coap.PUTRequest
 import ch.ethz.inf.vs.californium.coap.registries.CodeRegistry
 import ch.ethz.inf.vs.californium.endpoint.resources.LocalResource
 import controllers.ScalaUtils
-import models.DataPoint
 import models.Stream
 import play.core.PathPattern
 
@@ -62,7 +60,7 @@ class StreamsResource(subpath: Option[String] = None) extends CoapResource("api/
       return respond(request, CodeRegistry.RESP_NOT_FOUND, "Key does not exist")
     }
 
-    val qs = mapAsScalaMap(ScalaUtils.parseQueryString(request.getUriQuery()))
+    val qs = ScalaUtils.parseQueryString(request.getUriQuery())
 
     if (qs.contains("tail")) {
       val tail = qs.get("tail").flatMap(v => Try(Integer.parseInt(v.mkString)).toOption)

@@ -30,7 +30,6 @@
 package protocol.coap
 
 import java.net.URI
-import scala.collection.JavaConversions.mapAsScalaMap
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import ch.ethz.inf.vs.californium.coap
@@ -48,7 +47,6 @@ import protocol.Response
 import rx.Observable
 import rx.Observer
 import rx.subscriptions.Subscriptions
-import java.util.Collections
 import rx.util.functions.Action0
 import play.api.Logger
 
@@ -113,8 +111,8 @@ object CoapProtocol extends Protocol[coap.Message, coap.Response] {
   override def request(request: Request): Future[Response] =
     executeRequest(createRequest(request))
 
-  def observe(uri: URI, queryString: java.util.Map[String, Array[String]]): Observable[Response] = {
-    val request = GetRequest(uri, Collections.emptyMap(), queryString, "")
+  def observe(uri: URI, queryString: Map[String, Array[String]]): Observable[Response] = {
+    val request = GetRequest(uri, Map.empty, queryString, "")
 
     // Create the observing actor
     // Execute the request when the actor receives the first connect request.
