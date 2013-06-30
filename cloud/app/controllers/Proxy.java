@@ -92,14 +92,8 @@ public class Proxy extends Controller {
         Promise<Response> responsePromise = resource.request(method, headers, queryString, body);
         Promise<Result> resultPromise = responsePromise.map(new F.Function<Response, Result>() {
             public Result apply(Response response) {
-                String encoding;
                 String contentType;
 
-                try {
-                    encoding = response.contentEncoding();
-                } catch (Exception e) {
-                    encoding = "<Encoding not found>";
-                }
                 try {
                     contentType = response.contentType();
                 } catch (Exception e) {
@@ -108,7 +102,7 @@ public class Proxy extends Controller {
 
                 long contentLength = response.contentLength();
                 logger.info("Got response for: " + method + " " + resource.getUrl()
-                        + ", encoding: " + encoding + ", content-type: " + contentType
+                        + ", content-type: " + contentType
                         + ", body length: " + contentLength + " bytes");
                 return status(response.status(), response.body());
             }

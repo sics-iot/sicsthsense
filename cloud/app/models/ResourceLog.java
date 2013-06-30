@@ -140,11 +140,9 @@ public class ResourceLog extends Model {
             log.method = response.request().method();
             log.uri = response.uri().toString();
             log.headers =
-                    "Status " + response.statusText() + "\n" + HeaderNames.CONTENT_TYPE + " "
-                            + response.contentType() + "\n" + HeaderNames.CONTENT_ENCODING
-                            + " " + response.contentEncoding() + "\n"
-                            + HeaderNames.CONTENT_LENGTH + " " + response.contentLength()
-                            + "\n";
+                    "Status " + response.statusText() + "\n"
+                            + HeaderNames.CONTENT_TYPE + " " + response.contentType() + "\n"
+                            + HeaderNames.CONTENT_LENGTH + " " + response.contentLength() + "\n";
             log.interactionType = InteractionType.Observe;
 
             log.setCreationTimestamp(Utils.currentTime());
@@ -168,11 +166,9 @@ public class ResourceLog extends Model {
             log.method = response.request().method();
             log.uri = response.uri().toString();
             log.headers =
-                    "Status " + response.statusText() + "\n" + HeaderNames.CONTENT_TYPE + " "
-                            + response.contentType() + "\n" + HeaderNames.CONTENT_ENCODING
-                            + " " + response.contentEncoding() + "\n"
-                            + HeaderNames.CONTENT_LENGTH + " " + response.contentLength()
-                            + "\n";
+                    "Status " + response.statusText() + "\n"
+                            + HeaderNames.CONTENT_TYPE + " " + response.contentType() + "\n"
+                            + HeaderNames.CONTENT_LENGTH + " " + response.contentLength() + "\n";
             log.interactionType = InteractionType.Pull;
 
             log.setCreationTimestamp(creationTimestamp);

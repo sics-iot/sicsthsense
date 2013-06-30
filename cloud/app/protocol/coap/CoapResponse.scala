@@ -30,7 +30,7 @@ import java.net.URI
 import ch.ethz.inf.vs.californium.coap
 import protocol.Response
 import protocol.Request
-import scala.collection.JavaConversions.mapAsJavaMap
+import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
 
 class CoapResponse(response: coap.Response) extends Response {
   // Response Uri
@@ -42,10 +42,11 @@ class CoapResponse(response: coap.Response) extends Response {
 
   // Status code and text
   override def status: Int = CoapTranslator.getHttpStatusCode(response.getCode()).get
+
   override def statusText: String = CoapTranslator.getHttpStatusText(response.getCode()).get
 
   // Headers
-  override def headers: java.util.Map[String, Array[String]] =
+  override def headers: Map[String, Array[String]] =
     CoapTranslator.getHttpHeaders(response.getOptions)
 
   // Content Type
@@ -54,12 +55,15 @@ class CoapResponse(response: coap.Response) extends Response {
   override def contentType: String =
     if (ct == null) ""
     else ct.getMimeType()
-  override def contentEncoding: String =
-    if (ct == null) ""
-    else ct.getCharset().name()
+
   override def contentLength: Long = body.length
 
   override def receivedAt: Long = response.getTimestamp()
+
+  override def expires: Long =
+    Option(response.getFirstOption(OptionNumberRegistry.MAX_AGE))
+      .map(_.getIntValue.toLong)
+      .getOrElse(0L)
 
   // Body
   override def body: String = CoapTranslator.getContent(response)

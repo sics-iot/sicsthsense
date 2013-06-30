@@ -29,27 +29,26 @@ package protocol.http
 import protocol.Response
 import play.api.libs.ws
 import java.net.URI
-import scala.collection.JavaConversions.{ mapAsJavaMap, mapAsScalaMap }
 import org.apache.http.entity.ContentType
 import protocol.Request
 import controllers.Utils
+import scala.collection.JavaConversions.asScalaSet
+import scala.util.Try
 
-class HttpResponse(response: ws.Response) extends Response {
-  override def request: Request = ???
+class HttpResponse(response: ws.Response, req: Option[Request] = None) extends Response {
+  override def request: Request = req.get
 
   override def uri: URI = response.getAHCResponse.getUri()
 
   override def status: Int = response.status
+
   override def statusText: String = response.statusText
 
-  override def header(key: String): String =
-    headers(key).head
-
-  override def headers: java.util.Map[String, Array[String]] =
-    mapAsJavaMap(
-      mapAsScalaMap(response.ahcResponse.getHeaders)
-        .mapValues(_.toArray(Array[String]()))
-    )
+  override def headers: Map[String, Array[String]] =
+    response.ahcResponse.getHeaders.entrySet()
+      .map { entry =>
+      (entry.getKey, entry.getValue.toArray(Array.empty[String]))
+    }.toMap[String, Array[String]]
 
   private lazy val ct =
     Option(response.getAHCResponse.getContentType())
@@ -57,10 +56,28 @@ class HttpResponse(response: ws.Response) extends Response {
       .getOrElse(ContentType.APPLICATION_OCTET_STREAM)
 
   override def contentType: String = ct.getMimeType()
+
   override def contentLength: Long = body.length()
-  override def contentEncoding: String = ct.getCharset().displayName()
+
+  def date: Long = longHeader("Date", receivedAt)
 
   override val receivedAt: Long = Utils.currentTime
+
+  private val maxAgeR = """max-age=(\d+)""".r
+
+  override def expires: Long = {
+    val ma = for {
+      hs <- headers.get("Cache-Control")
+      m <- maxAgeR.findFirstMatchIn(hs.mkString(","))
+
+      if m.subgroups.length > 0
+      maxAge <- Try(m.subgroups(0).toLong).toOption
+
+      if receivedAt > 0
+    } yield maxAge + receivedAt
+
+    ma.getOrElse(longHeader("Expires", 0))
+  }
 
   override def body: String = response.body
 }

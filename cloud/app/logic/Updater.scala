@@ -82,7 +82,7 @@ private class Updater extends Actor {
       res => Updater.poll(res.id, res.pollingPeriod)
     }.size
 
-    Logger.info(s"Started polling on $pollCount resources")
+    logger.info(s"Started polling on $pollCount resources")
 
     val observeResources = Resource.find.where()
       .eq("pollingPeriod", -1)
@@ -92,7 +92,7 @@ private class Updater extends Actor {
       id => Updater.observe(id.asInstanceOf[Long])
     }.size
 
-    Logger.info(s"Started observing on $observeCount resources")
+    logger.info(s"Started observing on $observeCount resources")
   }
 
   override def preRestart(reason : Throwable, message: Option[Any]) {

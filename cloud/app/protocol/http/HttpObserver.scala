@@ -11,6 +11,7 @@ import play.api.Logger
 import play.api.libs.concurrent.Akka
 import rx.subscriptions.Subscriptions
 import scala.concurrent.ExecutionContext.Implicits.global
+import rx.util.functions.Action0
 
 private sealed trait UpdateMessage
 
@@ -26,6 +27,7 @@ private case class PollError(req: Request, obs: Observer[Response], t: Throwable
 private class HttpObserver extends Actor {
   private val logger = Logger(this.getClass)
 
+  private val MIN_POLL_PERIOD = 30.seconds
   private val DEFAULT_POLL_PERIOD = 1.minute
   private var scheduledPolls = Map.empty[Request, (Observer[Response], Cancellable)]
 
@@ -48,16 +50,19 @@ private class HttpObserver extends Actor {
     case Poll(req, obs) =>
       scheduledPolls -= req
 
-      HttpProtocol.request(req).andThen {
-        case Success(response) => PollResponse(req, obs, response)
-        case Failure(t) => PollError(req, obs, t)
-      }.pipeTo(self)
+      val res = HttpProtocol.request(req).map {
+        response => PollResponse(req, obs, response)
+      } recover {
+        case t: Throwable => PollError(req, obs, t)
+      }
+
+      res.pipeTo(self)
     case PollResponse(req, obs, res) =>
       obs.onNext(res)
 
       val delay =
-        if (res.expires() > 0)
-          (res.expires() - Utils.currentTime()).seconds
+        if (res.expires > 0)
+          MIN_POLL_PERIOD.max((res.expires - Utils.currentTime()).seconds)
         else
           DEFAULT_POLL_PERIOD
 
@@ -89,9 +94,11 @@ object HttpObserver {
     Observable.create[Response] { (obs: Observer[Response]) =>
       observer ! Poll(req, obs)
 
-      Subscriptions.create {
-        observer ! StopPoll(req)
-      }
+      Subscriptions.create(new Action0 {
+        def call() {
+          observer ! StopPoll(req)
+        }
+      })
     }
   }
 }

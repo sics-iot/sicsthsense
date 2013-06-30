@@ -63,7 +63,7 @@ object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Res
       case _        => throw new Exception("Unrecognized request method")
     }
 
-    promise.map(translateResponse)
+    promise.map(translateResponse(_, request))
   }
 
   def observe(uri: URI, params: java.util.Map[String, Array[String]]): Observable[Response] =
@@ -72,4 +72,6 @@ object HttpProtocol extends Protocol[play.mvc.Http.Request, play.api.libs.ws.Res
   def translateRequest(request: play.mvc.Http.Request): Request = new HttpRequest(request)
 
   def translateResponse(response: play.api.libs.ws.Response): Response = new HttpResponse(response)
+
+  def translateResponse(response: play.api.libs.ws.Response, request: Request): Response = new HttpResponse(response, Some(request))
 }
