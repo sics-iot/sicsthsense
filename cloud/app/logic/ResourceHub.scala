@@ -183,8 +183,7 @@ object ResourceHub {
           		FROM representations AS r
           		GROUP BY r.parent_id
           	) AS newest ON newest.parent_id = repr.parent_id
-          				AND newest.max_expires > repr.expires
-                  OR newest.max_timestamp > repr.timestamp
+          				AND (newest.max_expires > repr.expires OR newest.max_timestamp > repr.timestamp)
           )
         """.stripMargin
 

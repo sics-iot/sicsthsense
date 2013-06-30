@@ -74,7 +74,7 @@ class HttpResponse(response: ws.Response, req: Option[Request] = None) extends R
       maxAge <- Try(m.subgroups(0).toLong).toOption
 
       if receivedAt > 0
-    } yield maxAge + receivedAt
+    } yield maxAge * 1000 + receivedAt
 
     ma.getOrElse(longHeader("Expires", 0))
   }

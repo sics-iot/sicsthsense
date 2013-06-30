@@ -63,7 +63,7 @@ class CoapResponse(response: coap.Response) extends Response {
   override def expires: Long =
     Option(response.getFirstOption(OptionNumberRegistry.MAX_AGE))
       .map(_.getIntValue.toLong)
-      .getOrElse(0L)
+      .getOrElse(0L) * 1000 + receivedAt
 
   // Body
   override def body: String = CoapTranslator.getContent(response)
