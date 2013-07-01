@@ -171,7 +171,7 @@ object ResourceHub {
 
   def deleteOldRepresentations {
     DB.withConnection { implicit c =>
-      val sql =
+      val h2Sql =
         """
           DELETE
           FROM representations
@@ -186,9 +186,20 @@ object ResourceHub {
           				AND (newest.max_expires > repr.expires OR newest.max_timestamp > repr.timestamp)
           )
         """.stripMargin
+      val mySql =
+        """
+          DELETE repr.*
+          FROM representations AS repr
+          JOIN (
+          	SELECT r.parent_id, MAX(r.expires) AS max_expires, MAX(r.timestamp) AS max_timestamp
+          	FROM representations AS r
+          	GROUP BY r.parent_id
+          ) AS newest ON newest.parent_id = repr.parent_id
+          			AND (newest.max_expires > repr.expires OR newest.max_timestamp > repr.timestamp)
+        """.stripMargin
 
       val statement = c.createStatement()
-      val affectedRows = statement.executeUpdate(sql)
+      val affectedRows = statement.executeUpdate(h2Sql)
 
       logger.debug(s"Successfully deleted $affectedRows old Representations from the database")
     }
