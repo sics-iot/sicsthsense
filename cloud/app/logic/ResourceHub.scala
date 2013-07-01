@@ -56,7 +56,7 @@ object ResourceHub {
     var i = 0;
     var repr = Representation.getByResourceId(res.id)
 
-    while (repr.expires < Utils.currentTime()) {
+    while (repr.getExpiresAsDuration < Utils.currentTimeAsDuration()) {
       if (i >= 10) return Result(ResultCode.TimedOut)
 
       i += 1
@@ -88,10 +88,9 @@ object ResourceHub {
       res
     })
 
-  def updateResource(
-                      id: Long,
-                      changes: Resource,
-                      parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
+  def updateResource(id: Long,
+                     changes: Resource,
+                     parsers: java.util.List[StreamParserWrapper]): Result[Resource] =
     Result(Try {
       val res = Resource.getById(id)
 
@@ -117,7 +116,7 @@ object ResourceHub {
     val id = res.id
 
     if (res.isPoll) {
-      Updater.poll(id, res.pollingPeriod)
+      Updater.poll(id, res.getPollingPeriodDuration)
     } else if (res.isObserve) {
       Updater.observe(id)
     } else {

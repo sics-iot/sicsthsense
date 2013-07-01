@@ -26,6 +26,9 @@
 
 package protocol
 
+import scala.concurrent.duration.FiniteDuration
+import java.util.concurrent.TimeUnit
+
 trait Response extends Message {
   /** Returns the [[protocol.Request]] corresponding to this response. */
   def request: Request
@@ -39,6 +42,10 @@ trait Response extends Message {
   /** Returns the unix timestamp when the response was received. */
   def receivedAt: Long
 
+  def receivedAtAsDuration: FiniteDuration = FiniteDuration(receivedAt, TimeUnit.MILLISECONDS)
+
   /** Returns the unix timestamp when the response is not fresh anymore. */
   def expires: Long
+
+  def expiresAsDuration: FiniteDuration = FiniteDuration(expires, TimeUnit.SECONDS)
 }

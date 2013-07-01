@@ -30,7 +30,6 @@
 
 package models;
 
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.annotation.EnumValue;
 import controllers.Utils;
 import logic.Argument;

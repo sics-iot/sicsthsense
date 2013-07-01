@@ -29,6 +29,10 @@
  * */
 package controllers;
 
+import org.codehaus.jackson.JsonNode;
+import play.Logger;
+import scala.concurrent.duration.FiniteDuration;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -37,10 +41,7 @@ import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import org.codehaus.jackson.JsonNode;
-
-import play.Logger;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -48,6 +49,10 @@ public class Utils {
 		// return System.currentTimeMillis();
 		return new Date().getTime();
 	}
+
+    public static FiniteDuration currentTimeAsDuration() {
+        return FiniteDuration.apply(currentTime(), TimeUnit.MILLISECONDS);
+    }
 
 	public static String timeStr(long time) {
 		time /= 1000;

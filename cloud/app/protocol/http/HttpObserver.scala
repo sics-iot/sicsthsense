@@ -62,7 +62,7 @@ private class HttpObserver extends Actor {
 
       val delay =
         if (res.expires > 0)
-          MIN_POLL_PERIOD.max((res.expires - Utils.currentTime()).seconds)
+          MIN_POLL_PERIOD.max(res.expiresAsDuration - Utils.currentTimeAsDuration())
         else
           DEFAULT_POLL_PERIOD
 

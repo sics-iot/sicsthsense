@@ -34,6 +34,7 @@ import protocol.Request
 import controllers.Utils
 import scala.collection.JavaConversions.asScalaSet
 import scala.util.Try
+import scala.concurrent.duration._
 
 class HttpResponse(response: ws.Response, req: Option[Request] = None) extends Response {
   override def request: Request = req.get
@@ -74,9 +75,9 @@ class HttpResponse(response: ws.Response, req: Option[Request] = None) extends R
       maxAge <- Try(m.subgroups(0).toLong).toOption
 
       if receivedAt > 0
-    } yield maxAge * 1000 + receivedAt
+    } yield maxAge.seconds + receivedAtAsDuration
 
-    ma.getOrElse(longHeader("Expires", 0))
+    ma.map(_.toSeconds).getOrElse(longHeader("Expires", 0))
   }
 
   override def body: String = response.body

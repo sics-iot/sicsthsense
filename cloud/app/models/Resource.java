@@ -45,10 +45,12 @@ import protocol.http.HttpProtocol;
 import rx.Observable;
 import scala.collection.immutable.Map;
 import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
 
 import javax.persistence.*;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "resources", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner_id",
@@ -225,6 +227,10 @@ public class Resource extends Model {
 
     public boolean isObserve() {
         return pollingPeriod == -1;
+    }
+
+    public FiniteDuration getPollingPeriodDuration() {
+        return FiniteDuration.apply(pollingPeriod, TimeUnit.SECONDS);
     }
 
     public Promise<Response> request(String method, Map<String, String[]> headers,

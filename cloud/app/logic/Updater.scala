@@ -37,7 +37,7 @@ import play.api.libs.concurrent.Akka
 import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.DurationLong
+import scala.concurrent.duration.{FiniteDuration, DurationLong}
 import scala.util.{Failure, Success}
 import rx.Subscription
 import protocol.{Request, Response}
@@ -48,13 +48,13 @@ private sealed trait UpdateMessage
 
 private case class Push(id: Long, request: Request) extends UpdateMessage
 
-private case class StartPoll(id: Long, period: Long) extends UpdateMessage
+private case class StartPoll(id: Long, period: FiniteDuration) extends UpdateMessage
 
-private case class StopPoll(id: Long, period: Long) extends UpdateMessage
+private case class StopPoll(id: Long, period: FiniteDuration) extends UpdateMessage
 
 private case class Poll(id: Long) extends UpdateMessage
 
-private case class PollResponse(id: Long, requestTime: Long, responseTime: Long, response: Response) extends UpdateMessage
+private case class PollResponse(id: Long, requestTime: FiniteDuration, responseTime: FiniteDuration, response: Response) extends UpdateMessage
 
 private case class StartObserve(id: Long, failures: Int) extends UpdateMessage
 
@@ -70,7 +70,7 @@ private class Updater extends Actor {
 
   private val logger = Logger(this.getClass)
   private var observing = Map.empty[Long, Subscription]
-  private var polling = Map.empty[Long, (Long, Cancellable)]
+  private var polling = Map.empty[Long, (FiniteDuration, Cancellable)]
 
   override def preStart() {
     val pollResources = Resource.find.where()
@@ -79,7 +79,7 @@ private class Updater extends Actor {
       .findIterate()
 
     val pollCount = pollResources.map {
-      res => Updater.poll(res.id, res.pollingPeriod)
+      res => Updater.poll(res.id, res.getPollingPeriodDuration)
     }.size
 
     logger.info(s"Started polling on $pollCount resources")
@@ -123,7 +123,7 @@ private class Updater extends Actor {
         logger.info(s"Starting to poll resource '$id'")
 
         val cancel = context.system.scheduler.schedule(
-          0.seconds, period.seconds, self, Poll(id)
+          0.seconds, period, self, Poll(id)
         )
 
         polling = polling.updated(id, (period, cancel))
@@ -151,12 +151,12 @@ private class Updater extends Actor {
       if (shouldUpdate) {
         logger.debug(s"Polling resource '$id' URL: ${resource.getUrl()}")
 
-        val requestTime = Utils.currentTime()
+        val requestTime = Utils.currentTimeAsDuration()
         val responseP = resource.request().getWrappedPromise()
 
         responseP.onComplete {
           case Success(res) =>
-            self ! PollResponse(id, requestTime, Utils.currentTime(), res)
+            self ! PollResponse(id, requestTime, Utils.currentTimeAsDuration(), res)
           case Failure(t) =>
             logger.error(s"Error while polling resource '$id'", t)
         }
@@ -172,7 +172,7 @@ private class Updater extends Actor {
       repr.save()
       logger.debug(s"Stored Representation for resource $id")
 
-      val log = ResourceLog.fromResponse(resource, res, reqT, resT)
+      val log = ResourceLog.fromResponse(resource, res, reqT.toMillis, resT.toMillis)
       log.save()
       logger.debug(s"Stored ResourceLog for resource $id")
 
@@ -291,12 +291,12 @@ object Updater {
     updater ! Push(id, request)
   }
 
-  def poll(id: Long, seconds: Long) {
-    updater ! StartPoll(id, seconds)
+  def poll(id: Long, period: FiniteDuration) {
+    updater ! StartPoll(id, period)
   }
 
-  def stopPoll(id: Long, seconds: Long) {
-    updater ! StopPoll(id, seconds)
+  def stopPoll(id: Long, period: FiniteDuration) {
+    updater ! StopPoll(id, period)
   }
 
   def observe(id: Long) {

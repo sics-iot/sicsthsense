@@ -32,8 +32,10 @@ import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 import protocol.Request;
 import protocol.Response;
+import scala.concurrent.duration.FiniteDuration;
 
 import javax.persistence.*;
+import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "representations")
@@ -68,6 +70,10 @@ public class Representation extends Model {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public FiniteDuration getExpiresAsDuration() {
+        return FiniteDuration.apply(expires, TimeUnit.SECONDS);
     }
 
     private void normalize() {

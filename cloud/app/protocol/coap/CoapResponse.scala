@@ -31,6 +31,7 @@ import ch.ethz.inf.vs.californium.coap
 import protocol.Response
 import protocol.Request
 import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
+import scala.concurrent.duration._
 
 class CoapResponse(response: coap.Response) extends Response {
   // Response Uri
@@ -62,8 +63,11 @@ class CoapResponse(response: coap.Response) extends Response {
 
   override def expires: Long =
     Option(response.getFirstOption(OptionNumberRegistry.MAX_AGE))
-      .map(_.getIntValue.toLong)
-      .getOrElse(0L) * 1000 + receivedAt
+      .map { v =>
+      val maxAge = v.getIntValue.toLong.seconds
+      maxAge + receivedAtAsDuration
+    }
+      .getOrElse(receivedAtAsDuration).toSeconds
 
   // Body
   override def body: String = CoapTranslator.getContent(response)
