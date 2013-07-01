@@ -40,9 +40,9 @@ trait Response extends Message {
   def statusText: String
 
   /** Returns the unix timestamp when the response was received. */
-  def receivedAt: Long
+  def receivedAt: Long = receivedAtAsDuration.toMillis
 
-  def receivedAtAsDuration: FiniteDuration = FiniteDuration(receivedAt, TimeUnit.MILLISECONDS)
+  def receivedAtAsDuration: FiniteDuration
 
   /** Returns the unix timestamp when the response is not fresh anymore. */
   def expires: Long

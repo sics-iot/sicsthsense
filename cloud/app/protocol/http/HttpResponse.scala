@@ -62,7 +62,7 @@ class HttpResponse(response: ws.Response, req: Option[Request] = None) extends R
 
   def date: Long = longHeader("Date", receivedAt)
 
-  override val receivedAt: Long = Utils.currentTime
+  override val receivedAtAsDuration: FiniteDuration = Utils.currentTimeAsDuration
 
   private val maxAgeR = """max-age=(\d+)""".r
 

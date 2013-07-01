@@ -32,6 +32,7 @@ import protocol.Response
 import protocol.Request
 import ch.ethz.inf.vs.californium.coap.registries.OptionNumberRegistry
 import scala.concurrent.duration._
+import java.util.concurrent.TimeUnit
 
 class CoapResponse(response: coap.Response) extends Response {
   // Response Uri
@@ -59,7 +60,7 @@ class CoapResponse(response: coap.Response) extends Response {
 
   override def contentLength: Long = body.length
 
-  override def receivedAt: Long = response.getTimestamp()
+  override def receivedAtAsDuration: FiniteDuration = FiniteDuration(response.getTimestamp, TimeUnit.NANOSECONDS)
 
   override def expires: Long =
     Option(response.getFirstOption(OptionNumberRegistry.MAX_AGE))
