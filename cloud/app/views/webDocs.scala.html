@@ -74,18 +74,30 @@ be either sent as an integer or float.
     }
   }</pre>
 
-Other data formats can be easily parsed by specifying a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> to capture relevant numbers from an external webpage.
+Other data formats can be easily parsed by specifying a <a
+	href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a>
+to capture relevant numbers from an external webpage.
+Defining a regular expression 'group' will enable the parser to capture the relevant text.
+More complex regular expressions, with multiple named groups, resulting in multiple named
+stream output are also possible.
 
 
 	<br /> <br />
   <h1 id='pollingDataHelp'>Polling data</h1>
 	<a name="polling"></a>
   
-	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
-	This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
-  After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
-  The data will soon appear in graphs, and be available through our RESTful API.
+The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
+This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
+After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
+The data will soon appear in graphs, and be available through our RESTful API.
+Simply enter the URL that Sics<sup>th</sup>Sense should poll in the resource configuration page and the relevant
+polling period.
 
+  <h1 id='pollingDataHelp'>Posting data</h1>
+	<a name="posting"></a>
+Alternatively, you can perform HTTP POST's at the resource's Sics<sup>th</sup>Sense key URL. This can also be
+found in the resource's configuration page. The POST request will be authorised by including the owner's <i>user token</i> in the query
+string of the URL, e.g. "<i>POST [URL]?user_token=[userToken]</i>".
 
 	
 	<br /> <br />
