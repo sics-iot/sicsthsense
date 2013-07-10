@@ -38,7 +38,7 @@ import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{FiniteDuration, DurationLong}
-import scala.util.{Failure, Success}
+import scala.util.{Try, Failure, Success}
 import rx.Subscription
 import protocol.{Request, Response}
 import play.api.http.ContentTypes
@@ -163,7 +163,7 @@ private class Updater extends Actor {
       } else {
         logger.debug(s"Received $m but resource '$id' is not in poll mode or has no url")
       }
-    case PollResponse(id, reqT, resT, res) =>
+    case PollResponse(id, reqT, resT, res) => Try {
       val resource = Resource.getById(id)
 
       logger.info(s"Received response from resource $id")
@@ -184,6 +184,9 @@ private class Updater extends Actor {
 
       resource.lastPolled = Utils.currentTime()
       resource.save()
+    }.recover {
+      case t: Throwable => logger.error(s"An error happened while updating representation/log/streams of resource $id", t)
+    }
     case m@StartObserve(id, failures) =>
       val resource = Resource.getById(id)
 
@@ -220,7 +223,7 @@ private class Updater extends Actor {
       } else {
         logger.debug(s"Received $m but resource '$id' is still in observe mode")
       }
-    case Push(id, request) =>
+    case Push(id, request) => Try {
       val resource = Resource.getById(id)
 
       logger.info(s"Post received from URI: ${request.uri}, Content-Type: ${request.contentType}, Content: ${request.body}");
@@ -244,7 +247,10 @@ private class Updater extends Actor {
         sp.stream.post(points, Utils.currentTime())
       }
       logger.debug(s"Updated Streams for resource $id")
-    case Notification(id, res) =>
+    }.recover {
+      case t: Throwable => logger.error(s"An error happened while updating representation/log/streams of resource $id", t)
+    }
+    case Notification(id, res) => Try {
       val resource = Resource.getById(id)
 
       logger.info(s"Received notification from resource $id")
@@ -262,6 +268,9 @@ private class Updater extends Actor {
         sp.stream.post(data, Utils.currentTime())
       }
       logger.debug(s"Updated Streams for resource $id")
+    }.recover {
+      case t: Throwable => logger.error(s"An error happened while updating representation/log/streams of resource $id", t)
+    }
     case NotificationError(id, err, failures) =>
       observing -= id
       logger.warn(s"Resource '$id' has now $failures failures", err)
