@@ -163,10 +163,12 @@ object ResourceHub {
 
     val parsers = for {
       sp <- parsersFromPlain(body)
-      if !FileSystem.exists(resource.owner, sp.inputParser)
+
+      prefix = s"/${resource.label}/"
+      path = prefix + Stream.from(1).filterNot(i => FileSystem.exists(resource.owner, prefix + i)).head
     } yield {
       sp.resource = resource
-      StreamParser.create(sp)
+      StreamParser.create(path, sp)
     }
 
     parsers.to[Seq]
