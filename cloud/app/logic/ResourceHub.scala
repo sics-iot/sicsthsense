@@ -126,9 +126,9 @@ object ResourceHub {
   }
 
   private def newParser(prefix: String, node: JsValue): Option[StreamParser] = node match {
-    case JsBoolean(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
-    case JsNumber(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
-    case JsString(v) => Some(new StreamParser(prefix, "application/json", prefix, "unix", 1, 2, 1))
+    case JsBoolean(v) => Some(new StreamParser(prefix, "application/json", "unix", 1, 2, 1))
+    case JsNumber(v) => Some(new StreamParser(prefix, "application/json", "unix", 1, 2, 1))
+    case JsString(v) => Some(new StreamParser(prefix, "application/json", "unix", 1, 2, 1))
     case _ => None
   }
 
@@ -144,11 +144,11 @@ object ResourceHub {
     case _ => Seq.empty
   }
 
-  def createParsersFromJson(resource: Resource, request: Request): Seq[StreamParser] = {
+  def createParsersFromJson(resource: Resource, body: String): java.util.List[StreamParser] = {
     logger.info("Trying to parse Json to then auto fill in StreamParsers!")
 
     val parsers = for {
-      sp <- parsersFromJson(request.body)
+      sp <- parsersFromJson(body)
       if !FileSystem.exists(resource.owner, sp.inputParser)
     } yield {
       sp.resource = resource
@@ -158,14 +158,30 @@ object ResourceHub {
     parsers.to[Seq]
   }
 
+  def createParserFromPlain(resource: Resource, body: String): java.util.List[StreamParser] = {
+    logger.info("Trying to parse Json to then auto fill in StreamParsers!")
+
+    val parsers = for {
+      sp <- parsersFromPlain(body)
+
+      prefix = s"/${resource.label}/"
+      path = prefix + Stream.from(1).filterNot(i => FileSystem.exists(resource.owner, prefix + i)).head
+    } yield {
+      sp.resource = resource
+      StreamParser.create(path, sp)
+    }
+
+    parsers.to[Seq]
+  }
+
   def parsersFromJson(text: String): java.util.List[StreamParser] = {
     val json = Json.parse(text)
 
-    getParsers("/", json)
+    getParsers("", json)
   }
 
   def parsersFromPlain(text: String): java.util.List[StreamParser] = {
-    Seq(new StreamParser("(.*)", "text/plain", "/", "unix", 1, 2, 1))
+    Seq(new StreamParser("(.*)", "text/plain", "unix", 1, 2, 1))
   }
 
   def deleteOldRepresentations {
