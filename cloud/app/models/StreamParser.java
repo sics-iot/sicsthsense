@@ -111,11 +111,9 @@ public class StreamParser extends Model {
         super();
     }
 
-    public StreamParser(String inputParser, String inputType, String path,
+    public StreamParser(String inputParser, String inputType,
                         String timeformat, int dataGroup, int timeGroup, int numberOfPoints) {
         super();
-
-        Argument.notEmpty(path);
 
         this.inputParser = inputParser;
         this.inputType = inputType;

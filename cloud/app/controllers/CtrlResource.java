@@ -206,11 +206,11 @@ public class CtrlResource extends Controller {
 
         // decide to how to parse this data
         if (contentType.matches("application/json.*") || contentType.matches("text/json.*")) {
-            for (StreamParser sp : ResourceHub.parsersFromJson(response.body())) {
+            for (StreamParser sp : ResourceHub.createParsersFromJson(resource, response.body())) {
                 skeleton.streamParserWrappers.add(new StreamParserWrapper(sp));
             }
         } else if (contentType.matches("text/html.*") || contentType.matches("text/plain.*")) {
-            for (StreamParser sp : ResourceHub.parsersFromPlain(response.body())) {
+            for (StreamParser sp : ResourceHub.createParserFromPlain(resource, response.body())) {
                 skeleton.streamParserWrappers.add(new StreamParserWrapper(sp));
             }
         } else {

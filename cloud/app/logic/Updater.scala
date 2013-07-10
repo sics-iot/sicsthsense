@@ -239,7 +239,7 @@ private class Updater extends Actor {
       // if first POST (and no poll's), auto make parsers
       if (resource.streamParsers.isEmpty() && resource.isUnused() && request.contentType.equalsIgnoreCase(ContentTypes.JSON)) {
         logger.info(s"Resource '$id' has no StreamParsers defined but got pushed. Automatically creating StreamParsers");
-        ResourceHub.createParsersFromJson(resource, request)
+        ResourceHub.createParsersFromJson(resource, request.body)
       }
 
       for (sp <- StreamParser.forResource(resource)) {
