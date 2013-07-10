@@ -20,16 +20,16 @@ public class Resource {
 
 	public long getId()							{ return id; }
 	public String getLabel()				{ return label; }
-	public String getOwner_id()			{ return "null"; } 
-	public String getPolling_period(){ return "null"; }
-	public String getLast_polled()	{ return "null"; }
+	public String getOwner_id()			{ return null; } 
+	public String getPolling_period(){ return "-1"; }
+	public String getLast_polled()	{ return "-1"; }
 	public String getPolling_url()	{ return "null"; }
 	public String getPolling_authentication_key()		{ return "null"; }
 	public String getDescription()	{ return "null"; }
-	public String getParent_id()		{ return "null"; }
+	public String getParent_id()		{ return "-1"; }
 	public String getSecret_key()		{ return "null"; }
-	public String getVersion()			{ return "null"; }
-	public String getLast_posted()	{ return "null"; }
+	public String getVersion()			{ return "-1"; }
+	public String getLast_posted()	{ return "-1"; }
 
 	public void setId(long id)	{ this.id = id; }
 	public void setOwner_id(String p) {} 
