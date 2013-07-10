@@ -330,7 +330,6 @@ public class StreamParser extends Model {
         return data;
     }
 
-    @Transactional
     private Stream getOrCreateStream(String path) {
         Argument.absolutePath(path);
 

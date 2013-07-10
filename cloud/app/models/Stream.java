@@ -388,7 +388,6 @@ public class Stream extends Model implements Comparable<Stream> {
         return stream;
     }
 
-    @Transactional
     public static Stream create(String path, Stream stream) {
         Argument.notNull(stream);
         Argument.notNull(stream.owner);
