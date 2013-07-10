@@ -31,8 +31,8 @@ public interface StorageDAO {
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
 
-  @SqlUpdate("insert into resources(id, owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:id, :owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, 1, -1)")
-  void insertResource(@Bind("id") long id, 
+  @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, 1, -1)")
+  void insertResource(
 		@Bind("owner_id") String owner_id, 
 		@Bind("label") String label,
 		@Bind("polling_period") String polling_period,

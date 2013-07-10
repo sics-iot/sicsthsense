@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/users/{id}/{resourceId}")
+@Path("/users/{userId}/{resourceId}")
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceResource {
 	private StorageDAO storage;
@@ -28,7 +28,7 @@ public class ResourceResource {
 
 	@GET
 	@Timed
-	public Resource getResource(@PathParam("id") String userId, @PathParam("resourceId") String resourceId) {
+	public Resource getResource(@PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
 		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
 		System.out.println("Getting user/resource: "+userId+" "+resourceId);
 		Resource resource = storage.findResourceById(Integer.parseInt(resourceId));
@@ -37,14 +37,13 @@ public class ResourceResource {
 
 	@POST
 	@Timed
-	public void postResource(@PathParam("resourceId") String userId, Resource resource) {
+	public void postResource(@PathParam("userId") String userId, Resource resource) {
 		System.out.println("Adding user/resource:"+resource.getLabel());
 		insertResource(resource);
 	}
 	
 	void insertResource(Resource resource) {
-		storage.insertResource(resource.getId(), 
-	resource.getOwner_id(), 
+		storage.insertResource( resource.getOwner_id(), 
 	resource.getLabel(),
 	resource.getPolling_period(), 
 	resource.getLast_polled(), 
