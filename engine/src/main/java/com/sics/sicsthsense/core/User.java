@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
 	private long id;
-	@NotNull
+	//@NotNull
 	@JsonProperty
 	private String username;
 	@JsonProperty
@@ -24,9 +24,9 @@ public class User {
 	@JsonProperty
 	public String password; // only for username/password login
 	@JsonProperty
-	public String first_name;
+	public String firstName;
 	@JsonProperty
-	public String last_name;
+	public String lastName;
 	@JsonProperty
 	public String description = "";
 	@JsonProperty
@@ -34,50 +34,52 @@ public class User {
 	@JsonProperty
 	public Double longitude = 0.0;
 	@JsonProperty
-	public Date creation_date;
+	public Date creationDate;
 	@JsonProperty
-	public Date last_login;
+	public Date lastLogin;
 	@JsonProperty
 	private String token; /** Secret token for authentication */
 	@JsonProperty // only decoded if the poster is admin
 	private boolean admin;
 
+	public User() {
+	}
 	public User(long id, String username) {
 			this.id				= id;
 			this.username = username;
 	}
 	public User(//long id, 
 			String username,
-			String first_name,
-			String last_name,
+			String firstName,
+			String lastName,
 			String description,
 			Double latitude,
 			Double longitude,
-			Date creation_date,
-			Date last_login,
-			boolean admin
+			Date creationDate,
+			Date lastLogin //,
+			//boolean admin
 		) {
 			//this.id							= id;
 			this.username				= username;
-			this.first_name			= first_name;
-			this.last_name			= last_name;
+			this.firstName			= firstName;
+			this.lastName			= lastName;
 			this.description		= description;
 			this.latitude				= latitude;
 			this.longitude			= longitude;
-			this.creation_date	= creation_date;
-			this.last_login			= last_login;
-			this.admin					= admin;
+			this.creationDate	= creationDate;
+			this.lastLogin			= lastLogin;
+			//this.admin					= admin;
 	}
 	public User(
 			//long id, 
-			@JsonProperty("username") String username, @JsonProperty("first_name") String first_name, @JsonProperty("last_name") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creation_date") String creation_date_string, @JsonProperty("last_login") String last_login_string, @JsonProperty("admin") String admin_string) {
+			@JsonProperty("username") String username, @JsonProperty("firstName") String first_name, @JsonProperty("lastName") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creationDate") String creation_date_string, @JsonProperty("lastLogin") String last_login_string) {
 			this(//id, 
 					username, first_name, last_name, description,
 				Double.valueOf(latitude_string),
 				Double.valueOf(longitude_string),
 				new Date(),
-				new Date(),
-				admin_string.equals("true")
+				new Date() //,
+				//admin_string.equals("true")
 			);
 				// set complex parameters that throw exception
 			//this.last_login = parseStringToDate(last_login_string);
@@ -92,28 +94,36 @@ public class User {
 		}
 	}
 
-	public long getId()					{ return id; }
-	public void setId(long id)	{ this.id = id; }
-	public String getUsername()								{ return username; }
-	public void setUsername(String username)	{ this.username = username; }
+	public long		getId()					{ return id; }
+	public String getUsername()		{ return username; }
+	public String getEmail()      { return email; }
+	public String getDescription(){ return description; }
+	public String getToken()      { return token; }
+	public String getFirstName()  { return firstName; }
+	public String getLastName()   { return lastName; }
+	public Double getLatitude()   { return latitude; }
+	public Double getLongitude()  { return longitude; }
+	public Date		getLastLogin()  { return lastLogin; }
+	public boolean getAdmin()			{ return admin; }
+	public Date	getCreationDate() { return creationDate; }
 
-	public String  getEmail()             { return email; }
-	public void    setEmail(String email) { this.email=email; }
-	public String  getToken()             { return token; }
-	public String  getFirstName()         { return first_name; }
-	public String  getLastName()          { return last_name; }
-	public String  description()          { return description; }
-	public Double  getLatitude()          { return latitude; }
-	public Double  getLongitude()         { return longitude; }
+	public void		setId(long id)										{ this.id = id; }
+	public void		setUsername(String username)			{ this.username = username; }
+	public void		setEmail(String email)						{ this.email = email; }
+	public void		setDescription(String description){ this.description = description; }
+	public void		setToken()												{ this.token = token; }
+	public void		setAdmin(boolean admin)						{ this.admin = admin; }
+	public void		setPassword(String newPassword)		{ this.password = DigestUtils.md5Hex(newPassword); }
+	//public void		setLastLogin(Date lastLogin)			{ this.lastLogin = lastLogin; }
+	public void		setLastLogin(String lastLogin)				{ }
+	public void		setCreationDate(String creationDate)	{ }
+	//public void		setCreationDate(Date creationDate){ this.creationDate = creationDate; }
+	public void		setAdmin()												{ }
 	//public Boolean exists()               { return exists; }
 	//public void		 setLastLogin(Date last_login){ this.last_login = last_login; }
 	//public void		 setCreationDate(Date last_login){ this.last_login = last_login; }
 	public boolean isAdmin()		          { return admin; }
-	public void		 setAdmin(boolean admin){ this.admin = admin; }
 
-	public void setPassword(String newPassword) {
-		this.password = DigestUtils.md5Hex(newPassword);
-	}
 	public String resetPassword() {
 		String newPassword = new BigInteger(130,new SecureRandom()).toString(32);
 		this.password = hash(newPassword);
@@ -125,8 +135,8 @@ public class User {
 	}
 
 	public Date updateLastLogin() {
-		this.last_login = new Date();
-		return this.last_login;
+		this.lastLogin = new Date();
+		return this.lastLogin;
 	}
 
 	public String generateToken() {

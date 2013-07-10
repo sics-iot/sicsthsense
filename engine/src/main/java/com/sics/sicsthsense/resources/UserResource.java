@@ -27,12 +27,12 @@ import com.sics.sicsthsense.jdbi.*;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-    private final AtomicLong counter;
 		private StorageDAO storage;
+    private final AtomicLong counter;
 
     public UserResource(StorageDAO storage) {
-			this.counter = new AtomicLong();
 			this.storage = storage;
+			this.counter = new AtomicLong();
     }
 
 		@GET
@@ -45,10 +45,10 @@ public class UserResource {
 
 		@POST
 		@Timed
-		public Response post(@PathParam("user") String userId, User user) {
+		public Response post(@PathParam("id") String userId, User user) {
 			//final long id = store.add(userId.get(), notification);
      	//return Response.created(UriBuilder.fromResource(NotificationResource.class).build(userId.get(), id).build();
-					return Response.status(201).entity("posted alright").build();
+			return Response.status(201).entity("posted alright").build();
 		}
 
 }

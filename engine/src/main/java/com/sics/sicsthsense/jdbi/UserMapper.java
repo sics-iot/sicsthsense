@@ -25,8 +25,8 @@ public class UserMapper implements ResultSetMapper<User> {
 			r.getString("latitude"),
 			r.getString("longitude"),
 			r.getString("creation_date"),
-			r.getString("last_login"),
-			r.getString("admin")
+			r.getString("last_login")
+			//, r.getString("admin")
 		);
 	}
 

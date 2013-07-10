@@ -13,25 +13,48 @@ import javax.ws.rs.core.MediaType;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.jdbi.*;
 
 @Path("/users/{id}/{resourceId}")
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceResource {
-    private final AtomicLong counter;
+	private StorageDAO storage;
+	private final AtomicLong counter;
 
-    public ResourceResource() {
-        this.counter = new AtomicLong();
-    }
+	public ResourceResource(StorageDAO storage) {
+		this.storage = storage;
+		this.counter = new AtomicLong();
+	}
 
-		@GET
-		@Timed
-    public Message getResource(@PathParam("id") String userId, @PathParam("resourceId") String resourceId) {
-        return new Message(counter.incrementAndGet(), userId+" "+resourceId);
-    }
+	@GET
+	@Timed
+	public Resource getResource(@PathParam("id") String userId, @PathParam("resourceId") String resourceId) {
+		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
+		System.out.println("Getting user/resource: "+userId+" "+resourceId);
+		Resource resource = storage.findResourceById(Integer.parseInt(resourceId));
+		return resource;
+	}
 
-		@POST
-		public void addResource() {
-		}
-
+	@POST
+	@Timed
+	public void postResource(@PathParam("resourceId") String userId, Resource resource) {
+		System.out.println("Adding user/resource:"+resource.getLabel());
+		insertResource(resource);
+	}
+	
+	void insertResource(Resource resource) {
+		storage.insertResource(resource.getId(), 
+	resource.getOwner_id(), 
+	resource.getLabel(),
+	resource.getPolling_period(), 
+	resource.getLast_polled(), 
+	resource.getPolling_url(), 
+	resource.getPolling_authentication_key(), 
+	resource.getDescription(), 
+	resource.getParent_id(), 
+	resource.getSecret_key(), 
+	resource.getVersion(), 
+	resource.getLast_posted() 
+	);}
 }
 

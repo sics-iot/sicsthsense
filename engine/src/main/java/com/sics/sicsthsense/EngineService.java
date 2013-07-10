@@ -36,7 +36,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		System.out.println(user.getUsername());
 
 		environment.addResource(new UserResource(storage));
-		environment.addResource(new ResourceResource());
+		environment.addResource(new ResourceResource(storage));
 		environment.addResource(new StreamResource());
 	}
 
