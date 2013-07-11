@@ -43,7 +43,8 @@ public class ResourceResource {
 	}
 	
 	void insertResource(Resource resource) {
-		storage.insertResource( resource.getOwner_id(), 
+		storage.insertResource( 
+	resource.getOwner_id(), 
 	resource.getLabel(),
 	resource.getPolling_period(), 
 	resource.getLast_polled(), 
