@@ -47,8 +47,12 @@ public interface StorageDAO {
 	);
 
 	// Streams
-  @SqlQuery("select * from resources where id = :id")
+  @SqlQuery("select * from streams where id = :id")
 	@Mapper(StreamMapper.class)
   Stream findStreamById(@Bind("id") long id);
-}
 
+	// Parsers
+  @SqlQuery("select * from parsers where id = :id")
+	@Mapper(ParserMapper.class)
+  Parser findParserById(@Bind("id") long id);
+}

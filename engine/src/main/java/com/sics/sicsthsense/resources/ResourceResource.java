@@ -2,6 +2,7 @@ package com.sics.sicsthsense.resources;
 
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
+import com.yammer.dropwizard.auth.Auth;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
+import com.sics.sicsthsense.auth.*;
 
 @Path("/users/{userId}/{resourceId}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,7 +30,7 @@ public class ResourceResource {
 
 	@GET
 	@Timed
-	public Resource getResource(@PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
+	public Resource getResource(@Auth User user, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
 		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
 		System.out.println("Getting user/resource: "+userId+" "+resourceId);
 		Resource resource = storage.findResourceById(Integer.parseInt(resourceId));

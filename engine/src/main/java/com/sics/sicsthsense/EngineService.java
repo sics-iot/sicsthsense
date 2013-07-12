@@ -8,9 +8,16 @@ import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
 
+import com.yammer.dropwizard.auth.*;
+import com.yammer.dropwizard.auth.Authenticator;
+import com.yammer.dropwizard.auth.AuthenticationException;
+import com.yammer.dropwizard.auth.basic.BasicCredentials;
+import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
+
 import com.sics.sicsthsense.resources.*;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.auth.*;
 
 public class EngineService extends Service<EngineConfiguration> {
 
@@ -32,12 +39,11 @@ public class EngineService extends Service<EngineConfiguration> {
 		final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
 		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 
-		User user = storage.findUserById(1);
-		System.out.println(user.getUsername());
-
+		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		environment.addResource(new UserResource(storage));
 		environment.addResource(new ResourceResource(storage));
-		environment.addResource(new StreamResource());
+		environment.addResource(new StreamResource(storage));
+		environment.addResource(new ParserResource(storage));
 	}
 
 }

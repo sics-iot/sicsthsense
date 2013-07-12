@@ -13,26 +13,32 @@ import javax.ws.rs.core.MediaType;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.jdbi.*;
 
 @Path("/users/{id}/{resourceId}/{streamId}")
 @Produces(MediaType.APPLICATION_JSON)
 public class StreamResource {
-    private final AtomicLong counter;
+	private StorageDAO storage;
+  private final AtomicLong counter;
 
-    public StreamResource() {
-        this.counter = new AtomicLong();
-    }
+	public StreamResource(StorageDAO storage) {
+		this.storage = storage;
+		this.counter = new AtomicLong();
+	}
 
-		@GET
-		@Timed
-    public Message getResource(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
-        return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
-    }
+	@GET
+	@Timed
+	public Stream getStream(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
+			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
+			System.out.println("Getting user/resource/stream: "+userId+" "+resourceId+" "+streamId);
+			Stream stream = storage.findStreamById(Integer.parseInt(streamId));
+			return stream;
+	}
 
-		@POST
-		public String addResource() {
-			return "";
-		}
+	@POST
+	public String postStream() {
+		return "";
+	}
 
 }
 

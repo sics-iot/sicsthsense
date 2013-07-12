@@ -1,31 +1,51 @@
 package com.sics.sicsthsense.core;
 
-public class Stream {
-	private long id;
-	private String label;
-	private char type;
-	private double latitude;
-	private double longitude;
-	private String description;
-	private boolean public_access;
-	private boolean public_search;
-	private boolean frozen;
-	private int history_size;
-	private int last_updated;
-	private String secret_key;
-	private int owner_id;
-	private int resource_id;
-	private int version;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public Stream() {}
+public class Stream {
+	@JsonProperty
+	private long id;
+	@JsonProperty
+	private String label;
+	@JsonProperty
+	private String type;
+	@JsonProperty
+	private double latitude;
+	@JsonProperty
+	private double longitude;
+	@JsonProperty
+	private String description;
+	@JsonProperty
+	private boolean public_access;
+	@JsonProperty
+	private boolean public_search;
+	@JsonProperty
+	private boolean frozen;
+	@JsonProperty
+	private int history_size;
+	@JsonProperty
+	private int last_updated;
+	@JsonProperty
+	private String secret_key;
+	@JsonProperty
+	private int owner_id;
+	@JsonProperty
+	private int resource_id;
+	@JsonProperty
+	private int version;
+	//public String classtype;
+
+    public Stream() {
+			//classtype="stream";
+		}
     public Stream(long id, String label) {
 			this();
       this.id			= id;
       this.label	= label;
     }
-    public Stream( long id,
+    public Stream(long id,
 			String label,
-			char type,
+			String type,
 			double latitude,
 			double longitude,
 			String description,
@@ -44,7 +64,7 @@ public class Stream {
 
 	public long getId()								{ return id; }
 	public String getLabel()					{ return label; }
-	public char getType()							{ return type; }
+	public String getType()						{ return type; }
 	public double getLatitude()				{ return latitude; }
 	public double getLongitude()			{ return longitude; }
 	public String getDescription()		{ return description; }
@@ -60,7 +80,7 @@ public class Stream {
 
 	public void setId(long id)										{ this.id = id; }
 	public void setLabel(String label)						{ this.label = label; }
-	public void setType(char type)								{ this.type = type; }
+	public void setType(String type)								{ this.type = type; }
 	public void setLatitude(double latitude)			{ this.latitude = latitude; }
 	public void setLongitude(double longitude)		{ this.longitude = longitude; }
 	public void setDescription(String description)			{ this.description = description; }
