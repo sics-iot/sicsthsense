@@ -71,7 +71,7 @@ public class Resource extends Model {
     public long lastPolled = 0L;
     public long lastPosted = 0L;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne()
     public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
     // never use field access. Always use getter...
@@ -87,6 +87,9 @@ public class Resource extends Model {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     public List<Representation> representations = new ArrayList<Representation>();
+
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
+    public List<ResourceLog> logs = new ArrayList<ResourceLog>();
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     public List<Resource> subResources = new ArrayList<Resource>();
@@ -419,7 +422,7 @@ public class Resource extends Model {
         Updater.stopObserve(id);
         Updater.stopPoll(id);
 
-        Ebean.delete(Resource.class, id);
+        Ebean.delete(Resource.getById(id));
 
         // Liam: need to delete index for this resource
         // Beshr: Maybe in the resource.delete()?

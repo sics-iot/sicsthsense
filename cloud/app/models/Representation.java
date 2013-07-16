@@ -111,7 +111,7 @@ public class Representation extends Model {
     }
 
     public static Representation getByResourceId(long id) {
-        return find.where().eq("resource", id).findUnique();
+        return find.where().eq("parent", Resource.getById(id)).findUnique();
     }
 
     public static Representation create(Representation repr) {

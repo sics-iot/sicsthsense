@@ -56,7 +56,7 @@ public class ResourceLog extends Model {
     @Id
     public Long id;
 
-    @ManyToOne(optional = false, cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false)
     public Resource resource;
 
     @Constraints.Required
@@ -219,7 +219,7 @@ public class ResourceLog extends Model {
     }
 
     public static void delete(Long id) {
-        ResourceLog log = find.ref(id);
+        ResourceLog log = find.byId(id);
         if (log != null) log.delete();
     }
 }
