@@ -30,6 +30,7 @@
 
 package models;
 
+import com.avaje.ebean.Ebean;
 import controllers.ScalaUtils;
 import controllers.Utils;
 import logic.Argument;
@@ -365,8 +366,11 @@ public class Resource extends Model {
     public static List<Resource> availableResources(User user) {
         Argument.notNull(user);
 
-        // should add public resources...
-        return user.resourceList;
+        return
+            Resource.find
+                .where()
+                .eq("owner", user)
+                .findList();
     }
 
     public static Resource create(User user) {
