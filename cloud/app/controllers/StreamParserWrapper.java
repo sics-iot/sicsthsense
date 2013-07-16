@@ -101,12 +101,8 @@ public class StreamParserWrapper {
     }
 
     public StreamParser getStreamParser(Resource resource) {
-        final String path = vfilePath.startsWith("/")
-                ? vfilePath
-                : "/" + vfilePath;
-
         StreamParser sp =
-                new StreamParser(resource, inputParser, inputType, path, timeformat,
+                new StreamParser(resource, inputParser, inputType, vfilePath, timeformat,
                         dataGroup, timeGroup, numberOfPoints);
         sp.id = parserId;
         return sp;

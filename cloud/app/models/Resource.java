@@ -420,7 +420,6 @@ public class Resource extends Model {
 
     public static void delete(Long id) {
         Updater.stopObserve(id);
-        Updater.stopPoll(id);
 
         Ebean.delete(Resource.getById(id));
 

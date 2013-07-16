@@ -97,6 +97,10 @@ object ResourceHub {
       res.updateResource(changes)
 
       for (sp <- parsers) {
+        sp.vfilePath =
+          if (sp.vfilePath.startsWith("/")) sp.vfilePath
+          else "/" + sp.vfilePath
+
         val parser = sp.getStreamParser(res)
 
         if (parser.id == null) {

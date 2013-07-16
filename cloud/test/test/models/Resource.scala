@@ -3,7 +3,6 @@ package test.models
 import models._
 import org.specs2.mutable._
 
-import play.api.test._
 import play.api.test.Helpers._
 import models.ResourceLog.InteractionType
 import controllers.Utils

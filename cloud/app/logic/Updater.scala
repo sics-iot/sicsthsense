@@ -50,8 +50,6 @@ private case class Push(id: Long, request: Request) extends UpdateMessage
 
 private case class StartPoll(id: Long, period: FiniteDuration) extends UpdateMessage
 
-private case class StopPoll(id: Long) extends UpdateMessage
-
 private case class Poll(id: Long) extends UpdateMessage
 
 private case class PollResponse(id: Long, requestTime: FiniteDuration, responseTime: FiniteDuration, response: Response) extends UpdateMessage
@@ -143,14 +141,6 @@ private class Updater extends Actor {
         }
       } else {
         startPolling()
-      }
-    case m@StopPoll(id) =>
-      logger.info(s"Stopping to poll resource '$id'")
-
-      if (polling.contains(id)) {
-        val (_, cancel) = polling(id)
-        cancel.cancel()
-        polling -= id
       }
     case m@Poll(id) =>
       val resource = Resource.getById(id)
@@ -317,10 +307,6 @@ object Updater {
 
   def poll(id: Long, period: FiniteDuration) {
     updater ! StartPoll(id, period)
-  }
-
-  def stopPoll(id: Long) {
-    updater ! StopPoll(id)
   }
 
   def observe(id: Long) {
