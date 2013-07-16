@@ -198,7 +198,13 @@ private class Updater extends Actor {
     case m@StartObserve(id, failures) =>
       val resource = Resource.getById(id)
 
-      if (resource.isObserve && !observing.contains(id)) {
+      if (resource == null) {
+        logger.info(s"Received $m but already resource '$id' does not exist anymore")
+
+        if (observing.contains(id)) {
+          self ! StopObserve(id)
+        }
+      } else if (resource.isObserve && !observing.contains(id)) {
         logger.info(s"Starting to observe resource '$id'")
 
         val sub =
@@ -221,7 +227,8 @@ private class Updater extends Actor {
     case m@StopObserve(id) =>
       val resource = Resource.getById(id)
 
-      if (!resource.isObserve && observing.contains(id)) {
+      if (observing.contains(id)
+        && (resource == null  || !resource.isObserve )) {
         logger.info(s"Stopping to observe '$id'")
 
         observing(id).unsubscribe()
