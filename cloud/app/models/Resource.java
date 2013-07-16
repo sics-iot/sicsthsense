@@ -34,6 +34,7 @@ import com.avaje.ebean.Ebean;
 import controllers.ScalaUtils;
 import controllers.Utils;
 import logic.Argument;
+import logic.Updater;
 import play.Logger;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
@@ -415,8 +416,10 @@ public class Resource extends Model {
     }
 
     public static void delete(Long id) {
-        Resource resource = find.byId(id);
-        if (resource != null) resource.delete();
+        Updater.stopObserve(id);
+        Updater.stopPoll(id);
+
+        Ebean.delete(Resource.class, id);
 
         // Liam: need to delete index for this resource
         // Beshr: Maybe in the resource.delete()?
