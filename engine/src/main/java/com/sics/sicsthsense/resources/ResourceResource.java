@@ -29,8 +29,9 @@ public class ResourceResource {
 	}
 
 	@GET
+	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@Auth User user, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
+	public Resource getResource(@Auth(required=false) User user, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
 		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
 		System.out.println("Getting user/resource: "+userId+" "+resourceId);
 		Resource resource = storage.findResourceById(Integer.parseInt(resourceId));

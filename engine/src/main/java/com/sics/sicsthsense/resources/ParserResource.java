@@ -1,7 +1,5 @@
 package com.sics.sicsthsense.resources;
 
-import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,6 +9,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.base.Optional;
+import com.yammer.metrics.annotation.Timed;
+import com.yammer.dropwizard.auth.Auth;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -28,7 +30,7 @@ public class ParserResource {
 
 	@GET
 	@Timed
-	public Message getResource(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
+	public Message getResource(@Auth User user, @PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
 			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
 	}
 

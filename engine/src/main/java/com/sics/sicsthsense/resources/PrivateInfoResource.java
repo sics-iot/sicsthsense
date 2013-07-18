@@ -34,10 +34,7 @@ public class PrivateInfoResource {
   @Path("/home")
   @Timed
   @CacheControl(noCache = true)
-  public PublicFreemarkerView viewHome(
-    @RestrictedTo(Authority.ROLE_PUBLIC)
-    OpenIDUser publicUser
-  ) {
+  public PublicFreemarkerView viewHome( @RestrictedTo(Authority.ROLE_PUBLIC) OpenIDUser publicUser) {
     BaseModel model = new BaseModel();
     return new PublicFreemarkerView<BaseModel>("private/home.ftl", model);
   }
@@ -49,10 +46,7 @@ public class PrivateInfoResource {
   @Path("/admin")
   @Timed
   @CacheControl(noCache = true)
-  public PublicFreemarkerView viewAdmin(
-    @RestrictedTo(Authority.ROLE_ADMIN)
-    OpenIDUser adminUser
-  ) {
+  public PublicFreemarkerView viewAdmin( @RestrictedTo(Authority.ROLE_ADMIN) OpenIDUser adminUser) {
     BaseModel model = new BaseModel();
     return new PublicFreemarkerView<BaseModel>("private/admin.ftl", model);
   }

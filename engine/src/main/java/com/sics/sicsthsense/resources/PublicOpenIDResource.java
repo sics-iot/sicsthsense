@@ -1,5 +1,20 @@
 package com.sics.sicsthsense.resources;
 
+import javax.servlet.http.HttpServletRequest;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
 import com.google.common.base.Optional;
 import org.openid4java.OpenIDException;
 import org.openid4java.consumer.ConsumerException;
@@ -17,22 +32,6 @@ import org.openid4java.message.ax.FetchRequest;
 import org.openid4java.message.ax.FetchResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import javax.servlet.http.HttpServletRequest;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 import com.yammer.dropwizard.views.View;
 
@@ -107,11 +106,9 @@ public class PublicOpenIDResource {
     View view = new PublicFreemarkerView<BaseModel>("openid/logout.ftl", model);
 
     // Remove the session token which will have the effect of logout
-    return Response
-      .ok()
+    return Response.ok()
       .cookie(replaceSessionTokenCookie(Optional.<OpenIDUser>absent()))
-      .entity(view)
-      .build();
+      .entity(view).build();
 
   }
 
@@ -210,9 +207,7 @@ public class PublicOpenIDResource {
       authReq.addExtension(fetch);
 
       // Redirect the user to their OpenId server authentication process
-      return Response
-        .seeOther(URI.create(authReq.getDestinationUrl(true)))
-        .build();
+      return Response.seeOther(URI.create(authReq.getDestinationUrl(true))).build();
 
     } catch (MessageException e1) {
       log.error("MessageException:", e1);

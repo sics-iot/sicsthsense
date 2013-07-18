@@ -1,8 +1,5 @@
 package com.sics.sicsthsense.resources;
 
-import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -11,6 +8,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.base.Optional;
+import com.yammer.metrics.annotation.Timed;
+import com.yammer.dropwizard.auth.Auth;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -28,7 +29,7 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public Stream getStream(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
+	public Stream getStream(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId, @Auth User user) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
 			System.out.println("Getting user/resource/stream: "+userId+" "+resourceId+" "+streamId);
 			Stream stream = storage.findStreamById(Integer.parseInt(streamId));
@@ -37,7 +38,7 @@ public class StreamResource {
 
 	@POST
 	public String postStream() {
-		return "";
+		return "posted";
 	}
 
 }

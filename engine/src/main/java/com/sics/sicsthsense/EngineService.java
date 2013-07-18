@@ -39,7 +39,6 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
     bootstrap.addBundle(new ViewBundle());
-		//bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
@@ -54,13 +53,14 @@ public class EngineService extends Service<EngineConfiguration> {
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
-    // Configure authenticator
-    OpenIDAuthenticator authenticator = new OpenIDAuthenticator();
 
     // Configure environment
     environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
 
     environment.addProvider(new ViewMessageBodyWriter());
+
+    // Configure authenticator
+    OpenIDAuthenticator authenticator = new OpenIDAuthenticator();
     environment.addProvider(new OpenIDRestrictedToProvider<OpenIDUser>(authenticator, "OpenID"));
 
 		environment.addResource(new UserResource(storage));
@@ -69,8 +69,8 @@ public class EngineService extends Service<EngineConfiguration> {
 		environment.addResource(new ParserResource(storage));
 		environment.addResource(new PublicOpenIDResource());
 
-    // Session handler
-    //environment.setSessionHandler(new SessionHandler());
+    // Session handler to enable automatic session handling 
+    environment.setSessionHandler(new SessionHandler());
 	}
 
 }
