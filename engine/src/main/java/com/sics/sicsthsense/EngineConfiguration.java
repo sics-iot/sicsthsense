@@ -16,6 +16,8 @@ public class EngineConfiguration extends Configuration {
     @JsonProperty
     private String defaultName = "Stranger";
 		
+		public static final String SESSION_TOKEN_NAME ="SICSSense-Session";
+		
 		//@Valid
     //@NotNull
     @JsonProperty
