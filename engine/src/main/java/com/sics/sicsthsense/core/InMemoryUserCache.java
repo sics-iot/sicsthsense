@@ -66,14 +66,11 @@ public enum InMemoryUserCache {
 
     // Check the cache
     Optional<OpenIDUser> userOptional = Optional.fromNullable(userCache.getIfPresent(sessionToken));
-
     if (userOptional.isPresent()) {
       // Ensure we refresh the cache on a check to maintain the session timeout
       userCache.put(sessionToken, userOptional.get());
     }
-
     return userOptional;
-
   }
 
   /**
@@ -81,17 +78,13 @@ public enum InMemoryUserCache {
    * @param user      The User to cache
    */
   public void put(UUID sessionToken, OpenIDUser user) {
-
     Preconditions.checkNotNull(user);
-
     userCache.put(sessionToken, user);
   }
 
   public void hardDelete(OpenIDUser user) {
-
     Preconditions.checkNotNull(user);
     Preconditions.checkNotNull(user.getSessionToken());
-
     userCache.invalidate(user.getSessionToken());
   }
 
@@ -100,13 +93,10 @@ public enum InMemoryUserCache {
     Map<UUID, OpenIDUser> map = userCache.asMap();
 
     for (Map.Entry<UUID, OpenIDUser> entry : map.entrySet()) {
-
       if (entry.getValue().getOpenIDIdentifier().equals(openIDIdentifier)) {
         return Optional.of(entry.getValue());
       }
-
     }
-
     return Optional.absent();
   }
 
@@ -114,11 +104,9 @@ public enum InMemoryUserCache {
     Map<UUID, OpenIDUser> map = userCache.asMap();
 
     for (Map.Entry<UUID, OpenIDUser> entry : map.entrySet()) {
-
       if (entry.getValue().getEmailAddress().equals(emailAddress)) {
         return Optional.of(entry.getValue());
       }
-
     }
 
     return Optional.absent();

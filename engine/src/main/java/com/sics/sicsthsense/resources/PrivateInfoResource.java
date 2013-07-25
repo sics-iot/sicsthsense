@@ -40,6 +40,18 @@ public class PrivateInfoResource {
   }
 
   /**
+   * @return The private home view if authenticated
+   */
+  @GET
+  @Path("/dashboard")
+  @Timed
+  @CacheControl(noCache = true)
+  public PublicFreemarkerView viewDashboard( @RestrictedTo(Authority.ROLE_USER) OpenIDUser user) {
+    BaseModel model = new BaseModel();
+    return new PublicFreemarkerView<BaseModel>("private/dashboard.ftl", model);
+  }
+
+  /**
    * @return The private admin view if authenticated
    */
   @GET

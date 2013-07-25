@@ -1,5 +1,7 @@
 package com.sics.sicsthsense;
 
+import java.util.UUID;
+
 import org.skife.jdbi.v2.*; // For DBI
 import org.eclipse.jetty.server.session.SessionHandler;
 
@@ -49,9 +51,16 @@ public class EngineService extends Service<EngineConfiguration> {
 		final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
 		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 
-		//environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
+		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
+
+    // Configure authenticator
+
+		OpenIDUser publicUser = new OpenIDUser(null, UUID.randomUUID());
+		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
+    OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
+    environment.addProvider(new OpenIDRestrictedToProvider<OpenIDUser>(authenticator, "OpenID"));
 
 
     // Configure environment
@@ -59,9 +68,6 @@ public class EngineService extends Service<EngineConfiguration> {
 
     environment.addProvider(new ViewMessageBodyWriter());
 
-    // Configure authenticator
-    OpenIDAuthenticator authenticator = new OpenIDAuthenticator();
-    environment.addProvider(new OpenIDRestrictedToProvider<OpenIDUser>(authenticator, "OpenID"));
 
 		environment.addResource(new UserResource(storage));
 		environment.addResource(new ResourceResource(storage));

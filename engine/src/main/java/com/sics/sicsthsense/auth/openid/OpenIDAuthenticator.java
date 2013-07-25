@@ -1,5 +1,7 @@
 package com.sics.sicsthsense.auth.openid;
 
+import java.util.UUID;
+
 import com.google.common.base.Optional;
 
 import com.yammer.dropwizard.auth.AuthenticationException;
@@ -17,6 +19,11 @@ import com.sics.sicsthsense.model.security.OpenIDUser;
  * @since 0.0.1
  */
 public class OpenIDAuthenticator implements Authenticator<OpenIDCredentials, OpenIDUser> {
+	public OpenIDUser publicUser;
+
+	public OpenIDAuthenticator(OpenIDUser publicUser) {
+		this.publicUser = publicUser;
+	}
 
   @Override
   public Optional<OpenIDUser> authenticate(OpenIDCredentials credentials) throws AuthenticationException {
@@ -26,16 +33,18 @@ public class OpenIDAuthenticator implements Authenticator<OpenIDCredentials, Ope
       .INSTANCE
       .getBySessionToken(credentials.getSessionToken());
     if (!user.isPresent()) {
-      return Optional.absent();
+			if (!publicUser.hasAllAuthorities(credentials.getRequiredAuthorities())) {
+				return Optional.absent();
+			}
+			return Optional.<OpenIDUser>of(publicUser);
+      //return Optional.absent();
     }
 
     // Check that their authorities match their credentials
     if (!user.get().hasAllAuthorities(credentials.getRequiredAuthorities())) {
       return Optional.absent();
     }
-
     return user;
-
   }
 
 }

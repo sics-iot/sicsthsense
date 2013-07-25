@@ -54,14 +54,12 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
 @Produces(MediaType.TEXT_HTML)
 public class PublicOpenIDResource {
 
-  private static final Logger log = LoggerFactory.getLogger(PublicOpenIDResource.class);
-
   @Context
   protected HttpHeaders httpHeaders;
 
+  private static final Logger log = LoggerFactory.getLogger(PublicOpenIDResource.class);
   private final static String YAHOO_ENDPOINT = "https://me.yahoo.com";
   private final static String GOOGLE_ENDPOINT = "https://www.google.com/accounts/o8/id";
-
   private final ModelBuilder modelBuilder = new ModelBuilder();
 
   /**
@@ -96,20 +94,15 @@ public class PublicOpenIDResource {
     BaseModel model = modelBuilder.newBaseModel(httpHeaders);
     OpenIDUser user = model.getUser();
     if (user != null) {
-      // Invalidate the session token
-      user.setSessionToken(null);
+      user.setSessionToken(null); // Invalidate the session token
       // (We'll delete the user but really this would just be an update)
       InMemoryUserCache.INSTANCE.hardDelete(user);
       model.setUser(null);
     }
 
     View view = new PublicFreemarkerView<BaseModel>("openid/logout.ftl", model);
-
     // Remove the session token which will have the effect of logout
-    return Response.ok()
-      .cookie(replaceSessionTokenCookie(Optional.<OpenIDUser>absent()))
-      .entity(view).build();
-
+    return Response.ok() .cookie(replaceSessionTokenCookie(Optional.<OpenIDUser>absent())) .entity(view).build();
   }
 
   /**
@@ -121,33 +114,22 @@ public class PublicOpenIDResource {
    */
   @POST
   @SuppressWarnings("unchecked")
-  public Response authenticationRequest(
-    @Context
-    HttpServletRequest request,
-    @FormParam("identifier")
-    String identifier
-  ) {
+  public Response authenticationRequest( @Context HttpServletRequest request,
+    @FormParam("identifier") String identifier) {
 
     UUID sessionToken = UUID.randomUUID();
 
     try {
-
       // The OpenId server will use this endpoint to provide authentication
       // Parts of this may be shown to the user
       final String returnToUrl;
       if (request.getServerPort() == 80) {
-        returnToUrl = String.format(
-          "http://%s/openid/verify?token=%s",
-          request.getServerName(),
-          sessionToken);
+        returnToUrl = String.format( "http://%s/openid/verify?token=%s",
+          request.getServerName(), sessionToken);
       } else {
-        returnToUrl = String.format(
-          "http://%s:%d/openid/verify?token=%s",
-          request.getServerName(),
-          request.getServerPort(),
-          sessionToken);
+        returnToUrl = String.format( "http://%s:%d/openid/verify?token=%s",
+          request.getServerName(), request.getServerPort(), sessionToken);
       }
-
       log.debug("Return to URL '{}'", returnToUrl);
 
       // Create a consumer manager for this specific request and cache it
@@ -292,7 +274,6 @@ public class PublicOpenIDResource {
     ParameterList parameterList = new ParameterList(request.getParameterMap());
 
     try {
-
       // Verify the response
       // ConsumerManager needs to be the same (static) instance used
       // to place the authentication request
@@ -304,8 +285,7 @@ public class PublicOpenIDResource {
 
       // Examine the verification result and extract the verified identifier
       Optional<Identifier> verified = Optional.fromNullable(verification.getVerifiedId());
-      if (verified.isPresent()) {
-        // Verified
+      if (verified.isPresent()) { // Verified
         AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
         // We have successfully authenticated so remove the temp user
@@ -316,7 +296,8 @@ public class PublicOpenIDResource {
         tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 
         // Provide a basic authority in light of successful authentication
-        tempUser.getAuthorities().add(Authority.ROLE_PUBLIC);
+        tempUser.getAuthorities().add(Authority.ROLE_PUBLIC); // allow public access
+        tempUser.getAuthorities().add(Authority.ROLE_USER); // this is a valid user
 
         // Extract additional information
         if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {

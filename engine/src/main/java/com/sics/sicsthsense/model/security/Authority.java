@@ -24,14 +24,19 @@ public enum Authority {
    * The administrator role that can reach administration API functions
    */
   ROLE_ADMIN,
-  /**
-   * An anonymous (public) customer
-   */
-  ROLE_PUBLIC,
+	/** 
+		* Authenticated user of the system
+		*/
+	ROLE_USER,
   /**
    * An un-authenticated customer in possession of a "remember me" token
+	 * (unused currently)
    */
   ROLE_PARTIAL,
+  /**
+   * An anonymous unauthenticated (public) customer
+   */
+  ROLE_PUBLIC,
 
   // End of enum
   ;

@@ -34,6 +34,8 @@
                 <input id="openid_submit" type="submit" value="Sign-In"/>
             </div>
             <noscript>
+								<p>Javascript is not enabled, use <a href="/password/login">password login</a>.
+
                 <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
                     Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
                             href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
