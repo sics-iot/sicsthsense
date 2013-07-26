@@ -84,6 +84,7 @@ public enum InMemoryUserCache {
 
   public void hardDelete(OpenIDUser user) {
     Preconditions.checkNotNull(user);
+		//if (!user.hasSessionToken()) { return; }
     Preconditions.checkNotNull(user.getSessionToken());
     userCache.invalidate(user.getSessionToken());
   }

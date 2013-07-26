@@ -193,10 +193,12 @@ public class OpenIDUser {
   public UUID getSessionToken() {
     return sessionToken;
   }
-
   public void setSessionToken(UUID sessionToken) {
     this.sessionToken = sessionToken;
   }
+	public boolean hasSessionToken() {
+		return sessionToken!=null;
+	}
 
   public void setAuthorities(Set<Authority> authorities) {
     this.authorities = authorities;

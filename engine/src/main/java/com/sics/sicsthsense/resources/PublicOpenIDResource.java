@@ -94,7 +94,7 @@ public class PublicOpenIDResource {
     BaseModel model = modelBuilder.newBaseModel(httpHeaders);
     OpenIDUser user = model.getUser();
     if (user != null) {
-      user.setSessionToken(null); // Invalidate the session token
+      //user.setSessionToken(null); // Invalidate the session token
       // (We'll delete the user but really this would just be an update)
       InMemoryUserCache.INSTANCE.hardDelete(user);
       model.setUser(null);
