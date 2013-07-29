@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="uk.co.froot.demo.openid.views.PublicFreemarkerView" -->
+<#-- @ftlvariable name="" type="com.sics.sicsthsense.PublicFreemarkerView" -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +12,10 @@
   <h1>Public data</h1>
 
 Something that has been made public by the user...
+
+  <p><a href="/">Home</a>. 
+
+  <p><a href="/private/dashboard">Access personal info</a>. This is available to anyone after authentication</p>
 
 <#include "../includes/common/footer.ftl">
 

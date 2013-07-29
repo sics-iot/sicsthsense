@@ -1,8 +1,10 @@
 package com.sics.sicsthsense.resources;
 
+import javax.ws.rs.core.Context;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import com.yammer.dropwizard.jersey.caching.CacheControl;
@@ -26,6 +28,8 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
 @Path("/private")
 @Produces(MediaType.TEXT_HTML)
 public class PrivateInfoResource {
+  @Context
+  protected HttpHeaders httpHeaders;
 
   /**
    * @return The private home view if authenticated
@@ -47,7 +51,13 @@ public class PrivateInfoResource {
   @Timed
   @CacheControl(noCache = true)
   public PublicFreemarkerView viewDashboard( @RestrictedTo(Authority.ROLE_USER) OpenIDUser user) {
+    //BaseModel model2 = modelBuilder.newBaseModel(httpHeaders);
+    //OpenIDUser user = model.getUser();
+
+		System.out.println("User: "+user.getEmailAddress());
+
     BaseModel model = new BaseModel();
+		model.setUser(user); // make the user available
     return new PublicFreemarkerView<BaseModel>("private/dashboard.ftl", model);
   }
 

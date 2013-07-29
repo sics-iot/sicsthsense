@@ -66,13 +66,6 @@ public class PublicOpenIDResource {
    * Default constructor
    */
   public PublicOpenIDResource() {
-
-    // TODO Externalise this through the configuration
-    // Proxy configuration must come before ConsumerManager construction
-//    ProxyProperties proxyProps = new ProxyProperties();
-//    proxyProps.setProxyHostName("some-proxy");
-//    proxyProps.setProxyPort(8080);
-//    HttpClientFactory.setProxyProperties(proxyProps);
   }
 
   /**
