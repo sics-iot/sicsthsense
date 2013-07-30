@@ -156,6 +156,7 @@ public class User {
 		resources.add(new Resource());	
 		resources.add(new Resource());	
 		resources.add(new Resource());	
+		//return storage.findResourcesByOwnerId(1);
 		return resources;
 	}
 

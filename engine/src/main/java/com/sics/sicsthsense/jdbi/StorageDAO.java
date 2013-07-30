@@ -29,13 +29,14 @@ public interface StorageDAO {
 
 
 	// Resources
+  @SqlQuery("select * from resources where owner_id = :id")
+	@Mapper(ResourceMapper.class)
+  List<Resource> findResourcesByOwnerId(@Bind("id") long id);
+
   @SqlQuery("select * from resources where id = :id")
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
 
-  @SqlQuery("select * from resources where owner_id = :id")
-	@Mapper(ResourceMapper.class)
-  List<Resource> findResourcesByOwnerId(@Bind("id") long id);
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version, :last_posted)")
   void insertResource(
@@ -53,6 +54,10 @@ public interface StorageDAO {
 	);
 
 	// Streams
+  @SqlQuery("select * from streams where resource_id = :resourceid")
+	@Mapper(StreamMapper.class)
+  List<Stream> findStreamsByResourceId(@Bind("resourceid") long resourceid);
+
   @SqlQuery("select * from streams where id = :id")
 	@Mapper(StreamMapper.class)
   Stream findStreamById(@Bind("id") long id);
@@ -61,4 +66,9 @@ public interface StorageDAO {
   @SqlQuery("select * from parsers where id = :id")
 	@Mapper(ParserMapper.class)
   Parser findParserById(@Bind("id") long id);
+
+
+	// Permissions
+	boolean authorised(Resource resource, User user) { return true; }
+
 }

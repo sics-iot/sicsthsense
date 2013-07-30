@@ -23,7 +23,7 @@ import org.skife.jdbi.v2.sqlobject.*;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/users/{id}")
+@Path("/users/{userId}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -37,7 +37,7 @@ public class UserResource {
 
 		@GET
 		@Timed
-    public User getUser(@PathParam("id") String userId) {
+    public User getUser(@PathParam("userId") String userId) {
 			System.out.println("getting User!! "+userId);
 			User user = storage.findUserById(Integer.parseInt(userId));
 			return user;
@@ -45,7 +45,7 @@ public class UserResource {
 
 		@POST
 		@Timed
-		public Response post(@PathParam("id") String userId, User user) {
+		public Response post(@PathParam("userId") String userId, User user) {
 			//final long id = store.add(userId.get(), notification);
      	//return Response.created(UriBuilder.fromResource(NotificationResource.class).build(userId.get(), id).build();
 			return Response.status(201).entity("posted alright").build();

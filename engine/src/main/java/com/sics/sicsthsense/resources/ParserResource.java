@@ -17,7 +17,7 @@ import com.yammer.dropwizard.auth.Auth;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/users/{id}/{resourceId}/{streamId}/{parserId}")
+@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/{parserId}")
 @Produces(MediaType.APPLICATION_JSON)
 public class ParserResource {
 	private StorageDAO storage;
