@@ -294,7 +294,7 @@ public class PublicOpenIDResource {
 
         // Extract additional information
         if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
-          tempUser.setEmailAddress(extractEmailAddress(authSuccess));
+          tempUser.setEmail(extractEmail(authSuccess));
           tempUser.setFirstName(extractFirstName(authSuccess));
           tempUser.setLastName(extractLastName(authSuccess));
         }
@@ -305,8 +305,8 @@ public class PublicOpenIDResource {
         OpenIDUser user;
         if (!userOptional.isPresent()) {
           // This is either a new registration or the OpenID identifier has changed
-          if (tempUser.getEmailAddress() != null) {
-            userOptional = InMemoryUserCache.INSTANCE.getByEmailAddress(tempUser.getEmailAddress());
+          if (tempUser.getEmail() != null) {
+            userOptional = InMemoryUserCache.INSTANCE.getByEmail(tempUser.getEmail());
             if (!userOptional.isPresent()) {
               // This is a new User
               log.debug("Registering new {}", tempUser);
@@ -398,7 +398,7 @@ public class PublicOpenIDResource {
   }
 
 
-  private String extractEmailAddress(AuthSuccess authSuccess) throws MessageException {
+  private String extractEmail(AuthSuccess authSuccess) throws MessageException {
     FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
     return getAttributeValue(
       fetchResp,

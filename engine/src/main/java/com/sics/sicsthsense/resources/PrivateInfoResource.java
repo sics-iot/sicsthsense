@@ -13,7 +13,7 @@ import com.yammer.metrics.annotation.Timed;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 import com.sics.sicsthsense.model.BaseModel;
-import com.sics.sicsthsense.model.security.OpenIDUser;
+import com.sics.sicsthsense.core.OpenIDUser;
 import com.sics.sicsthsense.views.PublicFreemarkerView;
 
 
@@ -54,7 +54,7 @@ public class PrivateInfoResource {
     //BaseModel model2 = modelBuilder.newBaseModel(httpHeaders);
     //OpenIDUser user = model.getUser();
 
-		System.out.println("User: "+user.getEmailAddress());
+		System.out.println("User: "+user.getEmail());
 
     BaseModel model = new BaseModel();
 		model.setUser(user); // make the user available

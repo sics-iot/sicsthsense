@@ -1,14 +1,15 @@
 package com.sics.sicsthsense.core;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.sics.sicsthsense.model.security.OpenIDUser;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.sics.sicsthsense.core.OpenIDUser;
 
 /**
  * <p>Cache to provide the following to {@link User} authenticators:</p>
@@ -101,11 +102,11 @@ public enum InMemoryUserCache {
     return Optional.absent();
   }
 
-  public Optional<OpenIDUser> getByEmailAddress(String emailAddress) {
+  public Optional<OpenIDUser> getByEmail(String email) {
     Map<UUID, OpenIDUser> map = userCache.asMap();
 
     for (Map.Entry<UUID, OpenIDUser> entry : map.entrySet()) {
-      if (entry.getValue().getEmailAddress().equals(emailAddress)) {
+      if (entry.getValue().getEmail().equals(email)) {
         return Optional.of(entry.getValue());
       }
     }

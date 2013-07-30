@@ -8,7 +8,7 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 
 import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.model.security.OpenIDUser;
+import com.sics.sicsthsense.core.OpenIDUser;
 
 /**
  * <p>Authenticator to provide the following to application:</p>

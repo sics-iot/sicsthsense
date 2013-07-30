@@ -5,7 +5,7 @@ import com.google.common.io.Resources;
 
 //import org.pegdown.PegDownProcessor;
 
-import com.sics.sicsthsense.model.security.OpenIDUser;
+import com.sics.sicsthsense.core.OpenIDUser;
 
 import java.io.IOException;
 import java.net.URL;

@@ -1,16 +1,16 @@
 package com.sics.sicsthsense.model;
 
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import java.util.UUID;
+
 import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sics.sicsthsense.EngineConfiguration;
 import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.model.security.OpenIDUser;
-
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import java.util.UUID;
+import com.sics.sicsthsense.core.OpenIDUser;
 
 /**
  * <p>Builder to provide the following to resources:</p>
