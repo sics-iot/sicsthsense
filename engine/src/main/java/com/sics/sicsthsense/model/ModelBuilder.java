@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sics.sicsthsense.EngineConfiguration;
 import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.core.OpenIDUser;
+import com.sics.sicsthsense.core.User;
 
 /**
  * <p>Builder to provide the following to resources:</p>
@@ -77,7 +77,7 @@ public class ModelBuilder {
   public void addUser(HttpHeaders httpHeaders, BaseModel baseModel) {
     Optional<UUID> sessionToken = extractSessionToken(httpHeaders);
     if (sessionToken.isPresent()) {
-      Optional<OpenIDUser> user = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken.get());
+      Optional<User> user = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken.get());
       if (user.isPresent()) {
         log.debug("Found a user to match the session token {}",sessionToken.get());
         baseModel.setUser(user.get());

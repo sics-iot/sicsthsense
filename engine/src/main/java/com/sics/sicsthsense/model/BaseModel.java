@@ -5,7 +5,7 @@ import com.google.common.io.Resources;
 
 //import org.pegdown.PegDownProcessor;
 
-import com.sics.sicsthsense.core.OpenIDUser;
+import com.sics.sicsthsense.core.User;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,13 +20,13 @@ import java.net.URL;
  */
 public class BaseModel {
 
-  private OpenIDUser user;
+  private User user;
 
-  public OpenIDUser getUser() {
+  public User getUser() {
     return user;
   }
 
-  public void setUser(OpenIDUser user) {
+  public void setUser(User user) {
     this.user = user;
   }
 

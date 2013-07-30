@@ -13,7 +13,7 @@ import com.yammer.metrics.annotation.Timed;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 import com.sics.sicsthsense.model.BaseModel;
-import com.sics.sicsthsense.core.OpenIDUser;
+import com.sics.sicsthsense.core.User;
 import com.sics.sicsthsense.views.PublicFreemarkerView;
 
 
@@ -38,7 +38,7 @@ public class PrivateInfoResource {
   @Path("/home")
   @Timed
   @CacheControl(noCache = true)
-  public PublicFreemarkerView viewHome( @RestrictedTo(Authority.ROLE_PUBLIC) OpenIDUser publicUser) {
+  public PublicFreemarkerView viewHome( @RestrictedTo(Authority.ROLE_PUBLIC) User publicUser) {
     BaseModel model = new BaseModel();
     return new PublicFreemarkerView<BaseModel>("private/home.ftl", model);
   }
@@ -50,9 +50,9 @@ public class PrivateInfoResource {
   @Path("/dashboard")
   @Timed
   @CacheControl(noCache = true)
-  public PublicFreemarkerView viewDashboard( @RestrictedTo(Authority.ROLE_USER) OpenIDUser user) {
+  public PublicFreemarkerView viewDashboard( @RestrictedTo(Authority.ROLE_USER) User user) {
     //BaseModel model2 = modelBuilder.newBaseModel(httpHeaders);
-    //OpenIDUser user = model.getUser();
+    //User user = model.getUser();
 
 		System.out.println("User: "+user.getEmail());
 
@@ -68,7 +68,7 @@ public class PrivateInfoResource {
   @Path("/admin")
   @Timed
   @CacheControl(noCache = true)
-  public PublicFreemarkerView viewAdmin( @RestrictedTo(Authority.ROLE_ADMIN) OpenIDUser adminUser) {
+  public PublicFreemarkerView viewAdmin( @RestrictedTo(Authority.ROLE_ADMIN) User adminUser) {
     BaseModel model = new BaseModel();
     return new PublicFreemarkerView<BaseModel>("private/admin.ftl", model);
   }

@@ -93,4 +93,9 @@ public String getVersion()			{ return "1"; }
 	public void setLast_posted(String last_posted)	{ this.last_posted = last_posted; }
 	public void setPolling_period(String polling_period) { this.polling_period = polling_period; }
 	public void setPolling_authentication_key(String polling_authentication_key) { this.polling_authentication_key = polling_authentication_key; }
+
+
+	public String toString() {
+		return "A resource!!";
+	}
 }

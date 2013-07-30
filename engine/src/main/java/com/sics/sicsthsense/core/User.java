@@ -2,7 +2,12 @@ package com.sics.sicsthsense.core;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +39,7 @@ import com.sics.sicsthsense.model.security.*;
   "sessionToken",
   "authorities"
 })
-public class OpenIDUser {
+public class User {
 
   /** * <p>Unique identifier for this entity</p> */
   private String id;
@@ -91,82 +96,109 @@ public class OpenIDUser {
 	private boolean admin;
 
   @JsonCreator
-  public OpenIDUser(
+  public User(
     @JsonProperty("id") String id,
-    @JsonProperty("sessionToken") UUID sessionToken
-  ) {
-
+    @JsonProperty("sessionToken") UUID sessionToken) {
     this.id = id;
     this.sessionToken = sessionToken;
   }
+  public User() {
+			this(null, UUID.randomUUID());
+	}
+	public User(//long id, 
+			String username,
+			String firstName,
+			String lastName,
+			String description,
+			Double latitude,
+			Double longitude,
+			Date creationDate,
+			Date lastLogin //,
+			//boolean admin
+		) {
+			//this.id							= id;
+			this.username				= username;
+			this.firstName			= firstName;
+			this.lastName			= lastName;
+			this.description		= description;
+			this.latitude				= latitude;
+			this.longitude			= longitude;
+			this.creationDate	= creationDate;
+			this.lastLogin			= lastLogin;
+			//this.admin					= admin;
+	}
+	public User( //long id, 
+			@JsonProperty("username") String username, @JsonProperty("firstName") String first_name, @JsonProperty("lastName") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creationDate") String creation_date_string, @JsonProperty("lastLogin") String last_login_string) {
+			this(//id, 
+					username, first_name, last_name, description,
+				Double.valueOf(latitude_string),
+				Double.valueOf(longitude_string),
+				new Date(),
+				new Date() //,
+				//admin_string.equals("true")
+			);
+				// set complex parameters that throw exception
+			//this.last_login = parseStringToDate(last_login_string);
+	//			this.creation_date= new SimpleDateFormat("YYYY-MM-DD kk:mm:ss", Locale.ENGLISH).parse(creation_date_string);
+	}
 
-  public String getId() {
-    return id;
-  }
+	public Date parseStringToDate(String date_string) {
+		try {
+			return new SimpleDateFormat("YYYY-MM-DD kk:mm:ss", Locale.ENGLISH).parse(date_string);
+		} catch (ParseException e) {
+			System.out.println("Error: Date form database not parsed by java!");
+			return new Date();
+		}
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public List<Resource> getResources() {
+		List<Resource> resources = new ArrayList<Resource>();
+		resources.add(new Resource());	
+		resources.add(new Resource());	
+		resources.add(new Resource());	
+		return resources;
+	}
+
+	//
+	// Get set methods
+	//
+
+  public String getId() { return id; }
+
+  public void setId(String id) { this.id = id; }
 
   /**
    * @return The user name to authenticate with the client
    */
-  public String getUserName() {
-    return userName;
-  }
+  public String getUserName() { return userName; }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
+  public void setUserName(String userName) { this.userName = userName; }
 
   /**
    * @return The digested password to provide authentication between the user and the client
    */
-  public String getPasswordDigest() {
-    return passwordDigest;
-  }
+  public String getPasswordDigest() { return passwordDigest; }
 
   /**
    * <h3>Note that it is expected that Jasypt or similar is used prior to storage</h3>
    *
    * @param passwordDigest The password digest
    */
-  public void setPasswordDigest(String passwordDigest) {
-    this.passwordDigest = passwordDigest;
-  }
+  public void setPasswordDigest(String passwordDigest) { this.passwordDigest = passwordDigest; }
 
-  public String getFirstName() {
-    return firstName;
-  }
+  public String getFirstName() { return firstName; }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
+  public void setFirstName(String firstName) { this.firstName = firstName; }
 
-  public String getLastName() {
-    return lastName;
-  }
+  public String getLastName() { return lastName; }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
+  public void setLastName(String lastName) { this.lastName = lastName; }
 
+  public String getEmail() { return email; }
 
-  /**
-   * @return The user's email address
-   */
-  public String getEmail() {
-    return email;
-  }
+  public void setEmail(String email) { this.email = email; }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  /**
-   *
-   * @return The OpenID discovery information (phase 1 of authentication)
-   */
+  /** * @return The OpenID discovery information (phase 1 of authentication) */
   public DiscoveryInformationMemento getOpenIDDiscoveryInformationMemento() {
     return openIDDiscoveryInformationMemento;
   }
@@ -175,45 +207,23 @@ public class OpenIDUser {
     this.openIDDiscoveryInformationMemento = openIDDiscoveryInformationMemento;
   }
 
-  /**
-   * @return The OpenID identifier
-   */
-  public String getOpenIDIdentifier() {
-    return openIDIdentifier;
-  }
+  /** * @return The OpenID identifier */
+  public String getOpenIDIdentifier() { return openIDIdentifier; }
 
-  public void setOpenIDIdentifier(String openIDIdentifier) {
-    this.openIDIdentifier = openIDIdentifier;
-  }
+  public void setOpenIDIdentifier(String openIDIdentifier) { this.openIDIdentifier = openIDIdentifier; }
 
-  /**
-   * @return The session key
-   */
-  public UUID getSessionToken() {
-    return sessionToken;
-  }
-  public void setSessionToken(UUID sessionToken) {
-    this.sessionToken = sessionToken;
-  }
-	public boolean hasSessionToken() {
-		return sessionToken!=null;
-	}
+  /** * @return The session key */
+  public UUID getSessionToken() { return sessionToken; }
+  public void setSessionToken(UUID sessionToken) { this.sessionToken = sessionToken; }
+	public boolean hasSessionToken() { return sessionToken!=null; }
 
-  public void setAuthorities(Set<Authority> authorities) {
-    this.authorities = authorities;
-  }
+  public void setAuthorities(Set<Authority> authorities) { this.authorities = authorities; }
 
-  public Set<Authority> getAuthorities() {
-    return authorities;
-  }
+  public Set<Authority> getAuthorities() { return authorities; }
 
-  public boolean hasAllAuthorities(Set<Authority> requiredAuthorities) {
-    return authorities.containsAll(requiredAuthorities);
-  }
+  public boolean hasAllAuthorities(Set<Authority> requiredAuthorities) { return authorities.containsAll(requiredAuthorities); }
 
-  public boolean hasAuthority(Authority authority) {
-    return hasAllAuthorities(Sets.newHashSet(authority));
-  }
+  public boolean hasAuthority(Authority authority) { return hasAllAuthorities(Sets.newHashSet(authority)); }
 
   @Override
   public String toString() {

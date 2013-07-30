@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import com.sics.sicsthsense.core.OpenIDUser;
+import com.sics.sicsthsense.core.User;
 
 /**
  * <p>Cache to provide the following to {@link User} authenticators:</p>
@@ -27,7 +27,7 @@ public enum InMemoryUserCache {
   INSTANCE;
 
   // A lot of threads will hit this cache
-  private volatile Cache<UUID, OpenIDUser> userCache;
+  private volatile Cache<UUID, User> userCache;
 
   InMemoryUserCache() {
     reset(15, TimeUnit.MINUTES);
@@ -63,10 +63,10 @@ public enum InMemoryUserCache {
    *
    * @return The matching User or absent
    */
-  public Optional<OpenIDUser> getBySessionToken(UUID sessionToken) {
+  public Optional<User> getBySessionToken(UUID sessionToken) {
 
     // Check the cache
-    Optional<OpenIDUser> userOptional = Optional.fromNullable(userCache.getIfPresent(sessionToken));
+    Optional<User> userOptional = Optional.fromNullable(userCache.getIfPresent(sessionToken));
     if (userOptional.isPresent()) {
       // Ensure we refresh the cache on a check to maintain the session timeout
       userCache.put(sessionToken, userOptional.get());
@@ -78,23 +78,23 @@ public enum InMemoryUserCache {
    * @param sessionToken The session token to use to locate the user
    * @param user      The User to cache
    */
-  public void put(UUID sessionToken, OpenIDUser user) {
+  public void put(UUID sessionToken, User user) {
     Preconditions.checkNotNull(user);
     userCache.put(sessionToken, user);
   }
 
-  public void hardDelete(OpenIDUser user) {
+  public void hardDelete(User user) {
     Preconditions.checkNotNull(user);
 		//if (!user.hasSessionToken()) { return; }
     Preconditions.checkNotNull(user.getSessionToken());
     userCache.invalidate(user.getSessionToken());
   }
 
-  public Optional<OpenIDUser> getByOpenIDIdentifier(String openIDIdentifier) {
+  public Optional<User> getByOpenIDIdentifier(String openIDIdentifier) {
 
-    Map<UUID, OpenIDUser> map = userCache.asMap();
+    Map<UUID, User> map = userCache.asMap();
 
-    for (Map.Entry<UUID, OpenIDUser> entry : map.entrySet()) {
+    for (Map.Entry<UUID, User> entry : map.entrySet()) {
       if (entry.getValue().getOpenIDIdentifier().equals(openIDIdentifier)) {
         return Optional.of(entry.getValue());
       }
@@ -102,10 +102,10 @@ public enum InMemoryUserCache {
     return Optional.absent();
   }
 
-  public Optional<OpenIDUser> getByEmail(String email) {
-    Map<UUID, OpenIDUser> map = userCache.asMap();
+  public Optional<User> getByEmail(String email) {
+    Map<UUID, User> map = userCache.asMap();
 
-    for (Map.Entry<UUID, OpenIDUser> entry : map.entrySet()) {
+    for (Map.Entry<UUID, User> entry : map.entrySet()) {
       if (entry.getValue().getEmail().equals(email)) {
         return Optional.of(entry.getValue());
       }

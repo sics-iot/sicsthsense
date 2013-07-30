@@ -31,7 +31,7 @@ public class ParserResource {
 	@GET
 	@Timed
 	public Message getResource(@Auth User user, @PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
-			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId+"  "+user.getUsername());
+			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId+"  "+user.getUserName());
 	}
 
 	@POST

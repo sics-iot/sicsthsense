@@ -1,5 +1,7 @@
 package com.sics.sicsthsense.jdbi;
 
+import java.util.List;
+
 import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.*;
@@ -30,6 +32,10 @@ public interface StorageDAO {
   @SqlQuery("select * from resources where id = :id")
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
+
+  @SqlQuery("select * from resources where owner_id = :id")
+	@Mapper(ResourceMapper.class)
+  List<Resource> findResourcesByOwnerId(@Bind("id") long id);
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version, :last_posted)")
   void insertResource(

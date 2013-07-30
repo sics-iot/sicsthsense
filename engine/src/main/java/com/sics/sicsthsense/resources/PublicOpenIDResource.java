@@ -85,7 +85,7 @@ public class PublicOpenIDResource {
   public Response logout() {
 
     BaseModel model = modelBuilder.newBaseModel(httpHeaders);
-    OpenIDUser user = model.getUser();
+    User user = model.getUser();
     if (user != null) {
       //user.setSessionToken(null); // Invalidate the session token
       // (We'll delete the user but really this would just be an update)
@@ -95,7 +95,7 @@ public class PublicOpenIDResource {
 
     View view = new PublicFreemarkerView<BaseModel>("openid/logout.ftl", model);
     // Remove the session token which will have the effect of logout
-    return Response.ok() .cookie(replaceSessionTokenCookie(Optional.<OpenIDUser>absent())) .entity(view).build();
+    return Response.ok() .cookie(replaceSessionTokenCookie(Optional.<User>absent())) .entity(view).build();
   }
 
   /**
@@ -150,9 +150,9 @@ public class PublicOpenIDResource {
       memento.setTypes(discovered.getTypes());
       memento.setVersion(discovered.getVersion());
 
-      // Create a temporary OpenIDUser to preserve state between requests without
+      // Create a temporary User to preserve state between requests without
       // using a session (we could be in a cluster)
-      OpenIDUser tempUser = new OpenIDUser(null, sessionToken);
+      User tempUser = new User(null, sessionToken);
       tempUser.setOpenIDDiscoveryInformationMemento(memento);
       tempUser.setSessionToken(sessionToken);
 
@@ -223,12 +223,12 @@ public class PublicOpenIDResource {
     ConsumerManager consumerManager = consumerManagerOptional.get();
 
     // Attempt to locate the user by the session token
-    Optional<OpenIDUser> tempUserOptional = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken);
+    Optional<User> tempUserOptional = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken);
     if (!tempUserOptional.isPresent()) {
       log.debug("Authentication failed due to no temp User matching session token {}", rawToken);
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
-    OpenIDUser tempUser = tempUserOptional.get();
+    User tempUser = tempUserOptional.get();
 
     // Retrieve the discovery information
     final DiscoveryInformationMemento memento = tempUser.getOpenIDDiscoveryInformationMemento();
@@ -285,7 +285,7 @@ public class PublicOpenIDResource {
         // and replace it with a potentially new one
         InMemoryUserCache.INSTANCE.hardDelete(tempUser);
 
-        tempUser = new OpenIDUser(null, UUID.randomUUID());
+        tempUser = new User(null, UUID.randomUUID());
         tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 
         // Provide a basic authority in light of successful authentication
@@ -301,8 +301,8 @@ public class PublicOpenIDResource {
         log.info("Extracted a temporary {}", tempUser);
 
         // Search for a pre-existing User matching the temp User
-        Optional<OpenIDUser> userOptional = InMemoryUserCache.INSTANCE.getByOpenIDIdentifier(tempUser.getOpenIDIdentifier());
-        OpenIDUser user;
+        Optional<User> userOptional = InMemoryUserCache.INSTANCE.getByOpenIDIdentifier(tempUser.getOpenIDIdentifier());
+        User user;
         if (!userOptional.isPresent()) {
           // This is either a new registration or the OpenID identifier has changed
           if (tempUser.getEmail() != null) {
@@ -366,7 +366,7 @@ public class PublicOpenIDResource {
    *
    * @return A cookie with a long term expiry date suitable for use as a session token for OpenID
    */
-  private NewCookie replaceSessionTokenCookie(Optional<OpenIDUser> user) {
+  private NewCookie replaceSessionTokenCookie(Optional<User> user) {
 
     if (user.isPresent()) {
 

@@ -8,7 +8,7 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 
 import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.core.OpenIDUser;
+import com.sics.sicsthsense.core.User;
 
 /**
  * <p>Authenticator to provide the following to application:</p>
@@ -18,25 +18,25 @@ import com.sics.sicsthsense.core.OpenIDUser;
  *
  * @since 0.0.1
  */
-public class OpenIDAuthenticator implements Authenticator<OpenIDCredentials, OpenIDUser> {
-	public OpenIDUser publicUser;
+public class OpenIDAuthenticator implements Authenticator<OpenIDCredentials, User> {
+	public User publicUser;
 
-	public OpenIDAuthenticator(OpenIDUser publicUser) {
+	public OpenIDAuthenticator(User publicUser) {
 		this.publicUser = publicUser;
 	}
 
   @Override
-  public Optional<OpenIDUser> authenticate(OpenIDCredentials credentials) throws AuthenticationException {
+  public Optional<User> authenticate(OpenIDCredentials credentials) throws AuthenticationException {
 
     // Get the User referred to by the API key
-    Optional<OpenIDUser> user = InMemoryUserCache
+    Optional<User> user = InMemoryUserCache
       .INSTANCE
       .getBySessionToken(credentials.getSessionToken());
     if (!user.isPresent()) {
 			if (!publicUser.hasAllAuthorities(credentials.getRequiredAuthorities())) {
 				return Optional.absent();
 			}
-			return Optional.<OpenIDUser>of(publicUser);
+			return Optional.<User>of(publicUser);
       //return Optional.absent();
     }
 
