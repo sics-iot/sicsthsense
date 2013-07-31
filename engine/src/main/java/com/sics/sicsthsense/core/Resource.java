@@ -82,15 +82,15 @@ public class Resource {
 	}
 
 
-	public long getId()							{ return id; }
-	public long getOwner_id()				{ return owner_id; } 
+	public long   getId()						{ return id; }
+	public long   getOwner_id()			{ return owner_id; } 
 	public String getLabel()				{ return label; }
 	public String getPolling_period(){return polling_period; }
 	public String getLast_polled()	{ return last_polled; }
 	public String getPolling_url()	{ return polling_url; }
 	public String getPolling_authentication_key()	{ return polling_authentication_key; }
 	public String getDescription()	{ return description; }
-	public long getParent_id()			{ return parent_id; }
+	public long   getParent_id()		{ return parent_id; }
 	public String getSecret_key()		{ return secret_key; }
 	//public int getVersion()					{ return version; }
 public String getVersion()			{ return "1"; }
@@ -102,7 +102,7 @@ public String getVersion()			{ return "1"; }
 	public void setLast_polled(String last_polled)	{ this.last_polled = last_polled; }
 	public void setPolling_url(String polling_url)	{ this.polling_url = polling_url; }
 	public void setDescription(String description)	{ this.description = description;}
-	public void setParent_id(long parent_id)			{ this.parent_id = parent_id; }
+	public void setParent_id(long parent_id)				{ this.parent_id = parent_id; }
 	public void setSecret_key(String secret_key)		{ this.secret_key = secret_key; }
 	public void setVersion(int version)							{ this.version = version; }
 	public void setLast_posted(String last_posted)	{ this.last_posted = last_posted; }

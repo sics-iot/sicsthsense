@@ -54,6 +54,14 @@ public class ResourceResource {
 	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
 		Resource resource = storage.findResourceById(resourceId);
+		if (resource == null) {
+			logger.error("Resource "+resourceId+" does not exist!");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		if (resource.getOwner_id() != userId) {
+			logger.error("User "+userId+" does not own resource "+resourceId);
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
 			throw new WebApplicationException(Status.FORBIDDEN);
