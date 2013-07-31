@@ -29,7 +29,7 @@ import com.sics.sicsthsense.model.security.*;
  */
 @JsonPropertyOrder({
   "id",
-  "userName",
+  "username",
   "passwordDigest",
   "firstName",
   "lastName",
@@ -43,7 +43,8 @@ public class User {
 
   /** * <p>Unique identifier for this entity</p> */
   private long id;
-  private String userName;
+	@JsonProperty
+  private String username;
 
   /** * <p>A user password (not plaintext and optional for anonymity reasons)</p> */
   @JsonProperty
@@ -74,8 +75,6 @@ public class User {
   @JsonProperty
   private Set<Authority> authorities = Sets.newHashSet();
 
-	@JsonProperty
-	private String username;
 	@JsonProperty
 	public String email;
 	@JsonProperty
@@ -119,11 +118,11 @@ public class User {
 			//this.id							= id;
 			this.username				= username;
 			this.firstName			= firstName;
-			this.lastName			= lastName;
+			this.lastName				= lastName;
 			this.description		= description;
 			this.latitude				= latitude;
 			this.longitude			= longitude;
-			this.creationDate	= creationDate;
+			this.creationDate		= creationDate;
 			this.lastLogin			= lastLogin;
 			//this.admin					= admin;
 	}
@@ -164,72 +163,48 @@ public class User {
 	// Get set methods
 	//
 
-  public long getId() { return id; }
-
-  public void setId(long id) { this.id = id; }
-
-  /**
-   * @return The user name to authenticate with the client
-   */
-  public String getUserName() { return userName; }
-
-  public void setUserName(String userName) { this.userName = userName; }
-
-  /**
-   * @return The digested password to provide authentication between the user and the client
-   */
-  public String getPasswordDigest() { return passwordDigest; }
-
-  /**
-   * <h3>Note that it is expected that Jasypt or similar is used prior to storage</h3>
-   *
-   * @param passwordDigest The password digest
-   */
-  public void setPasswordDigest(String passwordDigest) { this.passwordDigest = passwordDigest; }
-
-  public String getFirstName() { return firstName; }
-
-  public void setFirstName(String firstName) { this.firstName = firstName; }
-
-  public String getLastName() { return lastName; }
-
-  public void setLastName(String lastName) { this.lastName = lastName; }
-
-  public String getEmail() { return email; }
-
-  public void setEmail(String email) { this.email = email; }
-
+  public long		getId()										{ return id; }
+  public String getFirstName()						{ return firstName; }
+  public String getLastName()							{ return lastName; }
+  public String getEmail()								{ return email; }
+  public Set<Authority> getAuthorities()	{ return authorities; }
+  /** * @return The user name to authenticate with the client */
+  public String getUsername()							{ return username; }
+  /** * @return The digested password to provide authentication between the user and the client */
+  public String getPasswordDigest()				{ return passwordDigest; }
+  /** * @return The OpenID identifier */
+  public String getOpenIDIdentifier()			{ return openIDIdentifier; }
+  /** * @return The session key */
+  public UUID		getSessionToken()					{ return sessionToken; }
   /** * @return The OpenID discovery information (phase 1 of authentication) */
-  public DiscoveryInformationMemento getOpenIDDiscoveryInformationMemento() {
-    return openIDDiscoveryInformationMemento;
-  }
+  public DiscoveryInformationMemento getOpenIDDiscoveryInformationMemento() { return openIDDiscoveryInformationMemento; }
 
+
+  public void setId(long id)																{ this.id = id; }
+  public void setUsername(String username)									{ this.username = username; }
+  public void setFirstName(String firstName)								{ this.firstName = firstName; }
+  public void setLastName(String lastName)									{ this.lastName = lastName; }
+  public void setEmail(String email)												{ this.email = email; }
+  public void setAuthorities(Set<Authority> authorities)		{ this.authorities = authorities; }
+  public void setOpenIDIdentifier(String openIDIdentifier)	{ this.openIDIdentifier = openIDIdentifier; }
+  public void setSessionToken(UUID sessionToken)						{ this.sessionToken = sessionToken; }
+  /** * <h3>Note that it is expected that Jasypt or similar is used prior to storage</h3>
+   * @param passwordDigest The password digest */
+  public void setPasswordDigest(String passwordDigest)			{ this.passwordDigest = passwordDigest; }
   public void setOpenIDDiscoveryInformationMemento(DiscoveryInformationMemento openIDDiscoveryInformationMemento) {
     this.openIDDiscoveryInformationMemento = openIDDiscoveryInformationMemento;
   }
 
-  /** * @return The OpenID identifier */
-  public String getOpenIDIdentifier() { return openIDIdentifier; }
-
-  public void setOpenIDIdentifier(String openIDIdentifier) { this.openIDIdentifier = openIDIdentifier; }
-
-  /** * @return The session key */
-  public UUID getSessionToken() { return sessionToken; }
-  public void setSessionToken(UUID sessionToken) { this.sessionToken = sessionToken; }
 	public boolean hasSessionToken() { return sessionToken!=null; }
-
-  public void setAuthorities(Set<Authority> authorities) { this.authorities = authorities; }
-
-  public Set<Authority> getAuthorities() { return authorities; }
-
   public boolean hasAllAuthorities(Set<Authority> requiredAuthorities) { return authorities.containsAll(requiredAuthorities); }
-
   public boolean hasAuthority(Authority authority) { return hasAllAuthorities(Sets.newHashSet(authority)); }
+	
+
 
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
-      .add("userName", userName)
+      .add("username", username)
       .add("password", "**********")
       .add("email", email)
       .add("openIDIdentifier", openIDIdentifier)

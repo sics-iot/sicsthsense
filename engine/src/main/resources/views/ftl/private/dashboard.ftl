@@ -11,9 +11,9 @@
 
   <h1>Your personal dashboard</h1>
 
-	Hello ${user.userName}.
+	Hello ${user.username!"Stranger"}.
 
-	Your <a href="/users/$user.id">profile</a> <br \>
+	Your <a href="/users/${user.id}">profile</a> <br \>
 	
 
   <p>Try to get to the <a href="/private/admin">admin page</a></p>

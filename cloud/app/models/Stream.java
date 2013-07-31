@@ -75,7 +75,7 @@ public class Stream extends Model implements Comparable<Stream> {
 
     public StreamType type = StreamType.UNDEFINED;
     public double latitude;
-    public double longtitude;
+    public double longitude;
     public String description;
 
     public boolean publicAccess = false;
@@ -132,7 +132,7 @@ public class Stream extends Model implements Comparable<Stream> {
         this.resource = resource;
         this.type = type;
         this.latitude = 0.0;
-        this.longtitude = 0.0;
+        this.longitude = 0.0;
 
         createKey();
 
@@ -162,7 +162,7 @@ public class Stream extends Model implements Comparable<Stream> {
 
     public void updateStream(Stream modified) {
         this.description = modified.description;
-        this.longtitude = modified.longtitude;
+        this.longitude = modified.longitude;
         this.latitude = modified.latitude;
         update();
     }

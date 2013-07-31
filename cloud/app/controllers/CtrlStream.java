@@ -162,7 +162,7 @@ public class CtrlStream extends Controller {
 
 			// probably not the correct way to do it
 			if (submitted.latitude != 0.0) {
-				//String lon = streamForm.field("longtitude").value();
+				//String lon = streamForm.field("longitude").value();
 				//String lat = streamForm.field("latitude").value();
 				//Logger.error("form latlon: "+lat+","+lon);
 				//Location location = new Location(lon,lat);
