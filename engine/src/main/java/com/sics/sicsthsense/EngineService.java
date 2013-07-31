@@ -56,7 +56,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
     // Configure authenticator
-		User publicUser = new User(null, UUID.randomUUID());
+		User publicUser = new User(-1, UUID.randomUUID());
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
     OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
     environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));

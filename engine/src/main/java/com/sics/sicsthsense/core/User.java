@@ -42,7 +42,7 @@ import com.sics.sicsthsense.model.security.*;
 public class User {
 
   /** * <p>Unique identifier for this entity</p> */
-  private String id;
+  private long id;
   private String userName;
 
   /** * <p>A user password (not plaintext and optional for anonymity reasons)</p> */
@@ -97,13 +97,13 @@ public class User {
 
   @JsonCreator
   public User(
-    @JsonProperty("id") String id,
+    @JsonProperty("id") long id,
     @JsonProperty("sessionToken") UUID sessionToken) {
     this.id = id;
     this.sessionToken = sessionToken;
   }
   public User() {
-			this(null, UUID.randomUUID());
+			this(-1, UUID.randomUUID());
 	}
 	public User(//long id, 
 			String username,
@@ -164,9 +164,9 @@ public class User {
 	// Get set methods
 	//
 
-  public String getId() { return id; }
+  public long getId() { return id; }
 
-  public void setId(String id) { this.id = id; }
+  public void setId(long id) { this.id = id; }
 
   /**
    * @return The user name to authenticate with the client

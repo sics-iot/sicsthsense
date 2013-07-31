@@ -16,8 +16,10 @@ import com.yammer.dropwizard.auth.Auth;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
+import com.sics.sicsthsense.auth.annotation.RestrictedTo;
+import com.sics.sicsthsense.model.security.Authority;
 
-@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/{parserId}")
+@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/parsers")
 @Produces(MediaType.APPLICATION_JSON)
 public class ParserResource {
 	private StorageDAO storage;
@@ -29,9 +31,10 @@ public class ParserResource {
 	}
 
 	@GET
+	@Path("/{parserId}")
 	@Timed
-	public Message getResource(@Auth User user, @PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId) {
-			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId+"  "+user.getUserName());
+	public Message getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("id") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
+			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId+"  "+visitor.getUserName());
 	}
 
 	@POST

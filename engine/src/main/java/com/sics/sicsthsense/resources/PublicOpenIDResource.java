@@ -152,7 +152,7 @@ public class PublicOpenIDResource {
 
       // Create a temporary User to preserve state between requests without
       // using a session (we could be in a cluster)
-      User tempUser = new User(null, sessionToken);
+      User tempUser = new User(-1, sessionToken);
       tempUser.setOpenIDDiscoveryInformationMemento(memento);
       tempUser.setSessionToken(sessionToken);
 
@@ -285,7 +285,7 @@ public class PublicOpenIDResource {
         // and replace it with a potentially new one
         InMemoryUserCache.INSTANCE.hardDelete(tempUser);
 
-        tempUser = new User(null, UUID.randomUUID());
+        tempUser = new User(-1, UUID.randomUUID());
         tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 
         // Provide a basic authority in light of successful authentication

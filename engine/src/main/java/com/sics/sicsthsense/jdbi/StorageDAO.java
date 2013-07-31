@@ -19,13 +19,13 @@ public interface StorageDAO {
 	// Users
   @SqlQuery("select * from users where id = :id")
 	@Mapper(UserMapper.class)
-  User findUserById(@Bind("id") int id);
+  User findUserById(@Bind("id") long id);
 
   @SqlQuery("select user_name from users where id = :id")
-  String findUsernameById(@Bind("id") int id);
+  String findUsernameById(@Bind("id") long id);
 
   @SqlUpdate("insert into users (id, name) values (:id, :name)")
-  void insertUser(@Bind("id") int id, @Bind("name") String name);
+  void insertUser(@Bind("id") long id, @Bind("name") String name);
 
 
 	// Resources
@@ -40,14 +40,14 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version, :last_posted)")
   void insertResource(
-		@Bind("owner_id") String owner_id, 
+		@Bind("owner_id") long owner_id, 
 		@Bind("label") String label,
 		@Bind("polling_period") String polling_period,
 		@Bind("last_polled") String last_polled,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
 		@Bind("description") String description,
-		@Bind("parent_id") String parent_id,
+		@Bind("parent_id") long parent_id,
 		@Bind("secret_key") String secret_key,
 		@Bind("version") String version,
 		@Bind("last_posted") String last_posted 
@@ -67,8 +67,5 @@ public interface StorageDAO {
 	@Mapper(ParserMapper.class)
   Parser findParserById(@Bind("id") long id);
 
-
-	// Permissions
-	boolean authorised(Resource resource, User user) { return true; }
 
 }

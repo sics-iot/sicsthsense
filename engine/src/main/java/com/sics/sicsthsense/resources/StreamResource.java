@@ -16,6 +16,8 @@ import com.yammer.dropwizard.auth.Auth;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
+import com.sics.sicsthsense.auth.annotation.RestrictedTo;
+import com.sics.sicsthsense.model.security.Authority;
 
 @Path("/users/{userId}/resources/{resourceId}/streams")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,20 +32,20 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public List<Stream> getStreams(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @Auth User user) {
+	public List<Stream> getStreams(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("id") long userId, @PathParam("resourceId") long resourceId) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
 			System.out.println("Getting user/resource/streams "+userId+" "+resourceId);
-			List<Stream> streams = storage.findStreamsByResourceId(Integer.parseInt(resourceId));
+			List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 			return streams;
 	}
 
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream(@PathParam("id") String userId, @PathParam("resourceId") String resourceId, @PathParam("streamId") String streamId, @Auth User user) {
+	public Stream getStream(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("id") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+streamId);
 			System.out.println("Getting user/resource/stream: "+userId+" "+resourceId+" "+streamId);
-			Stream stream = storage.findStreamById(Integer.parseInt(streamId));
+			Stream stream = storage.findStreamById(streamId);
 			return stream;
 	}
 
@@ -53,4 +55,3 @@ public class StreamResource {
 	}
 
 }
-

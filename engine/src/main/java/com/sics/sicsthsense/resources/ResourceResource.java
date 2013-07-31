@@ -36,11 +36,11 @@ public class ResourceResource {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public List<Resource> getResources(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") String userId) {
+	public List<Resource> getResources(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId) {
 		System.out.println("Getting all user "+userId+" resources");
 		System.out.println("For visitor  "+visitor.toString());
 
-		List<Resource> resources = storage.findResourcesByOwnerId(Integer.parseInt(userId));
+		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		return resources;
 	}
 
@@ -48,12 +48,12 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId) {
+	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
 		System.out.println("Getting user/resource: "+userId+" "+resourceId);
 
-		Resource resource = storage.findResourceById(Integer.parseInt(resourceId));
-		if (!storage.authorised(visitor,resource)) {
+		Resource resource = storage.findResourceById(resourceId);
+		if (!resource.isReadable(visitor)) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		return resource;
@@ -61,8 +61,11 @@ public class ResourceResource {
 
 	@POST
 	@Timed
-	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") String userId, Resource resource) {
+	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
 		System.out.println("Adding user/resource:"+resource.getLabel());
+		if (visitor.getId() != userId) {
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
 		insertResource(resource);
 	}
 	
@@ -81,4 +84,3 @@ public class ResourceResource {
 	resource.getLast_posted() 
 	);}
 }
-

@@ -37,19 +37,18 @@ public class UserResource {
 
 		@GET
 		@Timed
-    public User getUser(@PathParam("userId") String userId) {
+    public User getUser(@PathParam("userId") long userId) {
 			System.out.println("getting User!! "+userId);
-			User user = storage.findUserById(Integer.parseInt(userId));
+			User user = storage.findUserById(userId);
 			return user;
     }
 
 		@POST
 		@Timed
-		public Response post(@PathParam("userId") String userId, User user) {
+		public Response post(@PathParam("userId") long userId, User user) {
 			//final long id = store.add(userId.get(), notification);
      	//return Response.created(UriBuilder.fromResource(NotificationResource.class).build(userId.get(), id).build();
 			return Response.status(201).entity("posted alright").build();
 		}
 
 }
-

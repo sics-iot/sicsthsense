@@ -28,9 +28,9 @@ public class Stream {
 	@JsonProperty
 	private String secret_key;
 	@JsonProperty
-	private int owner_id;
+	private long owner_id;
 	@JsonProperty
-	private int resource_id;
+	private long resource_id;
 	@JsonProperty
 	private int version;
 	//public String classtype;
@@ -55,12 +55,21 @@ public class Stream {
 			int history_size,
 			int last_updated,
 			String secret_key,
-			int owner_id,
-			int resource_id,
+			long owner_id,
+			long resource_id,
 			int version
 		) {
 		this();
 		}
+
+	public boolean isReadable(User user) {
+		if (user.getId() == owner_id) {return true;} // owners can read
+		return false;
+	}
+	public boolean isWritableable(User user) {
+		if (user.getId() == owner_id) {return true;} // owners can read
+		return false;
+	}
 
 	public long getId()								{ return id; }
 	public String getLabel()					{ return label; }
@@ -74,13 +83,13 @@ public class Stream {
 	public int getHistory_size()			{ return history_size; }
 	public int getLast_updated()			{ return last_updated; }
 	public String getSecret_key()			{ return secret_key; }
-	public int getOwner_id()					{ return owner_id; }
-	public int getResource_id()				{ return resource_id; }
+	public long getOwner_id()					{ return owner_id; }
+	public long getResource_id()			{ return resource_id; }
 	public int getVersion()						{ return version; }
 
 	public void setId(long id)										{ this.id = id; }
 	public void setLabel(String label)						{ this.label = label; }
-	public void setType(String type)								{ this.type = type; }
+	public void setType(String type)							{ this.type = type; }
 	public void setLatitude(double latitude)			{ this.latitude = latitude; }
 	public void setLongitude(double longitude)		{ this.longitude = longitude; }
 	public void setDescription(String description)			{ this.description = description; }
@@ -90,7 +99,7 @@ public class Stream {
 	public void setHistory_size(int history_size) { this.history_size = history_size; }
 	public void setLast_updated(int last_updated) { this.last_updated = last_updated; }
 	public void setSecret_key(String secret_key)	{ this.secret_key = secret_key; }
-	public void setOwner_id(int owner_id)					{ this.owner_id = owner_id; }
-	public void setResource_id(int resource_id)		{ this.resource_id = resource_id; }
+	public void setOwner_id(long owner_id)				{ this.owner_id = owner_id; }
+	public void setResource_id(long resource_id)	{ this.resource_id = resource_id; }
 	public void setVersion(int version)						{ this.version = version; }
 }
