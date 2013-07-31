@@ -154,6 +154,11 @@ public class User {
 		this.id = user.id;
 	}
 
+	// XXX Need to hash and check password!
+	public boolean hasPassword(String password) {
+		return true;
+	}
+
 	public List<Resource> getResources() {
 		List<Resource> resources = new ArrayList<Resource>();
 		resources.add(new Resource());	

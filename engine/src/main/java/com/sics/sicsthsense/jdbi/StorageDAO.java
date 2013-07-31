@@ -21,6 +21,10 @@ public interface StorageDAO {
 	@Mapper(UserMapper.class)
   User findUserById(@Bind("id") long id);
 
+  @SqlQuery("select * from users where username = :username limit 1")
+	@Mapper(UserMapper.class)
+  User findUserByUsername(@Bind("username") String username);
+
   @SqlQuery("select * from users where email = :email limit 1")
 	@Mapper(UserMapper.class)
   User findUserByEmail(@Bind("email") String email);

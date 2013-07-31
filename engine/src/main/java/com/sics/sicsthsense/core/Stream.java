@@ -6,8 +6,6 @@ public class Stream {
 	@JsonProperty
 	private long id;
 	@JsonProperty
-	private String label;
-	@JsonProperty
 	private String type;
 	@JsonProperty
 	private double latitude;
@@ -38,13 +36,11 @@ public class Stream {
     public Stream() {
 			//classtype="stream";
 		}
-    public Stream(long id, String label) {
+    public Stream(long id) {
 			this();
       this.id			= id;
-      this.label	= label;
     }
     public Stream(long id,
-			String label,
 			String type,
 			double latitude,
 			double longitude,
@@ -59,7 +55,20 @@ public class Stream {
 			long resource_id,
 			int version
 		) {
-		this();
+			this(id);
+			this.type					= type;
+			this.latitude			= latitude;
+			this.longitude		= longitude;
+			this.description	= description;
+			this.public_access = public_access;
+			this.public_search = public_search;
+			this.frozen				= frozen;
+			this.history_size = history_size;
+			this.last_updated = last_updated;
+			this.secret_key		= secret_key;
+			this.owner_id			= owner_id;
+			this.resource_id	= resource_id;
+			this.version			= version;
 		}
 
 	public boolean isReadable(User user) {
@@ -73,7 +82,6 @@ public class Stream {
 	}
 
 	public long getId()								{ return id; }
-	public String getLabel()					{ return label; }
 	public String getType()						{ return type; }
 	public double getLatitude()				{ return latitude; }
 	public double getLongitude()			{ return longitude; }
@@ -89,7 +97,6 @@ public class Stream {
 	public int getVersion()						{ return version; }
 
 	public void setId(long id)										{ this.id = id; }
-	public void setLabel(String label)						{ this.label = label; }
 	public void setType(String type)							{ this.type = type; }
 	public void setLatitude(double latitude)			{ this.latitude = latitude; }
 	public void setLongitude(double longitude)		{ this.longitude = longitude; }

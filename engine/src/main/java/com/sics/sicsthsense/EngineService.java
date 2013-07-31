@@ -51,7 +51,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
 		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 
-		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
+		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 

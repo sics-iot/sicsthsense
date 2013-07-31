@@ -14,9 +14,8 @@ import com.sics.sicsthsense.core.*;
 public class StreamMapper implements ResultSetMapper<Stream> {
 	public Stream map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 		return new Stream(
-				1,//r.getLong("id"), 
-				"label","type",
-				//r.getString("label"), r.getString("type"),
+				r.getLong("id"), 
+				"type",
 				r.getDouble("latitude"), 
 				r.getDouble("longitude"), 
 				r.getString("description"),
