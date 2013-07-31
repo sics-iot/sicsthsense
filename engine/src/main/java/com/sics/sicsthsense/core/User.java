@@ -96,7 +96,7 @@ public class User {
 
   @JsonCreator
   public User(
-    @JsonProperty("id") long id,
+    long id,
     @JsonProperty("sessionToken") UUID sessionToken) {
     this.id = id;
     this.sessionToken = sessionToken;
@@ -104,7 +104,7 @@ public class User {
   public User() {
 			this(-1, UUID.randomUUID());
 	}
-	public User(//long id, 
+	public User(long id, 
 			String username,
 			String firstName,
 			String lastName,
@@ -115,7 +115,7 @@ public class User {
 			Date lastLogin //,
 			//boolean admin
 		) {
-			//this.id							= id;
+			this.id							= id;
 			this.username				= username;
 			this.firstName			= firstName;
 			this.lastName				= lastName;
@@ -126,10 +126,9 @@ public class User {
 			this.lastLogin			= lastLogin;
 			//this.admin					= admin;
 	}
-	public User( //long id, 
+	public User( long id, 
 			@JsonProperty("username") String username, @JsonProperty("firstName") String first_name, @JsonProperty("lastName") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creationDate") String creation_date_string, @JsonProperty("lastLogin") String last_login_string) {
-			this(//id, 
-					username, first_name, last_name, description,
+			this(id, username, first_name, last_name, description,
 				Double.valueOf(latitude_string),
 				Double.valueOf(longitude_string),
 				new Date(),
@@ -148,6 +147,11 @@ public class User {
 			System.out.println("Error: Date form database not parsed by java!");
 			return new Date();
 		}
+	}
+
+	// pull all user details from the parameter user into this object
+	public void copyFrom(User user) {
+		this.id = user.id;
 	}
 
 	public List<Resource> getResources() {

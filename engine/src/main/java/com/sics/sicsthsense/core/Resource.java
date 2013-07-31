@@ -1,5 +1,7 @@
 package com.sics.sicsthsense.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Resource {
@@ -27,6 +29,8 @@ public class Resource {
 	private String secret_key;
 	@JsonProperty
 	private String last_posted;
+
+	private final Logger logger = LoggerFactory.getLogger(Resource.class);
 
 	public Resource() {
 		this.id			= -1;
@@ -69,6 +73,7 @@ public class Resource {
 
 	public boolean isReadable(User user) {
 		if (user.getId() == owner_id) {return true;} // owners can read
+		else {logger.warn(user.getId()+"!="+owner_id);}
 		return false;
 	}
 	public boolean isWritableable(User user) {

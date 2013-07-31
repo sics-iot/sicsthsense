@@ -17,11 +17,15 @@ public interface StorageDAO {
   //void createSomethingTable();
 
 	// Users
-  @SqlQuery("select * from users where id = :id")
+  @SqlQuery("select * from users where id = :id limit 1")
 	@Mapper(UserMapper.class)
   User findUserById(@Bind("id") long id);
 
-  @SqlQuery("select user_name from users where id = :id")
+  @SqlQuery("select * from users where email = :email limit 1")
+	@Mapper(UserMapper.class)
+  User findUserByEmail(@Bind("email") String email);
+
+  @SqlQuery("select user_name from users where id = :id limit 1")
   String findUsernameById(@Bind("id") long id);
 
   @SqlUpdate("insert into users (id, name) values (:id, :name)")
@@ -33,7 +37,7 @@ public interface StorageDAO {
 	@Mapper(ResourceMapper.class)
   List<Resource> findResourcesByOwnerId(@Bind("id") long id);
 
-  @SqlQuery("select * from resources where id = :id")
+  @SqlQuery("select * from resources where id = :id limit 1")
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
 
@@ -58,12 +62,12 @@ public interface StorageDAO {
 	@Mapper(StreamMapper.class)
   List<Stream> findStreamsByResourceId(@Bind("resourceid") long resourceid);
 
-  @SqlQuery("select * from streams where id = :id")
+  @SqlQuery("select * from streams where id = :id limit 1")
 	@Mapper(StreamMapper.class)
   Stream findStreamById(@Bind("id") long id);
 
 	// Parsers
-  @SqlQuery("select * from parsers where id = :id")
+  @SqlQuery("select * from parsers where id = :id limit 1")
 	@Mapper(ParserMapper.class)
   Parser findParserById(@Bind("id") long id);
 

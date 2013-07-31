@@ -71,7 +71,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		environment.addResource(new ResourceResource(storage));
 		environment.addResource(new StreamResource(storage));
 		environment.addResource(new ParserResource(storage));
-		environment.addResource(new PublicOpenIDResource());
+		environment.addResource(new PublicOpenIDResource(storage));
 
     // Session handler to enable automatic session handling 
     environment.setSessionHandler(new SessionHandler());

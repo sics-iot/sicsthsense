@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.yammer.dropwizard.views.View;
 
 import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.model.*;
 import com.sics.sicsthsense.model.security.*;
 import com.sics.sicsthsense.EngineConfiguration;
@@ -57,6 +58,7 @@ public class PublicOpenIDResource {
   @Context
   protected HttpHeaders httpHeaders;
 
+	public final StorageDAO storage;
   private final static Logger logger = LoggerFactory.getLogger(PublicOpenIDResource.class);
   private final static String YAHOO_ENDPOINT = "https://me.yahoo.com";
   private final static String GOOGLE_ENDPOINT = "https://www.google.com/accounts/o8/id";
@@ -65,7 +67,8 @@ public class PublicOpenIDResource {
   /**
    * Default constructor
    */
-  public PublicOpenIDResource() {
+  public PublicOpenIDResource(StorageDAO storage) {
+		this.storage = storage;
   }
 
   /**
@@ -149,16 +152,13 @@ public class PublicOpenIDResource {
 
       memento.setTypes(discovered.getTypes());
       memento.setVersion(discovered.getVersion());
-
       // Create a temporary User to preserve state between requests without
       // using a session (we could be in a cluster)
-      User tempUser = new User(-1, sessionToken);
+      User tempUser = new User(-2, sessionToken);
       tempUser.setOpenIDDiscoveryInformationMemento(memento);
       tempUser.setSessionToken(sessionToken);
-
       // Persist the User
       InMemoryUserCache.INSTANCE.put(sessionToken, tempUser);
-
       // Build the AuthRequest message to be sent to the OpenID provider
       AuthRequest authReq = consumerManager.authenticate(discovered, returnToUrl);
 
@@ -177,13 +177,10 @@ public class PublicOpenIDResource {
         fetch.addAttribute("fullname", "http://schema.openid.net/namePerson", true);
         fetch.addAttribute("email", "http://schema.openid.net/contact/email", true);
       }
-
       // Attach the extension to the authentication request
       authReq.addExtension(fetch);
-
       // Redirect the user to their OpenId server authentication process
       return Response.seeOther(URI.create(authReq.getDestinationUrl(true))).build();
-
     } catch (MessageException e1) {
       logger.error("MessageException:", e1);
     } catch (DiscoveryException e1) {
@@ -267,25 +264,24 @@ public class PublicOpenIDResource {
     ParameterList parameterList = new ParameterList(request.getParameterMap());
 
     try {
-      // Verify the response
-      // ConsumerManager needs to be the same (static) instance used
+      // Verify the response ConsumerManager needs to be the same (static) instance used
       // to place the authentication request
       // This could be tricky if this service is load-balanced
       VerificationResult verification = consumerManager.verify(
-        receivingURL.toString(),
-        parameterList,
-        discovered);
+        receivingURL.toString(), parameterList, discovered);
 
       // Examine the verification result and extract the verified identifier
       Optional<Identifier> verified = Optional.fromNullable(verification.getVerifiedId());
       if (verified.isPresent()) { // Verified
         AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
-        // We have successfully authenticated so remove the temp user
-        // and replace it with a potentially new one
+        // successfully authenticated so remove temp and replace with a potentially new one
         InMemoryUserCache.INSTANCE.hardDelete(tempUser);
 
-        tempUser = new User(-1, UUID.randomUUID());
+        tempUser = storage.findUserByEmail(extractEmail(authSuccess));
+				if (tempUser==null) { // no existing user with that email
+					tempUser = new User(-3, UUID.randomUUID());
+				}
         tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 
         // Provide a basic authority in light of successful authentication
@@ -327,7 +323,6 @@ public class PublicOpenIDResource {
           // The User has been located by their OpenID identifier
           logger.debug("Found an existing User using OpenID identifier {}", tempUser);
           user = userOptional.get();
-
         }
 
         // Persist the user with the current session token
@@ -343,12 +338,9 @@ public class PublicOpenIDResource {
         View view = new PublicFreemarkerView<BaseModel>("private/home.ftl", model);
 
         // Refresh the session token cookie
-        return Response
-          .ok()
+        return Response.ok()
           .cookie(replaceSessionTokenCookie(Optional.of(user)))
-          .entity(view)
-          .build();
-
+          .entity(view) .build();
       } else {
         logger.debug("Failed verification");
       }

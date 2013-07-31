@@ -41,8 +41,7 @@ public class ResourceResource {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
 	public List<Resource> getResources(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId) {
-		System.out.println("Getting all user "+userId+" resources");
-		System.out.println("For visitor  "+visitor.toString());
+		logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
 
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		return resources;
@@ -53,11 +52,10 @@ public class ResourceResource {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
 	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
-		//System.out.println("Getting user/resource: "+userId+" "+resourceId);
-		logger.info("Getting user/resource: "+userId+" "+resourceId);
+		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
 		Resource resource = storage.findResourceById(resourceId);
 		if (!resource.isReadable(visitor)) {
+			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		return resource;
