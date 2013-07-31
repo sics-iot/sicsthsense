@@ -50,7 +50,7 @@ stream.file.getParentPath()
 			<label>Latitude</label>
 			<input class="span4 streamLat" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			<label>Longtitude</label>
-			<input class="span4 streamLong" type="number" step="any" id="@myForm("longtitude").id" name="@myForm("longtitude").name" value="@myForm("longtitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
+			<input class="span4 streamLong" type="number" step="any" id="@myForm("longitude").id" name="@myForm("longitude").name" value="@myForm("longitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			</div>
 					</fieldset>
     </div>
@@ -63,8 +63,8 @@ stream.file.getParentPath()
 				selectPathInTree(null, "@streamPath");
 	     
 	        var mapOptions = {
-	          center: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
-						@if(stream.latitude==0 && stream.longtitude==0) {
+	          center: new google.maps.LatLng(@stream.latitude, @stream.longitude),
+						@if(stream.latitude==0 && stream.longitude==0) {
 							zoom: 1,
 						} else {
 							zoom: 7,
@@ -74,14 +74,14 @@ stream.file.getParentPath()
 	        var map = new google.maps.Map(document.getElementById("map-canvas"),
 	            mapOptions);
 					marker = new google.maps.Marker({
-						position: new google.maps.LatLng(@stream.latitude, @stream.longtitude),
+						position: new google.maps.LatLng(@stream.latitude, @stream.longitude),
 						draggable:@stream.canWrite(Secured.getCurrentUser()),
 						animation:false,
 						map: map
 	      });
 				google.maps.event.addListener(marker, 'dragend', function(event) {
 	        document.getElementById("@myForm("latitude").id").value = this.getPosition().lat(); 
-	        document.getElementById("@myForm("longtitude").id").value = this.getPosition().lng();
+	        document.getElementById("@myForm("longitude").id").value = this.getPosition().lng();
 	       // $('.streamLat').val(this.getPosition().lat() );
 	        //$('.streamLong').val(this.getPosition().lng() );
 				});
