@@ -12,6 +12,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.auth.Auth;
@@ -25,8 +28,9 @@ import com.sics.sicsthsense.model.security.Authority;
 @Path("/users/{userId}/resources")
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceResource {
-	private StorageDAO storage;
+	private final StorageDAO storage;
 	private final AtomicLong counter;
+	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
 
 	public ResourceResource(StorageDAO storage) {
 		this.storage = storage;
@@ -50,8 +54,8 @@ public class ResourceResource {
 	@Timed
 	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		//return new Message(counter.incrementAndGet(), userId+" "+resourceId);
-		System.out.println("Getting user/resource: "+userId+" "+resourceId);
-
+		//System.out.println("Getting user/resource: "+userId+" "+resourceId);
+		logger.info("Getting user/resource: "+userId+" "+resourceId);
 		Resource resource = storage.findResourceById(resourceId);
 		if (!resource.isReadable(visitor)) {
 			throw new WebApplicationException(Status.FORBIDDEN);

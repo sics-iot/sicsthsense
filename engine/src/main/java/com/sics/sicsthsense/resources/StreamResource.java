@@ -10,6 +10,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.auth.Auth;
@@ -22,8 +24,9 @@ import com.sics.sicsthsense.model.security.Authority;
 @Path("/users/{userId}/resources/{resourceId}/streams")
 @Produces(MediaType.APPLICATION_JSON)
 public class StreamResource {
-	private StorageDAO storage;
+	private final StorageDAO storage;
   private final AtomicLong counter;
+	private final Logger logger = LoggerFactory.getLogger(StreamResource.class);
 
 	public StreamResource(StorageDAO storage) {
 		this.storage = storage;

@@ -1,7 +1,6 @@
 package com.sics.sicsthsense.resources;
 
-import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,10 +14,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.*;
 import javax.validation.Valid;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
+import com.google.common.base.Optional;
+import com.yammer.metrics.annotation.Timed;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -27,8 +28,9 @@ import com.sics.sicsthsense.jdbi.*;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-		private StorageDAO storage;
+		private final StorageDAO storage;
     private final AtomicLong counter;
+		private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     public UserResource(StorageDAO storage) {
 			this.storage = storage;

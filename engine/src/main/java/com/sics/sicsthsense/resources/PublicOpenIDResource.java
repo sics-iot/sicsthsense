@@ -57,7 +57,7 @@ public class PublicOpenIDResource {
   @Context
   protected HttpHeaders httpHeaders;
 
-  private static final Logger log = LoggerFactory.getLogger(PublicOpenIDResource.class);
+  private final static Logger logger = LoggerFactory.getLogger(PublicOpenIDResource.class);
   private final static String YAHOO_ENDPOINT = "https://me.yahoo.com";
   private final static String GOOGLE_ENDPOINT = "https://www.google.com/accounts/o8/id";
   private final ModelBuilder modelBuilder = new ModelBuilder();
@@ -123,7 +123,7 @@ public class PublicOpenIDResource {
         returnToUrl = String.format( "http://%s:%d/openid/verify?token=%s",
           request.getServerName(), request.getServerPort(), sessionToken);
       }
-      log.debug("Return to URL '{}'", returnToUrl);
+      logger.debug("Return to URL '{}'", returnToUrl);
 
       // Create a consumer manager for this specific request and cache it
       // (this is to preserve session state such as nonce values etc)
@@ -185,11 +185,11 @@ public class PublicOpenIDResource {
       return Response.seeOther(URI.create(authReq.getDestinationUrl(true))).build();
 
     } catch (MessageException e1) {
-      log.error("MessageException:", e1);
+      logger.error("MessageException:", e1);
     } catch (DiscoveryException e1) {
-      log.error("DiscoveryException:", e1);
+      logger.error("DiscoveryException:", e1);
     } catch (ConsumerException e1) {
-      log.error("ConsumerException:", e1);
+      logger.error("ConsumerException:", e1);
     }
     return Response.ok().build();
   }
@@ -207,7 +207,7 @@ public class PublicOpenIDResource {
 
     // Retrieve the previously stored discovery information from the temporary User
     if (rawToken == null) {
-      log.debug("Authentication failed due to no session token");
+      logger.debug("Authentication failed due to no session token");
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
 
@@ -217,7 +217,7 @@ public class PublicOpenIDResource {
     // Attempt to locate the consumer manager by the session token
     Optional<ConsumerManager> consumerManagerOptional = InMemoryOpenIDCache.INSTANCE.getConsumerManager(sessionToken);
     if (!consumerManagerOptional.isPresent()) {
-      log.debug("Authentication failed due to no consumer manager matching session token {}", rawToken);
+      logger.debug("Authentication failed due to no consumer manager matching session token {}", rawToken);
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
     ConsumerManager consumerManager = consumerManagerOptional.get();
@@ -225,7 +225,7 @@ public class PublicOpenIDResource {
     // Attempt to locate the user by the session token
     Optional<User> tempUserOptional = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken);
     if (!tempUserOptional.isPresent()) {
-      log.debug("Authentication failed due to no temp User matching session token {}", rawToken);
+      logger.debug("Authentication failed due to no temp User matching session token {}", rawToken);
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
     User tempUser = tempUserOptional.get();
@@ -260,7 +260,7 @@ public class PublicOpenIDResource {
     if (queryString != null && queryString.length() > 0) {
       receivingURL.append("?").append(request.getQueryString());
     }
-    log.debug("Receiving URL = '{}", receivingURL.toString());
+    logger.debug("Receiving URL = '{}", receivingURL.toString());
 
     // Extract the parameters from the authentication response
     // (which comes in as a HTTP request from the OpenID provider)
@@ -298,7 +298,7 @@ public class PublicOpenIDResource {
           tempUser.setFirstName(extractFirstName(authSuccess));
           tempUser.setLastName(extractLastName(authSuccess));
         }
-        log.info("Extracted a temporary {}", tempUser);
+        logger.info("Extracted a temporary {}", tempUser);
 
         // Search for a pre-existing User matching the temp User
         Optional<User> userOptional = InMemoryUserCache.INSTANCE.getByOpenIDIdentifier(tempUser.getOpenIDIdentifier());
@@ -309,23 +309,23 @@ public class PublicOpenIDResource {
             userOptional = InMemoryUserCache.INSTANCE.getByEmail(tempUser.getEmail());
             if (!userOptional.isPresent()) {
               // This is a new User
-              log.debug("Registering new {}", tempUser);
+              logger.debug("Registering new {}", tempUser);
               user = tempUser;
             } else {
               // The OpenID identifier has changed so update it
-              log.debug("Updating OpenID identifier for {}", tempUser);
+              logger.debug("Updating OpenID identifier for {}", tempUser);
               user = userOptional.get();
               user.setOpenIDIdentifier(tempUser.getOpenIDIdentifier());
             }
 
           } else {
             // No email address to use as backup
-            log.warn("Rejecting valid authentication. No email address for {}");
+            logger.warn("Rejecting valid authentication. No email address for {}");
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
           }
         } else {
           // The User has been located by their OpenID identifier
-          log.debug("Found an existing User using OpenID identifier {}", tempUser);
+          logger.debug("Found an existing User using OpenID identifier {}", tempUser);
           user = userOptional.get();
 
         }
@@ -350,11 +350,11 @@ public class PublicOpenIDResource {
           .build();
 
       } else {
-        log.debug("Failed verification");
+        logger.debug("Failed verification");
       }
     } catch (OpenIDException e) {
       // present error to the user
-      log.error("OpenIDException", e);
+      logger.error("OpenIDException", e);
     }
 
     // Must have failed to be here
@@ -372,7 +372,7 @@ public class PublicOpenIDResource {
 
       String value = user.get().getSessionToken().toString();
 
-      log.debug("Replacing session token with {}", value);
+      logger.debug("Replacing session token with {}", value);
 
       return new NewCookie(
         EngineConfiguration.SESSION_TOKEN_NAME,
@@ -384,7 +384,7 @@ public class PublicOpenIDResource {
         false);
     } else {
       // Remove the session token cookie
-      log.debug("Removing session token");
+      logger.debug("Removing session token");
 
       return new NewCookie(
         EngineConfiguration.SESSION_TOKEN_NAME,
