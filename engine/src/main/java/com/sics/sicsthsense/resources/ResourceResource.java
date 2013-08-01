@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.logger;
+import org.slf4j.loggerfactory;
 
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
