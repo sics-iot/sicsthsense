@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+// bad behaviour!
+import com.sics.sicsthsense.core.User;
+
 /**
  * <p>Injectable to provide the following to {@link OpenIDRestrictedToProvider}:</p>
  * <ul>
@@ -65,13 +68,19 @@ class OpenIDRestrictedToInjectable<T> extends AbstractHttpContextInjectable<T> {
 
   @Override
   public T getValue(HttpContext httpContext) {
+      log.warn("get value");
 
     try {
 
       // Get the Authorization header
       final Map<String,Cookie> cookieMap = httpContext.getRequest().getCookies();
       if (!cookieMap.containsKey(EngineConfiguration.SESSION_TOKEN_NAME)) {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+				log.warn("Error with authenticating from cookie!");
+				User publicUser = new User(-1, UUID.randomUUID());
+				publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
+				Optional<T> opt = Optional.of((T)publicUser);
+				return opt.get();
+        //throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
 
       UUID sessionToken = UUID.fromString(cookieMap.get(EngineConfiguration.SESSION_TOKEN_NAME).getValue());
@@ -92,9 +101,9 @@ class OpenIDRestrictedToInjectable<T> extends AbstractHttpContextInjectable<T> {
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
 
+      log.warn("Error with authenticating!");
     // Must have failed to be here
     throw new WebApplicationException(Response.Status.UNAUTHORIZED);
   }
 
 }
-

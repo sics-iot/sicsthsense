@@ -3,13 +3,21 @@ package com.sics.sicsthsense.core;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataPoint {
+	@JsonProperty
 	private long id;
+	@JsonProperty
 	private long stream_id;
 	@JsonProperty
 	private long timestamp;
 	@JsonProperty
 	private double value;
 
+	public DataPoint() {
+		id=-1;
+		stream_id=-1;
+		timestamp=-1;
+		value=-1;
+	}
 	public DataPoint(double value) {
 		this.timestamp	= System.currentTimeMillis();
 		this.value			= value;

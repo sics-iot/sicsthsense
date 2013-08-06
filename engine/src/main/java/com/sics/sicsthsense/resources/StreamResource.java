@@ -89,7 +89,9 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public List<DataPoint> getData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
+	public List<DataPoint> getData(
+			@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
 		logger.info("Getting stream:"+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {

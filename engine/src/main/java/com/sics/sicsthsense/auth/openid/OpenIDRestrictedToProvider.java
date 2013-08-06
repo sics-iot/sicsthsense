@@ -1,5 +1,8 @@
 package com.sics.sicsthsense.auth.openid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -21,6 +24,7 @@ import com.sics.sicsthsense.auth.annotation.RestrictedTo;
  */
 public class OpenIDRestrictedToProvider<T> implements InjectableProvider<RestrictedTo, Parameter> {
 
+	private final Logger logger = LoggerFactory.getLogger(OpenIDRestrictedToProvider.class);
   private final Authenticator<OpenIDCredentials, T> authenticator;
   private final String realm;
 
@@ -48,4 +52,3 @@ public class OpenIDRestrictedToProvider<T> implements InjectableProvider<Restric
     return new OpenIDRestrictedToInjectable<T>(authenticator, realm, a.value());
   }
 }
-
