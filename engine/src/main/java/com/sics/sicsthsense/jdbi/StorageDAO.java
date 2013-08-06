@@ -75,5 +75,10 @@ public interface StorageDAO {
 	@Mapper(ParserMapper.class)
   Parser findParserById(@Bind("id") long id);
 
+	// DataPoints
+  @SqlQuery("select * from data_point_double where stream_id = :stream_id limit 10")
+	@Mapper(PointMapper.class)
+  DataPoint findPointByStreamId(@Bind("stream_id") long stream_id);
+
 
 }

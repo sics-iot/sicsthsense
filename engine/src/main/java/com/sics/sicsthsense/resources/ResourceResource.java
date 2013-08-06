@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.logger;
-import org.slf4j.loggerfactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
@@ -70,9 +70,20 @@ public class ResourceResource {
 	}
 
 	@POST
+	@Path("/{resourceId}/data")
+	@Timed
+	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource, @PathParam("resourceId") long resourceId) {
+		logger.info("Adding user/resource:"+resource.getLabel());
+		if (visitor.getId() != userId) {
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		insertResource(resource);
+	}
+
+	@POST
 	@Timed
 	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-		System.out.println("Adding user/resource:"+resource.getLabel());
+		logger.info("Adding user/resource:"+resource.getLabel());
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}

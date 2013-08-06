@@ -21,7 +21,7 @@ import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 
-@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/parsers")
+@Path("/users/{userId}/resources/{resourceId}/parsers")
 @Produces(MediaType.APPLICATION_JSON)
 public class ParserResource {
 	private final StorageDAO storage;
@@ -52,4 +52,3 @@ public class ParserResource {
 	}
 
 }
-

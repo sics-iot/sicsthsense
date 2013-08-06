@@ -82,6 +82,21 @@ public class StreamResource {
 			return stream;
 	}
 
+	@GET
+	@Path("/{streamId}/data")
+	@Produces({MediaType.APPLICATION_JSON})
+	@Timed
+	public DataPoint getData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
+		logger.info("Getting stream:"+streamId);
+		//Stream stream = storage.findStreamById(streamId);
+/*		if (visitor.getId() != userId) {
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}*/
+		//return new DataPoint(-1);
+		return storage.findPointByStreamId(streamId);
+	}
+
+
 	@POST
 	public String postStream() {
 		return "posted";

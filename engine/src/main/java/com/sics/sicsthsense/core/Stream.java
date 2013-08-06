@@ -22,7 +22,7 @@ public class Stream {
 	@JsonProperty
 	private int history_size;
 	@JsonProperty
-	private int last_updated;
+	private long last_updated;
 	@JsonProperty
 	private String secret_key;
 	@JsonProperty
@@ -49,7 +49,7 @@ public class Stream {
 			boolean public_search,
 			boolean frozen,
 			int history_size,
-			int last_updated,
+			long last_updated,
 			String secret_key,
 			long owner_id,
 			long resource_id,
@@ -90,7 +90,7 @@ public class Stream {
 	public boolean getPublic_search() { return public_search; }
 	public boolean getFrozen()				{ return frozen; }
 	public int getHistory_size()			{ return history_size; }
-	public int getLast_updated()			{ return last_updated; }
+	public long getLast_updated()			{ return last_updated; }
 	public String getSecret_key()			{ return secret_key; }
 	public long getOwner_id()					{ return owner_id; }
 	public long getResource_id()			{ return resource_id; }
@@ -105,7 +105,7 @@ public class Stream {
 	public void setPublic_search(boolean public_search) { this.public_search = public_search; }
 	public void setFrozen(boolean frozen)					{ this.frozen = frozen; }
 	public void setHistory_size(int history_size) { this.history_size = history_size; }
-	public void setLast_updated(int last_updated) { this.last_updated = last_updated; }
+	public void setLast_updated(long last_updated){ this.last_updated = last_updated; }
 	public void setSecret_key(String secret_key)	{ this.secret_key = secret_key; }
 	public void setOwner_id(long owner_id)				{ this.owner_id = owner_id; }
 	public void setResource_id(long resource_id)	{ this.resource_id = resource_id; }
