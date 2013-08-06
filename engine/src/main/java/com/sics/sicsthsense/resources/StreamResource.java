@@ -6,8 +6,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.auth.Auth;
+import com.yammer.dropwizard.jersey.params.IntParam;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -86,14 +89,35 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public DataPoint getData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
+	public List<DataPoint> getData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
 		logger.info("Getting stream:"+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
-		//return new DataPoint(-1);
-		return storage.findPointByStreamId(streamId);
+		return storage.findPointsByStreamId(streamId,limit.get());
+	}
+
+	@POST
+	@Path("/{streamId}/data")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Timed
+	public void postData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
+		logger.info("Inserting into stream:"+streamId);
+		Stream stream = storage.findStreamById(streamId);
+/*		if (visitor.getId() != userId) {
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}*/
+		datapoint.setStreamId(streamId); // keep consistency
+		insertDataPoint(datapoint);
+	}
+	void insertDataPoint(DataPoint datapoint) {
+		storage.insertDataPoint(
+			datapoint.getId(),
+			datapoint.getStreamId(),
+			datapoint.getTimestamp(),
+			datapoint.getValue()
+		);
 	}
 
 

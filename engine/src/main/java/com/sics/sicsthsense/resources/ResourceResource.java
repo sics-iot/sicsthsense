@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
@@ -71,16 +72,19 @@ public class ResourceResource {
 
 	@POST
 	@Path("/{resourceId}/data")
+	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource, @PathParam("resourceId") long resourceId) {
+	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
+		Resource resource = storage.findResourceById(resourceId);
 		logger.info("Adding user/resource:"+resource.getLabel());
+		//Resource resource = storage.findResourceById(resourceId);
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		insertResource(resource);
 	}
 
 	@POST
+	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
 		logger.info("Adding user/resource:"+resource.getLabel());

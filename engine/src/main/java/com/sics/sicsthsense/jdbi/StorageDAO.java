@@ -80,5 +80,13 @@ public interface StorageDAO {
 	@Mapper(PointMapper.class)
   DataPoint findPointByStreamId(@Bind("stream_id") long stream_id);
 
+  @SqlQuery("select * from data_point_double where stream_id = :stream_id limit :limit")
+	@Mapper(PointMapper.class)
+  List<DataPoint> findPointsByStreamId(@Bind("stream_id") long stream_id, @Bind("limit") int limit);
+
+  @SqlUpdate("insert into data_point_double(id, stream_id, timestamp, data) values (:id, :stream_id, :timestamp, :data)")
+  void insertDataPoint(@Bind("id") long id, @Bind("stream_id") long stream_id, @Bind("timestamp") long timestamp, @Bind("data") double data);
+
+
 
 }
