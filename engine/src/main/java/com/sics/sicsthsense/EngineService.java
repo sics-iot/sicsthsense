@@ -21,6 +21,17 @@ import com.yammer.dropwizard.auth.oauth.*;
 import com.yammer.dropwizard.views.ViewBundle;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import akka.actor.Props;
+import scala.concurrent.duration.Duration;
+import java.util.concurrent.TimeUnit;
+import akka.actor.UntypedActor;
+import akka.actor.Cancellable;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+
 import com.sics.sicsthsense.resources.*;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.core.*;
@@ -29,6 +40,7 @@ import com.sics.sicsthsense.auth.openid.*;
 import com.sics.sicsthsense.model.security.*;
 
 public class EngineService extends Service<EngineConfiguration> {
+	private final Logger logger = LoggerFactory.getLogger(EngineService.class);
 
 	public static void main(String[] args) throws Exception {
 		new EngineService().run(args);
@@ -41,6 +53,23 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
     bootstrap.addBundle(new ViewBundle());
+	}
+
+	public void startPolling() {
+		logger.info("Starting polling...");
+		ActorSystem system = ActorSystem.create("SicsthAkkaSystem");
+
+		ActorRef pollActor = system.actorOf(Props.create(Poller.class,"http://test.com"),"test");
+		system.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(5000, TimeUnit.MILLISECONDS),
+		  pollActor, "tick", system.dispatcher(), null);
+
+		ActorRef pollActor2 = system.actorOf(Props.create(Poller.class,"http://example.com"),"example");
+		system.scheduler().schedule(
+				Duration.create(2500, TimeUnit.MILLISECONDS),
+				Duration.create(5000, TimeUnit.MILLISECONDS),
+		  pollActor2, "tick", system.dispatcher(), null);
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
@@ -75,6 +104,8 @@ public class EngineService extends Service<EngineConfiguration> {
 
     // Session handler to enable automatic session handling 
     environment.setSessionHandler(new SessionHandler());
+
+		startPolling();
 	}
 
 }

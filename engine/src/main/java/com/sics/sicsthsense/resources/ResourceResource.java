@@ -70,6 +70,19 @@ public class ResourceResource {
 		return resource;
 	}
 
+	// post resource definition 
+	@POST
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Timed
+	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
+		logger.info("Adding user/resource:"+resource.getLabel());
+		if (visitor.getId() != userId) {
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		insertResource(resource);
+	}
+
+	// Post data to the resource, and run data through its parsers
 	@POST
 	@Path("/{resourceId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
@@ -81,17 +94,6 @@ public class ResourceResource {
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-	}
-
-	@POST
-	@Consumes({MediaType.APPLICATION_JSON})
-	@Timed
-	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-		logger.info("Adding user/resource:"+resource.getLabel());
-		if (visitor.getId() != userId) {
-			throw new WebApplicationException(Status.FORBIDDEN);
-		}
-		insertResource(resource);
 	}
 	
 	void insertResource(Resource resource) {
