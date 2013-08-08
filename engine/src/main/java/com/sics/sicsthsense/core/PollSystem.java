@@ -15,15 +15,24 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
 import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.jdbi.StorageDAO;
  
 public class PollSystem {
+	private final Logger logger = LoggerFactory.getLogger(PollSystem.class);
+	private StorageDAO storage;
  // LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-	ActorSystem system;
+	private ActorSystem system;
 	public Map<String, ActorRef> actors;
+
+	public PollSystem(StorageDAO storage) {
+		this.storage = storage;
+	}
+
 	public void createPoller(String name, String url, long period, String auth) {
+		logger.info("Making poller"+name);
 		ActorRef actorRef = system.actorOf(Props.create(Poller.class,url),name);
 		system.scheduler().schedule(
-				Duration.create(2500, TimeUnit.MILLISECONDS),
+				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(period, TimeUnit.MILLISECONDS),
 		  actorRef, "tick", system.dispatcher(), null);
 		// test if already there?
@@ -32,7 +41,14 @@ public class PollSystem {
 	}
  
 	public void createPollers() {
+		logger.info("Starting polling...");
 		system = ActorSystem.create("SicsthAkkaSystem");
+
+		actors = new HashMap(1000);
+		// for each polled resource
+
+		createPoller("test","http://test.com",5000,null);
+		createPoller("example","http://example.com",20000,null);
 
 	}
 }

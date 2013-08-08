@@ -15,7 +15,7 @@ public class Poller extends UntypedActor {
 	@Override
   public void onReceive(Object message) throws Exception {
     if (message instanceof String) {
-      log.info("Received String message: to probe: {}\n\n", url);
+      log.info("Received String message: to probe: {}", url);
       //getSender().tell(message, getSelf());
     } else
       unhandled(message);

@@ -41,6 +41,7 @@ import com.sics.sicsthsense.model.security.*;
 
 public class EngineService extends Service<EngineConfiguration> {
 	private final Logger logger = LoggerFactory.getLogger(EngineService.class);
+	private PollSystem pollSystem;
 
 	public static void main(String[] args) throws Exception {
 		new EngineService().run(args);
@@ -55,22 +56,6 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new ViewBundle());
 	}
 
-	public void startPolling() {
-		logger.info("Starting polling...");
-		ActorSystem system = ActorSystem.create("SicsthAkkaSystem");
-
-		ActorRef pollActor = system.actorOf(Props.create(Poller.class,"http://test.com"),"test");
-		system.scheduler().schedule(
-				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(5000, TimeUnit.MILLISECONDS),
-		  pollActor, "tick", system.dispatcher(), null);
-
-		ActorRef pollActor2 = system.actorOf(Props.create(Poller.class,"http://example.com"),"example");
-		system.scheduler().schedule(
-				Duration.create(2500, TimeUnit.MILLISECONDS),
-				Duration.create(5000, TimeUnit.MILLISECONDS),
-		  pollActor2, "tick", system.dispatcher(), null);
-	}
 
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
@@ -105,7 +90,9 @@ public class EngineService extends Service<EngineConfiguration> {
     // Session handler to enable automatic session handling 
     environment.setSessionHandler(new SessionHandler());
 
-		startPolling();
+
+		pollSystem = new PollSystem(storage);
+		pollSystem.createPollers();
 	}
 
 }
