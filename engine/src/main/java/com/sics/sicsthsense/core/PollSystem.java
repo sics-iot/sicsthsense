@@ -1,5 +1,6 @@
 package com.sics.sicsthsense.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import org.slf4j.Logger;
@@ -28,9 +29,10 @@ public class PollSystem {
 		this.storage = storage;
 	}
 
-	public void createPoller(String name, String url, long period, String auth) {
-		logger.info("Making poller"+name);
-		ActorRef actorRef = system.actorOf(Props.create(Poller.class,url),name);
+	public void createPoller(long resourceId, String name, String url, long period, String auth) {
+		logger.info("Making poller: "+name+" on: "+url);
+		ActorRef actorRef = system.actorOf(Props.create( Poller.class,storage,resourceId,url), name);
+		// schedule the actor to recieve a tick every period seconds
 		system.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(period, TimeUnit.MILLISECONDS),
@@ -45,10 +47,12 @@ public class PollSystem {
 		system = ActorSystem.create("SicsthAkkaSystem");
 
 		actors = new HashMap(1000);
-		// for each polled resource
+		List<Resource> toPoll = storage.findPolledResources();
 
-		createPoller("test","http://test.com",5000,null);
-		createPoller("example","http://example.com",20000,null);
+		// for each polled resource
+		for (Resource resource: toPoll) {
+			createPoller(resource.getId(), resource.getLabel(),resource.getPolling_url(),resource.getPolling_period(),null);
+		}
 
 	}
 }

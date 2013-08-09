@@ -45,6 +45,9 @@ public interface StorageDAO {
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
 
+  @SqlQuery("select * from resources where polling_period>0")
+	@Mapper(ResourceMapper.class)
+  List<Resource> findPolledResources();
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version, :last_posted)")
   void insertResource(
@@ -64,7 +67,7 @@ public interface StorageDAO {
 	// Streams
   @SqlQuery("select * from streams where resource_id = :resourceid")
 	@Mapper(StreamMapper.class)
-  List<Stream> findStreamsByResourceId(@Bind("resourceid") long resourceid);
+  List<Stream> findStreamsByResourceId(@Bind("resourceId") long resourceId);
 
   @SqlQuery("select * from streams where id = :id limit 1")
 	@Mapper(StreamMapper.class)
@@ -74,6 +77,10 @@ public interface StorageDAO {
   @SqlQuery("select * from parsers where id = :id limit 1")
 	@Mapper(ParserMapper.class)
   Parser findParserById(@Bind("id") long id);
+
+  @SqlQuery("select * from parsers where resource_id = :resourceId")
+	@Mapper(ParserMapper.class)
+  List<Parser> findParsersByResourceId(@Bind("resourceId") long resourceId);
 
 	// DataPoints
   @SqlQuery("select * from data_point_double where stream_id = :stream_id limit 10")

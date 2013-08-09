@@ -18,14 +18,14 @@ public class ResourceMapper implements ResultSetMapper<Resource> {
 				r.getString("label"),
 				r.getInt("version"),
 				r.getLong("owner_id"),
-				r.getString("polling_period"),
-				r.getString("last_polled"),
+				r.getLong("parent_id"),
 				r.getString("polling_url"),
 				r.getString("polling_authentication_key"),
-				r.getString("description"),
-				r.getLong("parent_id"),
+				r.getLong("polling_period"),
 				r.getString("secret_key"),
-				r.getString("last_posted")
+				r.getString("description"),
+				r.getLong("last_polled"),
+				r.getLong("last_posted")
 				);
 	}
 }

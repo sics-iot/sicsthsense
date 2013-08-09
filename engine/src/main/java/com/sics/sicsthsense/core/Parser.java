@@ -11,23 +11,29 @@ public class Parser {
 	private int time_group;
 	private int number_of_points;
 
-    public Parser() {}
-    public Parser(long id) {
-			this();
-      this.id			= id;
-    }
-    public Parser(long id,
-				long resource_id,
-				long stream_id,
-				String input_parser,
-				String input_type,
-				String timeformat,
-				int data_group,
-				int time_group,
-				int number_of_points
-			) {
-			this();
-		}
+	public Parser() {}
+	public Parser(long id) {
+		this();
+		this.id			= id;
+	}
+	public Parser(long id,
+			long resource_id,
+			long stream_id,
+			String input_parser,
+			String input_type,
+			String timeformat,
+			int data_group,
+			int time_group,
+			int number_of_points
+		) {
+		this();
+	}
+
+	// apply this parser to the supplied data
+	public void apply(String data) {
+
+	}
+	
 
 	public long getId()								{ return id; }
 	public long getResource_id()			{ return resource_id; }
