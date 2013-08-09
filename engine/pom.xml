@@ -102,7 +102,17 @@
 			<artifactId>akka-actor_2.11.0-M4</artifactId>
 			<version>2.2.0</version>
 		</dependency>
-									
+<dependency>
+	<groupId>org.codehaus.jackson</groupId>
+	<artifactId>jackson-core-asl</artifactId>
+	<version>1.9.13</version>
+</dependency>
+<dependency>
+	<groupId>org.codehaus.jackson</groupId>
+	<artifactId>jackson-mapper-asl</artifactId>
+	<version>1.5.0</version>
+</dependency>
+						  
 									
   </dependencies>
 </project>

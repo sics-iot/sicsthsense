@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import javax.net.ssl.HttpsURLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -17,7 +19,8 @@ import com.sics.sicsthsense.core.Parser;
 import com.sics.sicsthsense.jdbi.StorageDAO;
  
 public class Poller extends UntypedActor {
-  LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+  //LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+	private final Logger logger = LoggerFactory.getLogger(Poller.class);
 	public long resourceId;
 	public String url;
 	private StorageDAO storage;
@@ -29,21 +32,30 @@ public class Poller extends UntypedActor {
 		this.resourceId=resourceId;
 		this.url=url;
 		this.storage = storage;
+		logger.info("Making a poller for resource "+resourceId+" on url "+url);
 		urlobj = new URL(url);
 		parsers = storage.findParsersByResourceId(resourceId);
+		for (Parser parser: parsers) {
+			parser.setStorage(storage);
+		}
 	}
 
 	public void applyParsers(String data) {
-
+		logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
-			parser.apply(data);
+			logger.info("a parser "+parser.getInput_parser());
+			try {
+				parser.apply(data);
+			} catch (Exception e) {
+				logger.error("Parsing failed!"+e);
+			}
 		}
 	}
  
 	@Override
   public void onReceive(Object message) throws Exception {
     if (message instanceof String) {
-      log.info("Received String message: to probe: {}", url);
+      logger.info("Received String message: to probe: {}", url);
       //getSender().tell(message, getSelf());
 
 			HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();
@@ -60,7 +72,8 @@ public class Poller extends UntypedActor {
 			while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 			in.close();
 	 
-			System.out.println(response.toString());
+			//System.out.println(response.toString());
+			applyParsers(response.toString());
     } else
       unhandled(message);
   }
