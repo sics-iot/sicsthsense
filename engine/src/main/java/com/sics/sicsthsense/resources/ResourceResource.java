@@ -32,9 +32,11 @@ public class ResourceResource {
 	private final StorageDAO storage;
 	private final AtomicLong counter;
 	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
+	private PollSystem pollSystem;
 
-	public ResourceResource(StorageDAO storage) {
+	public ResourceResource(StorageDAO storage, PollSystem pollSystem) {
 		this.storage = storage;
+		this.pollSystem = pollSystem;
 		this.counter = new AtomicLong();
 	}
 
@@ -98,16 +100,16 @@ public class ResourceResource {
 	
 	void insertResource(Resource resource) {
 		storage.insertResource( 
-			resource.getOwner_id(), 
 			resource.getLabel(),
-			resource.getPolling_period(), 
-			resource.getLast_polled(), 
+			resource.getVersion(), 
+			resource.getOwner_id(), 
+			resource.getParent_id(), 
 			resource.getPolling_url(), 
 			resource.getPolling_authentication_key(), 
-			resource.getDescription(), 
-			resource.getParent_id(), 
+			resource.getPolling_period(), 
 			resource.getSecret_key(), 
-			resource.getVersion(), 
+			resource.getDescription(), 
+			resource.getLast_polled(), 
 			resource.getLast_posted() 
 	);}
 }

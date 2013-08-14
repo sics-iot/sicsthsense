@@ -51,17 +51,17 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, last_polled, polling_url, polling_authentication_key, description, parent_id, secret_key, version, last_posted ) values (:owner_id, :label, :polling_period, :last_polled, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version, :last_posted)")
   void insertResource(
-		@Bind("owner_id") long owner_id, 
 		@Bind("label") String label,
-		@Bind("polling_period") String polling_period,
-		@Bind("last_polled") String last_polled,
+		@Bind("version") String version,
+		@Bind("owner_id")  long owner_id, 
+		@Bind("parent_id") long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
+		@Bind("polling_period") long polling_period,
+		@Bind("secret_key")  String secret_key,
 		@Bind("description") String description,
-		@Bind("parent_id") long parent_id,
-		@Bind("secret_key") String secret_key,
-		@Bind("version") String version,
-		@Bind("last_posted") String last_posted 
+		@Bind("last_polled") long last_polled,
+		@Bind("last_posted") long last_posted 
 	);
 
 	// Streams

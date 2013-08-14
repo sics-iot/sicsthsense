@@ -65,6 +65,9 @@ public class EngineService extends Service<EngineConfiguration> {
 		final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
 		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 
+		pollSystem = new PollSystem(storage);
+		pollSystem.createPollers();
+
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
@@ -75,24 +78,17 @@ public class EngineService extends Service<EngineConfiguration> {
     OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
     environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 
-
     // Configure environment
     environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
-
     environment.addProvider(new ViewMessageBodyWriter());
-
 		environment.addResource(new UserResource(storage));
-		environment.addResource(new ResourceResource(storage));
+		environment.addResource(new ResourceResource(storage, pollSystem));
 		environment.addResource(new StreamResource(storage));
 		environment.addResource(new ParserResource(storage));
 		environment.addResource(new PublicOpenIDResource(storage));
 
     // Session handler to enable automatic session handling 
     environment.setSessionHandler(new SessionHandler());
-
-
-		pollSystem = new PollSystem(storage);
-		pollSystem.createPollers();
 	}
 
 }

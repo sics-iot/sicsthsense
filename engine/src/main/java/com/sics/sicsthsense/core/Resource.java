@@ -10,7 +10,7 @@ public class Resource {
 	@JsonProperty
   private String label;
 	@JsonProperty
-  private int version;
+  private String version;
 	@JsonProperty
 	private long owner_id;
 	@JsonProperty
@@ -35,7 +35,7 @@ public class Resource {
 	public Resource() {
 		this.id			= -1;
 		this.label	= "nolabel";
-		this.version= 1;
+		this.version= "1.0";
 		this.owner_id=-1;
 	}
 	public Resource(long id, String label) {
@@ -45,7 +45,7 @@ public class Resource {
 	}
 	public Resource(long id, 
 									String label,
-									int version,
+									String version,
 									long owner_id,
 									long parent_id,
 									String polling_url,
@@ -83,7 +83,7 @@ public class Resource {
 
 
 	public long   getId()						{ return id; }
-public String getVersion()			{ return "1"; }
+public String getVersion()			{ return "1.0"; }
 //public int getVersion()					{ return version; }
 	public String getLabel()				{ return label; }
 	public long   getOwner_id()			{ return owner_id; } 
@@ -98,7 +98,7 @@ public String getVersion()			{ return "1"; }
 
 	public void setId(long id)											{ this.id = id; }
 	public void setLabel(String label)							{ this.label = label; }
-	public void setVersion(int version)							{ this.version = version; }
+	public void setVersion(String version)					{ this.version = version; }
 	public void setOwner_id(long p)									{ this.owner_id = owner_id; } 
 	public void setParent_id(long parent_id)				{ this.parent_id = parent_id; }
 	public void setPolling_url(String polling_url)	{ this.polling_url = polling_url; }
