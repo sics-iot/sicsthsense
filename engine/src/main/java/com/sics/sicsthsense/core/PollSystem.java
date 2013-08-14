@@ -28,19 +28,6 @@ public class PollSystem {
 	public PollSystem(StorageDAO storage) {
 		this.storage = storage;
 	}
-
-	public void createPoller(long resourceId, String name, String url, long period, String auth) {
-		logger.info("Making poller: "+name+" on: "+url);
-		ActorRef actorRef = system.actorOf(Props.create( Poller.class,storage,resourceId,url), name);
-		// schedule the actor to recieve a tick every period seconds
-		system.scheduler().schedule(
-				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(period, TimeUnit.MILLISECONDS),
-		  actorRef, "probe", system.dispatcher(), null);
-		// test if already there?
-
-		actors.put(name, actorRef);
-	}
  
 	public void createPollers() {
 		logger.info("Starting polling...");
@@ -55,10 +42,25 @@ public class PollSystem {
 		}
 	}
 
+	public void createPoller(long resourceId, String name, String url, long period, String auth) {
+		logger.info("Making poller: "+name+" on: "+url);
+		ActorRef actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
+		// schedule the actor to recieve a tick every period seconds
+		system.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(period, TimeUnit.MILLISECONDS),
+		  actorRef, "probe", system.dispatcher(), null);
+		// test if already there?
+
+		actors.put(name, actorRef);
+	}
+
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
 		Resource resource = storage.findResourceById(resourceId);
+		if (resource==null) {logger.error("No resource with ID: "+resource.getId()); return;}
 		ActorRef actorRef = actors.get(resource.getLabel());
+		if (actorRef==null) {logger.error("Could not find Actor for Resource: "+resource.getLabel()); return;}
 		system.scheduler().scheduleOnce(
 			Duration.create(0, TimeUnit.MILLISECONDS),
 		  actorRef, "rebuild", system.dispatcher(), null);

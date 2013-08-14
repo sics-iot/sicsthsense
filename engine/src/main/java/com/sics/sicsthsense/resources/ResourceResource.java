@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -67,12 +68,12 @@ public class ResourceResource {
 		}
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
-			throw new WebApplicationException(Status.FORBIDDEN);
+//			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		return resource;
 	}
 
-	// post resource definition 
+	// post new resource definition 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
@@ -82,6 +83,19 @@ public class ResourceResource {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		insertResource(resource);
+	}
+
+	// put updated resource definition 
+	@PUT
+	@Path("/{resourceId}")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Timed
+	public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
+		logger.info("Updating user/resource:"+resource.getLabel());
+		if (visitor.getId() != userId) { // only owners
+//			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		updateResource(resource);
 	}
 
 	// Post data to the resource, and run data through its parsers
@@ -98,6 +112,7 @@ public class ResourceResource {
 		}
 	}
 	
+	// add a resource 
 	void insertResource(Resource resource) {
 		storage.insertResource( 
 			resource.getLabel(),
@@ -111,5 +126,26 @@ public class ResourceResource {
 			resource.getDescription(), 
 			resource.getLast_polled(), 
 			resource.getLast_posted() 
-	);}
+		);
+	}
+
+	// add a resource 
+	void updateResource(Resource resource) {
+		storage.updateResource( 
+			resource.getId(),
+			resource.getLabel(),
+			resource.getVersion(), 
+			resource.getOwner_id(), 
+			resource.getParent_id(), 
+			resource.getPolling_url(), 
+			resource.getPolling_authentication_key(), 
+			resource.getPolling_period(), 
+			resource.getSecret_key(), 
+			resource.getDescription(), 
+			resource.getLast_polled(), 
+			resource.getLast_posted() 
+		);
+		// remake pollers with updated Resource attribtues
+		pollSystem.rebuildResourcePoller(resource.getId());
+	}
 }

@@ -16,7 +16,7 @@ public class ResourceMapper implements ResultSetMapper<Resource> {
 		return new Resource(
 				r.getInt("id"), 
 				r.getString("label"),
-				r.getInt("version"),
+				r.getString("version"),
 				r.getLong("owner_id"),
 				r.getLong("parent_id"),
 				r.getString("polling_url"),

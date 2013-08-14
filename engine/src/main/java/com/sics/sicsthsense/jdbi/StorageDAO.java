@@ -64,6 +64,22 @@ public interface StorageDAO {
 		@Bind("last_posted") long last_posted 
 	);
 
+  @SqlUpdate("update resources set owner_id=':owner_id', label=':label', polling_period=':polling_period', last_polled=':last_polled', polling_url=':polling_url', polling_authentication_key=':polling_authentication_key', description=':description', parent_id=':parent_id', secret_key=':secret_key', version=':version', last_posted=':last_posted' where id = ':id'")
+  void updateResource(
+		@Bind("id") long id,
+		@Bind("label") String label,
+		@Bind("version") String version,
+		@Bind("owner_id")  long owner_id, 
+		@Bind("parent_id") long parent_id,
+		@Bind("polling_url") String polling_url,
+		@Bind("polling_authentication_key") String polling_authentication_key,
+		@Bind("polling_period") long polling_period,
+		@Bind("secret_key")  String secret_key,
+		@Bind("description") String description,
+		@Bind("last_polled") long last_polled,
+		@Bind("last_posted") long last_posted 
+	);
+
 	// Streams
   @SqlQuery("select * from streams where resource_id = :resourceid")
 	@Mapper(StreamMapper.class)
