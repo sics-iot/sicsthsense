@@ -28,7 +28,7 @@ public class Parser {
 	private int data_group;
 	private int time_group;
 	private int number_of_points;
-	//ObjectMapper mapper;
+	ObjectMapper mapper;
 	StorageDAO storage;
   Pattern regexPattern;
 	// Matching configuration
@@ -63,24 +63,36 @@ public class Parser {
 			int time_group,
 			int number_of_points
 		) {
-		this();
+			this(id);
+			this.resource_id  = resource_id;
+			this.stream_id    = stream_id;
+			this.input_parser = input_parser;
+			this.input_type   = input_type;
+			this.timeformat   = timeformat;
+			this.data_group   = data_group;
+			this.time_group   = time_group;
+			this.number_of_points = number_of_points;
 	}
 	public void setStorage(StorageDAO storage) {
 		this.storage=storage;
 	}
+	public void setMapper(ObjectMapper mapper) {
+		this.mapper=mapper;
+	}
 
 	// apply this parser to the supplied data
 	public void apply(String data) throws Exception {
-		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
 		Long currentTime = System.currentTimeMillis();
-		logger.info("Applying Parser to data: "+data);
-		if ("application/json".equalsIgnoreCase(input_type)
+		//logger.info("Applying Parser to data: "+data);
+		if ("application/json".equalsIgnoreCase(input_type) 
 		//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
+			//logger.info("Applying Parser to JSON data: "+data);
 			//mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);                 
 			JsonNode rootNode = mapper.readTree(data);
 			parseJsonResponse(rootNode, currentTime);
 		} else {
+			//logger.info("Applying Parser to text data: "+data);
 			parseTextResponse(data, currentTime);
 		}
 	}
@@ -220,4 +232,9 @@ public class Parser {
 	public void setData_group(int data_group)					{ this.data_group = data_group; }
 	public void setTime_group(int time_group)					{ this.time_group = time_group; }
 	public void setNumber_of_points(int number_of_points)		{ this.number_of_points = number_of_points; }
+
+	public String toString() {
+		return "a parser: "+input_parser;
+	}
+
 }

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.sics.sicsthsense.core.Parser;
 import com.sics.sicsthsense.jdbi.StorageDAO;
@@ -35,19 +36,22 @@ public class Poller extends UntypedActor {
 		logger.info("Making a poller for resource "+resourceId+" on url "+url);
 		urlobj = new URL(url);
 		parsers = storage.findParsersByResourceId(resourceId);
+		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
 		for (Parser parser: parsers) {
+			//logger.info(parser.toString());
 			parser.setStorage(storage);
+			parser.setMapper(mapper);
 		}
 	}
 
 	public void applyParsers(String data) {
 		logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
-			logger.info("a parser "+parser.getInput_parser());
+			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
 				parser.apply(data);
 			} catch (Exception e) {
-				logger.error("Parsing failed!"+e);
+				logger.error("Parsing "+data+" failed!"+e);
 			}
 		}
 	}
