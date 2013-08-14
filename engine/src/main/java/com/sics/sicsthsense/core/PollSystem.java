@@ -36,7 +36,7 @@ public class PollSystem {
 		system.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(period, TimeUnit.MILLISECONDS),
-		  actorRef, "tick", system.dispatcher(), null);
+		  actorRef, "probe", system.dispatcher(), null);
 		// test if already there?
 
 		actors.put(name, actorRef);
@@ -53,6 +53,15 @@ public class PollSystem {
 		for (Resource resource: toPoll) {
 			createPoller(resource.getId(), resource.getLabel(),resource.getPolling_url(),resource.getPolling_period(),null);
 		}
-
 	}
+
+	// tell specified poller to rebuild from the database
+	public void rebuildResourcePoller(long resourceId) {
+		Resource resource = storage.findResourceById(resourceId);
+		ActorRef actorRef = actors.get(resource.getLabel());
+		system.scheduler().scheduleOnce(
+			Duration.create(0, TimeUnit.MILLISECONDS),
+		  actorRef, "rebuild", system.dispatcher(), null);
+	}
+
 }

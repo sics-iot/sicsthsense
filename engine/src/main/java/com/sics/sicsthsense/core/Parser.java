@@ -80,15 +80,15 @@ public class Parser {
 		this.mapper=mapper;
 	}
 
-	// apply this parser to the supplied data
+	// Apply this parser to the supplied data
 	public void apply(String data) throws Exception {
+		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
+		if (mapper==null)	 { logger.error("Mapper has not been set!"); return; }
 		Long currentTime = System.currentTimeMillis();
-		//logger.info("Applying Parser to data: "+data);
 		if ("application/json".equalsIgnoreCase(input_type) 
-		//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
+			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
 			//logger.info("Applying Parser to JSON data: "+data);
-			//mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);                 
 			JsonNode rootNode = mapper.readTree(data);
 			parseJsonResponse(rootNode, currentTime);
 		} else {
