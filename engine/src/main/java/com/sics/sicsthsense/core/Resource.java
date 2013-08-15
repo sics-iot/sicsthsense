@@ -99,7 +99,7 @@ public String getVersion()			{ return "1.0"; }
 	public void setId(long id)											{ this.id = id; }
 	public void setLabel(String label)							{ this.label = label; }
 	public void setVersion(String version)					{ this.version = version; }
-	public void setOwner_id(long p)									{ this.owner_id = owner_id; } 
+	public void setOwner_id(long owner_id)					{ this.owner_id = owner_id; } 
 	public void setParent_id(long parent_id)				{ this.parent_id = parent_id; }
 	public void setPolling_url(String polling_url)	{ this.polling_url = polling_url; }
 	public void setPolling_authentication_key(String polling_authentication_key) { this.polling_authentication_key = polling_authentication_key; }
@@ -111,6 +111,6 @@ public String getVersion()			{ return "1.0"; }
 
 
 	public String toString() {
-		return "Aresource";
+		return "Resource: "+id+","+label+","+polling_url;
 	}
 }

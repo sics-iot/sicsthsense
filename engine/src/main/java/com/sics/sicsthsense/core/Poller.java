@@ -80,18 +80,23 @@ public class Poller extends UntypedActor {
 				con.setRequestMethod("GET"); // optional default is GET
 				con.setRequestProperty("User-Agent", "SICSthSense"); //add request header
 		 
-				int responseCode = con.getResponseCode();
-				System.out.print("Sending 'GET' request to URL : " + url);
-				System.out.println(" Response Code : " + responseCode);
-		 
-				BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
-				StringBuffer response = new StringBuffer();
-		 
-				while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
-				in.close();
-		 
-				//System.out.println(response.toString());
-				applyParsers(response.toString());
+				try {
+					int responseCode = con.getResponseCode();
+					System.out.print("Sending 'GET' request to URL : " + url);
+					System.out.println(" Response Code : " + responseCode);
+			 
+					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
+					StringBuffer response = new StringBuffer();
+
+					while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
+					in.close();
+			 
+					//System.out.println(response.toString());
+					applyParsers(response.toString());
+				} catch (Exception e) {
+					logger.error("Network problem: "+e);
+				}
+
 			}
     } else
       unhandled(message);

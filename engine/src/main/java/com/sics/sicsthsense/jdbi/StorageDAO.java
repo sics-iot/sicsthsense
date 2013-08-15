@@ -64,13 +64,14 @@ public interface StorageDAO {
 		@Bind("last_posted") long last_posted 
 	);
 
-  @SqlUpdate("update resources set owner_id=':owner_id', label=':label', polling_period=':polling_period', last_polled=':last_polled', polling_url=':polling_url', polling_authentication_key=':polling_authentication_key', description=':description', parent_id=':parent_id', secret_key=':secret_key', version=':version', last_posted=':last_posted' where id = ':id'")
+  //@SqlUpdate("update resources set owner_id=':owner_id', label=':label', polling_period=':polling_period', last_polled=':last_polled', polling_url=':polling_url', polling_authentication_key=':polling_authentication_key', description=':description', parent_id=':parent_id', secret_key=':secret_key', version=':version', last_posted=':last_posted' where id  ':id'")
+  @SqlUpdate("update resources set label = :label, polling_period=:polling_period, polling_url=:polling_url, polling_authentication_key=:polling_authentication_key where id = :id")
   void updateResource(
 		@Bind("id") long id,
 		@Bind("label") String label,
 		@Bind("version") String version,
 		@Bind("owner_id")  long owner_id, 
-		@Bind("parent_id") long parent_id,
+		@Bind("parent_id") Long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
 		@Bind("polling_period") long polling_period,
@@ -79,6 +80,9 @@ public interface StorageDAO {
 		@Bind("last_polled") long last_polled,
 		@Bind("last_posted") long last_posted 
 	);
+
+  @SqlUpdate("delete from resources where id = :id")
+  void deleteResource(@Bind("id") long id);
 
 	// Streams
   @SqlQuery("select * from streams where resource_id = :resourceid")

@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -90,12 +91,24 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-		logger.info("Updating user/resource:"+resource.getLabel());
+	public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+		logger.info("Updating resourceId:"+resourceId);
 		if (visitor.getId() != userId) { // only owners
 //			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		updateResource(resource);
+		updateResource(resourceId, resource);
+	}
+	// put updated resource definition 
+	@DELETE
+	@Path("/{resourceId}")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Timed
+	public void deleteResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+		logger.warn("Deleting resourceId:"+resourceId);
+		if (visitor.getId() != userId) { // only owners
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		storage.deleteResource(resourceId);
 	}
 
 	// Post data to the resource, and run data through its parsers
@@ -130,13 +143,18 @@ public class ResourceResource {
 	}
 
 	// add a resource 
-	void updateResource(Resource resource) {
+	void updateResource(long resourceId, Resource resource) {
+		logger.info("Updating resourceID "+resourceId+" to: "+resource);
+		//long parent_id = resource.getParent_id();
+		//if (parent_id==0) {parent_id=null;}
 		storage.updateResource( 
-			resource.getId(),
+			resourceId, // the reosurce ID from the PUT'd URL
 			resource.getLabel(),
 			resource.getVersion(), 
 			resource.getOwner_id(), 
-			resource.getParent_id(), 
+			//resource.getParent_id(), 
+			//parent_id,
+			null,
 			resource.getPolling_url(), 
 			resource.getPolling_authentication_key(), 
 			resource.getPolling_period(), 
@@ -146,6 +164,6 @@ public class ResourceResource {
 			resource.getLast_posted() 
 		);
 		// remake pollers with updated Resource attribtues
-		pollSystem.rebuildResourcePoller(resource.getId());
+		pollSystem.rebuildResourcePoller(resourceId);
 	}
 }

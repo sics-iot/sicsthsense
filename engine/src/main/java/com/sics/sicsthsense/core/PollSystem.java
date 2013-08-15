@@ -23,7 +23,7 @@ public class PollSystem {
 	private StorageDAO storage;
  // LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	private ActorSystem system;
-	public Map<String, ActorRef> actors;
+	public Map<Long, ActorRef> actors;
 
 	public PollSystem(StorageDAO storage) {
 		this.storage = storage;
@@ -33,7 +33,7 @@ public class PollSystem {
 		logger.info("Starting polling...");
 		system = ActorSystem.create("SicsthAkkaSystem");
 
-		actors = new HashMap(1000);
+		actors = new HashMap<Long, ActorRef>(1000);
 		List<Resource> toPoll = storage.findPolledResources();
 
 		// for each polled resource
@@ -50,17 +50,17 @@ public class PollSystem {
 				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(period, TimeUnit.MILLISECONDS),
 		  actorRef, "probe", system.dispatcher(), null);
-		// test if already there?
+		// test if poller is already there?
 
-		actors.put(name, actorRef);
+		actors.put(resourceId, actorRef);
 	}
 
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
-		Resource resource = storage.findResourceById(resourceId);
-		if (resource==null) {logger.error("No resource with ID: "+resource.getId()); return;}
-		ActorRef actorRef = actors.get(resource.getLabel());
-		if (actorRef==null) {logger.error("Could not find Actor for Resource: "+resource.getLabel()); return;}
+		//Resource resource = storage.findResourceById(resourceId);
+		//if (resource==null) {logger.error("No resource with ID: "+resource.getId()); return;}
+		ActorRef actorRef = actors.get(resourceId);
+		if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
 		system.scheduler().scheduleOnce(
 			Duration.create(0, TimeUnit.MILLISECONDS),
 		  actorRef, "rebuild", system.dispatcher(), null);

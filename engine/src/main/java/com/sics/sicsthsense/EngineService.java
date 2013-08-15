@@ -20,6 +20,7 @@ import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.auth.oauth.*;
 import com.yammer.dropwizard.views.ViewBundle;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
+import com.yammer.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
     bootstrap.addBundle(new ViewBundle());
+		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
 
 
