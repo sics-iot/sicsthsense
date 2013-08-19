@@ -102,6 +102,33 @@ public interface StorageDAO {
 	@Mapper(ParserMapper.class)
   List<Parser> findParsersByResourceId(@Bind("resourceId") long resourceId);
 
+  @SqlUpdate("delete from parsers where id = :id")
+  void deleteParser(@Bind("id") long id);
+
+  @SqlUpdate("insert into parsers( resource_id, stream_id, input_parser, input_type, timeformat, data_group, time_group, number_of_points) values ( :resource_id, :stream_id, :input_parser, :input_type, :timeformat, :data_group, :time_group, :number_of_points)")
+  void insertParser(
+		@Bind("resource_id") long resource_id, 
+		@Bind("stream_id")  long stream_id, 
+		@Bind("input_parser") String input_parser,
+		@Bind("intpu_type") String input_type,
+		@Bind("timeformat") String timeformat,
+		@Bind("data_group")  int data_group,
+		@Bind("time_group")  int time_group,
+		@Bind("number_of_points")  int number_of_points 
+	);
+
+  @SqlUpdate("update parser set label = :label, polling_period=:polling_period, polling_url=:polling_url, polling_authentication_key=:polling_authentication_key where id = :id")
+  void updateParser(
+		@Bind("id") long id,
+		@Bind("input_parser") String input_parser,
+		@Bind("intput_type") String input_type,
+		@Bind("timeformat") String timeformat,
+		@Bind("data_group")  int data_group,
+		@Bind("time_group")  int time_group,
+		@Bind("number_of_points")  int number_of_points 
+	);
+
+
 	// DataPoints
   @SqlQuery("select * from data_point_double where stream_id = :stream_id limit 10")
 	@Mapper(PointMapper.class)
@@ -113,7 +140,6 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into data_point_double(id, stream_id, timestamp, data) values (:id, :stream_id, :timestamp, :data)")
   void insertDataPoint(@Bind("id") long id, @Bind("stream_id") long stream_id, @Bind("timestamp") long timestamp, @Bind("data") double data);
-
 
 
 }

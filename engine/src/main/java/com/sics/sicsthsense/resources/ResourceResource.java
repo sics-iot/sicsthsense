@@ -81,6 +81,7 @@ public class ResourceResource {
 	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		if (visitor.getId() != userId) {
+			logger.error("Not allowed to add resource");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		insertResource(resource);
@@ -94,18 +95,24 @@ public class ResourceResource {
 	public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
 		logger.info("Updating resourceId:"+resourceId);
 		if (visitor.getId() != userId) { // only owners
-//			throw new WebApplicationException(Status.FORBIDDEN);
+			logger.error("Not allowed to modify resource: "+resourceId);
+			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		updateResource(resourceId, resource);
 	}
-	// put updated resource definition 
+
 	@DELETE
 	@Path("/{resourceId}")
-	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void deleteResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+	public void deleteResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		logger.warn("Deleting resourceId:"+resourceId);
+		Resource resource = storage.findResourceById(resourceId);
+		if (resource==null) {
+			logger.error("No resource to delete: "+resourceId);
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
 		if (visitor.getId() != userId) { // only owners
+			logger.error("Not allowed to delete resource: "+resourceId);
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		storage.deleteResource(resourceId);
