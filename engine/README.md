@@ -1,8 +1,28 @@
 SicsthSense Engine
 ===========
 
-A constrained HTTP server representing the core engine of the cloud server.
+The Engine is a Java implementation of a RESTful HTTP server representing the SicsthSense cloud presence.
 
-Based on DropWizard, a distritbution of Jetty, Jersey, Jackson, etc. and using MySQL as a data backend.
+It uses DropWizard, which is a distribution of popular Java frameworks (Jetty,Jersey, Jackson, JDBI, slf4j, etc.). Other external libraries used include: Atmosphere (for websockets). A MySQL server is required for the data storage.
+
+The build system is Maven, allowing automatic dependency management for all of the included 3rd party libraries.
+
+To build the engine from the /engine directory simply:
+
+$ mvn package
+
+This will create the server in a self-contained .jar file "/engine/target/engine-1.0-SNAPSHOT-shaded.jar"
+
+To run this server:
+
+$ ./runJar.sh
+or
+$ java -jar target/engine-1.0-SNAPSHOT.jar server 6sense.yml
+
+
+The github Wiki "https://github.com/sics-iot/sicsthsense/wiki" also contains a breakdown of the codebase
+
+There should now be an HTTP server running on port 8080. Visiting this with a web browser should confirm it. From here you may authenticate using OpenID or a username/password combination.
+
 
 
