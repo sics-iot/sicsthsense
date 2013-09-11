@@ -23,7 +23,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-/* Description:
+/* Description: Jersey Resource for SicsthSense Resources. Handles config of Resources
+ * contains the Parsers and Streams of the associated Resource. 
  * TODO:
  * */
 package com.sics.sicsthsense.resources;
@@ -57,14 +58,16 @@ import com.sics.sicsthsense.auth.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 
+// publicly reachable path of the resource
 @Path("/users/{userId}/resources")
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceResource {
 	private final StorageDAO storage;
 	private final AtomicLong counter;
-	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
 	private PollSystem pollSystem;
+	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
 
+	// constructor with the system's stoarge and poll system.
 	public ResourceResource(StorageDAO storage, PollSystem pollSystem) {
 		this.storage = storage;
 		this.pollSystem = pollSystem;

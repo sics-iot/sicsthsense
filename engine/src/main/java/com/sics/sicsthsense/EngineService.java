@@ -23,15 +23,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-/* Description:
+/* Description: The main source file that constructs the rest of the system.
+ * All Resources are made and connected here. The authorisation is also set here.
  * TODO:
  * */
 package com.sics.sicsthsense;
 
 import java.util.UUID;
 
-import org.skife.jdbi.v2.*; // For DBI
 import org.eclipse.jetty.server.session.SessionHandler;
+
+import org.skife.jdbi.v2.*; // For DBI
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
@@ -50,12 +54,9 @@ import com.yammer.dropwizard.views.ViewBundle;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import com.yammer.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import akka.actor.Props;
 import scala.concurrent.duration.Duration;
 import java.util.concurrent.TimeUnit;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.actor.Cancellable;
 import akka.actor.ActorRef;
@@ -79,14 +80,18 @@ public class EngineService extends Service<EngineConfiguration> {
 	@Override
 	public void initialize(Bootstrap<EngineConfiguration> bootstrap) {
 		bootstrap.setName("SicsthSense-Engine");
-    // Bundles
+    // Bundles give certain commonly used features
+		// Static files:
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
+		// jQuery
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
+		// help with templates
     bootstrap.addBundle(new ViewBundle());
+		// Give pretty error messages when database failures occur
 		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
 
-
+	// main method to perform all the heavy lifting
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
@@ -95,20 +100,22 @@ public class EngineService extends Service<EngineConfiguration> {
 		final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
 		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 
+		// Akka system for automatically polling external resources
 		pollSystem = new PollSystem(storage);
 		pollSystem.createPollers();
 
+		// Authentication subsystem
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
     // Configure authenticator
-		User publicUser = new User(-1, UUID.randomUUID());
-		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
+		User publicUser = new User(-1, UUID.randomUUID()); // default null user
+		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC); // only has PUBLIC role
     OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
     environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 
-    // Configure environment
+    // Configure environment and resources
     environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
     environment.addProvider(new ViewMessageBodyWriter());
 		environment.addResource(new UserResource(storage));
