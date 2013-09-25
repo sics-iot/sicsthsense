@@ -41,9 +41,9 @@ import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.config.FilterBuilder;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
-
 import com.yammer.dropwizard.auth.*;
 import com.yammer.dropwizard.auth.Authenticator;
 import com.yammer.dropwizard.auth.AuthenticationException;
@@ -54,6 +54,8 @@ import com.yammer.dropwizard.views.ViewBundle;
 import com.yammer.dropwizard.views.ViewMessageBodyWriter;
 import com.yammer.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 
+import org.atmosphere.cpr.AtmosphereServlet;
+
 import scala.concurrent.duration.Duration;
 import java.util.concurrent.TimeUnit;
 import akka.actor.Props;
@@ -61,6 +63,7 @@ import akka.actor.UntypedActor;
 import akka.actor.Cancellable;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+//import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import com.sics.sicsthsense.resources.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -68,6 +71,7 @@ import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.auth.*;
 import com.sics.sicsthsense.auth.openid.*;
 import com.sics.sicsthsense.model.security.*;
+import com.sics.sicsthsense.push.*;
 
 public class EngineService extends Service<EngineConfiguration> {
 	private final Logger logger = LoggerFactory.getLogger(EngineService.class);
@@ -103,20 +107,29 @@ public class EngineService extends Service<EngineConfiguration> {
 		// Akka system for automatically polling external resources
 		pollSystem = new PollSystem(storage);
 		pollSystem.createPollers();
-
 		// Authentication subsystem
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
-
     // Configure authenticator
 		User publicUser = new User(-1, UUID.randomUUID()); // default null user
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC); // only has PUBLIC role
     OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
     environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
+      
+		//environment.addFilter(new RootRequiredFileFilter(), "/*");
+//		FilterBuilder fconfig = environment.addFilter(CrossOriginFilter.class, "/chat");
+//		fconfig.setInitParam(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
+
+		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
+		atmosphereServlet.framework().addInitParameter(
+				"com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
+		atmosphereServlet.framework().addInitParameter(
+				"org.atmosphere.websocket.messageContentType", "application/json");
+		environment.addServlet(atmosphereServlet, "/chat/*");
 
     // Configure environment and resources
-    environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
+    //environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
     environment.addProvider(new ViewMessageBodyWriter());
 		environment.addResource(new UserResource(storage));
 		environment.addResource(new ResourceResource(storage, pollSystem));

@@ -38,3 +38,7 @@ database:
   # the maximum lifetime of an idle connection
   closeConnectionIfIdleFor: 1 minute
 
+http:
+  rootPath: /service/*  # Default is /*
+  connectorType: nonblocking
+
