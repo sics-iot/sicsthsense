@@ -32,9 +32,10 @@ import javax.ws.rs.Produces;
  * Atmosphere Javascript and Atmosphere Jersey extension.
  *
  * @author Jeanfrancois Arcand
+ * @author Liam McNamara (minor changes)
  */
-@Path("/pubsub/{topic}")
-public class JerseyPubSub {
+@Path("/users/1/resources/{topic}")
+public class AtmosEndpoint {
 
     private
     @PathParam("topic")
