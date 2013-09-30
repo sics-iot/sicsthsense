@@ -89,6 +89,8 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
 		// jQuery
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
+		// test
+    bootstrap.addBundle(new AssetsBundle("/assets/test", "/test"));
 		// help with templates
     bootstrap.addBundle(new ViewBundle());
 		// Give pretty error messages when database failures occur
@@ -121,15 +123,20 @@ public class EngineService extends Service<EngineConfiguration> {
 //		FilterBuilder fconfig = environment.addFilter(CrossOriginFilter.class, "/chat");
 //		fconfig.setInitParam(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
 
+//com.sics.sicsthsense.resources.atmosphere;
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter(
 				"com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter(
+				"org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
+		atmosphereServlet.framework().addInitParameter(
+				"org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
+		atmosphereServlet.framework().addInitParameter(
 				"org.atmosphere.websocket.messageContentType", "application/json");
-		environment.addServlet(atmosphereServlet, "/chat/*");
+		environment.addServlet(atmosphereServlet, "/ws/*");
 
     // Configure environment and resources
-    //environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
+//    environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
     environment.addProvider(new ViewMessageBodyWriter());
 		environment.addResource(new UserResource(storage));
 		environment.addResource(new ResourceResource(storage, pollSystem));
