@@ -123,7 +123,7 @@ public class EngineService extends Service<EngineConfiguration> {
 //		FilterBuilder fconfig = environment.addFilter(CrossOriginFilter.class, "/chat");
 //		fconfig.setInitParam(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
 
-//com.sics.sicsthsense.resources.atmosphere;
+		/*
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter(
 			"com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
@@ -133,10 +133,11 @@ public class EngineService extends Service<EngineConfiguration> {
 			"org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter(
 			"org.atmosphere.websocket.messageContentType", "application/json");
+		*/
 //		environment.addServlet(atmosphereServlet, "/ws/*");
 
 		// Configure environment and resources
-		environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
+//		environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
 		//environment.scanPackagesForResourcesAndProviders(Monitor.class);
 		environment.addProvider(new ViewMessageBodyWriter());
 		environment.addProvider(new Monitor());
