@@ -50,7 +50,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-@Path("/")
+@Path("/h")
 @Produces(MediaType.TEXT_HTML)
 public class PublicHomeResource {
 

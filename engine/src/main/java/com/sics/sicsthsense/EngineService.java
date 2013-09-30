@@ -84,15 +84,15 @@ public class EngineService extends Service<EngineConfiguration> {
 	@Override
 	public void initialize(Bootstrap<EngineConfiguration> bootstrap) {
 		bootstrap.setName("SicsthSense-Engine");
-    // Bundles give certain commonly used features
+		// Bundles give certain commonly used features
 		// Static files:
-    bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
+		bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
 		// jQuery
-    bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
-		// test
-    bootstrap.addBundle(new AssetsBundle("/assets/test", "/test"));
+		bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
+		// Atmosphere subdir 
+		bootstrap.addBundle(new AssetsBundle("/assets/atmos", "/atmos"));
 		// help with templates
-    bootstrap.addBundle(new ViewBundle());
+		bootstrap.addBundle(new ViewBundle());
 		// Give pretty error messages when database failures occur
 		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
@@ -113,12 +113,12 @@ public class EngineService extends Service<EngineConfiguration> {
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
-    // Configure authenticator
+		// Configure authenticator
 		User publicUser = new User(-1, UUID.randomUUID()); // default null user
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC); // only has PUBLIC role
-    OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
-    environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
-      
+		OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
+		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
+
 		//environment.addFilter(new RootRequiredFileFilter(), "/*");
 //		FilterBuilder fconfig = environment.addFilter(CrossOriginFilter.class, "/chat");
 //		fconfig.setInitParam(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
@@ -126,26 +126,28 @@ public class EngineService extends Service<EngineConfiguration> {
 //com.sics.sicsthsense.resources.atmosphere;
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter(
-				"com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
+			"com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter(
-				"org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
+			"org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
 		atmosphereServlet.framework().addInitParameter(
-				"org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
+			"org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter(
-				"org.atmosphere.websocket.messageContentType", "application/json");
-		environment.addServlet(atmosphereServlet, "/ws/*");
+			"org.atmosphere.websocket.messageContentType", "application/json");
+//		environment.addServlet(atmosphereServlet, "/ws/*");
 
-    // Configure environment and resources
-//    environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
-    environment.addProvider(new ViewMessageBodyWriter());
+		// Configure environment and resources
+		environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
+		//environment.scanPackagesForResourcesAndProviders(Monitor.class);
+		environment.addProvider(new ViewMessageBodyWriter());
+		environment.addProvider(new Monitor());
 		environment.addResource(new UserResource(storage));
 		environment.addResource(new ResourceResource(storage, pollSystem));
 		environment.addResource(new StreamResource(storage));
 		environment.addResource(new ParserResource(storage));
 		environment.addResource(new PublicOpenIDResource(storage));
 
-    // Session handler to enable automatic session handling 
-    environment.setSessionHandler(new SessionHandler());
+		// Session handler to enable automatic session handling 
+		environment.setSessionHandler(new SessionHandler());
 	}
 
 }

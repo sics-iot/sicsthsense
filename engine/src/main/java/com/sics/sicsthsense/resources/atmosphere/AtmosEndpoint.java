@@ -34,12 +34,11 @@ import javax.ws.rs.Produces;
  * @author Jeanfrancois Arcand
  * @author Liam McNamara (minor changes)
  */
-@Path("/users/1/resources/{topic}")
+@Path("/users/{user}/resources/{resourceId}")
 public class AtmosEndpoint {
 
     private
-    @PathParam("topic")
-    Broadcaster topic;
+    @PathParam("resourceId") Broadcaster topic;
 
     @GET
     public SuspendResponse<String> subscribe() {
