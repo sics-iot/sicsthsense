@@ -29,7 +29,7 @@ public class EventsLogger implements WebSocketEventListener {
     public EventsLogger() {
     }
 
-    @Override
+//    @Override
     public void onPreSuspend(AtmosphereResourceEvent event) {
     }
 
@@ -56,7 +56,7 @@ public class EventsLogger implements WebSocketEventListener {
         logger.warn("onThrowable(): {}", event);
     }
 
-    @Override
+//    @Override
     public void onClose(AtmosphereResourceEvent event) {
         logger.info("onClose(): {}", event.getMessage());
 

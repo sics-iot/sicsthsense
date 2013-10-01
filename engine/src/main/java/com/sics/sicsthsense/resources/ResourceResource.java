@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -155,13 +156,14 @@ public class ResourceResource {
 	@Path("/{resourceId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
+	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) { //,  DataPoint datapoint) {
 		Resource resource = storage.findResourceById(resourceId);
 		logger.info("Adding user/resource:"+resource.getLabel());
 		//Resource resource = storage.findResourceById(resourceId);
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		// should actually save it!
 	}
 	
 	// add a resource 

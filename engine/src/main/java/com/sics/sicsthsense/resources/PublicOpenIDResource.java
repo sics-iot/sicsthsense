@@ -3,14 +3,14 @@
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of The Swedish Institute of Computer Science nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *		 * Redistributions of source code must retain the above copyright
+ *			 notice, this list of conditions and the following disclaimer.
+ *		 * Redistributions in binary form must reproduce the above copyright
+ *			 notice, this list of conditions and the following disclaimer in the
+ *			 documentation and/or other materials provided with the distribution.
+ *		 * Neither the name of The Swedish Institute of Computer Science nor the
+ *			 names of its contributors may be used to endorse or promote products
+ *			 derived from this software without specific prior written permission.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -83,377 +83,378 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
 @Produces(MediaType.TEXT_HTML)
 public class PublicOpenIDResource {
 
-  @Context
-  protected HttpHeaders httpHeaders;
+	@Context
+	protected HttpHeaders httpHeaders;
 
 	public final StorageDAO storage;
-  private final static Logger logger = LoggerFactory.getLogger(PublicOpenIDResource.class);
-  private final static String YAHOO_ENDPOINT = "https://me.yahoo.com";
-  private final static String GOOGLE_ENDPOINT = "https://www.google.com/accounts/o8/id";
-  private final ModelBuilder modelBuilder = new ModelBuilder();
+	private final static Logger logger = LoggerFactory.getLogger(PublicOpenIDResource.class);
+	private final static String YAHOO_ENDPOINT = "https://me.yahoo.com";
+	private final static String GOOGLE_ENDPOINT = "https://www.google.com/accounts/o8/id";
+	private final ModelBuilder modelBuilder = new ModelBuilder();
 
-  /**
-   * Default constructor
-   */
-  public PublicOpenIDResource(StorageDAO storage) {
+	/**
+	 * Default constructor
+	 */
+	public PublicOpenIDResource(StorageDAO storage) {
 		this.storage = storage;
-  }
+	}
 
-  /**
-   * @return A login view with a session token
-   */
-  @GET
-  @Path("/login")
-  public View login() {
-    return new PublicFreemarkerView<BaseModel>("openid/login.ftl", modelBuilder.newBaseModel(httpHeaders));
-  }
+	/**
+	 * @return A login view with a session token
+	 */
+	@GET
+	@Path("/login")
+	public View login() {
+		System.out.println("loggining in!");
+		return new PublicFreemarkerView<BaseModel>("openid/login.ftl", modelBuilder.newBaseModel(httpHeaders));
+	}
 
-  /**
-   * @return A login view with a session token
-   */
-  @GET
-  @Path("/logout")
-  public Response logout() {
+	/**
+	 * @return A login view with a session token
+	 */
+	@GET
+	@Path("/logout")
+	public Response logout() {
 
-    BaseModel model = modelBuilder.newBaseModel(httpHeaders);
-    User user = model.getUser();
-    if (user != null) {
-      //user.setSessionToken(null); // Invalidate the session token
-      // (We'll delete the user but really this would just be an update)
-      InMemoryUserCache.INSTANCE.hardDelete(user);
-      model.setUser(null);
-    }
+		BaseModel model = modelBuilder.newBaseModel(httpHeaders);
+		User user = model.getUser();
+		if (user != null) {
+			//user.setSessionToken(null); // Invalidate the session token
+			// (We'll delete the user but really this would just be an update)
+			InMemoryUserCache.INSTANCE.hardDelete(user);
+			model.setUser(null);
+		}
 
-    View view = new PublicFreemarkerView<BaseModel>("openid/logout.ftl", model);
-    // Remove the session token which will have the effect of logout
-    return Response.ok() .cookie(replaceSessionTokenCookie(Optional.<User>absent())) .entity(view).build();
-  }
+		View view = new PublicFreemarkerView<BaseModel>("openid/logout.ftl", model);
+		// Remove the session token which will have the effect of logout
+		return Response.ok() .cookie(replaceSessionTokenCookie(Optional.<User>absent())) .entity(view).build();
+	}
 
-  /**
-   * Handles the authentication request from the user after they select their OpenId server
-   *
-   * @param identifier The identifier for the OpenId server
-   *
-   * @return A redirection or a form view containing user-specific permissions
-   */
-  @POST
-  @SuppressWarnings("unchecked")
-  public Response authenticationRequest( @Context HttpServletRequest request,
-    @FormParam("identifier") String identifier) {
+	/**
+	 * Handles the authentication request from the user after they select their OpenId server
+	 *
+	 * @param identifier The identifier for the OpenId server
+	 *
+	 * @return A redirection or a form view containing user-specific permissions
+	 */
+	@POST
+	@SuppressWarnings("unchecked")
+	public Response authenticationRequest( @Context HttpServletRequest request,
+		@FormParam("identifier") String identifier) {
 
-    UUID sessionToken = UUID.randomUUID();
+		UUID sessionToken = UUID.randomUUID();
 
-    try {
-      // The OpenId server will use this endpoint to provide authentication
-      // Parts of this may be shown to the user
-      final String returnToUrl;
-      if (request.getServerPort() == 80) {
-        returnToUrl = String.format( "http://%s/openid/verify?token=%s",
-          request.getServerName(), sessionToken);
-      } else {
-        returnToUrl = String.format( "http://%s:%d/openid/verify?token=%s",
-          request.getServerName(), request.getServerPort(), sessionToken);
-      }
-      logger.debug("Return to URL '{}'", returnToUrl);
+		try {
+			// The OpenId server will use this endpoint to provide authentication
+			// Parts of this may be shown to the user
+			final String returnToUrl;
+			if (request.getServerPort() == 80) {
+				returnToUrl = String.format( "http://%s/openid/verify?token=%s",
+					request.getServerName(), sessionToken);
+			} else {
+				returnToUrl = String.format( "http://%s:%d/openid/verify?token=%s",
+					request.getServerName(), request.getServerPort(), sessionToken);
+			}
+			logger.debug("Return to URL '{}'", returnToUrl);
 
-      // Create a consumer manager for this specific request and cache it
-      // (this is to preserve session state such as nonce values etc)
-      ConsumerManager consumerManager = new ConsumerManager();
-      InMemoryOpenIDCache.INSTANCE.putConsumerManager(sessionToken, consumerManager);
+			// Create a consumer manager for this specific request and cache it
+			// (this is to preserve session state such as nonce values etc)
+			ConsumerManager consumerManager = new ConsumerManager();
+			InMemoryOpenIDCache.INSTANCE.putConsumerManager(sessionToken, consumerManager);
 
-      // Perform discovery on the user-supplied identifier
-      List discoveries = consumerManager.discover(identifier);
+			// Perform discovery on the user-supplied identifier
+			List discoveries = consumerManager.discover(identifier);
 
-      // Attempt to associate with the OpenID provider
-      // and retrieve one service endpoint for authentication
-      DiscoveryInformation discovered = consumerManager.associate(discoveries);
+			// Attempt to associate with the OpenID provider
+			// and retrieve one service endpoint for authentication
+			DiscoveryInformation discovered = consumerManager.associate(discoveries);
 
-      // Create a memento to rebuild the discovered information in a subsequent request
-      DiscoveryInformationMemento memento = new DiscoveryInformationMemento();
-      if (discovered.getClaimedIdentifier() != null) {
-        memento.setClaimedIdentifier(discovered.getClaimedIdentifier().getIdentifier());
-      }
-      memento.setDelegate(discovered.getDelegateIdentifier());
-      if (discovered.getOPEndpoint() != null) {
-        memento.setOpEndpoint(discovered.getOPEndpoint().toString());
-      }
+			// Create a memento to rebuild the discovered information in a subsequent request
+			DiscoveryInformationMemento memento = new DiscoveryInformationMemento();
+			if (discovered.getClaimedIdentifier() != null) {
+				memento.setClaimedIdentifier(discovered.getClaimedIdentifier().getIdentifier());
+			}
+			memento.setDelegate(discovered.getDelegateIdentifier());
+			if (discovered.getOPEndpoint() != null) {
+				memento.setOpEndpoint(discovered.getOPEndpoint().toString());
+			}
 
-      memento.setTypes(discovered.getTypes());
-      memento.setVersion(discovered.getVersion());
-      // Create a temporary User to preserve state between requests without
-      // using a session (we could be in a cluster)
-      User tempUser = new User(-2, sessionToken);
-      tempUser.setOpenIDDiscoveryInformationMemento(memento);
-      tempUser.setSessionToken(sessionToken);
-      // Persist the User
-      InMemoryUserCache.INSTANCE.put(sessionToken, tempUser);
-      // Build the AuthRequest message to be sent to the OpenID provider
-      AuthRequest authReq = consumerManager.authenticate(discovered, returnToUrl);
+			memento.setTypes(discovered.getTypes());
+			memento.setVersion(discovered.getVersion());
+			// Create a temporary User to preserve state between requests without
+			// using a session (we could be in a cluster)
+			User tempUser = new User(-2, sessionToken);
+			tempUser.setOpenIDDiscoveryInformationMemento(memento);
+			tempUser.setSessionToken(sessionToken);
+			// Persist the User
+			InMemoryUserCache.INSTANCE.put(sessionToken, tempUser);
+			// Build the AuthRequest message to be sent to the OpenID provider
+			AuthRequest authReq = consumerManager.authenticate(discovered, returnToUrl);
 
-      // Build the FetchRequest containing the information to be copied
-      // from the OpenID provider
-      FetchRequest fetch = FetchRequest.createFetchRequest();
-      // Attempt to decode each entry
-      if (identifier.startsWith(GOOGLE_ENDPOINT)) {
-        fetch.addAttribute("email", "http://axschema.org/contact/email", true);
-        fetch.addAttribute("firstName", "http://axschema.org/namePerson/first", true);
-        fetch.addAttribute("lastName", "http://axschema.org/namePerson/last", true);
-      } else if (identifier.startsWith(YAHOO_ENDPOINT)) {
-        fetch.addAttribute("email", "http://axschema.org/contact/email", true);
-        fetch.addAttribute("fullname", "http://axschema.org/namePerson", true);
-      } else { // works for myOpenID
-        fetch.addAttribute("fullname", "http://schema.openid.net/namePerson", true);
-        fetch.addAttribute("email", "http://schema.openid.net/contact/email", true);
-      }
-      // Attach the extension to the authentication request
-      authReq.addExtension(fetch);
-      // Redirect the user to their OpenId server authentication process
-      return Response.seeOther(URI.create(authReq.getDestinationUrl(true))).build();
-    } catch (MessageException e1) {
-      logger.error("MessageException:", e1);
-    } catch (DiscoveryException e1) {
-      logger.error("DiscoveryException:", e1);
-    } catch (ConsumerException e1) {
-      logger.error("ConsumerException:", e1);
-    }
-    return Response.ok().build();
-  }
+			// Build the FetchRequest containing the information to be copied
+			// from the OpenID provider
+			FetchRequest fetch = FetchRequest.createFetchRequest();
+			// Attempt to decode each entry
+			if (identifier.startsWith(GOOGLE_ENDPOINT)) {
+				fetch.addAttribute("email", "http://axschema.org/contact/email", true);
+				fetch.addAttribute("firstName", "http://axschema.org/namePerson/first", true);
+				fetch.addAttribute("lastName", "http://axschema.org/namePerson/last", true);
+			} else if (identifier.startsWith(YAHOO_ENDPOINT)) {
+				fetch.addAttribute("email", "http://axschema.org/contact/email", true);
+				fetch.addAttribute("fullname", "http://axschema.org/namePerson", true);
+			} else { // works for myOpenID
+				fetch.addAttribute("fullname", "http://schema.openid.net/namePerson", true);
+				fetch.addAttribute("email", "http://schema.openid.net/contact/email", true);
+			}
+			// Attach the extension to the authentication request
+			authReq.addExtension(fetch);
+			// Redirect the user to their OpenId server authentication process
+			return Response.seeOther(URI.create(authReq.getDestinationUrl(true))).build();
+		} catch (MessageException e1) {
+			logger.error("MessageException:", e1);
+		} catch (DiscoveryException e1) {
+			logger.error("DiscoveryException:", e1);
+		} catch (ConsumerException e1) {
+			logger.error("ConsumerException:", e1);
+		}
+		return Response.ok().build();
+	}
 
-  /**
-   * Handles the OpenId server response to the earlier AuthRequest
-   *
-   * @return The OpenId identifier for this user if verification was successful
-   */
-  @GET
-  @Path("/verify")
-  public Response verifyOpenIdServerResponse(
-    @Context HttpServletRequest request,
-    @QueryParam("token") String rawToken) {
+	/**
+	 * Handles the OpenId server response to the earlier AuthRequest
+	 *
+	 * @return The OpenId identifier for this user if verification was successful
+	 */
+	@GET
+	@Path("/verify")
+	public Response verifyOpenIdServerResponse(
+		@Context HttpServletRequest request,
+		@QueryParam("token") String rawToken) {
 
-    // Retrieve the previously stored discovery information from the temporary User
-    if (rawToken == null) {
-      logger.debug("Authentication failed due to no session token");
-      throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-    }
+		// Retrieve the previously stored discovery information from the temporary User
+		if (rawToken == null) {
+			logger.debug("Authentication failed due to no session token");
+			throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+		}
 
-    // Build a session token from the request
-    UUID sessionToken = UUID.fromString(rawToken);
+		// Build a session token from the request
+		UUID sessionToken = UUID.fromString(rawToken);
 
-    // Attempt to locate the consumer manager by the session token
-    Optional<ConsumerManager> consumerManagerOptional = InMemoryOpenIDCache.INSTANCE.getConsumerManager(sessionToken);
-    if (!consumerManagerOptional.isPresent()) {
-      logger.debug("Authentication failed due to no consumer manager matching session token {}", rawToken);
-      throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-    }
-    ConsumerManager consumerManager = consumerManagerOptional.get();
+		// Attempt to locate the consumer manager by the session token
+		Optional<ConsumerManager> consumerManagerOptional = InMemoryOpenIDCache.INSTANCE.getConsumerManager(sessionToken);
+		if (!consumerManagerOptional.isPresent()) {
+			logger.debug("Authentication failed due to no consumer manager matching session token {}", rawToken);
+			throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+		}
+		ConsumerManager consumerManager = consumerManagerOptional.get();
 
-    // Attempt to locate the user by the session token
-    Optional<User> tempUserOptional = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken);
-    if (!tempUserOptional.isPresent()) {
-      logger.debug("Authentication failed due to no temp User matching session token {}", rawToken);
-      throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-    }
-    User tempUser = tempUserOptional.get();
+		// Attempt to locate the user by the session token
+		Optional<User> tempUserOptional = InMemoryUserCache.INSTANCE.getBySessionToken(sessionToken);
+		if (!tempUserOptional.isPresent()) {
+			logger.debug("Authentication failed due to no temp User matching session token {}", rawToken);
+			throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+		}
+		User tempUser = tempUserOptional.get();
 
-    // Retrieve the discovery information
-    final DiscoveryInformationMemento memento = tempUser.getOpenIDDiscoveryInformationMemento();
-    Identifier identifier = new Identifier() {
-      @Override
-      public String getIdentifier() {
-        return memento.getClaimedIdentifier();
-      }
-    };
+		// Retrieve the discovery information
+		final DiscoveryInformationMemento memento = tempUser.getOpenIDDiscoveryInformationMemento();
+		Identifier identifier = new Identifier() {
+			@Override
+			public String getIdentifier() {
+				return memento.getClaimedIdentifier();
+			}
+		};
 
-    DiscoveryInformation discovered;
-    try {
-      discovered = new DiscoveryInformation(
-        URI.create(memento.getOpEndpoint()).toURL(),
-        identifier,
-        memento.getDelegate(),
-        memento.getVersion(),
-        memento.getTypes()
-      );
-    } catch (DiscoveryException e) {
-      throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
-    } catch (MalformedURLException e) {
-      throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
-    }
+		DiscoveryInformation discovered;
+		try {
+			discovered = new DiscoveryInformation(
+				URI.create(memento.getOpEndpoint()).toURL(),
+				identifier,
+				memento.getDelegate(),
+				memento.getVersion(),
+				memento.getTypes()
+			);
+		} catch (DiscoveryException e) {
+			throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
+		} catch (MalformedURLException e) {
+			throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
+		}
 
-    // Extract the receiving URL from the HTTP request
-    StringBuffer receivingURL = request.getRequestURL();
-    String queryString = request.getQueryString();
-    if (queryString != null && queryString.length() > 0) {
-      receivingURL.append("?").append(request.getQueryString());
-    }
-    logger.debug("Receiving URL = '{}", receivingURL.toString());
+		// Extract the receiving URL from the HTTP request
+		StringBuffer receivingURL = request.getRequestURL();
+		String queryString = request.getQueryString();
+		if (queryString != null && queryString.length() > 0) {
+			receivingURL.append("?").append(request.getQueryString());
+		}
+		logger.debug("Receiving URL = '{}", receivingURL.toString());
 
-    // Extract the parameters from the authentication response
-    // (which comes in as a HTTP request from the OpenID provider)
-    ParameterList parameterList = new ParameterList(request.getParameterMap());
+		// Extract the parameters from the authentication response
+		// (which comes in as a HTTP request from the OpenID provider)
+		ParameterList parameterList = new ParameterList(request.getParameterMap());
 
-    try {
-      // Verify the response ConsumerManager needs to be the same (static) instance used
-      // to place the authentication request
-      // This could be tricky if this service is load-balanced
-      VerificationResult verification = consumerManager.verify(
-        receivingURL.toString(), parameterList, discovered);
+		try {
+			// Verify the response ConsumerManager needs to be the same (static) instance used
+			// to place the authentication request
+			// This could be tricky if this service is load-balanced
+			VerificationResult verification = consumerManager.verify(
+				receivingURL.toString(), parameterList, discovered);
 
-      // Examine the verification result and extract the verified identifier
-      Optional<Identifier> verified = Optional.fromNullable(verification.getVerifiedId());
-      if (verified.isPresent()) { // Verified
-        AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
+			// Examine the verification result and extract the verified identifier
+			Optional<Identifier> verified = Optional.fromNullable(verification.getVerifiedId());
+			if (verified.isPresent()) { // Verified
+				AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
-        // successfully authenticated so remove temp and replace with a potentially new one
-        InMemoryUserCache.INSTANCE.hardDelete(tempUser);
+				// successfully authenticated so remove temp and replace with a potentially new one
+				InMemoryUserCache.INSTANCE.hardDelete(tempUser);
 
-        tempUser = storage.findUserByEmail(extractEmail(authSuccess));
+				tempUser = storage.findUserByEmail(extractEmail(authSuccess));
 				if (tempUser==null) { // no existing user with that email
 					tempUser = new User(-3, UUID.randomUUID());
 				}
-        tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
+				tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 
-        // Provide a basic authority in light of successful authentication
-        tempUser.getAuthorities().add(Authority.ROLE_PUBLIC); // allow public access
-        tempUser.getAuthorities().add(Authority.ROLE_USER); // this is a valid user
+				// Provide a basic authority in light of successful authentication
+				tempUser.getAuthorities().add(Authority.ROLE_PUBLIC); // allow public access
+				tempUser.getAuthorities().add(Authority.ROLE_USER); // this is a valid user
 
-        // Extract additional information
-        if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
-          tempUser.setEmail(extractEmail(authSuccess));
-          tempUser.setFirstName(extractFirstName(authSuccess));
-          tempUser.setLastName(extractLastName(authSuccess));
-        }
-        logger.info("Extracted a temporary {}", tempUser);
+				// Extract additional information
+				if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
+					tempUser.setEmail(extractEmail(authSuccess));
+					tempUser.setFirstName(extractFirstName(authSuccess));
+					tempUser.setLastName(extractLastName(authSuccess));
+				}
+				logger.info("Extracted a temporary {}", tempUser);
 
-        // Search for a pre-existing User matching the temp User
-        Optional<User> userOptional = InMemoryUserCache.INSTANCE.getByOpenIDIdentifier(tempUser.getOpenIDIdentifier());
-        User user;
-        if (!userOptional.isPresent()) {
-          // This is either a new registration or the OpenID identifier has changed
-          if (tempUser.getEmail() != null) {
-            userOptional = InMemoryUserCache.INSTANCE.getByEmail(tempUser.getEmail());
-            if (!userOptional.isPresent()) {
-              // This is a new User
-              logger.debug("Registering new {}", tempUser);
-              user = tempUser;
-            } else {
-              // The OpenID identifier has changed so update it
-              logger.debug("Updating OpenID identifier for {}", tempUser);
-              user = userOptional.get();
-              user.setOpenIDIdentifier(tempUser.getOpenIDIdentifier());
-            }
+				// Search for a pre-existing User matching the temp User
+				Optional<User> userOptional = InMemoryUserCache.INSTANCE.getByOpenIDIdentifier(tempUser.getOpenIDIdentifier());
+				User user;
+				if (!userOptional.isPresent()) {
+					// This is either a new registration or the OpenID identifier has changed
+					if (tempUser.getEmail() != null) {
+						userOptional = InMemoryUserCache.INSTANCE.getByEmail(tempUser.getEmail());
+						if (!userOptional.isPresent()) {
+							// This is a new User
+							logger.debug("Registering new {}", tempUser);
+							user = tempUser;
+						} else {
+							// The OpenID identifier has changed so update it
+							logger.debug("Updating OpenID identifier for {}", tempUser);
+							user = userOptional.get();
+							user.setOpenIDIdentifier(tempUser.getOpenIDIdentifier());
+						}
 
-          } else {
-            // No email address to use as backup
-            logger.warn("Rejecting valid authentication. No email address for {}");
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-          }
-        } else {
-          // The User has been located by their OpenID identifier
-          logger.debug("Found an existing User using OpenID identifier {}", tempUser);
-          user = userOptional.get();
-        }
+					} else {
+						// No email address to use as backup
+						logger.warn("Rejecting valid authentication. No email address for {}");
+						throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+					}
+				} else {
+					// The User has been located by their OpenID identifier
+					logger.debug("Found an existing User using OpenID identifier {}", tempUser);
+					user = userOptional.get();
+				}
 
-        // Persist the user with the current session token
-        user.setSessionToken(sessionToken);
-        InMemoryUserCache.INSTANCE.put(sessionToken, user);
+				// Persist the user with the current session token
+				user.setSessionToken(sessionToken);
+				InMemoryUserCache.INSTANCE.put(sessionToken, user);
 
-        // Create a suitable view for the response
-        // The session token has changed so we create the base model directly
-        BaseModel model = new BaseModel();
-        model.setUser(user);
+				// Create a suitable view for the response
+				// The session token has changed so we create the base model directly
+				BaseModel model = new BaseModel();
+				model.setUser(user);
 
-        // Authenticated
-        View view = new PublicFreemarkerView<BaseModel>("private/home.ftl", model);
+				// Authenticated
+				View view = new PublicFreemarkerView<BaseModel>("private/home.ftl", model);
 
-        // Refresh the session token cookie
-        return Response.ok()
-          .cookie(replaceSessionTokenCookie(Optional.of(user)))
-          .entity(view) .build();
-      } else {
-        logger.debug("Failed verification");
-      }
-    } catch (OpenIDException e) {
-      // present error to the user
-      logger.error("OpenIDException", e);
-    }
+				// Refresh the session token cookie
+				return Response.ok()
+					.cookie(replaceSessionTokenCookie(Optional.of(user)))
+					.entity(view) .build();
+			} else {
+				logger.debug("Failed verification");
+			}
+		} catch (OpenIDException e) {
+			// present error to the user
+			logger.error("OpenIDException", e);
+		}
 
-    // Must have failed to be here
-    throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-  }
+		// Must have failed to be here
+		throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+	}
 
-  /**
-   * @param user A user with a session token. If absent then the cookie will be removed.
-   *
-   * @return A cookie with a long term expiry date suitable for use as a session token for OpenID
-   */
-  private NewCookie replaceSessionTokenCookie(Optional<User> user) {
+	/**
+	 * @param user A user with a session token. If absent then the cookie will be removed.
+	 *
+	 * @return A cookie with a long term expiry date suitable for use as a session token for OpenID
+	 */
+	private NewCookie replaceSessionTokenCookie(Optional<User> user) {
 
-    if (user.isPresent()) {
+		if (user.isPresent()) {
 
-      String value = user.get().getSessionToken().toString();
+			String value = user.get().getSessionToken().toString();
 
-      logger.debug("Replacing session token with {}", value);
+			logger.debug("Replacing session token with {}", value);
 
-      return new NewCookie(
-        EngineConfiguration.SESSION_TOKEN_NAME,
-        value,   // Value
-        "/",     // Path
-        null,    // Domain
-        null,    // Comment
-        86400 * 30, // 30 days
-        false);
-    } else {
-      // Remove the session token cookie
-      logger.debug("Removing session token");
+			return new NewCookie(
+				EngineConfiguration.SESSION_TOKEN_NAME,
+				value,	 // Value
+				"/",		 // Path
+				null,		 // Domain
+				null,		 // Comment
+				86400 * 30, // 30 days
+				false);
+		} else {
+			// Remove the session token cookie
+			logger.debug("Removing session token");
 
-      return new NewCookie(
-        EngineConfiguration.SESSION_TOKEN_NAME,
-        null,   // Value
-        null,    // Path
-        null,   // Domain
-        null,   // Comment
-        0,      // Expire immediately
-        false);
-    }
-  }
+			return new NewCookie(
+				EngineConfiguration.SESSION_TOKEN_NAME,
+				null,		// Value
+				null,		 // Path
+				null,		// Domain
+				null,		// Comment
+				0,			// Expire immediately
+				false);
+		}
+	}
 
 
-  private String extractEmail(AuthSuccess authSuccess) throws MessageException {
-    FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
-    return getAttributeValue(
-      fetchResp,
-      "email",
-      "",
-      String.class);
-  }
+	private String extractEmail(AuthSuccess authSuccess) throws MessageException {
+		FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
+		return getAttributeValue(
+			fetchResp,
+			"email",
+			"",
+			String.class);
+	}
 
-  private String extractFirstName(AuthSuccess authSuccess) throws MessageException {
-    FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
-    return getAttributeValue(
-      fetchResp,
-      "firstname",
-      "",
-      String.class);
-  }
+	private String extractFirstName(AuthSuccess authSuccess) throws MessageException {
+		FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
+		return getAttributeValue(
+			fetchResp,
+			"firstname",
+			"",
+			String.class);
+	}
 
-  private String extractLastName(AuthSuccess authSuccess) throws MessageException {
-    FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
-    return getAttributeValue(
-      fetchResp,
-      "lastname",
-      "",
-      String.class);
-  }
+	private String extractLastName(AuthSuccess authSuccess) throws MessageException {
+		FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
+		return getAttributeValue(
+			fetchResp,
+			"lastname",
+			"",
+			String.class);
+	}
 
-  @SuppressWarnings({"unchecked", "unused"})
-  private <T> T getAttributeValue(FetchResponse fetchResponse, String attribute, T defaultValue, Class<T> clazz) {
-    List list = fetchResponse.getAttributeValues(attribute);
-    if (list != null && !list.isEmpty()) {
-      return (T) list.get(0);
-    }
+	@SuppressWarnings({"unchecked", "unused"})
+	private <T> T getAttributeValue(FetchResponse fetchResponse, String attribute, T defaultValue, Class<T> clazz) {
+		List list = fetchResponse.getAttributeValues(attribute);
+		if (list != null && !list.isEmpty()) {
+			return (T) list.get(0);
+		}
 
-    return defaultValue;
+		return defaultValue;
 
-  }
+	}
 
 }

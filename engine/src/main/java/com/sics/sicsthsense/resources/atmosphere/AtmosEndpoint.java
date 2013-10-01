@@ -34,7 +34,8 @@ import javax.ws.rs.Produces;
  * @author Jeanfrancois Arcand
  * @author Liam McNamara (minor changes)
  */
-@Path("/users/{user}/resources/{resourceId}")
+//@Path("/users/{user}/resources/{resourceId}")
+@Path("/{resourceId}")
 public class AtmosEndpoint {
 
     private
