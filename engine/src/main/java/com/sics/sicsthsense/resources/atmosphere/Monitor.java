@@ -26,59 +26,56 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.metrics.annotation.Timed;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
+import org.pegdown.PegDownProcessor;
+import java.io.IOException;
+import java.net.URL;
 
 import com.sics.sicsthsense.model.BaseModel;
 import com.sics.sicsthsense.views.PublicFreemarkerView;
 
 /**
- * <p>Resource to provide the following to application:</p>
- * <ul>
- * <li>Provision of configuration for public home page</li>
- * </ul>
  *
  * @since 0.0.1
  */
-@Path("/home")
+//@Path("/users/{userId}/resources/{resourceId}/monitor")
+@Path("/monitor")
 @Produces(MediaType.TEXT_HTML)
-public class PublicHomeResource {
+public class Monitor {
 
   /**
-   * Provide the initial view on to the system
-   *
-   * @return A localised view containing HTML
+	 *
    */
   @GET
   @Timed
-  @CacheControl(noCache = true)
-  public PublicFreemarkerView viewHome() {
+  //public PublicFreemarkerView monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+  public String monitor() throws IOException {
+		System.out.println("resource ID: ");
+
+    URL url = Monitor.class.getResource("/views/ftl/common/monitor.ftl");
+    String markdown = Resources.toString(url, Charsets.UTF_8).trim();
+		return markdown;
+		/*
     BaseModel model = new BaseModel();
-    return new PublicFreemarkerView<BaseModel>("common/home.ftl",model);
-  }
-
-  /**
-   * Provide the initial view on to the system
-   *
-   * @return A the favicon images from the assets
-   */
-  @GET
-  @Path("favicon.ico")
-  @Timed
-  @CacheControl(maxAge = 24, maxAgeUnit = TimeUnit.HOURS)
-  public Response viewFavicon() {
-    InputStream is = PublicHomeResource.class.getResourceAsStream("/assets/favicon.ico");
-    return Response.ok(is).build();
+		PublicFreemarkerView<BaseModel> v = new PublicFreemarkerView<BaseModel>("common/monitor.ftl",model);
+		return v.getModel().getMarkdownHtml();
+		*/
   }
 
 }
