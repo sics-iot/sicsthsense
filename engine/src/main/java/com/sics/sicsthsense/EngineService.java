@@ -102,7 +102,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
 	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-		environment.addServlet(atmosphereServlet, "/ws/*");
+		environment.addServlet(atmosphereServlet, "/users/*");
 
     // Session handler to enable automatic session handling 
     //environment.setSessionHandler(new SessionHandler());

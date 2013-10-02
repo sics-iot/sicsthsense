@@ -54,8 +54,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-//@Path("/users/{userId}/resources/{resourceId}/monitor")
-@Path("/monitor")
+@Path("/{userId}/resources/{resourceId}/monitor")
 @Produces(MediaType.TEXT_HTML)
 public class Monitor {
 
@@ -65,12 +64,13 @@ public class Monitor {
   @GET
   @Timed
   //public PublicFreemarkerView monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-  public String monitor() throws IOException {
+  public String monitor(@PathParam("resourceId") String resourceId) throws IOException {
 		System.out.println("resource ID: ");
 
-    URL url = Monitor.class.getResource("/views/ftl/common/monitor.ftl");
+    URL url = Monitor.class.getResource("/views/pub.html");
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();
-		return markdown;
+		return markdown.replace("%resourceId%",resourceId);
+		//return markdown;
 		/*
     BaseModel model = new BaseModel();
 		PublicFreemarkerView<BaseModel> v = new PublicFreemarkerView<BaseModel>("common/monitor.ftl",model);
