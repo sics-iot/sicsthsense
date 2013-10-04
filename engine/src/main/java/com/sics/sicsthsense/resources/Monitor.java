@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package com.sics.sicsthsense.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -54,7 +54,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-@Path("/{userId}/resources/{resourceId}/monitor")
+@Path("/users/{userId}/resources/{resourceId}/monitor")
 @Produces(MediaType.TEXT_HTML)
 public class Monitor {
 

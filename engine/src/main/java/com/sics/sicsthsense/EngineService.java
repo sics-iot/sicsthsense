@@ -62,6 +62,13 @@ public class EngineService extends Service<EngineConfiguration> {
 	}
 
 	public void addServlet(Environment environment) {
+		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
+		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
+		environment.addServlet(atmosphereServlet, "/ws/*");
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
@@ -94,18 +101,13 @@ public class EngineService extends Service<EngineConfiguration> {
 		environment.addResource(new ParserResource(storage));
 		environment.addResource(new PublicOpenIDResource(storage));
 
-		//addServlet(environment);
-		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
+		addServlet(environment);
+		/*
+*/
 	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-		environment.addServlet(atmosphereServlet, "/users/*");
 
     // Session handler to enable automatic session handling 
-    //environment.setSessionHandler(new SessionHandler());
+    environment.setSessionHandler(new SessionHandler());
 	}
 
 }

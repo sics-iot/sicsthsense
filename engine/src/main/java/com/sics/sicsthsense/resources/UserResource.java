@@ -51,8 +51,9 @@ import com.yammer.metrics.annotation.Timed;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
-@Path("/users/{userId}")
-@Produces(MediaType.APPLICATION_JSON)
+
+@Path("/BADusers/{userId}")
+//@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 		private final StorageDAO storage;

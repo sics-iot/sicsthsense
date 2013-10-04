@@ -34,7 +34,7 @@
         function subscribe() {
 						resourceId = '%resourceId%';
             var request = {
-                url : 'http://localhost:8080/users/1/resources/' + resourceId, //getElementByIdValue('topic'),
+                url : 'http://localhost:8080/ws/users/1/resources/' + resourceId, //getElementByIdValue('topic'),
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
 
@@ -72,21 +72,9 @@
         }
 
         getElementById('connect').onclick = function(event) {
-            if (getElementById('topic').value == '') {
-                alert("Please enter a PubSub topic to subscribe");
-                return;
-            }
             connect();
         }
 
-        getElementById('topic').onkeyup = function(event) {
-            getElementById('sendMessage').className = 'hidden';
-            var keyc = getKeyCode(event);
-            if (keyc == 13 || keyc == 10) {
-                connect();
-                return false;
-            }
-        }
 
         getElementById('phrase').setAttribute('autocomplete', 'OFF');
         getElementById('phrase').onkeyup = function(event) {
@@ -108,10 +96,6 @@
         };
 
         getElementById('send_message').onclick = function(event) {
-            if (getElementById('topic').value == '') {
-                alert("Please enter a message to publish");
-                return;
-            }
 
             var m = " sent using " + detectedTransport;
             if (detectedTransport == null) {
@@ -125,7 +109,6 @@
             return false;
         };
 
-        getElementById('topic').focus();
     };
     </script>
     <style type='text/css'>
@@ -139,10 +122,12 @@
 </head>
 <body>
     <h1>Resource monitoring using Atmosphere's Javascript Library and a Jersey's Resource</h1>
+	<!--
     <h2>Select resource ID to subscribe</h2>
     <div id='pubsub'>
         <input id='topic' type='text'/>
-    </div>
+		</div>
+		-->
     <h2>Select transport to use for subscribing</h2>
     <h3>You can change the transport any time.</h3>
     <div id='select_transport'>

@@ -39,6 +39,6 @@ database:
   closeConnectionIfIdleFor: 1 minute
 
 http:
-  rootPath: /service/*  # Default is /*
+  rootPath: /*  # Default is /*
   connectorType: nonblocking
 
