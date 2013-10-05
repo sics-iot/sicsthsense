@@ -30,10 +30,9 @@
 
 package models;
 
-import com.avaje.ebean.annotation.Transactional;
 import controllers.Utils;
 import logic.Argument;
-import logic.FileSystem;
+import logic.StreamDrive;
 import logic.State;
 import org.codehaus.jackson.JsonNode;
 import play.Logger;
@@ -139,7 +138,7 @@ public class StreamParser extends Model {
         this.numberOfPoints = numberOfPoints;
 
         if (resource.owner != null) {
-            Vfile f = FileSystem.read(resource.owner, path);
+            Vfile f = StreamDrive.read(resource.owner, path);
             this.stream = (f != null) ? f.stream : null;
 
         }

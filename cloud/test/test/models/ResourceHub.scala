@@ -5,7 +5,7 @@ import org.specs2.mutable._
 
 import play.api.test.Helpers._
 import play.api.test.FakeApplication
-import logic.{FileSystem, ResultCode, ResourceHub}
+import logic.{StreamDrive, ResultCode, ResourceHub}
 import scala.collection.JavaConversions.{seqAsJavaList, iterableAsScalaIterable}
 import controllers.StreamParserWrapper
 
@@ -68,7 +68,7 @@ class ResourceHubSpec extends Specification {
         StreamParser.forResource(resource).size.mustEqual(4).orThrow
 
         for (spw <- newParsers) {
-          FileSystem.exists(user, spw.vfilePath).mustEqual(true)
+          StreamDrive.exists(user, spw.vfilePath).mustEqual(true)
         }
       }
     }

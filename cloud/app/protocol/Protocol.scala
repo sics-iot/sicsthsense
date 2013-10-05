@@ -30,9 +30,13 @@
 package protocol
 
 import scala.concurrent.Future
+import java.net.URI
+import rx.Observable
 
 trait Protocol[TRequest, TResponse] {
   def request(request: Request): Future[Response]
+
+  def observe(uri: URI, params: Map[String, Array[String]]): Observable[Response]
 
   def translateRequest(request: TRequest): Request
 

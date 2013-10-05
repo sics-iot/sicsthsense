@@ -30,7 +30,7 @@
 
 package controllers;
 
-import logic.FileSystem;
+import logic.StreamDrive;
 import models.User;
 import models.Vfile;
 import play.Logger;
@@ -48,7 +48,7 @@ public class CtrlFile extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getFiles() {
         User currentUser = Secured.getCurrentUser();
-        List<Vfile> vfiles = FileSystem.listFiles(currentUser);
+        List<Vfile> vfiles = StreamDrive.listFiles(currentUser);
         Map<String, String> fileTree = new HashMap<String, String>(vfiles.size() + 1);
         for (Vfile vf : vfiles) {
             vf.getPath();
@@ -69,19 +69,19 @@ public class CtrlFile extends Controller {
         path = Utils.decodePath(path).trim();
 
         if (path.equalsIgnoreCase("") || path.equalsIgnoreCase("/")) {
-            return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", ""));
+            return ok(filesPage.render(StreamDrive.lsDir(currentUser, "/"), "/", ""));
         }
 
-        Vfile vfile = FileSystem.read(currentUser, path);
+        Vfile vfile = StreamDrive.read(currentUser, path);
         if (vfile == null) {
-            return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", "Not found!"));
+            return notFound(filesPage.render(StreamDrive.lsDir(currentUser, "/"), "/", "Not found!"));
         }
         if (vfile.isFile() && vfile.getLink() != null) {
             return Application.viewStream(vfile.getLink().id);
         } else if (vfile.isDir()) {
-            return ok(filesPage.render(FileSystem.lsDir(currentUser, path), path, ""));
+            return ok(filesPage.render(StreamDrive.lsDir(currentUser, path), path, ""));
         } else {
-            return notFound(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", "Not found!"));
+            return notFound(filesPage.render(StreamDrive.lsDir(currentUser, "/"), "/", "Not found!"));
         }
     }
 
@@ -92,19 +92,19 @@ public class CtrlFile extends Controller {
         path = Utils.decodePath(path).trim();
 
         if (path.equalsIgnoreCase("") || path.equalsIgnoreCase("/")) {
-            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+            return ok(views.html.filesUtils.listDir.render(StreamDrive.lsDir(currentUser, "/"), "/"));
         }
 
-        Vfile vfile = FileSystem.read(currentUser, path);
+        Vfile vfile = StreamDrive.read(currentUser, path);
         if (vfile == null) {
-            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+            return notFound(views.html.filesUtils.listDir.render(StreamDrive.lsDir(currentUser, "/"), "/"));
         }
         if (vfile.isFile() && vfile.getLink() != null) {
             return Application.ajaxViewStream(vfile.getLink().id);
         } else if (vfile.isDir()) {
-            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, path), path));
+            return ok(views.html.filesUtils.listDir.render(StreamDrive.lsDir(currentUser, path), path));
         } else {
-            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+            return notFound(views.html.filesUtils.listDir.render(StreamDrive.lsDir(currentUser, "/"), "/"));
         }
     }
 
@@ -112,7 +112,7 @@ public class CtrlFile extends Controller {
     public static Result delete(String path) {
         User currentUser = Secured.getCurrentUser();
         path = Utils.decodePath(path);
-        boolean success = FileSystem.deleteFile(currentUser, path);
+        boolean success = StreamDrive.deleteFile(currentUser, path);
         if (success)
             return ok("true");
         else
@@ -123,25 +123,25 @@ public class CtrlFile extends Controller {
     public static Result move(String path, String newPath) {
         User currentUser = Secured.getCurrentUser();
         path = Utils.decodePath(path);
-        boolean success = FileSystem.moveFile(currentUser, path, newPath);
+        boolean success = StreamDrive.moveFile(currentUser, path, newPath);
         if (success)
-            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-                    currentUser, FileSystem.getParentPath(newPath)), FileSystem.getParentPath(newPath)));
+            return ok(views.html.filesUtils.listDir.render(StreamDrive.lsDir(
+                    currentUser, StreamDrive.getParentPath(newPath)), StreamDrive.getParentPath(newPath)));
         else
-            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-                    currentUser, FileSystem.getParentPath(path)), FileSystem.getParentPath(path)));
+            return notFound(views.html.filesUtils.listDir.render(StreamDrive.lsDir(
+                    currentUser, StreamDrive.getParentPath(path)), StreamDrive.getParentPath(path)));
     }
 
     @Security.Authenticated(Secured.class)
     public static Result createDir(String path) {
         User currentUser = Secured.getCurrentUser();
         path = Utils.decodePath(path);
-        boolean success = (FileSystem.createDirectory(currentUser, path) != null);
+        boolean success = (StreamDrive.createDirectory(currentUser, path) != null);
         if (success)
-            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
-                    currentUser, FileSystem.getParentPath(path)), FileSystem.getParentPath(path)));
+            return ok(views.html.filesUtils.listDir.render(StreamDrive.lsDir(
+                    currentUser, StreamDrive.getParentPath(path)), StreamDrive.getParentPath(path)));
         else
-            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+            return notFound(views.html.filesUtils.listDir.render(StreamDrive.lsDir(
                     currentUser, "/"), "/"));
     }
 
@@ -151,15 +151,15 @@ public class CtrlFile extends Controller {
         path = Utils.decodePath(path);
         boolean success = false;
         Vfile f = null;
-        if (!FileSystem.exists(currentUser, path)) {
-            f = FileSystem.createFile(currentUser, path);
+        if (!StreamDrive.exists(currentUser, path)) {
+            f = StreamDrive.createFile(currentUser, path);
             success = (f != null);
         }
         if (success)
-            return ok(views.html.filesUtils.listDir.render(FileSystem.lsDir(
+            return ok(views.html.filesUtils.listDir.render(StreamDrive.lsDir(
                     currentUser, f.getParentPath()), f.getParentPath()));
         else
-            return notFound(views.html.filesUtils.listDir.render(FileSystem.lsDir(currentUser, "/"), "/"));
+            return notFound(views.html.filesUtils.listDir.render(StreamDrive.lsDir(currentUser, "/"), "/"));
     }
 
     private static void parsePath(Vfile vfile) {
@@ -169,13 +169,13 @@ public class CtrlFile extends Controller {
         int sep = 2;
         while ((sep = path.indexOf('/', sep)) != -1) { // for each subdir into path
             String ancestors = path.substring(0, sep);
-            if (FileSystem.isDir(user, ancestors)) { // if parent is a dir
+            if (StreamDrive.isDir(user, ancestors)) { // if parent is a dir
                 //create dir
-                FileSystem.createDirectory(user, ancestors);
-            } else if (FileSystem.isFile(user, path)) { // if it is a file
+                StreamDrive.createDirectory(user, ancestors);
+            } else if (StreamDrive.isFile(user, path)) { // if it is a file
                 // complain
                 Logger.info("Path already exists as a file: " + path);
-            } else if (FileSystem.isFile(user, ancestors)) {
+            } else if (StreamDrive.isFile(user, ancestors)) {
                 // complain
                 Logger.error("Subpath already exists as a file: " + ancestors);
                 //return null;

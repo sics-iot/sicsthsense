@@ -32,7 +32,7 @@ package models;
 
 import com.avaje.ebean.annotation.EnumValue;
 import logic.Argument;
-import logic.FileSystem;
+import logic.StreamDrive;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
@@ -124,11 +124,11 @@ public class Vfile extends Model {
     }
 
     public String getName() {
-        return FileSystem.getName(path);
+        return StreamDrive.getName(path);
     }
 
     public String getParentPath() {
-        return FileSystem.getParentPath(path);
+        return StreamDrive.getParentPath(path);
     }
 
     public void setLink(Stream linkedStream) {

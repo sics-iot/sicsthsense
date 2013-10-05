@@ -1,7 +1,7 @@
 @(streams : List[Stream], message: String="")
 
 @import helper._
-@import logic.FileSystem
+@import logic.StreamDrive
 
 @layout("Streams", message, session) {
 
@@ -13,7 +13,7 @@
 				<h4>Streams</h4>
 					<div id="vfileTree">
 						<ul>
-						@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))
+						@Html(StreamDrive.listHTMLFileSystem(Secured.getCurrentUser()))
 						</ul>
 					</div>
 				} else {

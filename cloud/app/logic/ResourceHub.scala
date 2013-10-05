@@ -157,7 +157,7 @@ object ResourceHub {
 
     val parsers = for {
       sp <- parsersFromJson(body)
-      if !FileSystem.exists(resource.owner, sp.inputParser)
+      if !StreamDrive.exists(resource.owner, sp.inputParser)
     } yield {
       sp.resource = resource
       StreamParser.create(sp)
@@ -173,7 +173,7 @@ object ResourceHub {
       sp <- parsersFromPlain(body)
 
       prefix = s"/${resource.label}/"
-      path = prefix + Stream.from(1).filterNot(i => FileSystem.exists(resource.owner, prefix + i)).head
+      path = prefix + Stream.from(1).filterNot(i => StreamDrive.exists(resource.owner, prefix + i)).head
     } yield {
       sp.resource = resource
       StreamParser.create(path, sp)
@@ -192,7 +192,7 @@ object ResourceHub {
     Seq(new StreamParser("(.*)", "text/plain", "unix", 1, 2, 1))
   }
 
-  def deleteOldRepresentations {
+  def deleteOldRepresentations() {
     DB.withConnection { implicit c =>
       val h2Sql =
         """
@@ -222,7 +222,7 @@ object ResourceHub {
         """.stripMargin
 
       val statement = c.createStatement()
-      val affectedRows = statement.executeUpdate(h2Sql)
+      val affectedRows = statement.executeUpdate(mySql)
 
       logger.debug(s"Successfully deleted $affectedRows old Representations from the database")
     }

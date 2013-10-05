@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import models.DataPoint;
-import logic.FileSystem;
+import logic.StreamDrive;
 import models.Resource;
 import models.Stream;
 import models.User;
@@ -438,7 +438,7 @@ public class CtrlStream extends Controller {
 	// @Security.Authenticated(Secured.class)
 	private static Result getData(User currentUser, User owner, String path,
 			Long tail, Long last, Long since) {
-		Vfile f = FileSystem.read(owner, path);
+		Vfile f = StreamDrive.read(owner, path);
 		if (f == null) {
 			return notFound();
 		}

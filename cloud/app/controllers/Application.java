@@ -33,7 +33,7 @@ package controllers;
 import com.github.cleverage.elasticsearch.IndexQuery;
 import com.github.cleverage.elasticsearch.IndexResults;
 import index.Indexer;
-import logic.FileSystem;
+import logic.StreamDrive;
 import models.Resource;
 import models.Setting;
 import models.Stream;
@@ -117,7 +117,7 @@ public class Application extends Controller {
 
     public static Result files() {
         User currentUser = Secured.getCurrentUser();
-        return ok(filesPage.render(FileSystem.lsDir(currentUser, "/"), "/", ""));
+        return ok(filesPage.render(StreamDrive.lsDir(currentUser, "/"), "/", ""));
     }
 
     public static Result viewStream(Long id) {

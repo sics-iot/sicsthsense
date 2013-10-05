@@ -33,10 +33,9 @@ package models;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.annotation.EnumValue;
-import com.avaje.ebean.annotation.Transactional;
 import controllers.Utils;
 import logic.Argument;
-import logic.FileSystem;
+import logic.StreamDrive;
 import play.Logger;
 import play.db.ebean.Model;
 
@@ -393,21 +392,21 @@ public class Stream extends Model implements Comparable<Stream> {
         Argument.notNull(stream.owner);
         Argument.absolutePath(path);
 
-        Vfile f = FileSystem.read(stream.owner, path);
+        Vfile f = StreamDrive.read(stream.owner, path);
 
         if (f == null) {
-            f = FileSystem.createFile(stream.owner, path);
+            f = StreamDrive.createFile(stream.owner, path);
         } else if (f.getType() == Vfile.Filetype.DIR) {
             String fileName;
 
             for (int i = 0; ; ++i) {
                 fileName = path + "\\newstream" + Integer.toString(i);
 
-                if (!FileSystem.exists(stream.owner, fileName))
+                if (!StreamDrive.exists(stream.owner, fileName))
                     break;
             }
 
-            f = FileSystem.createFile(stream.owner, fileName);
+            f = StreamDrive.createFile(stream.owner, fileName);
         }
 
         if (stream.type == StreamType.UNDEFINED) {
@@ -436,7 +435,7 @@ public class Stream extends Model implements Comparable<Stream> {
         Argument.notNull(user);
         Argument.absolutePath(path);
 
-        Vfile file = FileSystem.read(user, path);
+        Vfile file = StreamDrive.read(user, path);
 
         if (file == null) {
             return null;

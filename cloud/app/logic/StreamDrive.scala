@@ -37,7 +37,7 @@ import play.db.ebean.Transactional
 import scala.collection.JavaConversions.iterableAsScalaIterable
 import scalax.file.Path
 
-object FileSystem {
+object StreamDrive {
   private val logger = Logger(this.getClass)
 
   def createError {

@@ -1,7 +1,7 @@
 @(streams : List[Stream], stream: Stream, myForm: Form[Stream], message: String="")
 
 @import helper._
-@import logic.FileSystem
+@import logic.StreamDrive
 
 @streamPath=@{
 if(stream.file != null && stream.file.getPath() != null) {
@@ -34,7 +34,7 @@ stream.file.getParentPath()
 		<div class="span2 bs-docs-sidebar">
 				<div id="vfileTree">
 					<ul class="unstyled"><li class=''><i class='icon-hdd hideRoot'></i> <span class='dirNode selectedFile' data-filepath=''>Drive</span>
-						<ul class="folderNodeUL">@Html(FileSystem.listHTMLFileSystem(Secured.getCurrentUser()))</ul>
+						<ul class="folderNodeUL">@Html(StreamDrive.listHTMLFileSystem(Secured.getCurrentUser()))</ul>
 					</li></ul>
 				</div>
   	</div>
