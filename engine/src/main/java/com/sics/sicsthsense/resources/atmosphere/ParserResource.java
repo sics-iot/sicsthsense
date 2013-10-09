@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -61,8 +61,8 @@ public class ParserResource {
   private final AtomicLong counter;
 	private final Logger logger = LoggerFactory.getLogger(ParserResource.class);
 
-	public ParserResource(StorageDAO storage) {
-		this.storage = storage;
+	public ParserResource() {
+		this.storage = DAOFactory.getInstance();
 		this.counter = new AtomicLong();
 	}
 
@@ -75,14 +75,16 @@ public class ParserResource {
 	@GET
 	@Path("/{parserId}")
 	@Timed
-	public Message getParser(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+	public Message getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+		User visitor = new User();
 			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postParser(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+	public String postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+		User visitor = new User();
 		insertParser(parser);
 		return "";
 	}
@@ -92,7 +94,8 @@ public class ParserResource {
 	@Path("/{parserId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void putParser(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser) {
+	public void putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser) {
+		User visitor = new User();
 		logger.info("Updating parserId:"+parserId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify parser: "+parserId);
@@ -104,7 +107,8 @@ public class ParserResource {
 	@DELETE
 	@Path("/{parserId}")
 	@Timed
-	public void deleteParser(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+	public void deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+		User visitor = new User();
 		logger.warn("Deleting parserId:"+parserId);
 		Parser parser = storage.findParserById(parserId);
 		if (parser==null) {

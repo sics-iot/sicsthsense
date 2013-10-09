@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.cpr.Broadcaster;
@@ -67,8 +67,8 @@ public class StreamResource {
 	private final Logger logger = LoggerFactory.getLogger(StreamResource.class);
   private @PathParam("resourceId") Broadcaster topic;
 
-	public StreamResource(StorageDAO storage) {
-		this.storage = storage;
+	public StreamResource() {
+		this.storage = DAOFactory.getInstance();
 		this.counter = new AtomicLong();
 	}
 
@@ -102,7 +102,9 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public List<Stream> getStreams(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+	public List<Stream> getStreams(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+					@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+		User visitor = new User();
 			logger.info("Getting user/resource/streams "+userId+" "+resourceId);
 			checkHierarchy(userId,resourceId);
 			List<Stream> streams = storage.findStreamsByResourceId(resourceId);
@@ -112,7 +114,9 @@ public class StreamResource {
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
+	public Stream getStream(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+					@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
+		User visitor = new User();
 			logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId+" for "+visitor.getId());
 			checkHierarchy(userId,resourceId,streamId);
 			Stream stream = storage.findStreamById(streamId);
@@ -124,8 +128,9 @@ public class StreamResource {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
 	public List<DataPoint> getData(
-			@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+			//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
 			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
+		User visitor = new User();
 		logger.info("Getting stream:"+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
@@ -139,7 +144,8 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void postData(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
+	public void postData( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
+		User visitor = new User();
 		logger.info("Inserting into stream:"+streamId);
 		Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {

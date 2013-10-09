@@ -13,12 +13,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Message {
     public String author = "";
     public String message = "";
+		public long time = 0;
 
     public Message(){
     }
 
     public Message(String author, String message) {
         this.author = author;
+        this.message = message;
+    }
+    public Message(long time, String message) {
+        this.time = time;
         this.message = message;
     }
 }
