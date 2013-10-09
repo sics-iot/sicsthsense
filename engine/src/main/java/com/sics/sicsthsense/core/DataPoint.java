@@ -61,6 +61,10 @@ public class DataPoint {
 		this.value			= value;
 	}
 
+	public String toString() {
+		return getValue()+" @ "+getTimestamp();
+	}
+
 	public long getId()										{ return id; }
 	public long getStreamId()							{ return stream_id; }
 	public long getTimestamp()						{ return timestamp; }

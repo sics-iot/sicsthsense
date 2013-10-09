@@ -39,7 +39,7 @@ import com.yammer.dropwizard.jdbi.*;
 
 import com.sics.sicsthsense.core.*;
 
-public class PointMapper implements ResultSetMapper<DataPoint> {
+public class DataPointMapper implements ResultSetMapper<DataPoint> {
 	public DataPoint map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 		return new DataPoint(
 				r.getLong("id"), 

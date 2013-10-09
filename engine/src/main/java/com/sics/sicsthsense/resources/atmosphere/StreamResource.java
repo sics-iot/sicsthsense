@@ -156,9 +156,9 @@ public class StreamResource {
 		}*/
 		if (stream==null) {return "no stream";}
 		datapoint.setStreamId(streamId); // keep consistency
-		topic.broadcast("hello world");
-		insertDataPoint(datapoint);
-		return "posted";
+		insertDataPoint(datapoint); // insert first to fail early
+		topic.broadcast(datapoint.toString());
+		return "Posted successfully!";
 	}
 
 	void insertDataPoint(DataPoint datapoint) {
