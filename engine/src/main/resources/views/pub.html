@@ -32,9 +32,9 @@
         }
 
         function subscribe() {
-						resourceId = '%resourceId%';
+						streamId = '%streamId%';
             var request = {
-                url : 'http://localhost:8080/ws/users/1/resources/' + resourceId, //getElementByIdValue('topic'),
+                url : 'http://localhost:8080/ws/users/1/resources/1/streams/' + streamId + "/ws", //getElementByIdValue('topic'),
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
 

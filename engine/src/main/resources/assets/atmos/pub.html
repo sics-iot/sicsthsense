@@ -33,7 +33,7 @@
 
         function subscribe() {
             var request = {
-                url : 'http://localhost:8080/ws/a/' + getElementByIdValue('topic'),
+                url : 'http://localhost:8080/ws/users/1/resources/1/streams/' + getElementByIdValue('topic') + '/ws',
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
 

@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -54,7 +54,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-@Path("/users/{userId}/resources/{resourceId}/monitor")
+@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/monitor")
 @Produces(MediaType.TEXT_HTML)
 public class Monitor {
 
@@ -64,12 +64,12 @@ public class Monitor {
   @GET
   @Timed
   //public PublicFreemarkerView monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-  public String monitor(@PathParam("resourceId") String resourceId) throws IOException {
-		System.out.println("resource ID: ");
+  public String monitor(@PathParam("streamId") String streamId) throws IOException {
+		System.out.println("stream ID: "+streamId);
 
     URL url = Monitor.class.getResource("/views/pub.html");
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();
-		return markdown.replace("%resourceId%",resourceId);
+		return markdown.replace("%streamId%",streamId);
 		//return markdown;
 		/*
     BaseModel model = new BaseModel();

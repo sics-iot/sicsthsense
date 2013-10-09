@@ -100,11 +100,14 @@ public class StreamResource {
 			}
 	}
 
+	// Broken ?
 	@GET
 	@Timed
 	public List<Stream> getStreams(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-					@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+					@PathParam("userId") long userId //, @PathParam("resourceId") long resourceId
+					) {
 		User visitor = new User();
+		long resourceId = Long.parseLong(topic.getID());
 			logger.info("Getting user/resource/streams "+userId+" "+resourceId);
 			checkHierarchy(userId,resourceId);
 			List<Stream> streams = storage.findStreamsByResourceId(resourceId);
@@ -144,16 +147,18 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void postData( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
+	public String postData( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
 		User visitor = new User();
 		logger.info("Inserting into stream:"+streamId);
 		Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
+		if (stream==null) {return "no stream";}
 		datapoint.setStreamId(streamId); // keep consistency
-		
+		topic.broadcast("hello world");
 		insertDataPoint(datapoint);
+		return "posted";
 	}
 
 	void insertDataPoint(DataPoint datapoint) {
