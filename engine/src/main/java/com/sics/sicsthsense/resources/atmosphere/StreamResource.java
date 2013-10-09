@@ -28,6 +28,11 @@
  * */
 package com.sics.sicsthsense.resources;
 
+import org.atmosphere.annotation.Broadcast;
+import org.atmosphere.cpr.Broadcaster;
+import org.atmosphere.jersey.Broadcastable;
+import org.atmosphere.jersey.SuspendResponse;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
@@ -60,6 +65,7 @@ public class StreamResource {
 	private final StorageDAO storage;
   private final AtomicLong counter;
 	private final Logger logger = LoggerFactory.getLogger(StreamResource.class);
+  private @PathParam("resourceId") Broadcaster topic;
 
 	public StreamResource(StorageDAO storage) {
 		this.storage = storage;
@@ -129,6 +135,7 @@ public class StreamResource {
 	}
 
 	@POST
+	@Broadcast
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
@@ -139,8 +146,10 @@ public class StreamResource {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
 		datapoint.setStreamId(streamId); // keep consistency
+		
 		insertDataPoint(datapoint);
 	}
+
 	void insertDataPoint(DataPoint datapoint) {
 		storage.insertDataPoint(
 			datapoint.getId(),

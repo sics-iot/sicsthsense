@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,7 +50,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-@Path("/home")
+@Path("/")
 @Produces(MediaType.TEXT_HTML)
 public class PublicHomeResource {
 

@@ -26,11 +26,13 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.GET;
+//import javax.servlet.ServletContext;
+import javax.servlet.*;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -48,37 +50,46 @@ import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
+import com.yammer.dropwizard.jdbi.*;
+import com.yammer.dropwizard.db.*;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/BADusers/{userId}")
-//@Produces(MediaType.APPLICATION_JSON)
+@Path("/users/{userId}")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-		private final StorageDAO storage;
+		@Context ServletContext context;
+		private StorageDAO storage;
 		private final AtomicLong counter;
 		private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
-		public UserResource(StorageDAO storage) {
-			this.storage = storage;
+		public UserResource() {
 			this.counter = new AtomicLong();
+			storage = DAOFactory.getInstance();
 		}
 
 		@GET
 		@Timed
 		public User getUser(@PathParam("userId") long userId) {
-			System.out.println("getting User!! "+userId);
-			User user = storage.findUserById(userId);
-			return user;
+/*	System.out.println("getting User!! "+userId);
+	System.out.println("got context!! "+context);
+	Object obj =	context.getAttribute("storage");
+	System.out.println("got attr!! "+obj);
+*/
+	//		User user = storage.findUserById(userId);
+//			return user;
+				return new User();
 		}
 
 		@POST
 		@Timed
-		public Response post(@PathParam("userId") long userId, User user) {
+		public String post(@PathParam("userId") long userId, User user) {
 			//final long id = store.add(userId.get(), notification);
 			//return Response.created(UriBuilder.fromResource(NotificationResource.class).build(userId.get(), id).build();
-			return Response.status(201).entity("posted alright").build();
+			//return Response.status(201).entity("posted alright").build();
+			return "not posted yet...";
 		}
 
 }

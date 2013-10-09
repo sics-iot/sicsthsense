@@ -27,7 +27,7 @@
  * contains the Parsers and Streams of the associated Resource. 
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package com.sics.sicsthsense.resources.atmosphere;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -62,6 +62,7 @@ import com.sics.sicsthsense.model.security.Authority;
 // publicly reachable path of the resource
 @Path("/users/{userId}/resources")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ResourceResource {
 	private final StorageDAO storage;
 	private final AtomicLong counter;
@@ -69,18 +70,17 @@ public class ResourceResource {
 	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
 
 	// constructor with the system's stoarge and poll system.
-	public ResourceResource(StorageDAO storage, PollSystem pollSystem) {
-		this.storage = storage;
-		this.pollSystem = pollSystem;
+	public ResourceResource() {
+		this.storage = DAOFactory.getInstance();
+		this.pollSystem = null; //pollSystem;
 		this.counter = new AtomicLong();
 	}
 
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public List<Resource> getResources(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId) {
+	public List<Resource> getResources(@PathParam("userId") long userId) {
+		User visitor = new User();
 		logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
-
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		return resources;
 	}
@@ -89,7 +89,10 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+	//public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+		User visitor = new User();
+		logger.info("getResource()");
 		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource == null) {
@@ -111,7 +114,9 @@ public class ResourceResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
+	//public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
+	public void postResource( @PathParam("userId") long userId, Resource resource) {
+		User visitor = new User();
 		logger.info("Adding user/resource:"+resource.getLabel());
 		if (visitor.getId() != userId) {
 			logger.error("Not allowed to add resource");
@@ -122,10 +127,12 @@ public class ResourceResource {
 
 	// put updated resource definition 
 	@PUT
-	@Path("/{resourceId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+	@Path("/{resourceId}")
+	//public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
+		User visitor = new User();
 		logger.info("Updating resourceId:"+resourceId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify resource: "+resourceId);
@@ -153,10 +160,11 @@ public class ResourceResource {
 
 	// Post data to the resource, and run data through its parsers
 	@POST
-	@Path("/{resourceId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
-	@Timed
-	public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) { //,  DataPoint datapoint) {
+	@Path("/{resourceId}/data")
+	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
+	public void postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
+		User visitor = new User();
 		Resource resource = storage.findResourceById(resourceId);
 		logger.info("Adding user/resource:"+resource.getLabel());
 		//Resource resource = storage.findResourceById(resourceId);
