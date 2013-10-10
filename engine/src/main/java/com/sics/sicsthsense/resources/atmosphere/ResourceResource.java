@@ -60,7 +60,7 @@ import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 
 // publicly reachable path of the resource
-@Path("/users/{userId}/resources")
+@Path("/{userId}/resources")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ResourceResource {

@@ -61,7 +61,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
 
-	public void addServlet(Environment environment, StorageDAO storage) {
+	public void addServlet(Environment environment) {
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
@@ -69,18 +69,15 @@ public class EngineService extends Service<EngineConfiguration> {
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
 	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-		//atmosphereServlet.getServletContext().setAttribute("storage",storage);
+		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
 
-		environment.addServlet(atmosphereServlet, "/ws/*");
+		environment.addServlet(atmosphereServlet, "/users/*");
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
 		// register each resource type accessible through the API
-		//final DBIFactory factory = new DBIFactory();
-		//final DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
-		//final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 		DAOFactory.build(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
 
@@ -97,28 +94,9 @@ public class EngineService extends Service<EngineConfiguration> {
     OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
     environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 
-		environment.addResource(new UserResource(storage));
-    // Configure environment
-		/*
-    environment.scanPackagesForResourcesAndProviders(PublicHomeResource.class);
-    environment.addProvider(new ViewMessageBodyWriter());
-		environment.addResource(new ResourceResource(storage, pollSystem));
-		environment.addResource(new StreamResource(storage));
-		environment.addResource(new ParserResource(storage));
-		environment.addResource(new PublicOpenIDResource(storage));
-		*/
-		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
-	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-
-		environment.addServlet(atmosphereServlet, "/ws/*");
-		//addServlet(environment,storage);
-		//atmosphereServlet.getServletContext().setAttribute("storage",storage);
+		environment.addResource(new PublicHomeResource());
+    // Attach Atmosphere servlet
+		addServlet(environment);
 
     // Session handler to enable automatic session handling 
     environment.setSessionHandler(new SessionHandler());

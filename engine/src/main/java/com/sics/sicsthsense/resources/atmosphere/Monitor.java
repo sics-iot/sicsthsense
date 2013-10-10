@@ -54,7 +54,7 @@ import com.sics.sicsthsense.views.PublicFreemarkerView;
  *
  * @since 0.0.1
  */
-@Path("/users/{userId}/resources/{resourceId}/streams/{streamId}/monitor")
+@Path("/{userId}/resources/{resourceId}/streams/{streamId}/monitor")
 @Produces(MediaType.TEXT_HTML)
 public class Monitor {
 

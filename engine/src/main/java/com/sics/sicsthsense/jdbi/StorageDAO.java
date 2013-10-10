@@ -113,7 +113,7 @@ public interface StorageDAO {
   void deleteResource(@Bind("id") long id);
 
 	// Streams
-  @SqlQuery("select * from streams where resource_id = :resourceid")
+  @SqlQuery("select * from streams where resource_id = :resourceId")
 	@Mapper(StreamMapper.class)
   List<Stream> findStreamsByResourceId(@Bind("resourceId") long resourceId);
 

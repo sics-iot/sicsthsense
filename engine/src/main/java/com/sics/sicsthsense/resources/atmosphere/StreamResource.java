@@ -59,7 +59,7 @@ import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
 
-@Path("/users/{userId}/resources/{resourceId}/streams")
+@Path("/{userId}/resources/{resourceId}/streams")
 @Produces(MediaType.APPLICATION_JSON)
 public class StreamResource {
 	private final StorageDAO storage;

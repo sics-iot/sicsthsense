@@ -56,7 +56,7 @@ import com.yammer.dropwizard.db.*;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/users/{userId}")
+@Path("/{userId}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
