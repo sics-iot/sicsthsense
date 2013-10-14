@@ -69,7 +69,9 @@ public class EngineService extends Service<EngineConfiguration> {
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
 	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
+		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.authorization", "admin@example.com:password");
+		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.server", "http://localhost");
+		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
 
 		environment.addServlet(atmosphereServlet, "/users/*");
 	}

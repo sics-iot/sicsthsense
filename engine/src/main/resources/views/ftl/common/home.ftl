@@ -23,6 +23,9 @@
 	This is only available to people who authenticate with the
   specific email address set in <code>PublicOpenIDResource</code>.</p>
 
+	<hr />
+	Resources: <a href="/users/1/resources">/users/<i>1</i>/resources</a>
+
   <#include "../includes/common/footer.ftl">
 
 </div>
