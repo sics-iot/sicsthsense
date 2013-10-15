@@ -108,7 +108,7 @@ public class PollSystem {
 		system.scheduler().scheduleOnce(
 			Duration.create(0, TimeUnit.MILLISECONDS),
 		  actorRef, "rebuild", system.dispatcher(), null);
-		killSwitch.cancel(); // race condition?
+		if (killSwitch!=null) {killSwitch.cancel();} // race condition?
 
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) {logger.error("No resource with ID: "+resourceId); return;}
@@ -119,6 +119,8 @@ public class PollSystem {
 				Duration.create(resource.getPolling_period(), TimeUnit.MILLISECONDS),
 				actorRef, "probe", system.dispatcher(), null);
 			killSwitches.put(resourceId,killSwitch);
+		} else { // or get rid of the mapping
+			killSwitches.remove(resourceId);
 		}
 	}
 
