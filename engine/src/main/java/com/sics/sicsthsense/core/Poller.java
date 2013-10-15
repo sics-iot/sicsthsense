@@ -48,7 +48,6 @@ import com.sics.sicsthsense.core.Parser;
 import com.sics.sicsthsense.jdbi.StorageDAO;
  
 public class Poller extends UntypedActor {
-  //LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	private final Logger logger = LoggerFactory.getLogger(Poller.class);
 	public long resourceId;
 	public String url;
@@ -84,7 +83,7 @@ public class Poller extends UntypedActor {
 	}
 
 	public void applyParsers(String data) {
-		logger.info("Applying all parsers to data: "+data);
+		//logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
@@ -101,7 +100,7 @@ public class Poller extends UntypedActor {
 			if (message.equals("rebuild")) {
 				rebuild();
 			} else { // "probe"
-				logger.info("Received String message: to probe: {}", url);
+				//logger.info("Received String message: to probe: {}", url);
 				//getSender().tell(message, getSelf());
 
 				HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();

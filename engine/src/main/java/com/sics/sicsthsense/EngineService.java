@@ -82,8 +82,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		// register each resource type accessible through the API
 		DAOFactory.build(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
-
-		pollSystem = new PollSystem(storage);
+		pollSystem = PollSystem.build(storage);
 		pollSystem.createPollers();
 
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));

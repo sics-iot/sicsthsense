@@ -38,8 +38,10 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
@@ -55,6 +57,7 @@ import com.sics.sicsthsense.model.security.*;
  * </ul>
  * </p>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({
   "id",
   "username",
@@ -62,9 +65,7 @@ import com.sics.sicsthsense.model.security.*;
   "firstName",
   "lastName",
   "email",
-  "openIDDiscoveryInformationMemento",
   "openIDIdentifier",
-  "sessionToken",
   "authorities"
 })
 public class User {
@@ -96,7 +97,7 @@ public class User {
   @JsonProperty
   private String openIDIdentifier;
 
-  @JsonProperty
+  @JsonIgnore
   private UUID sessionToken;
 
   /**The authorities for this User (an unauthenticated user has no authorities) */
@@ -125,7 +126,7 @@ public class User {
   @JsonCreator
   public User(
     long id,
-    @JsonProperty("sessionToken") UUID sessionToken) {
+    UUID sessionToken) {
     this.id = id;
     this.sessionToken = sessionToken;
   }
@@ -245,7 +246,7 @@ public class User {
       .add("password", "**********")
       .add("email", email)
       .add("openIDIdentifier", openIDIdentifier)
-      .add("sessionToken", sessionToken)
+  //    .add("sessionToken", sessionToken)
       .add("firstName", firstName)
       .add("lastName", lastName)
       .toString();

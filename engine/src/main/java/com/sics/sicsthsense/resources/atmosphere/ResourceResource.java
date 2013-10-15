@@ -72,7 +72,7 @@ public class ResourceResource {
 	// constructor with the system's stoarge and poll system.
 	public ResourceResource() {
 		this.storage = DAOFactory.getInstance();
-		this.pollSystem = null; //pollSystem;
+		this.pollSystem = PollSystem.getInstance();
 		this.counter = new AtomicLong();
 	}
 
@@ -136,7 +136,7 @@ public class ResourceResource {
 		logger.info("Updating resourceId:"+resourceId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify resource: "+resourceId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		updateResource(resourceId, resource);
 	}

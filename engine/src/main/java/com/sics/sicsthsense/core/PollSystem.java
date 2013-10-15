@@ -42,16 +42,28 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Cancellable;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.StorageDAO;
  
 public class PollSystem {
+	private static PollSystem singleton;
 	private final Logger logger = LoggerFactory.getLogger(PollSystem.class);
 	private StorageDAO storage;
- // LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	private ActorSystem system;
 	public Map<Long, ActorRef> actors;
+	public Map<Long, Cancellable> killSwitches;
+
+	// Static methods to ensure single instance
+	public static PollSystem getInstance() {
+		return singleton;
+	}
+	public static PollSystem build(StorageDAO storage) {
+		singleton = new PollSystem(storage);
+		return singleton;
+	}
+
 
 	public PollSystem(StorageDAO storage) {
 		this.storage = storage;
@@ -62,6 +74,7 @@ public class PollSystem {
 		system = ActorSystem.create("SicsthAkkaSystem");
 
 		actors = new HashMap<Long, ActorRef>(1000);
+		killSwitches = new HashMap<Long, Cancellable>(1000);
 		List<Resource> toPoll = storage.findPolledResources();
 
 		// for each polled resource
@@ -74,24 +87,39 @@ public class PollSystem {
 		logger.info("Making poller: "+name+" on: "+url);
 		ActorRef actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
 		// schedule the actor to recieve a tick every period seconds
-		system.scheduler().schedule(
+		Cancellable killSwitch = system.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(period, TimeUnit.MILLISECONDS),
 		  actorRef, "probe", system.dispatcher(), null);
 		// test if poller is already there?
-
+		killSwitches.put(resourceId,killSwitch);
 		actors.put(resourceId, actorRef);
 	}
 
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
-		//Resource resource = storage.findResourceById(resourceId);
-		//if (resource==null) {logger.error("No resource with ID: "+resource.getId()); return;}
+		logger.info("Rebuilding poller: "+resourceId);
+
 		ActorRef actorRef = actors.get(resourceId);
+		Cancellable killSwitch = killSwitches.get(resourceId);
 		if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
+		
+		// send rebuild event
 		system.scheduler().scheduleOnce(
 			Duration.create(0, TimeUnit.MILLISECONDS),
 		  actorRef, "rebuild", system.dispatcher(), null);
+		killSwitch.cancel(); // race condition?
+
+		Resource resource = storage.findResourceById(resourceId);
+		if (resource==null) {logger.error("No resource with ID: "+resourceId); return;}
+		if (resource.getPolling_period() > 0) {
+			// reschedule the probe event
+			killSwitch = system.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(resource.getPolling_period(), TimeUnit.MILLISECONDS),
+				actorRef, "probe", system.dispatcher(), null);
+			killSwitches.put(resourceId,killSwitch);
+		}
 	}
 
 }

@@ -31,7 +31,6 @@ package com.sics.sicsthsense.resources.atmosphere;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.GET;
-//import javax.servlet.ServletContext;
 import javax.servlet.*;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -56,11 +55,10 @@ import com.yammer.dropwizard.db.*;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 
-@Path("/{userId}")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-		@Context ServletContext context;
 		private StorageDAO storage;
 		private final AtomicLong counter;
 		private final Logger logger = LoggerFactory.getLogger(UserResource.class);
@@ -72,15 +70,18 @@ public class UserResource {
 
 		@GET
 		@Timed
+		@Path("/")
+		public String listUsers() {
+			return "Can not list users...";
+		}
+
+		@GET
+		@Timed
+		@Path("/{userId}")
 		public User getUser(@PathParam("userId") long userId) {
-/*	System.out.println("getting User!! "+userId);
-	System.out.println("got context!! "+context);
-	Object obj =	context.getAttribute("storage");
-	System.out.println("got attr!! "+obj);
-*/
-	//		User user = storage.findUserById(userId);
-//			return user;
-				return new User();
+			System.out.println("getting User!! "+userId);
+			User user = storage.findUserById(userId);
+			return user;
 		}
 
 		@POST
