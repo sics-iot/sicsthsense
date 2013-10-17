@@ -1,4 +1,9 @@
 
+CREATE DATABASE sicsth2;
+CREATE USER 'sicsthsense'@'localhost' IDENTIFIED BY 'sicsdev';
+GRANT ALL PRIVILEGES ON sicsth2.* TO 'sicsthsense'@'localhost';
+USE sicsth2;
+
 create table actuators (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
