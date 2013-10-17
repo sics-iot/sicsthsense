@@ -19,7 +19,7 @@ var StreamPlots = {
 			var overviewPlot = window['streamplot'+streamID].overview;
 			overviewPlot.clearSelection();
 		},
-	setup : function(stream) {
+		setup : function(stream) {
 		var streamID = $('#'+stream.id).attr('stream_id');
 		var streamplot = '#streamplot' + streamID; // == '#'+stream.id
 		StreamPlots.activePlots.push(streamID);
