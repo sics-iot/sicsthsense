@@ -167,8 +167,8 @@ alter table functions add constraint fk_functions_owner_4 foreign key (owner_id)
 create index ix_functions_owner_4 on functions (owner_id);
 alter table resources add constraint fk_resources_owner_5 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_resources_owner_5 on resources (owner_id);
-alter table resources add constraint fk_resources_parent_6 foreign key (parent_id) references resources (id) on delete restrict on update restrict;
-create index ix_resources_parent_6 on resources (parent_id);
+#alter table resources add constraint fk_resources_parent_6 foreign key (parent_id) references resources (id) on delete restrict on update restrict;
+#create index ix_resources_parent_6 on resources (parent_id);
 alter table resource_log add constraint fk_resource_log_resource_7 foreign key (resource_id) references resources (id) on delete restrict on update restrict;
 create index ix_resource_log_resource_7 on resource_log (resource_id);
 alter table streams add constraint fk_streams_owner_8 foreign key (owner_id) references users (id) on delete restrict on update restrict;

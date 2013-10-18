@@ -30,6 +30,7 @@ package com.sics.sicsthsense.resources.atmosphere;
 
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -56,6 +57,7 @@ import com.sics.sicsthsense.model.security.Authority;
 
 @Path("/{userId}/resources/{resourceId}/parsers")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ParserResource {
 	private final StorageDAO storage;
   private final AtomicLong counter;
@@ -68,25 +70,36 @@ public class ParserResource {
 
 	@GET
 	@Timed
-	public Message getParsers(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
+	public List<Parser> getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
+			List<Parser> parsers = storage.findParsersByResourceId(resourceId);
+			return parsers;
 	}
 
 	@GET
 	@Path("/{parserId}")
 	@Timed
-	public Message getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+	public Parser getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
 		User visitor = new User();
-			return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
+			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
+			Parser parser = storage.findParserById(parserId);
+			return parser;
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+	public int postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+		logger.info("Creating parser!:"+parser.toString());
 		User visitor = new User();
-		insertParser(parser);
-		return "";
+		if (visitor.getId() != userId) { // only owners
+			logger.error("Not allowed to post parser");
+			//throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		parser.setResource_id(resourceId);
+		int parserId = insertParser(parser);
+		return parserId;
 	}
 
 	// put updated resource definition 
@@ -99,8 +112,9 @@ public class ParserResource {
 		logger.info("Updating parserId:"+parserId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify parser: "+parserId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		parser.setResource_id(resourceId);
 		updateParser(parserId, parser);
 	}
 
@@ -113,17 +127,17 @@ public class ParserResource {
 		Parser parser = storage.findParserById(parserId);
 		if (parser==null) {
 			logger.error("No parser to delete: "+parserId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to delete parser: "+parserId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		storage.deleteParser(parserId);
 	}
 
 	// add a resource 
-	void insertParser(Parser parser) {
+	int insertParser(Parser parser) {
 		logger.info("Adding "+parser);
 		storage.insertParser(
 			parser.getResource_id(),
@@ -135,6 +149,8 @@ public class ParserResource {
 			parser.getTime_group(),
 			1
 		);
+		// bad behaviour! Parsers are not unique to resourceid&streamid
+		return storage.findParserId(parser.getResource_id(), parser.getStream_id()); // return the new parser ID
 	}
 
 	// update a resource 

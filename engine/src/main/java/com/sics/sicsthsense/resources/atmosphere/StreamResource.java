@@ -162,18 +162,49 @@ public class StreamResource {
 	}
 
 	void insertDataPoint(DataPoint datapoint) {
+		if (datapoint.getTimestamp()<=0) {
+			datapoint.setTimestamp(java.lang.System.currentTimeMillis());
+		}
 		storage.insertDataPoint(
-			datapoint.getId(),
 			datapoint.getStreamId(),
-			datapoint.getTimestamp(),
-			datapoint.getValue()
+			datapoint.getValue(),
+			datapoint.getTimestamp()
 		);
 	}
 
 
 	@POST
-	public String postStream() {
-		return "posted";
+	public int postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream) {
+		logger.info("Creating stream!:"+stream.toString());
+		User visitor = new User();
+		if (visitor.getId() != userId) { // only owners
+			logger.error("Not allowed to post stream");
+			//throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		stream.setResource_id(resourceId);
+		stream.setOwner_id(userId);
+		int streamId = insertStream(stream);
+		return streamId;
 	}
+
+	int insertStream(Stream stream) {
+		storage.insertStream(
+			stream.getType(),
+			stream.getLatitude(),
+			stream.getLongitude(),
+			stream.getDescription(),
+			stream.getPublic_access(),
+			stream.getPublic_search(),
+			stream.getFrozen(),
+			stream.getHistory_size(),
+			stream.getLast_updated(),
+			stream.getSecret_key(),
+			stream.getOwner_id(),
+			stream.getResource_id(),
+			stream.getVersion()
+		);
+		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
+	}
+
 
 }

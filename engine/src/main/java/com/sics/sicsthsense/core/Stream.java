@@ -28,6 +28,7 @@
  * */
 package com.sics.sicsthsense.core;
 
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Stream {
@@ -59,10 +60,10 @@ public class Stream {
 	private long resource_id;
 	@JsonProperty
 	private int version;
-	//public String classtype;
 
     public Stream() {
-			//classtype="stream";
+			this.type = "D";
+			this.secret_key = UUID.randomUUID().toString();
 		}
     public Stream(long id) {
 			this();

@@ -45,6 +45,7 @@ import akka.event.LoggingAdapter;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.DeserializationConfig;
 import com.sics.sicsthsense.core.Parser;
+import com.sics.sicsthsense.model.ParseData;
 import com.sics.sicsthsense.jdbi.StorageDAO;
  
 public class Poller extends UntypedActor {
@@ -52,6 +53,7 @@ public class Poller extends UntypedActor {
 	public long resourceId;
 	public String url;
 	private ObjectMapper mapper;
+	private ParseData parsedata;
 	private StorageDAO storage;
 	private URL urlobj;
 	private String inputLine;
@@ -61,7 +63,8 @@ public class Poller extends UntypedActor {
 		this.resourceId=resourceId;
 		this.storage = storage;
 		mapper = new ObjectMapper(); // can reuse, share globally
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);                 
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		parsedata = new ParseData(mapper);
 		rebuild();
 	}
 
@@ -77,8 +80,8 @@ public class Poller extends UntypedActor {
 		for (Parser parser: parsers) {
 			// give each parser access to global entities
 			//logger.info(parser.toString());
-			parser.setStorage(storage);
-			parser.setMapper(mapper);
+			//parser.setStorage(storage);
+			//parser.setMapper(mapper);
 		}
 	}
 
@@ -87,7 +90,7 @@ public class Poller extends UntypedActor {
 		for (Parser parser: parsers) {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
-				parser.apply(data);
+				parsedata.apply(parser,data);
 			} catch (Exception e) {
 				logger.error("Parsing "+data+" failed!"+e);
 			}

@@ -28,6 +28,8 @@
  * */
 package com.sics.sicsthsense.core;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -65,6 +67,9 @@ public class Resource {
 		this.label	= "nolabel";
 		this.version= "1.0";
 		this.owner_id=-1;
+		this.parent_id=-1;
+		this.description="";
+		this.secret_key = UUID.randomUUID().toString();
 	}
 	public Resource(long id, String label) {
 		this();

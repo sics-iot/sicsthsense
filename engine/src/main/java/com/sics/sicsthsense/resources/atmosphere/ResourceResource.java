@@ -115,14 +115,16 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	//public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-	public void postResource( @PathParam("userId") long userId, Resource resource) {
+	public int postResource( @PathParam("userId") long userId, Resource resource) {
 		User visitor = new User();
 		logger.info("Adding user/resource:"+resource.getLabel());
 		if (visitor.getId() != userId) {
 			logger.error("Not allowed to add resource");
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		insertResource(resource);
+		resource.setOwner_id(userId); // should know the owner
+		int newId = insertResource(resource);
+		return newId;
 	}
 
 	// put updated resource definition 
@@ -144,17 +146,24 @@ public class ResourceResource {
 	@DELETE
 	@Path("/{resourceId}")
 	@Timed
-	public void deleteResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
+			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		logger.warn("Deleting resourceId:"+resourceId);
+		User visitor = new User();
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) {
 			logger.error("No resource to delete: "+resourceId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to delete resource: "+resourceId);
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		// delete child streams and parsers
+		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
+		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
+		for (Parser p: parsers) {storage.deleteParser(p.getId());}
+		for (Stream s: streams) {storage.deleteStream(s.getId());}
 		storage.deleteResource(resourceId);
 	}
 
@@ -172,10 +181,13 @@ public class ResourceResource {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		// should actually save it!
+		// storage.insertDataPoint(datapoint)
 	}
 	
 	// add a resource 
-	void insertResource(Resource resource) {
+	int insertResource(Resource resource) {
+		// should check label exists!
+
 		storage.insertResource( 
 			resource.getLabel(),
 			resource.getVersion(), 
@@ -185,10 +197,9 @@ public class ResourceResource {
 			resource.getPolling_authentication_key(), 
 			resource.getPolling_period(), 
 			resource.getSecret_key(), 
-			resource.getDescription(), 
-			resource.getLast_polled(), 
-			resource.getLast_posted() 
+			resource.getDescription() 
 		);
+		return storage.findResourceId(resource.getLabel());
 	}
 
 	// add a resource 
