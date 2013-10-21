@@ -134,7 +134,7 @@ public class StreamResource {
 			//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
 			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
 		User visitor = new User();
-		logger.info("Getting stream:"+streamId);
+		logger.info("Getting stream: "+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);

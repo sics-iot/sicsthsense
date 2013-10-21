@@ -88,8 +88,8 @@ public class PollSystem {
 		ActorRef actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
 		// schedule the actor to recieve a tick every period seconds
 		Cancellable killSwitch = system.scheduler().schedule(
-				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(period, TimeUnit.MILLISECONDS),
+				Duration.create(0, TimeUnit.SECONDS),
+				Duration.create(period, TimeUnit.SECONDS),
 		  actorRef, "probe", system.dispatcher(), null);
 		// test if poller is already there?
 		killSwitches.put(resourceId,killSwitch);
@@ -106,7 +106,7 @@ public class PollSystem {
 		
 		// send rebuild event
 		system.scheduler().scheduleOnce(
-			Duration.create(0, TimeUnit.MILLISECONDS),
+			Duration.create(0, TimeUnit.SECONDS),
 		  actorRef, "rebuild", system.dispatcher(), null);
 		if (killSwitch!=null) {killSwitch.cancel();} // race condition?
 
@@ -115,8 +115,8 @@ public class PollSystem {
 		if (resource.getPolling_period() > 0) {
 			// reschedule the probe event
 			killSwitch = system.scheduler().schedule(
-				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(resource.getPolling_period(), TimeUnit.MILLISECONDS),
+				Duration.create(0, TimeUnit.SECONDS),
+				Duration.create(resource.getPolling_period(), TimeUnit.SECONDS),
 				actorRef, "probe", system.dispatcher(), null);
 			killSwitches.put(resourceId,killSwitch);
 		} else { // or get rid of the mapping

@@ -11,7 +11,7 @@ e.setUser("1")
 
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
-newresource = {"label": resourceLabel}
+newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":200}
 jsonstr = json.dumps(newresource)
 #print jsonstr
 
@@ -33,18 +33,25 @@ if True:
 		#print parserjsonstr
 		newId = e.createParser(resourceId,parserjsonstr)
 		print "new parser ID: "+newId;
-print "Now deleting it all..."
-e.deleteResource(resourceId)
+
 
 # POST data
 
-#for x in range(0,3):
-#	result = e.postStreamData("1","1",'{ "value":"3113" }')
-#	print result
+for x in range(0,3):
+	data = {"value": str(random.randint(0,99))}
+	result = e.postStreamData(resourceId,streamId,json.dumps(data))
+	print result
 	#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
 
 
 # GET data
 
-#result = e.getStreamData("1","1")
-#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
+result = e.getStreamData(resourceId,streamId)
+print json.dumps(json.loads(result), sort_keys = False, indent = 4)
+
+
+if False:
+	print "Now deleting it all..."
+	e.deleteResource(resourceId)
+
+

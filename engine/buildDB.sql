@@ -159,7 +159,8 @@ create table users_streams (
 ;
 alter table actuators add constraint fk_actuators_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_actuators_owner_1 on actuators (owner_id);
-alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+#alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
+#alter table data_point_double add constraint fk_data_point_double_stream_2 foreign key (stream_id) references streams (id) on delete set null on update restrict;
 create index ix_data_point_double_stream_2 on data_point_double (stream_id);
 alter table data_point_string add constraint fk_data_point_string_stream_3 foreign key (stream_id) references streams (id) on delete restrict on update restrict;
 create index ix_data_point_string_stream_3 on data_point_string (stream_id);

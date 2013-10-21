@@ -186,9 +186,9 @@ public interface StorageDAO {
 
 
 	// DataPoints
-  @SqlQuery("select * from data_point_double where stream_id = :stream_id limit 10")
+  @SqlQuery("select * from data_point_double where id = :id limit 10")
 	@Mapper(DataPointMapper.class)
-  DataPoint findPointByStreamId(@Bind("stream_id") long stream_id);
+  DataPoint findPointById(@Bind("id") long id);
 
   @SqlQuery("select * from data_point_double where stream_id = :stream_id limit :limit")
 	@Mapper(DataPointMapper.class)
