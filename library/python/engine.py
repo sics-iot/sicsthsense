@@ -31,11 +31,11 @@ class Engine:
 	# Resource CRUD
 	def createResource(self, resourceJSON):
 		url = self.hostname+"/users/"+str(self.userId)+"/resources/"
-		return self.postToURL(url,resourceJSON)
+		return self.postToURL(url, resourceJSON)
 	
 	def updateResource(self, resourceId, resourceJSON):
 		url = self.genResourceURL(resourceId)
-		return self.postToURL(url,resourceJSON)
+		return self.putToURL(url, resourceJSON)
 
 	def deleteResource(self, resourceId):
 		url = self.genResourceURL(resourceId)
@@ -45,11 +45,11 @@ class Engine:
 	# Stream CRUD
 	def createStream(self, resourceId, streamJSON):
 		url = self.genResourceURL(resourceId)+"/streams"
-		return self.postToURL(url,streamJSON)
+		return self.postToURL(url, streamJSON)
 		
 	def updateStream(self, resourceId, streamId, streamJSON):
 		url = self.genStreamURL(resourceId, streamId)
-		return self.postToURL(url,streamJSON)
+		return self.putToURL(url, streamJSON)
 	
 	def deleteStream(self, resourceId, streamId):
 		url = self.genStreamURL(resourceId, streamId)
@@ -59,7 +59,11 @@ class Engine:
 	# Parser CRUD
 	def createParser(self, resourceId, parserJSON):
 		url = self.genResourceURL(resourceId)+"/parsers"
-		return self.postToURL(url,parserJSON)
+		return self.postToURL(url, parserJSON)
+
+	def updateParser(self, resourceId, parserId, parserJSON):
+		url = self.genParserURL(resourceId, parserId)
+		return self.putToURL(url, parserJSON)
 
 	def deleteParser(self, resourceId, parserId):
 		url = self.genParserURL(resourceId, parserId)
@@ -76,33 +80,17 @@ class Engine:
 	# Data posting 
 	def postResourceData(self, resourceId, value, time=None):
 		url = self.genResourceURL(resourceId)+"/data"
-		return self.postToURL(url,value)
+		return self.postToURL(url, value)
 
 	def postStreamData(self, resourceId, streamId, value, time=None):
 		url = self.genStreamURL(resourceId, streamId)+"/data"
-		return self.postToURL(url,value)
+		return self.postToURL(url, value)
 
 
-	# Data getting
-
+	# GET data
 	def getStreamData(self, resourceId, streamId, count=10):
 		url = self.genStreamURL(resourceId, streamId)+"/data"
 		return self.getFromURL(url)
-
-	# Delete data
-	def deleteURL(self, url):
-		if not self.valid():
-			return "Engine configuration not valid!"
-		print "url: "+url
-		try:
-			req2 = RequestWithMethod("DELETE",url)
-			response = urllib2.urlopen(req2)
-		except Exception as e:
-			print "Connection to "+url+" failed\n!",e
-			return None
-		# check response was 20X
-		return response.read()
-	
 
 
 	#
@@ -164,6 +152,37 @@ class Engine:
 			print "Error: HTTP return code "+response.getcode()
 			print response.info()
 		return response.read()
+
+	# DELETE data
+	def deleteURL(self, url):
+		if not self.valid():
+			return "Engine configuration not valid!"
+		print "DELETE url: "+url
+		try:
+			req2 = RequestWithMethod("DELETE",url)
+			response = urllib2.urlopen(req2)
+		except Exception as e:
+			print "Connection to "+url+" failed\n!",e
+			return None
+		# check response was 20X
+		return response.read()
+	
+	# PUT data
+	def putToURL(self, url, data):
+		if not self.valid():
+			return "Engine configuration not valid!"
+		print "PUT url: "+url
+		headers = {'Content-Type':'application/json'}
+		try:
+			req2 = RequestWithMethod("PUT", url, data, headers)
+			response = urllib2.urlopen(req2)
+		except Exception as e:
+			print "Connection to "+url+" failed\n!",e
+			return None
+		# check response was 20X
+		return response.read()
+	
+
 
 
 	#

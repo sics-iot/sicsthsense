@@ -79,49 +79,63 @@ public class PollSystem {
 
 		// for each polled resource
 		for (Resource resource: toPoll) {
-			createPoller(resource.getId(), resource.getLabel(),resource.getPolling_url(),resource.getPolling_period(),null);
+			createPoller(resource.getId(), resource.getLabel(), resource.getPolling_url(), resource.getPolling_period(), null);
 		}
+	}
+	public void createPoller(Resource resource) {
+		createPoller(resource.getId(), resource.getLabel(), resource.getPolling_url(), resource.getPolling_period(), null);
 	}
 
 	public void createPoller(long resourceId, String name, String url, long period, String auth) {
 		logger.info("Making poller: "+name+" on: "+url);
-		ActorRef actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
-		// schedule the actor to recieve a tick every period seconds
-		Cancellable killSwitch = system.scheduler().schedule(
-				Duration.create(0, TimeUnit.SECONDS),
-				Duration.create(period, TimeUnit.SECONDS),
-		  actorRef, "probe", system.dispatcher(), null);
-		// test if poller is already there?
-		killSwitches.put(resourceId,killSwitch);
-		actors.put(resourceId, actorRef);
+
+		ActorRef actorRef = actors.get(resourceId);
+		if (actorRef==null) { 
+			actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
+			actors.put(resourceId, actorRef);
+		}
+		if (period > 0) {
+			// schedule the actor to recieve a tick every period seconds
+			Cancellable killSwitch = system.scheduler().schedule(Duration.create(0, TimeUnit.SECONDS),
+					Duration.create(period, TimeUnit.SECONDS), actorRef, "probe", system.dispatcher(), null);
+			// test if poller is already there?
+			killSwitches.put(resourceId,killSwitch);
+		}
 	}
 
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
 		logger.info("Rebuilding poller: "+resourceId);
 
-		ActorRef actorRef = actors.get(resourceId);
-		Cancellable killSwitch = killSwitches.get(resourceId);
-		if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
-		
-		// send rebuild event
-		system.scheduler().scheduleOnce(
-			Duration.create(0, TimeUnit.SECONDS),
-		  actorRef, "rebuild", system.dispatcher(), null);
-		if (killSwitch!=null) {killSwitch.cancel();} // race condition?
-
 		Resource resource = storage.findResourceById(resourceId);
-		if (resource==null) {logger.error("No resource with ID: "+resourceId); return;}
+		if (resource==null) {
+			logger.error("No resource with ID: "+resourceId); 
+			killSwitches.remove(resourceId);
+			return;
+		}
+		Cancellable killSwitch = killSwitches.get(resourceId);
+		if (killSwitch!=null) {killSwitch.cancel();} // Cancel polling // race condition?
+
+		//ActorRef actorRef = actors.get(resourceId);
+		//if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
+		
+		createPoller(resource);
+
+		/*
+		// send rebuild event
+		system.scheduler().scheduleOnce(Duration.create(0, TimeUnit.SECONDS), 
+			actorRef, "rebuild", system.dispatcher(), null);
+
 		if (resource.getPolling_period() > 0) {
 			// reschedule the probe event
-			killSwitch = system.scheduler().schedule(
-				Duration.create(0, TimeUnit.SECONDS),
+			killSwitch = system.scheduler().schedule(Duration.create(0, TimeUnit.SECONDS),
 				Duration.create(resource.getPolling_period(), TimeUnit.SECONDS),
 				actorRef, "probe", system.dispatcher(), null);
 			killSwitches.put(resourceId,killSwitch);
 		} else { // or get rid of the mapping
 			killSwitches.remove(resourceId);
 		}
+		*/
 	}
 
 }

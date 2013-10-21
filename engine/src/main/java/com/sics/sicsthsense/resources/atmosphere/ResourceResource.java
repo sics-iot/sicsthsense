@@ -92,7 +92,6 @@ public class ResourceResource {
 	//public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		User visitor = new User();
-		logger.info("getResource()");
 		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource == null) {
@@ -123,8 +122,10 @@ public class ResourceResource {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		resource.setOwner_id(userId); // should know the owner
-		int newId = insertResource(resource);
-		return newId;
+		int resourceId = insertResource(resource);
+		// remake pollers with updated Resource attribtues
+		pollSystem.rebuildResourcePoller(resourceId);
+		return resourceId;
 	}
 
 	// put updated resource definition 
@@ -144,8 +145,8 @@ public class ResourceResource {
 	}
 
 	@DELETE
-	@Path("/{resourceId}")
 	@Timed
+	@Path("/{resourceId}")
 	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
 			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		logger.warn("Deleting resourceId:"+resourceId);
@@ -165,6 +166,8 @@ public class ResourceResource {
 		for (Parser p: parsers) {storage.deleteParser(p.getId());}
 		for (Stream s: streams) {storage.deleteStream(s.getId());}
 		storage.deleteResource(resourceId);
+		// remake pollers with updated Resource attribtues
+		pollSystem.rebuildResourcePoller(resourceId);
 	}
 
 	// Post data to the resource, and run data through its parsers
@@ -176,12 +179,10 @@ public class ResourceResource {
 		User visitor = new User();
 		Resource resource = storage.findResourceById(resourceId);
 		logger.info("Adding user/resource:"+resource.getLabel());
-		//Resource resource = storage.findResourceById(resourceId);
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		// should actually save it!
-		// storage.insertDataPoint(datapoint)
+		//should run it through the parsers
 	}
 	
 	// add a resource 
@@ -203,17 +204,17 @@ public class ResourceResource {
 	}
 
 	// add a resource 
-	void updateResource(long resourceId, Resource resource) {
-		logger.info("Updating resourceID "+resourceId+" to: "+resource);
-		//long parent_id = resource.getParent_id();
-		//if (parent_id==0) {parent_id=null;}
+	void updateResource(long resourceId, Resource newresource) {
+		logger.info("Updating resourceID "+resourceId+" to: "+newresource);
+
+		Resource resource = storage.findResourceById(resourceId);
+		resource.update(newresource);
+	
 		storage.updateResource( 
-			resourceId, // the reosurce ID from the PUT'd URL
+			resourceId, // the resource ID from the PUT'd URL
 			resource.getLabel(),
 			resource.getVersion(), 
 			resource.getOwner_id(), 
-			//resource.getParent_id(), 
-			//parent_id,
 			null,
 			resource.getPolling_url(), 
 			resource.getPolling_authentication_key(), 

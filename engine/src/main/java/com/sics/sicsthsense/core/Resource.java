@@ -114,6 +114,14 @@ public class Resource {
 		return false;
 	}
 
+	public void update(Resource newresource) {
+		if (newresource.getLabel()!="nolabel") {setLabel(newresource.getLabel());}		
+		if (newresource.getDescription()!="") {setDescription(newresource.getDescription());}		
+		setPolling_period(newresource.getPolling_period());
+		if (newresource.getPolling_url()!="") {setPolling_url(newresource.getPolling_url());}		
+		if (newresource.getPolling_authentication_key()!="") {setPolling_authentication_key(newresource.getPolling_authentication_key());}		
+	}
+
 
 	public long   getId()						{ return id; }
 public String getVersion()			{ return "1.0"; }

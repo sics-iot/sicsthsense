@@ -11,7 +11,7 @@ e.setUser("1")
 
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
-newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":200}
+newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":30}
 jsonstr = json.dumps(newresource)
 #print jsonstr
 

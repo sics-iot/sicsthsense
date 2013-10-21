@@ -174,10 +174,10 @@ public interface StorageDAO {
   void updateParser(
 		@Bind("id") long id,
 		@Bind("input_parser") String input_parser,
-		@Bind("intput_type") String input_type,
-		@Bind("timeformat")  String timeformat,
-		@Bind("data_group")  int data_group,
-		@Bind("time_group")  int time_group,
+		@Bind("intput_type")  String input_type,
+		@Bind("timeformat")   String timeformat,
+		@Bind("data_group")   int data_group,
+		@Bind("time_group")   int time_group,
 		@Bind("number_of_points")  int number_of_points 
 	);
 
