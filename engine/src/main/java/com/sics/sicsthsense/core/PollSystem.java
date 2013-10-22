@@ -108,7 +108,7 @@ public class PollSystem {
 		logger.info("Rebuilding poller: "+resourceId);
 
 		Resource resource = storage.findResourceById(resourceId);
-		if (resource==null) {
+		if (resource==null) { // it may have been deleted
 			logger.error("No resource with ID: "+resourceId); 
 			killSwitches.remove(resourceId);
 			return;

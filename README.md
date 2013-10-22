@@ -12,3 +12,13 @@ Please read the Wiki for more details.
 
 -Contiki
 
+ToDo
+
+* discovery-free registration (specify resources manually)
+* setting url arguments
+* accounts support
+* coap support
+* cloud-side rule engine
+* cloud-side scripting via Actinium
+
+

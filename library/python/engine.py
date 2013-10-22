@@ -1,8 +1,9 @@
 #!/usr/bin/python
 import urllib, urllib2
 import simplejson as json
+from websocket import create_connection
 
-version = 0.1
+version = 0.2
 
 class RequestWithMethod(urllib2.Request):
   def __init__(self, method, *args, **kwargs):
@@ -16,7 +17,7 @@ class RequestWithMethod(urllib2.Request):
 class Engine:
 	"""Object for interacting with the SicsthSense Engine"""
 	#hostname = "http://sense.sics.se:8080" 
-	hostname = "http://localhost:8080" 
+	hostname = "localhost:8080" 
 
 	def __init__(self, userId=None):
 		self.setUser(userId)
@@ -30,43 +31,43 @@ class Engine:
 
 	# Resource CRUD
 	def createResource(self, resourceJSON):
-		url = self.hostname+"/users/"+str(self.userId)+"/resources/"
+		url = "http://"+self.hostname+"/users/"+str(self.userId)+"/resources/"
 		return self.postToURL(url, resourceJSON)
 	
 	def updateResource(self, resourceId, resourceJSON):
-		url = self.genResourceURL(resourceId)
+		url = "http://"+self.genResourceURL(resourceId)
 		return self.putToURL(url, resourceJSON)
 
 	def deleteResource(self, resourceId):
-		url = self.genResourceURL(resourceId)
+		url = "http://"+self.genResourceURL(resourceId)
 		return self.deleteURL(url)
 
 
 	# Stream CRUD
 	def createStream(self, resourceId, streamJSON):
-		url = self.genResourceURL(resourceId)+"/streams"
+		url = "http://"+self.genResourceURL(resourceId)+"/streams"
 		return self.postToURL(url, streamJSON)
 		
 	def updateStream(self, resourceId, streamId, streamJSON):
-		url = self.genStreamURL(resourceId, streamId)
+		url = "http://"+self.genStreamURL(resourceId, streamId)
 		return self.putToURL(url, streamJSON)
 	
 	def deleteStream(self, resourceId, streamId):
-		url = self.genStreamURL(resourceId, streamId)
+		url = "http://"+self.genStreamURL(resourceId, streamId)
 		return self.deleteURL(url)
 
 
 	# Parser CRUD
 	def createParser(self, resourceId, parserJSON):
-		url = self.genResourceURL(resourceId)+"/parsers"
+		url = "http://"+self.genResourceURL(resourceId)+"/parsers"
 		return self.postToURL(url, parserJSON)
 
 	def updateParser(self, resourceId, parserId, parserJSON):
-		url = self.genParserURL(resourceId, parserId)
+		url = "http://"+self.genParserURL(resourceId, parserId)
 		return self.putToURL(url, parserJSON)
 
 	def deleteParser(self, resourceId, parserId):
-		url = self.genParserURL(resourceId, parserId)
+		url = "http://"+self.genParserURL(resourceId, parserId)
 		return self.deleteURL(url)
 
 
@@ -79,18 +80,31 @@ class Engine:
 
 	# Data posting 
 	def postResourceData(self, resourceId, value, time=None):
-		url = self.genResourceURL(resourceId)+"/data"
+		url = "http://"+self.genResourceURL(resourceId)+"/data"
 		return self.postToURL(url, value)
 
 	def postStreamData(self, resourceId, streamId, value, time=None):
-		url = self.genStreamURL(resourceId, streamId)+"/data"
+		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
 		return self.postToURL(url, value)
+
+	# generate a websocket for posting to a specific stream
+	def genWebsocketPost(self, resourceId, streamId):
+		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
+		ws = create_connection(url)
+		return ws
+
+	# generate a websocket for posting to a specific stream
+	def genWebsocketGet(self, resourceId, streamId):
+		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
+		ws = create_connection(url)
+		return ws
 
 
 	# GET data
 	def getStreamData(self, resourceId, streamId, count=10):
-		url = self.genStreamURL(resourceId, streamId)+"/data"
+		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
 		return self.getFromURL(url)
+
 
 
 	#
@@ -182,7 +196,6 @@ class Engine:
 		# check response was 20X
 		return response.read()
 	
-
 
 
 	#
