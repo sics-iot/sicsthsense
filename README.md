@@ -12,14 +12,3 @@ This repository contain many different aspects of the SicsthSense system:
 * `Contiki`: Code for installing on small devices that can then talk to SicsthSense.
 * `Android`: Preliminary code to run on Android phones.
 * `Depricated`: old code and prototypes.
-
-
-ToDo
----
-* discovery-free registration (specify resources manually)
-* setting url arguments
-* accounts support
-* cloud-side rule engine
-* cloud-side scripting via Actinium
-
-
