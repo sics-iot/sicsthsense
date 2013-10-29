@@ -29,28 +29,31 @@ from websocket import create_connection
 
 version = 0.2
 
+# Class to provide PUT and DELETE methods on HTTP Requests
 class RequestWithMethod(urllib2.Request):
   def __init__(self, method, *args, **kwargs):
     self._method = method
     urllib2.Request.__init__(self, *args, **kwargs)
-
   def get_method(self):
     return self._method
 
 
 class Engine:
-	"""Object for interacting with the SicsthSense Engine"""
-	#hostname = "http://sense.sics.se:8080" 
-	hostname = "localhost:8080" 
+	"""Handle for interacting with the SicsthSense Engine"""
+	#hostname = "http://sense.sics.se:8080"
+	hostname = "localhost:8080"
 
-	def __init__(self, userId=None):
-		self.setUser(userId)
+	# create the Engine handle, should specify user, maybe hostname
+	def __init__(self, userId, hostname="localhost:8080"):
+		self.setUserId(userId)
+		self.setHostname(hostname)
 
 	def registerUser(userJSON):
+		# does not work, may never work
 		pass
+
 	def updateUser(userId, userJSON):
-		pass
-	def deleteUser(userId):
+		# should work in future
 		pass
 
 	# Resource CRUD
@@ -95,57 +98,39 @@ class Engine:
 		return self.deleteURL(url)
 
 
-	# Parser & Stream CRUD sugar
-	def createStreamParser(self, resourceId, streamParserJSON):
-		self.createParser(resourceId, streamParserJSON)
-		#self.createStream(resourceId, streamParserJSON)
 
-
-
-	# Data posting 
+	# Data posting  to a resource (to be run through Parsers)
 	def postResourceData(self, resourceId, value, time=None):
 		url = "http://"+self.genResourceURL(resourceId)+"/data"
 		return self.postToURL(url, value)
 
+	# Data posting direct to a Stream
 	def postStreamData(self, resourceId, streamId, value, time=None):
 		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
 		return self.postToURL(url, value)
 
-	# generate a websocket for posting to a specific stream
+	# Generate a websocket for posting to a specific stream
 	def genWebsocketPost(self, resourceId, streamId):
 		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
 		ws = create_connection(url)
 		return ws
 
-	# generate a websocket for posting to a specific stream
+	# Generate a websocket for listening to a specific stream
 	def genWebsocketGet(self, resourceId, streamId):
 		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
 		ws = create_connection(url)
 		return ws
 
-
-	# GET data
+	# GET data from a Stream
 	def getStreamData(self, resourceId, streamId, count=10):
 		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
 		return self.getFromURL(url)
 
 
 
-	#
+	###########
 	# Utility methods
-	#
-
-	# Build the URL to the given resource, using the hostname and userId
-	def genResourceURL(self, resourceId):
-		return self.hostname+"/users/"+str(self.userId)+"/resources/"+str(resourceId)
-
-	# Build the URL to the given stream, using the hostname, userId and resourceId
-	def genStreamURL(self, resourceId, streamId):
-		return self.genResourceURL(resourceId)+"/streams/"+str(streamId)
-
-	# Build the URL to the given stream, using the hostname, userId and resourceId
-	def genParserURL(self, resourceId, parserId):
-		return self.genResourceURL(resourceId)+"/parsers/"+str(parserId)
+	###########
 
 	# Ensure hostname and userId are set
 	def valid(self):
@@ -220,7 +205,18 @@ class Engine:
 		# check response was 20X
 		return response.read()
 	
+	# Create URL that correspond to appropriate HTTP Resources
+	# Build the URL to the given resource, using the hostname and userId
+	def genResourceURL(self, resourceId):
+		return self.hostname+"/users/"+str(self.userId)+"/resources/"+str(resourceId)
 
+	# Build the URL to the given stream, using the hostname, userId and resourceId
+	def genStreamURL(self, resourceId, streamId):
+		return self.genResourceURL(resourceId)+"/streams/"+str(streamId)
+
+	# Build the URL to the given stream, using the hostname, userId and resourceId
+	def genParserURL(self, resourceId, parserId):
+		return self.genResourceURL(resourceId)+"/parsers/"+str(parserId)
 
 	#
 	# Getters and Setters
@@ -228,7 +224,7 @@ class Engine:
 	def setHostname(self,hostname):
 		self.hostname = hostname
 
-	def setUser(self,userId):
+	def setUserId(self,userId):
 		self.userId = userId
 
 

@@ -45,6 +45,7 @@ create table resources (
   label                     varchar(255),
   polling_period            bigint,
   last_polled               bigint,
+  last_posted               bigint,
   polling_url               varchar(255),
   polling_authentication_key varchar(255),
   description               varchar(255),
