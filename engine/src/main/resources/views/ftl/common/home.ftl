@@ -10,11 +10,11 @@
 <#include "../includes/common/header.ftl">
 
   <h1>SICSSense Engine</h1>
-
+	<!--
   <p>Login using <a href="/openid/login">OpenID</a> or <a href="/password/login">Username/Password</a> to allow access you personal data streams.</p>
 
 	<p><a href="/openid/logout">Logout</a> from either authentication method</p>
-
+	
   <p><a href="/private/home">Access public info</a>. This is available to anyone</p>
 
   <p><a href="/private/dashboard">Access personal info</a>. This is available to anyone after authentication</p>
@@ -22,7 +22,7 @@
   <p><a href="/private/admin">Access private info</a>. 
 	This is only available to people who authenticate with the
   specific email address set in <code>PublicOpenIDResource</code>.</p>
-
+-->
 	<hr />
 	Resources: <a href="/users/1/resources">/users/<i>1</i>/resources</a>
 
