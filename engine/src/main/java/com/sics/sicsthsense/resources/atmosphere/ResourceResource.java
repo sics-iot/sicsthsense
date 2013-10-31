@@ -104,7 +104,7 @@ public class ResourceResource {
 		}
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
-//			throw new WebApplicationException(Status.FORBIDDEN);
+//		throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		return resource;
 	}
@@ -117,6 +117,10 @@ public class ResourceResource {
 	public int postResource( @PathParam("userId") long userId, Resource resource) {
 		User visitor = new User();
 		logger.info("Adding user/resource:"+resource.getLabel());
+		User owner = storage.findUserById(userId);
+		if (owner==null) { // user does not exist
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
 		if (visitor.getId() != userId) {
 			logger.error("Not allowed to add resource");
 			//throw new WebApplicationException(Status.FORBIDDEN);

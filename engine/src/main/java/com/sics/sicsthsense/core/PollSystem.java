@@ -91,7 +91,7 @@ public class PollSystem {
 
 		ActorRef actorRef = actors.get(resourceId);
 		if (actorRef==null) { 
-			actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), name);
+			actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), String.valueOf(resourceId));
 			actors.put(resourceId, actorRef);
 		}
 		if (period > 0) {

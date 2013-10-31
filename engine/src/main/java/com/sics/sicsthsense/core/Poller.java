@@ -74,6 +74,9 @@ public class Poller extends UntypedActor {
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) {logger.error("Resource does not exist: "+resourceId); return; }
 		this.url=resource.getPolling_url();
+		if (this.url==null || this.url=="") {
+			return;
+		}
 		urlobj = new URL(url);
 		parsers = storage.findParsersByResourceId(resourceId);
 
