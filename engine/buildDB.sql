@@ -1,17 +1,16 @@
 
-CREATE DATABASE sicsth2;
-CREATE USER 'sicsthsense'@'localhost' IDENTIFIED BY 'sicsdev';
-GRANT ALL PRIVILEGES ON sicsth2.* TO 'sicsthsense'@'localhost';
+CREATE DATABASE IF NOT EXISTS sicsth2;
+GRANT ALL PRIVILEGES ON sicsth2.* TO 'sicsthsense'@'localhost' IDENTIFIED BY 'sicsdev';
 USE sicsth2;
 
-create table actuators (
+create table IF NOT EXISTS actuators (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
   input_parser              varchar(255),
   constraint pk_actuators primary key (id))
 ;
 
-create table data_point_double (
+create table IF NOT EXISTS data_point_double (
   id                        bigint auto_increment not null,
   stream_id                 bigint,
   timestamp                 bigint,
@@ -20,7 +19,7 @@ create table data_point_double (
   constraint pk_data_point_double primary key (id))
 ;
 
-create table data_point_string (
+create table IF NOT EXISTS data_point_string (
   id                        bigint auto_increment not null,
   stream_id                 bigint,
   timestamp                 bigint,
@@ -29,18 +28,18 @@ create table data_point_string (
   constraint pk_data_point_string primary key (id))
 ;
 
-create table functions (
+create table IF NOT EXISTS functions (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
   constraint pk_functions primary key (id))
 ;
 
-create table operators (
+create table IF NOT EXISTS operators (
   id                        bigint auto_increment not null,
   constraint pk_operators primary key (id))
 ;
 
-create table resources (
+create table IF NOT EXISTS resources (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
   label                     varchar(255),
@@ -57,7 +56,7 @@ create table resources (
   constraint pk_resources primary key (id))
 ;
 
-create table resource_log (
+create table IF NOT EXISTS resource_log (
   id                        bigint auto_increment not null,
   resource_id               bigint,
   creation_timestamp        bigint,
@@ -75,7 +74,7 @@ create table resource_log (
   constraint pk_resource_log primary key (id))
 ;
 
-create table settings (
+create table IF NOT EXISTS settings (
   id                        bigint auto_increment not null,
   name                      varchar(255) not null,
   val                       varchar(255),
@@ -83,7 +82,7 @@ create table settings (
   constraint pk_settings primary key (id))
 ;
 
-create table streams (
+create table IF NOT EXISTS streams (
   id                        bigint auto_increment not null,
   type                      varchar(1),
   latitude                  double,
@@ -102,7 +101,7 @@ create table streams (
   constraint pk_streams primary key (id))
 ;
 
-create table parsers (
+create table IF NOT EXISTS parsers (
   id                        bigint auto_increment not null,
   resource_id               bigint,
   stream_id                 bigint,
@@ -115,7 +114,7 @@ create table parsers (
   constraint pk_parsers primary key (id))
 ;
 
-create table users (
+create table IF NOT EXISTS users (
   id                        bigint auto_increment not null,
   email                     varchar(255) not null,
   user_name                 varchar(255) not null,
@@ -135,7 +134,7 @@ create table users (
   constraint pk_users primary key (id))
 ;
 
-create table vfiles (
+create table IF NOT EXISTS vfiles (
   id                        bigint auto_increment not null,
   path                      varchar(255) not null,
   owner_id                  bigint,
@@ -147,13 +146,13 @@ create table vfiles (
 ;
 
 
-create table functions_streams (
+create table IF NOT EXISTS functions_streams (
   functions_id                   bigint not null,
   streams_id                     bigint not null,
   constraint pk_functions_streams primary key (functions_id, streams_id))
 ;
 
-create table users_streams (
+create table IF NOT EXISTS users_streams (
   users_id                       bigint not null,
   streams_id                     bigint not null,
   constraint pk_users_streams primary key (users_id, streams_id))
