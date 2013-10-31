@@ -73,6 +73,7 @@ public class ParserResource {
 	public List<Parser> getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
 		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
+			checkHierarchy(userId);
 			List<Parser> parsers = storage.findParsersByResourceId(resourceId);
 			return parsers;
 	}
@@ -82,9 +83,9 @@ public class ParserResource {
 	@Timed
 	public Parser getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
 		User visitor = new User();
-			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
-			Parser parser = storage.findParserById(parserId);
-			return parser;
+		checkHierarchy(userId);
+		Parser parser = storage.findParserById(parserId);
+		return parser;
 	}
 
 	@POST
@@ -92,6 +93,7 @@ public class ParserResource {
 	@Timed
 	public int postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
 		logger.info("Creating parser!:"+parser.toString());
+		checkHierarchy(userId,resourceId);
 		User visitor = new User();
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to post parser");
@@ -110,6 +112,7 @@ public class ParserResource {
 	public void putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser) {
 		User visitor = new User();
 		logger.info("Updating parserId:"+parserId);
+		checkHierarchy(userId,resourceId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify parser: "+parserId);
 			//throw new WebApplicationException(Status.FORBIDDEN);
@@ -124,6 +127,7 @@ public class ParserResource {
 	public void deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
 		User visitor = new User();
 		logger.warn("Deleting parserId:"+parserId);
+		checkHierarchy(userId,resourceId);
 		Parser parser = storage.findParserById(parserId);
 		if (parser==null) {
 			logger.error("No parser to delete: "+parserId);
@@ -134,6 +138,16 @@ public class ParserResource {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		storage.deleteParser(parserId);
+	}
+
+	public void checkHierarchy(long userId) {
+		User owner = storage.findUserById(userId);
+		if (owner==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+	}
+	public void checkHierarchy(long userId, long resourceId) {
+		checkHierarchy(userId);
+		Resource resource = storage.findResourceById(resourceId);
+		if (resource==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
 
 	// add a resource 

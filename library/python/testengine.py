@@ -5,15 +5,16 @@ from engine import *
 
 print "Testing SicsthSense python module..."
 
-e = Engine("1")
+e = Engine("1","localhost:8080")
+#e = Engine("1","presense.sics.se:8080")
 print e.hostname
-e.setUser("1")
+e.setUserId("1")
 
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
 newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":30}
 jsonstr = json.dumps(newresource)
-#print jsonstr
+print jsonstr
 
 resourceId = e.createResource(jsonstr)
 print "Made resource: "+str(resourceId);
@@ -32,7 +33,7 @@ if True:
 		parserjsonstr = json.dumps(newparser)
 		#print parserjsonstr
 		newId = e.createParser(resourceId,parserjsonstr)
-		print "new parser ID: "+newId;
+		print "new parser ID: "+str(newId);
 
 
 # POST data

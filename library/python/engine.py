@@ -25,7 +25,7 @@
 
 import urllib, urllib2
 import simplejson as json
-from websocket import create_connection
+#from websocket import create_connection
 
 version = 0.2
 
@@ -112,13 +112,13 @@ class Engine:
 	# Generate a websocket for posting to a specific stream
 	def genWebsocketPost(self, resourceId, streamId):
 		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
-		ws = create_connection(url)
+		ws = None # create_connection(url)
 		return ws
 
 	# Generate a websocket for listening to a specific stream
 	def genWebsocketGet(self, resourceId, streamId):
 		url = "ws://"+self.genStreamURL(resourceId, streamId)+"/ws"
-		ws = create_connection(url)
+		ws = None #create_connection(url)
 		return ws
 
 	# GET data from a Stream

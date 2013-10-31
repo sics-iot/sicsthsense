@@ -81,6 +81,7 @@ public class ResourceResource {
 	public List<Resource> getResources(@PathParam("userId") long userId) {
 		User visitor = new User();
 		logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
+		checkHierarchy(userId);
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		return resources;
 	}
@@ -93,6 +94,7 @@ public class ResourceResource {
 	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		User visitor = new User();
 		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
+		checkHierarchy(userId);
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource == null) {
 			logger.error("Resource "+resourceId+" does not exist!");
@@ -117,10 +119,7 @@ public class ResourceResource {
 	public int postResource( @PathParam("userId") long userId, Resource resource) {
 		User visitor = new User();
 		logger.info("Adding user/resource:"+resource.getLabel());
-		User owner = storage.findUserById(userId);
-		if (owner==null) { // user does not exist
-			throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		checkHierarchy(userId);
 		if (visitor.getId() != userId) {
 			logger.error("Not allowed to add resource");
 			//throw new WebApplicationException(Status.FORBIDDEN);
@@ -141,6 +140,7 @@ public class ResourceResource {
 	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
 		User visitor = new User();
 		logger.info("Updating resourceId:"+resourceId);
+		checkHierarchy(userId);
 		if (visitor.getId() != userId) { // only owners
 			logger.error("Not allowed to modify resource: "+resourceId);
 			//throw new WebApplicationException(Status.FORBIDDEN);
@@ -154,6 +154,7 @@ public class ResourceResource {
 	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
 			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
 		logger.warn("Deleting resourceId:"+resourceId);
+		checkHierarchy(userId);
 		User visitor = new User();
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) {
@@ -181,17 +182,23 @@ public class ResourceResource {
 	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
 	public void postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
 		User visitor = new User();
-		Resource resource = storage.findResourceById(resourceId);
 		logger.info("Adding user/resource:"+resource.getLabel());
+		checkHierarchy(userId);
+		Resource resource = storage.findResourceById(resourceId);
 		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		//should run it through the parsers
 	}
+
+	public void checkHierarchy(long userId) {
+		User owner = storage.findUserById(userId);
+		if (owner==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+	}
 	
 	// add a resource 
 	int insertResource(Resource resource) {
-		// should check label exists!
+		// should check if label exists!
 
 		storage.insertResource( 
 			resource.getLabel(),

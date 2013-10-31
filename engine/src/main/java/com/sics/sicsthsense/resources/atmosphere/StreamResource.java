@@ -72,35 +72,6 @@ public class StreamResource {
 		this.counter = new AtomicLong();
 	}
 
-	public void checkHierarchy(long userId, long resourceId) {
-			Resource resource = storage.findResourceById(resourceId);
-			if (resource == null) {
-				logger.error("Resource "+resourceId+" does not exist!");
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			if (resource.getOwner_id() != userId) {
-				logger.error("User "+userId+" does not own resource "+resourceId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-	}
-	public void checkHierarchy(long userId, long resourceId, long streamId) {
-			Resource resource = storage.findResourceById(resourceId);
-			if (resource == null) {
-				logger.error("Resource "+resourceId+" does not exist!");
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			if (resource.getOwner_id() != userId) {
-				logger.error("User "+userId+" does not own resource "+resourceId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			Stream stream = storage.findStreamById(streamId);
-			if (stream.getResource_id() != resourceId) {
-				logger.error("Resource "+resourceId+" does not own stream "+streamId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-	}
-
-	// Broken ?
 	@GET
 	@Timed
 	public List<Stream> getStreams(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
@@ -159,6 +130,34 @@ public class StreamResource {
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
 		return "Posted successfully!";
+	}
+
+	public void checkHierarchy(long userId, long resourceId) {
+			Resource resource = storage.findResourceById(resourceId);
+			if (resource == null) {
+				logger.error("Resource "+resourceId+" does not exist!");
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+			if (resource.getOwner_id() != userId) {
+				logger.error("User "+userId+" does not own resource "+resourceId);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+	}
+	public void checkHierarchy(long userId, long resourceId, long streamId) {
+			Resource resource = storage.findResourceById(resourceId);
+			if (resource == null) {
+				logger.error("Resource "+resourceId+" does not exist!");
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+			if (resource.getOwner_id() != userId) {
+				logger.error("User "+userId+" does not own resource "+resourceId);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
+			Stream stream = storage.findStreamById(streamId);
+			if (stream.getResource_id() != resourceId) {
+				logger.error("Resource "+resourceId+" does not own stream "+streamId);
+				throw new WebApplicationException(Status.NOT_FOUND);
+			}
 	}
 
 	void insertDataPoint(DataPoint datapoint) {
