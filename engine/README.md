@@ -3,7 +3,7 @@ SicsthSense Engine
 
 The Engine is a Java implementation of a RESTful HTTP server representing the SicsthSense cloud presence.
 
-It uses DropWizard, which is a distribution of popular Java frameworks (Jetty,Jersey, Jackson, JDBI, slf4j, etc.). Other external libraries used include: Atmosphere (for websockets). A MySQL server is required for the data storage.
+It uses DropWizard, which is a distribution of popular Java frameworks (Jetty, Jersey, Jackson, JDBI, slf4j, etc.). Other external libraries used include: Atmosphere (for websockets). A MySQL server is required for the data storage.
 
 The build system is Maven, allowing automatic dependency management for all of the included 3rd party libraries.
 
@@ -15,7 +15,7 @@ This will create the server in a self-contained .jar file "/engine/target/engine
 
 To run this server:
 
-$ ./runJar.sh
+$ ./run.sh
 or
 $ java -jar target/engine-1.0-SNAPSHOT.jar server 6sense.yml
 
