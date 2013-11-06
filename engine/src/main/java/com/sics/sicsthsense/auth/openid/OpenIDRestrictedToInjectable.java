@@ -80,7 +80,7 @@ class OpenIDRestrictedToInjectable<T> extends AbstractHttpContextInjectable<T> {
       final Map<String,Cookie> cookieMap = httpContext.getRequest().getCookies();
       if (!cookieMap.containsKey(EngineConfiguration.SESSION_TOKEN_NAME)) {
 				log.warn("Error with authenticating from cookie!");
-				User publicUser = new User(-1, UUID.randomUUID());
+				User publicUser = new User();
 				publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
 				Optional<T> opt = Optional.of((T)publicUser);
 				return opt.get();

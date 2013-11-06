@@ -59,10 +59,9 @@ public class Poller extends UntypedActor {
 	private String inputLine;
 	private List<Parser> parsers;
 
-	public Poller(StorageDAO storage, long resourceId, String url) throws MalformedURLException {
+	public Poller(StorageDAO storage, ObjectMapper mapper, long resourceId, String url) throws MalformedURLException {
 		this.resourceId=resourceId;
 		this.storage = storage;
-		mapper = new ObjectMapper(); // can reuse, share globally
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		parsedata = new ParseData(mapper);
 		rebuild();
@@ -129,9 +128,9 @@ public class Poller extends UntypedActor {
 				} catch (Exception e) {
 					logger.error("Network problem: "+e);
 				}
-
 			}
-    } else
+    } else {
       unhandled(message);
+		}
   }
 }

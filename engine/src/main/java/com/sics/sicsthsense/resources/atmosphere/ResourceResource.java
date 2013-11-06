@@ -55,6 +55,7 @@ import org.atmosphere.annotation.Suspend;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
+import com.sics.sicsthsense.model.*;
 import com.sics.sicsthsense.auth.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
 import com.sics.sicsthsense.model.security.Authority;
@@ -68,12 +69,15 @@ public class ResourceResource {
 	private final AtomicLong counter;
 	private PollSystem pollSystem;
 	private final Logger logger = LoggerFactory.getLogger(ResourceResource.class);
+	public ParseData parseData;
+	List<Parser> parsers;
 
 	// constructor with the system's stoarge and poll system.
 	public ResourceResource() {
 		this.storage = DAOFactory.getInstance();
 		this.pollSystem = PollSystem.getInstance();
 		this.counter = new AtomicLong();
+		this.parseData = new ParseData();;
 	}
 
 	@GET
@@ -116,7 +120,7 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	//public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-	public int postResource( @PathParam("userId") long userId, Resource resource) {
+	public long postResource( @PathParam("userId") long userId, Resource resource) {
 		User visitor = new User();
 		logger.info("Adding user/resource:"+resource.getLabel());
 		checkHierarchy(userId);
@@ -125,9 +129,11 @@ public class ResourceResource {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		resource.setOwner_id(userId); // should know the owner
-		int resourceId = insertResource(resource);
-		// remake pollers with updated Resource attribtues
-		pollSystem.rebuildResourcePoller(resourceId);
+		long resourceId = insertResource(resource);
+		if (resource.getPolling_period() > 0) {
+			// remake pollers with updated Resource attribtues
+			pollSystem.rebuildResourcePoller(resourceId);
+		}
 		return resourceId;
 	}
 
@@ -180,24 +186,56 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
 	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
-	public void postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
+	public void postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data) {
 		User visitor = new User();
-		logger.info("Adding user/resource:"+resource.getLabel());
 		checkHierarchy(userId);
 		Resource resource = storage.findResourceById(resourceId);
+		logger.info("Adding resource data to:"+resource.getLabel());
 		if (visitor.getId() != userId) {
-			throw new WebApplicationException(Status.FORBIDDEN);
+			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		//should run it through the parsers
+		// if parsers are undefined, create them!
+		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
+		if (parsers==null || parsers.size()==0) { 
+			logger.info("No parsers defined! Trying to auto create for:"+resource.getLabel());
+			try {
+				// staticness is a mess...
+				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper,resource,data); 
+			} catch (Exception e) {
+				logger.error("JSON parsing for auto creation failed!");
+				return;
+			}
+		}
+		for (Parser parser: parsers) {
+			logger.info(parser.toString());
+		}
+
+		//run it through the parsers
+		applyParsers(resourceId, data);
+	}
+
+	public void applyParsers(long resourceId, String data) {
+		//logger.info("Applying all parsers to data: "+data);
+		if (parsers==null) { parsers = storage.findParsersByResourceId(resourceId); }
+		for (Parser parser: parsers) {
+			//logger.info("applying a parser "+parser.getInput_parser());
+			try {
+				parseData.apply(parser,data);
+			} catch (Exception e) {
+				logger.error("Parsing "+data+" failed!"+e);
+			}
+		}
 	}
 
 	public void checkHierarchy(long userId) {
 		User owner = storage.findUserById(userId);
 		if (owner==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
-	
+
+ 
+
 	// add a resource 
-	int insertResource(Resource resource) {
+	long insertResource(Resource resource) {
 		// should check if label exists!
 
 		storage.insertResource( 

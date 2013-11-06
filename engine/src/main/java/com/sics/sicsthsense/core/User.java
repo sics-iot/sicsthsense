@@ -57,8 +57,7 @@ import com.sics.sicsthsense.model.security.*;
  * </ul>
  * </p>
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
+/*@JsonPropertyOrder({
   "id",
   "username",
   "passwordDigest",
@@ -67,10 +66,11 @@ import com.sics.sicsthsense.model.security.*;
   "email",
   "openIDIdentifier",
   "authorities"
-})
+})*/
 public class User {
 
   /** * <p>Unique identifier for this entity</p> */
+	@JsonProperty
   private long id;
 	@JsonProperty
   private String username;
@@ -91,7 +91,7 @@ public class User {
    * <p>The OpenID discovery information used in phase 1 of authenticating against an OpenID server</p>
    * <p>Once the OpenID identifier is in place, this can be safely deleted</p>
    */
-  @JsonProperty
+  @JsonIgnore
   private DiscoveryInformationMemento openIDDiscoveryInformationMemento;
 
   @JsonProperty
@@ -101,7 +101,7 @@ public class User {
   private UUID sessionToken;
 
   /**The authorities for this User (an unauthenticated user has no authorities) */
-  @JsonProperty
+  @JsonIgnore
   private Set<Authority> authorities = Sets.newHashSet();
 
 	@JsonProperty
@@ -123,15 +123,10 @@ public class User {
 	@JsonProperty // only decoded if the poster is admin
 	private boolean admin;
 
-  @JsonCreator
-  public User(
-    long id,
-    UUID sessionToken) {
-    this.id = id;
-    this.sessionToken = sessionToken;
-  }
   public User() {
-			this(-1, UUID.randomUUID());
+		this.creationDate = new Date();
+		this.token = UUID.randomUUID().toString();
+		getAuthorities().add(Authority.ROLE_PUBLIC);
 	}
 	public User(long id, 
 			String username,
@@ -141,9 +136,10 @@ public class User {
 			Double latitude,
 			Double longitude,
 			Date creationDate,
-			Date lastLogin //,
+			Date lastLogin
 			//boolean admin
 		) {
+			this();
 			this.id							= id;
 			this.username				= username;
 			this.firstName			= firstName;
@@ -155,6 +151,7 @@ public class User {
 			this.lastLogin			= lastLogin;
 			//this.admin					= admin;
 	}
+	/*
 	public User( long id, 
 			@JsonProperty("username") String username, @JsonProperty("firstName") String first_name, @JsonProperty("lastName") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creationDate") String creation_date_string, @JsonProperty("lastLogin") String last_login_string) {
 			this(id, username, first_name, last_name, description,
@@ -163,7 +160,17 @@ public class User {
 				new Date(),
 				new Date() //,
 				//admin_string.equals("true")
+			);*/
+	public User( long id, 
+			String username, String first_name, String last_name, String description, Double latitude, Double longitude, String creation_date_string, String last_login_string, String token) {
+			this(id, username, first_name, last_name, description,
+				latitude,
+				longitude,
+				new Date(),
+				new Date()
+				//admin_string.equals("true")
 			);
+			this.token					= token;
 				// set complex parameters that throw exception
 			//this.last_login = parseStringToDate(last_login_string);
 	//			this.creation_date= new SimpleDateFormat("YYYY-MM-DD kk:mm:ss", Locale.ENGLISH).parse(creation_date_string);
@@ -181,6 +188,11 @@ public class User {
 	// pull all user details from the parameter user into this object
 	public void copyFrom(User user) {
 		this.id = user.id;
+	}
+	public void update(User user) {
+		this.firstName = user.firstName;
+		this.lastName  = user.lastName;
+		this.email     = user.email;
 	}
 
 	// XXX Need to hash and check password!
@@ -214,6 +226,7 @@ public class User {
   public String getOpenIDIdentifier()			{ return openIDIdentifier; }
   /** * @return The session key */
   public UUID		getSessionToken()					{ return sessionToken; }
+  public String	getToken()								{ return token; }
   /** * @return The OpenID discovery information (phase 1 of authentication) */
   public DiscoveryInformationMemento getOpenIDDiscoveryInformationMemento() { return openIDDiscoveryInformationMemento; }
 
@@ -226,6 +239,7 @@ public class User {
   public void setAuthorities(Set<Authority> authorities)		{ this.authorities = authorities; }
   public void setOpenIDIdentifier(String openIDIdentifier)	{ this.openIDIdentifier = openIDIdentifier; }
   public void setSessionToken(UUID sessionToken)						{ this.sessionToken = sessionToken; }
+  public void setToken(String token)													{ this.token = token; }
   /** * <h3>Note that it is expected that Jasypt or similar is used prior to storage</h3>
    * @param passwordDigest The password digest */
   public void setPasswordDigest(String passwordDigest)			{ this.passwordDigest = passwordDigest; }

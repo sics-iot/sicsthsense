@@ -44,6 +44,8 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Cancellable;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.StorageDAO;
  
@@ -51,6 +53,7 @@ public class PollSystem {
 	private static PollSystem singleton;
 	private final Logger logger = LoggerFactory.getLogger(PollSystem.class);
 	private StorageDAO storage;
+	public ObjectMapper mapper;
 	private ActorSystem system;
 	public Map<Long, ActorRef> actors;
 	public Map<Long, Cancellable> killSwitches;
@@ -67,6 +70,7 @@ public class PollSystem {
 
 	public PollSystem(StorageDAO storage) {
 		this.storage = storage;
+		this.mapper = new ObjectMapper();
 	}
  
 	public void createPollers() {
@@ -91,10 +95,10 @@ public class PollSystem {
 
 		ActorRef actorRef = actors.get(resourceId);
 		if (actorRef==null) { 
-			actorRef = system.actorOf( Props.create(Poller.class,storage,resourceId,url), String.valueOf(resourceId));
+			actorRef = system.actorOf( Props.create(Poller.class,storage,mapper,resourceId,url), String.valueOf(resourceId));
 			actors.put(resourceId, actorRef);
 		}
-		if (period > 0) {
+		if (period > 0 && url!=null && url!="") {
 			// schedule the actor to recieve a tick every period seconds
 			Cancellable killSwitch = system.scheduler().schedule(Duration.create(0, TimeUnit.SECONDS),
 					Duration.create(period, TimeUnit.SECONDS), actorRef, "probe", system.dispatcher(), null);
@@ -105,7 +109,6 @@ public class PollSystem {
 
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
-		logger.info("Rebuilding poller: "+resourceId);
 
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) { // it may have been deleted
@@ -118,24 +121,10 @@ public class PollSystem {
 
 		//ActorRef actorRef = actors.get(resourceId);
 		//if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
+		logger.info("Rebuilding poller: "+resourceId);
 		
 		createPoller(resource);
 
-		/*
-		// send rebuild event
-		system.scheduler().scheduleOnce(Duration.create(0, TimeUnit.SECONDS), 
-			actorRef, "rebuild", system.dispatcher(), null);
-
-		if (resource.getPolling_period() > 0) {
-			// reschedule the probe event
-			killSwitch = system.scheduler().schedule(Duration.create(0, TimeUnit.SECONDS),
-				Duration.create(resource.getPolling_period(), TimeUnit.SECONDS),
-				actorRef, "probe", system.dispatcher(), null);
-			killSwitches.put(resourceId,killSwitch);
-		} else { // or get rid of the mapping
-			killSwitches.remove(resourceId);
-		}
-		*/
 	}
 
 }

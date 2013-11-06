@@ -30,6 +30,8 @@ package com.sics.sicsthsense.model;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Iterator;
+import java.util.List;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,9 +44,12 @@ import org.slf4j.LoggerFactory;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.Parser;
+import com.sics.sicsthsense.core.*;
+import com.sics.sicsthsense.resources.atmosphere.*;
 
 public class ParseData {
 	private final Logger logger = LoggerFactory.getLogger(ParseData.class);
@@ -67,13 +72,12 @@ public class ParseData {
 	// Apply this parser to the supplied data
 	public void apply(Parser parser, String data) throws Exception {
 		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
-		if (mapper==null)	 { logger.error("Mapper has not been set!"); return; }
 		Long currentTime = System.currentTimeMillis();
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
 			//logger.info("Applying Parser to JSON data: "+data);
-			JsonNode rootNode = mapper.readTree(data);
+			JsonNode rootNode = PollSystem.getInstance().mapper.readTree(data);
 			parseJsonResponse(parser, rootNode, currentTime);
 		} else {
 			//logger.info("Applying Parser to text data: "+data);
@@ -104,7 +108,7 @@ public class ParseData {
 			if (node.isValueNode()) { // it is a simple primitive
 					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
-					//storage.insertDataPoint(-1,stream_id, System.currentTimeMillis(), node.getDoubleValue());
+					storage.insertDataPoint(parser.getStream_id(), node.getDoubleValue(), System.currentTimeMillis() );
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
 					double value = node.get("value").getDoubleValue();
@@ -184,6 +188,61 @@ public class ParseData {
 			}
 			return success;
 	}
+
+	public static void makeStreamAndParser(Resource resource, String nodePath) {
+			//Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ resource.label+nodePath);
+			Stream stream = new Stream();
+			stream.setResource_id(resource.getId());
+			stream.setOwner_id(resource.getOwner_id());
+			long streamId = StreamResource.insertStream(stream);
+
+			Parser parser = new Parser();
+			parser.setResource_id(resource.getId());
+			parser.setStream_id(streamId);
+			parser.setInput_parser(nodePath);
+			ParserResource.insertParser(parser);
+	}
+
+	// Auto parsing
+  // Walk Json tree creating resource parsers
+  public static void parseJsonNode(Resource resource, JsonNode node, String parents) {
+    // descend to all nodes to find all primitive element paths...
+    //logger.info("parsing Nodes below "+parents);
+    System.out.println("parsing Nodes below "+parents);
+    Iterator<String> nodeIt = node.getFieldNames();
+    while (nodeIt.hasNext()) {
+      String field = nodeIt.next();
+      JsonNode n = node.get(field);
+      if (n.isValueNode()) {
+        System.out.println("value node: " + parents + "/" + field);
+        // TODO: try to guess time format instead of defaulting to "unix"!
+        String nodePath = parents+"/"+field;
+				makeStreamAndParser(resource, nodePath);
+      } else {
+        String fullNodeName = parents + "/" + field;
+        //Logger.info("Node: " + fullNodeName);
+        parseJsonNode(resource, n, fullNodeName);
+      }
+    }
+  }
+
+  // Parse Json into resource parsers
+  //@Security.Authenticated(Secured.class)
+  public static boolean autoCreateJsonParsers(ObjectMapper mapper, Resource resource, String data) throws Exception {
+    //Logger.info("createJsonParsers() Trying to parse Json to then auto fill in StreamParsers!");
+    try {
+      // recusively parse JSON and add() all fields
+			JsonNode root = mapper.readTree(data);
+      parseJsonNode(resource, root, "");
+    } catch (Exception e) { // nevermind, move on...
+      System.out.println("createJsonParsers() had problems parsing JSON: "+  data);
+      System.out.println("Error: "+e.toString());
+			throw e;
+    }
+    return true;
+  }
+
+
 	private Long parseDateTime(String input, String timeformat) {
 			DateFormat df = new SimpleDateFormat(timeformat, Locale.ENGLISH);
 			Long result = -1L;

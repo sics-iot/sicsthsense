@@ -183,7 +183,7 @@ public class PublicOpenIDResource {
 			memento.setVersion(discovered.getVersion());
 			// Create a temporary User to preserve state between requests without
 			// using a session (we could be in a cluster)
-			User tempUser = new User(-2, sessionToken);
+			User tempUser = new User();
 			tempUser.setOpenIDDiscoveryInformationMemento(memento);
 			tempUser.setSessionToken(sessionToken);
 			// Persist the User
@@ -309,7 +309,7 @@ public class PublicOpenIDResource {
 
 				tempUser = storage.findUserByEmail(extractEmail(authSuccess));
 				if (tempUser==null) { // no existing user with that email
-					tempUser = new User(-3, UUID.randomUUID());
+					tempUser = new User();
 				}
 				tempUser.setOpenIDIdentifier(verified.get().getIdentifier());
 

@@ -44,13 +44,16 @@ class Engine:
 	hostname = "localhost:8080"
 
 	# create the Engine handle, should specify user, maybe hostname
-	def __init__(self, userId, hostname="localhost:8080"):
+	def __init__(self, hostname="localhost:8080", userId=1 ):
 		self.setUserId(userId)
 		self.setHostname(hostname)
 
-	def registerUser(userJSON):
+	def registerUser(self,userJSON):
 		# does not work, may never work
-		pass
+		url = "http://"+self.hostname+"/users/"
+		userId = self.postToURL(url, userJSON)
+		self.setUserId(userId)
+                return userId
 
 	def updateUser(userId, userJSON):
 		# should work in future
@@ -169,7 +172,7 @@ class Engine:
 			response = urllib2.urlopen(req)
 		except Exception as e:
 			print "Error: Connection to "+url+" failed!\n",e
-			return None
+                        raise e
 		# check response code
 		if response.getcode() > 400:
 			print "Error: HTTP return code "+response.getcode()

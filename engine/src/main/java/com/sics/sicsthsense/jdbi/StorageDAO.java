@@ -49,19 +49,40 @@ public interface StorageDAO {
 	@Mapper(UserMapper.class)
   User findUserById(@Bind("id") long id);
 
-  @SqlQuery("select * from users where username = :username limit 1")
+  @SqlQuery("select * from users where user_name = :user_name limit 1")
 	@Mapper(UserMapper.class)
-  User findUserByUsername(@Bind("username") String username);
+  User findUserByUsername(@Bind("user_name") String user_name);
+
+  @SqlQuery("select id from users where user_name = :user_name limit 1")
+  long findUserIdByUsername(@Bind("user_name") String user_name);
 
   @SqlQuery("select * from users where email = :email limit 1")
 	@Mapper(UserMapper.class)
   User findUserByEmail(@Bind("email") String email);
 
+  @SqlQuery("select id from users where email = :email limit 1")
+  long findUserIdByEmail(@Bind("email") String email);
+
   @SqlQuery("select user_name from users where id = :id limit 1")
   String findUsernameById(@Bind("id") long id);
 
-  @SqlUpdate("insert into users (id, name) values (:id, :name)")
-  void insertUser(@Bind("id") long id, @Bind("name") String name);
+  @SqlUpdate("insert into users (user_name, email, first_name, last_name, creation_date, version, token) VALUES (:user_name, :email, :first_name, :last_name, NOW(), 1, token)")
+  void insertUser(
+		@Bind("user_name") String user_name, 
+		@Bind("email") String email,
+		@Bind("first_name") String first_name,
+		@Bind("last_name") String last_name,
+		@Bind("token") String token
+	);
+	
+  @SqlUpdate("update resources set user_name = :user_name, first_name=:first_name, last_name=:last_name, email where id = :id")
+  void updateUser(
+		@Bind("id") long id,
+		@Bind("user_name") String user_name,
+		@Bind("first_name") String first_name,
+		@Bind("last_name")  String last_name,
+		@Bind("email") String email
+	);
 
 
 	// Resources
@@ -78,7 +99,7 @@ public interface StorageDAO {
   List<Resource> findPolledResources();
 
   @SqlQuery("select id from resources where label = :label limit 1")
-  int findResourceId(@Bind("label") String label);
+  long findResourceId(@Bind("label") String label);
 
   @SqlUpdate("insert into resources(owner_id, label, polling_period, polling_url, polling_authentication_key, description, parent_id, secret_key, version) values (:owner_id, :label, :polling_period, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version)")
   void insertResource(
@@ -124,7 +145,7 @@ public interface StorageDAO {
   Stream findStreamById(@Bind("id") long id);
 
   @SqlQuery("select id from streams where resource_id = :resource_id and secret_key = :secret_key limit 1")
-  int findStreamId(@Bind("resource_id") long id, @Bind("secret_key") String secret_key);
+  long findStreamId(@Bind("resource_id") long id, @Bind("secret_key") String secret_key);
 
   @SqlUpdate("insert into streams( type, latitude, longitude, description, public_access, public_search, frozen, history_size, last_updated, secret_key, owner_id, resource_id, version) values (  :type, :latitude, :longitude, :description, :public_access, :public_search, :frozen, :history_size, :last_updated, :secret_key, :owner_id, :resource_id, :version)")
   void insertStream(
@@ -168,7 +189,7 @@ public interface StorageDAO {
 	);
 
   @SqlQuery("select id from parsers where resource_id = :resource_id and stream_id = :stream_id limit 1")
-  int findParserId(@Bind("resource_id") long id, @Bind("stream_id") long stream_id);
+  long findParserId(@Bind("resource_id") long id, @Bind("stream_id") long stream_id);
 
   @SqlUpdate("update parser set label = :label, polling_period=:polling_period, polling_url=:polling_url, polling_authentication_key=:polling_authentication_key where id = :id")
   void updateParser(

@@ -29,8 +29,10 @@
 package com.sics.sicsthsense.resources.atmosphere;
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Date;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.servlet.*;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -70,7 +72,6 @@ public class UserResource {
 
 		@GET
 		@Timed
-		@Path("/")
 		public String listUsers() {
 			return "Can not list users...";
 		}
@@ -86,11 +87,61 @@ public class UserResource {
 
 		@POST
 		@Timed
-		public String post(@PathParam("userId") long userId, User user) {
-			//final long id = store.add(userId.get(), notification);
-			//return Response.created(UriBuilder.fromResource(NotificationResource.class).build(userId.get(), id).build();
+		public String post(User user) throws Exception {
 			//return Response.status(201).entity("posted alright").build();
-			return "not posted yet...";
+			logger.info("making a new user");
+
+			if (user.getEmail()==null || user.getEmail()=="") {
+				logger.info("new User email not set!");
+				return "Error: No user 'email' attribute set!";
+			}
+			if (storage.findUserByUsername(user.getUsername())!=null) {
+				String errorMsg ="Error: Duplicate username: "+user.getUsername()+"!";
+				logger.error(errorMsg);
+				return errorMsg;
+			}
+			if (storage.findUserByEmail(user.getEmail())!=null) {
+				String errorMsg = "Error: Duplicate email: "+user.getEmail()+"!";
+				logger.error(errorMsg);
+				return errorMsg;
+			}
+
+			return Long.toString(insertUser(user));
 		}
 
+		@PUT
+		@Timed
+		@Path("/{userId}")
+		public User put(@PathParam("userId") long userId, User user) {
+			// should check permissions...
+
+			user.setId(userId);
+			updateUser(userId,user);
+			return user;
+		}
+
+		public long insertUser(User newuser) {
+				// check doesnt exist/allowed
+				logger.info("Adding new user: "+newuser.toString());
+				storage.insertUser(
+					newuser.getUsername(),
+					newuser.getEmail(),
+					newuser.getFirstName(),
+					newuser.getLastName(),
+					newuser.getToken()
+				);
+				return storage.findUserIdByUsername(newuser.getUsername());
+		}
+
+		public void updateUser(long userId, User newuser) {
+				User olduser = storage.findUserById(userId);
+				olduser.update(newuser);
+				storage.updateUser(
+					newuser.getId(),
+					newuser.getUsername(),
+					newuser.getFirstName(),
+					newuser.getLastName(),
+					newuser.getEmail()
+				);
+		}
 }

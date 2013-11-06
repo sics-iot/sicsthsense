@@ -77,6 +77,7 @@ public class Parser {
 		this.timeformat = "unix";
 		this.data_group = 1; // first element
 		this.time_group = 2; // second element
+		this.number_of_points = 1; // match count
 	}
 	public Parser(long id) {
 		this();

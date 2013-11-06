@@ -91,7 +91,7 @@ public class ParserResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public int postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+	public long postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
 		logger.info("Creating parser!:"+parser.toString());
 		checkHierarchy(userId,resourceId);
 		User visitor = new User();
@@ -100,7 +100,7 @@ public class ParserResource {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		parser.setResource_id(resourceId);
-		int parserId = insertParser(parser);
+		long parserId = insertParser(parser);
 		return parserId;
 	}
 
@@ -151,8 +151,9 @@ public class ParserResource {
 	}
 
 	// add a resource 
-	int insertParser(Parser parser) {
-		logger.info("Adding "+parser);
+	// static to allow external ParseData to insertParser() as well
+	public static long insertParser(Parser parser) {
+		StorageDAO storage = DAOFactory.getInstance();
 		storage.insertParser(
 			parser.getResource_id(),
 			parser.getStream_id(),
@@ -163,7 +164,7 @@ public class ParserResource {
 			parser.getTime_group(),
 			1
 		);
-		// bad behaviour! Parsers are not unique to resourceid&streamid
+		// XXX bad behaviour! Parsers are not unique to resourceid&streamid
 		return storage.findParserId(parser.getResource_id(), parser.getStream_id()); // return the new parser ID
 	}
 

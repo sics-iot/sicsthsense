@@ -173,7 +173,7 @@ public class StreamResource {
 
 
 	@POST
-	public int postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream) {
+	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream) {
 		logger.info("Creating stream!:"+stream.toString());
 		User visitor = new User();
 		if (visitor.getId() != userId) { // only owners
@@ -182,11 +182,12 @@ public class StreamResource {
 		}
 		stream.setResource_id(resourceId);
 		stream.setOwner_id(userId);
-		int streamId = insertStream(stream);
+		long streamId = insertStream(stream);
 		return streamId;
 	}
 
-	int insertStream(Stream stream) {
+	public static long insertStream(Stream stream) {
+		StorageDAO storage = DAOFactory.getInstance();
 		storage.insertStream(
 			stream.getType(),
 			stream.getLatitude(),

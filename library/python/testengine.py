@@ -5,21 +5,35 @@ from engine import *
 
 print "Testing SicsthSense python module..."
 
-e = Engine("1","localhost:8080")
+e = Engine("localhost:8080")
 #e = Engine("1","presense.sics.se:8080")
 print e.hostname
-e.setUserId("1")
+username = "newuser"+str(random.randint(0,99))
+newUserId = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+print "User ID:",newUserId
 
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
-newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":30}
+#newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":0}
+newresource = {"label": resourceLabel}
 jsonstr = json.dumps(newresource)
 print jsonstr
 
 resourceId = e.createResource(jsonstr)
 print "Made resource: "+str(resourceId);
 
+# Use auto creation of streams and parsers
 if True:
+	for x in range(0,3):
+			data = { "temperature": random.randint(0,20) }
+			datastr = json.dumps(data)
+			print "Sending....",datastr
+			result = e.postResourceData(resourceId,json.dumps(data))
+			print result
+
+
+# Manually create stream and parser
+if False:
 	if True:
 		newstream = { "description": "light measure" }
 		streamjsonstr = json.dumps(newstream)
@@ -35,24 +49,22 @@ if True:
 		newId = e.createParser(resourceId,parserjsonstr)
 		print "new parser ID: "+str(newId);
 
-
-# POST data
-
-for x in range(0,3):
-	data = {"value": str(random.randint(0,99))}
-	result = e.postStreamData(resourceId,streamId,json.dumps(data))
-	print result
-	#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
+		# POST data to made stream
+		for x in range(0,3):
+			data = {"value": str(random.randint(0,99))}
+			result = e.postStreamData(resourceId,streamId,json.dumps(data))
+			print result
+			#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
 
 
 # GET data
-
-result = e.getStreamData(resourceId,streamId)
-print json.dumps(json.loads(result), sort_keys = False, indent = 4)
-
-
 if False:
-	print "Now deleting it all..."
-	e.deleteResource(resourceId)
+    result = e.getStreamData(resourceId,streamId)
+    print json.dumps(json.loads(result), sort_keys = False, indent = 4)
+
+# delete resource and everything (streams and parsers) under it
+if False:
+    print "Now deleting it all..."
+    e.deleteResource(resourceId)
 
 
