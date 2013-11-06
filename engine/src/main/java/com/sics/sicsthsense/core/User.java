@@ -136,8 +136,8 @@ public class User {
 			Double latitude,
 			Double longitude,
 			Date creationDate,
-			Date lastLogin
-			//boolean admin
+			Date lastLogin,
+			String token
 		) {
 			this();
 			this.id							= id;
@@ -149,18 +149,10 @@ public class User {
 			this.longitude			= longitude;
 			this.creationDate		= creationDate;
 			this.lastLogin			= lastLogin;
-			//this.admin					= admin;
+			this.token					= token;
 	}
+
 	/*
-	public User( long id, 
-			@JsonProperty("username") String username, @JsonProperty("firstName") String first_name, @JsonProperty("lastName") String last_name, @JsonProperty("description") String description, @JsonProperty("latitude") String latitude_string, @JsonProperty("longitude") String longitude_string, @JsonProperty("creationDate") String creation_date_string, @JsonProperty("lastLogin") String last_login_string) {
-			this(id, username, first_name, last_name, description,
-				Double.valueOf(latitude_string),
-				Double.valueOf(longitude_string),
-				new Date(),
-				new Date() //,
-				//admin_string.equals("true")
-			);*/
 	public User( long id, 
 			String username, String first_name, String last_name, String description, Double latitude, Double longitude, String creation_date_string, String last_login_string, String token) {
 			this(id, username, first_name, last_name, description,
@@ -175,7 +167,7 @@ public class User {
 			//this.last_login = parseStringToDate(last_login_string);
 	//			this.creation_date= new SimpleDateFormat("YYYY-MM-DD kk:mm:ss", Locale.ENGLISH).parse(creation_date_string);
 	}
-
+*/
 	public Date parseStringToDate(String date_string) {
 		try {
 			return new SimpleDateFormat("YYYY-MM-DD kk:mm:ss", Locale.ENGLISH).parse(date_string);
@@ -191,8 +183,12 @@ public class User {
 	}
 	public void update(User user) {
 		this.firstName = user.firstName;
+		this.username = user.username;
 		this.lastName  = user.lastName;
 		this.email     = user.email;
+		this.latitude  = user.latitude;
+		this.longitude = user.longitude;
+		this.token			= user.token;
 	}
 
 	// XXX Need to hash and check password!

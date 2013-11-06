@@ -123,12 +123,16 @@ public class UserResource {
 		public long insertUser(User newuser) {
 				// check doesnt exist/allowed
 				logger.info("Adding new user: "+newuser.toString());
+
+				User user = new User();
+				user.update(newuser);
+
 				storage.insertUser(
-					newuser.getUsername(),
-					newuser.getEmail(),
-					newuser.getFirstName(),
-					newuser.getLastName(),
-					newuser.getToken()
+					user.getUsername(),
+					user.getEmail(),
+					user.getFirstName(),
+					user.getLastName(),
+					user.getToken()
 				);
 				return storage.findUserIdByUsername(newuser.getUsername());
 		}

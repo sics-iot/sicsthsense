@@ -43,15 +43,15 @@ public class UserMapper implements ResultSetMapper<User> {
 
 	public User map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 		return new User(
-			r.getInt("id"), 
+			r.getLong("id"), 
 			r.getString("user_name"),
 			r.getString("first_name"),
 			r.getString("last_name"),
 			r.getString("description"),
 			r.getDouble("latitude"),
 			r.getDouble("longitude"),
-			r.getString("creation_date"),
-			r.getString("last_login"),
+			r.getDate("creation_date"),
+			r.getDate("last_login"),
 			r.getString("token")
 			//, r.getString("admin")
 		);

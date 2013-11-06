@@ -195,6 +195,8 @@ public class ParseData {
 			stream.setResource_id(resource.getId());
 			stream.setOwner_id(resource.getOwner_id());
 			long streamId = StreamResource.insertStream(stream);
+			long vfileId = StreamResource.insertVFile(nodePath,resource.getOwnerId(),'D',streamId);
+
 
 			Parser parser = new Parser();
 			parser.setResource_id(resource.getId());

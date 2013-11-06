@@ -66,7 +66,7 @@ public interface StorageDAO {
   @SqlQuery("select user_name from users where id = :id limit 1")
   String findUsernameById(@Bind("id") long id);
 
-  @SqlUpdate("insert into users (user_name, email, first_name, last_name, creation_date, version, token) VALUES (:user_name, :email, :first_name, :last_name, NOW(), 1, token)")
+  @SqlUpdate("insert into users (user_name, email, first_name, last_name, creation_date, version, token) VALUES (:user_name, :email, :first_name, :last_name, NOW(), 1, :token)")
   void insertUser(
 		@Bind("user_name") String user_name, 
 		@Bind("email") String email,
@@ -166,6 +166,16 @@ public interface StorageDAO {
 
   @SqlUpdate("delete from streams where id = :id")
   void deleteStream(@Bind("id") long id);
+
+
+	// VFiles
+  @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (  path, owner_id, type, linked_stream_id )")
+  void insertVFile(
+		@Bind("path")       String path, 
+		@Bind("owner_id")		long owner_id, 
+		@Bind("type")       String type, 
+		@Bind("linked_stream_id")     long linked_stream_id, 
+	);
 
 	// Parsers
   @SqlQuery("select * from parsers where id = :id limit 1")
