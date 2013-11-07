@@ -169,12 +169,12 @@ public interface StorageDAO {
 
 
 	// VFiles
-  @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (  path, owner_id, type, linked_stream_id )")
+  @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (:path, :owner_id, :type, :linked_stream_id )")
   void insertVFile(
 		@Bind("path")       String path, 
 		@Bind("owner_id")		long owner_id, 
 		@Bind("type")       String type, 
-		@Bind("linked_stream_id")     long linked_stream_id, 
+		@Bind("linked_stream_id")     long linked_stream_id
 	);
 
 	// Parsers

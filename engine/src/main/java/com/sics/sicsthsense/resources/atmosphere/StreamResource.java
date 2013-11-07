@@ -206,5 +206,11 @@ public class StreamResource {
 		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
 	}
 
+	public static long insertVFile(String path, long owner_id, String type, long stream_id) {
+		StorageDAO storage = DAOFactory.getInstance();
+		storage.insertVFile( path,owner_id,type,stream_id);
+		return -1;
+	}
+
 
 }
