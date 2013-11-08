@@ -101,12 +101,12 @@ public interface StorageDAO {
   @SqlQuery("select id from resources where label = :label limit 1")
   long findResourceId(@Bind("label") String label);
 
-  @SqlUpdate("insert into resources(owner_id, label, polling_period, polling_url, polling_authentication_key, description, parent_id, secret_key, version) values (:owner_id, :label, :polling_period, :polling_url, :polling_authentication_key, :description, :parent_id, :secret_key, :version)")
+  @SqlUpdate("insert into resources(owner_id, label, polling_period, polling_url, polling_authentication_key, description, parent_id, secret_key, version) values (:owner_id, :label, :polling_period, :polling_url, :polling_authentication_key, :description, NULL, :secret_key, :version)")
   void insertResource(
 		@Bind("label") String label,
 		@Bind("version") String version,
 		@Bind("owner_id")  long owner_id, 
-		@Bind("parent_id") Long parent_id,
+		@Bind("parent_id") long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
 		@Bind("polling_period") long polling_period,
@@ -121,7 +121,7 @@ public interface StorageDAO {
 		@Bind("label") String label,
 		@Bind("version") String version,
 		@Bind("owner_id")  long owner_id, 
-		@Bind("parent_id") Long parent_id,
+		@Bind("parent_id") long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
 		@Bind("polling_period") long polling_period,
@@ -130,7 +130,13 @@ public interface StorageDAO {
 		@Bind("last_polled") long last_polled,
 		@Bind("last_posted") long last_posted 
 	);
+/*
+  @SqlQuery("update resources set last_polled=NOW() where id = :id")
+  void polledResourceId(@Bind("id") long id);
 
+  @SqlQuery("update resources set last_posted=NOW() where id = :id")
+  void postedResourceId(@Bind("id") long id);
+*/
   @SqlUpdate("delete from resources where id = :id")
   void deleteResource(@Bind("id") long id);
 
@@ -163,6 +169,9 @@ public interface StorageDAO {
 		@Bind("resource_id")  long resource_id, 
 		@Bind("version")      int version 
 	);
+
+  //@SqlQuery("update streams set last_updated=NOW() where id = :id")
+  //void updatedStreamId(@Bind("id") long id);
 
   @SqlUpdate("delete from streams where id = :id")
   void deleteStream(@Bind("id") long id);

@@ -79,12 +79,6 @@ public class Poller extends UntypedActor {
 		urlobj = new URL(url);
 		parsers = storage.findParsersByResourceId(resourceId);
 
-		for (Parser parser: parsers) {
-			// give each parser access to global entities
-			//logger.info(parser.toString());
-			//parser.setStorage(storage);
-			//parser.setMapper(mapper);
-		}
 	}
 
 	public void applyParsers(String data) {
@@ -123,6 +117,7 @@ public class Poller extends UntypedActor {
 					while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 					in.close();
 			 
+					//storage.polledResourceId(resourceId);
 					//System.out.println(response.toString());
 					applyParsers(response.toString());
 				} catch (Exception e) {
