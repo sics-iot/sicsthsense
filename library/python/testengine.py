@@ -10,6 +10,7 @@ e = Engine("localhost:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
 newUserId = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+e.setUserId(newUserId)
 print "User ID:",newUserId
 
 # create a resource

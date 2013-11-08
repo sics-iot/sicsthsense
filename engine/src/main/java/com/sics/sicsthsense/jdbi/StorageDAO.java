@@ -106,7 +106,7 @@ public interface StorageDAO {
 		@Bind("label") String label,
 		@Bind("version") String version,
 		@Bind("owner_id")  long owner_id, 
-		@Bind("parent_id") long parent_id,
+		@Bind("parent_id") Long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
 		@Bind("polling_period") long polling_period,

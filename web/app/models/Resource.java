@@ -175,7 +175,7 @@ public class Resource extends Operator {
 
     public String getUrl() {
         String path = "";
-        if (parent != null && parent.hasUrl()) {
+        if (parent != null &&  parent.hasUrl()) {
 //            if (parent.getUrl().endsWith("/")) {
 //                path = parent.getUrl().substring(0, parent.getUrl().length() - 1);
 //            } else {
