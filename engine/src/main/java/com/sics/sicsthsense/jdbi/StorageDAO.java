@@ -130,13 +130,13 @@ public interface StorageDAO {
 		@Bind("last_polled") long last_polled,
 		@Bind("last_posted") long last_posted 
 	);
-/*
-  @SqlQuery("update resources set last_polled=NOW() where id = :id")
-  void polledResourceId(@Bind("id") long id);
 
-  @SqlQuery("update resources set last_posted=NOW() where id = :id")
-  void postedResourceId(@Bind("id") long id);
-*/
+  @SqlUpdate("update resources set last_polled=:time where id = :id")
+  void polledResource(@Bind("id") long id, @Bind("time") long time);
+
+  @SqlUpdate("update resources set last_posted=:time where id = :id")
+  void postedResource(@Bind("id") long id, @Bind("time") long time);
+
   @SqlUpdate("delete from resources where id = :id")
   void deleteResource(@Bind("id") long id);
 
@@ -170,8 +170,9 @@ public interface StorageDAO {
 		@Bind("version")      int version 
 	);
 
-  //@SqlQuery("update streams set last_updated=NOW() where id = :id")
-  //void updatedStreamId(@Bind("id") long id);
+  @SqlUpdate("update streams set last_updated=:time where id = :id")
+  void updatedStream(@Bind("id") long id, @Bind("time") long time);
+
 
   @SqlUpdate("delete from streams where id = :id")
   void deleteStream(@Bind("id") long id);
@@ -210,7 +211,7 @@ public interface StorageDAO {
   @SqlQuery("select id from parsers where resource_id = :resource_id and stream_id = :stream_id limit 1")
   long findParserId(@Bind("resource_id") long id, @Bind("stream_id") long stream_id);
 
-  @SqlUpdate("update parser set label = :label, polling_period=:polling_period, polling_url=:polling_url, polling_authentication_key=:polling_authentication_key where id = :id")
+  @SqlUpdate("update parsers set label = :label, polling_period=:polling_period, polling_url=:polling_url, polling_authentication_key=:polling_authentication_key where id = :id")
   void updateParser(
 		@Bind("id") long id,
 		@Bind("input_parser") String input_parser,

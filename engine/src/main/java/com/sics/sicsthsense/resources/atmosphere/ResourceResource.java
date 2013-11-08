@@ -194,7 +194,7 @@ public class ResourceResource {
 		if (visitor.getId() != userId) {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		//storage.postedResourceId(resourceId);
+		storage.postedResource(resourceId,System.currentTimeMillis());
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
 		if (parsers==null || parsers.size()==0) { 
@@ -243,7 +243,7 @@ public class ResourceResource {
 			resource.getLabel(),
 			resource.getVersion(), 
 			resource.getOwner_id(), 
-			resource.getParent_id(), 
+			-1,
 			resource.getPolling_url(), 
 			resource.getPolling_authentication_key(), 
 			resource.getPolling_period(), 

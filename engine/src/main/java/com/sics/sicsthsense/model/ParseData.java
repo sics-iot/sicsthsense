@@ -109,7 +109,7 @@ public class ParseData {
 					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
 					storage.insertDataPoint(parser.getStream_id(), node.getDoubleValue(), System.currentTimeMillis() );
-					//storage.updatedStreamId(parser.getStream_id());
+					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
 					double value = node.get("value").getDoubleValue();

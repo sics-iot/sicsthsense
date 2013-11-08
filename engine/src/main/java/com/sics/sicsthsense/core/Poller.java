@@ -117,7 +117,7 @@ public class Poller extends UntypedActor {
 					while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 					in.close();
 			 
-					//storage.polledResourceId(resourceId);
+					storage.polledResource(resourceId,System.currentTimeMillis());
 					//System.out.println(response.toString());
 					applyParsers(response.toString());
 				} catch (Exception e) {
