@@ -181,12 +181,18 @@ public class ResourceResource {
 		pollSystem.rebuildResourcePoller(resourceId);
 	}
 
+	@GET
+	@Path("/{resourceId}/data")
+	public String getData() {
+		return "Error: Only Streams can have data read";
+	}
+
 	// Post data to the resource, and run data through its parsers
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
 	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
-	public void postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data) {
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data) {
 		User visitor = new User();
 		checkHierarchy(userId);
 		Resource resource = storage.findResourceById(resourceId);
@@ -194,6 +200,7 @@ public class ResourceResource {
 		if (visitor.getId() != userId) {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		// update Resource last_posted
 		storage.postedResource(resourceId,System.currentTimeMillis());
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
@@ -204,15 +211,17 @@ public class ResourceResource {
 				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper,resource,data); 
 			} catch (Exception e) {
 				logger.error("JSON parsing for auto creation failed!");
-				return;
+				return "Error: JSON parsing for auto creation failed!";
 			}
 		}
+		/*
 		for (Parser parser: parsers) {
 			logger.info(parser.toString());
-		}
-
+		}*/
 		//run it through the parsers
 		applyParsers(resourceId, data);
+
+		return "Success";
 	}
 
 	public void applyParsers(long resourceId, String data) {

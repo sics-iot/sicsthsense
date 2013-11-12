@@ -125,7 +125,7 @@ public class StreamResource {
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
-		if (stream==null) {return "no stream";}
+		if (stream==null) {return "Error: Stream does not exist";}
 		datapoint.setStreamId(streamId); // keep consistency
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
