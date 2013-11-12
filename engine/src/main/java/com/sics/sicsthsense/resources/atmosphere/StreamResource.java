@@ -75,14 +75,14 @@ public class StreamResource {
 	@GET
 	@Timed
 	public List<Stream> getStreams(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-					@PathParam("userId") long userId //, @PathParam("resourceId") long resourceId
-					) {
+		@PathParam("userId") long userId //, @PathParam("resourceId") long resourceId
+		) {
 		User visitor = new User();
 		long resourceId = Long.parseLong(topic.getID());
-			logger.info("Getting user/resource/streams "+userId+" "+resourceId);
-			checkHierarchy(userId,resourceId);
-			List<Stream> streams = storage.findStreamsByResourceId(resourceId);
-			return streams;
+		logger.info("Getting user/resource/streams "+userId+" "+resourceId);
+		checkHierarchy(userId,resourceId);
+		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
+		return streams;
 	}
 
 	@GET
@@ -91,10 +91,10 @@ public class StreamResource {
 	public Stream getStream(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
 					@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
 		User visitor = new User();
-			logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId+" for "+visitor.getId());
-			checkHierarchy(userId,resourceId,streamId);
-			Stream stream = storage.findStreamById(streamId);
-			return stream;
+		logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId+" for "+visitor.getId());
+		checkHierarchy(userId,resourceId,streamId);
+		Stream stream = storage.findStreamById(streamId);
+		return stream;
 	}
 
 	@GET
@@ -102,8 +102,8 @@ public class StreamResource {
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
 	public List<DataPoint> getData(
-			//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
+		//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
 		User visitor = new User();
 		logger.info("Getting stream: "+streamId);
 		//Stream stream = storage.findStreamById(streamId);
@@ -133,31 +133,31 @@ public class StreamResource {
 	}
 
 	public void checkHierarchy(long userId, long resourceId) {
-			Resource resource = storage.findResourceById(resourceId);
-			if (resource == null) {
-				logger.error("Resource "+resourceId+" does not exist!");
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			if (resource.getOwner_id() != userId) {
-				logger.error("User "+userId+" does not own resource "+resourceId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
+		Resource resource = storage.findResourceById(resourceId);
+		if (resource == null) {
+			logger.error("Resource "+resourceId+" does not exist!");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		if (resource.getOwner_id() != userId) {
+			logger.error("User "+userId+" does not own resource "+resourceId);
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
 	public void checkHierarchy(long userId, long resourceId, long streamId) {
-			Resource resource = storage.findResourceById(resourceId);
-			if (resource == null) {
-				logger.error("Resource "+resourceId+" does not exist!");
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			if (resource.getOwner_id() != userId) {
-				logger.error("User "+userId+" does not own resource "+resourceId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
-			Stream stream = storage.findStreamById(streamId);
-			if (stream.getResource_id() != resourceId) {
-				logger.error("Resource "+resourceId+" does not own stream "+streamId);
-				throw new WebApplicationException(Status.NOT_FOUND);
-			}
+		Resource resource = storage.findResourceById(resourceId);
+		if (resource == null) {
+			logger.error("Resource "+resourceId+" does not exist!");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		if (resource.getOwner_id() != userId) {
+			logger.error("User "+userId+" does not own resource "+resourceId);
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		Stream stream = storage.findStreamById(streamId);
+		if (stream.getResource_id() != resourceId) {
+			logger.error("Resource "+resourceId+" does not own stream "+streamId);
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
 
 	void insertDataPoint(DataPoint datapoint) {

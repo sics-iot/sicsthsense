@@ -1,1 +1,1 @@
-java -jar target/engine-*-SNAPSHOT.jar server 6sense.yml
+java -jar target/engine-1.1-SNAPSHOT.jar server 6sense.yml
