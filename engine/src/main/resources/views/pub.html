@@ -32,9 +32,11 @@
         }
 
         function subscribe() {
+						userId = '%userId%';
+						resourceId = '%resourceId%';
 						streamId = '%streamId%';
             var request = {
-                url : 'http://localhost:8080/users/1/resources/1/streams/' + streamId + "/ws", //getElementByIdValue('topic'),
+                url : 'http://localhost:8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws", //getElementByIdValue('topic'),
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
 
@@ -121,15 +123,8 @@
     </style>
 </head>
 <body>
-    <h1>Resource monitoring using Atmosphere's Javascript Library and a Jersey's Resource</h1>
-	<!--
-    <h2>Select resource ID to subscribe</h2>
-    <div id='pubsub'>
-        <input id='topic' type='text'/>
-		</div>
-		-->
-    <h2>Select transport to use for subscribing</h2>
-    <h3>You can change the transport any time.</h3>
+    <h1>Stream monitor using Atmosphere's Javascript Library</h1>
+    <h3>Select transport to use for subscribing</h3>
     <div id='select_transport'>
         <select id="transport">
             <option id="autodetect" value="websocket">autodetect</option>
@@ -143,13 +138,14 @@
     </div>
     <br/>
     <br/>
-    <h2 id="s_h" class='hidden'>Resource ID</h2>
+    <h2 id="s_h" class='hidden'>POST data:</h2>
     <div id='sendMessage' class='hidden'>
         <input id='phrase' type='text'/>
         <input id='send_message' class='button' type='submit' name='Publish' value='Publish Message'/>
     </div>
     <br/>
-    <h2>Real Time Update</h2>
+    <br/>
+    <h2>Real Time Updates:</h2>
     <ul></ul>
 </body>
 </html>

@@ -63,19 +63,17 @@ public class Monitor {
    */
   @GET
   @Timed
-  //public PublicFreemarkerView monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-  public String monitor(@PathParam("streamId") String streamId) throws IOException {
+  //public PublicFreemarkerView monitor() {
+  public String monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,
+					@PathParam("streamId") String streamId) throws IOException {
 		System.out.println("stream ID: "+streamId);
 
     URL url = Monitor.class.getResource("/views/pub.html");
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();
-		return markdown.replace("%streamId%",streamId);
-		//return markdown;
-		/*
-    BaseModel model = new BaseModel();
-		PublicFreemarkerView<BaseModel> v = new PublicFreemarkerView<BaseModel>("common/monitor.ftl",model);
-		return v.getModel().getMarkdownHtml();
-		*/
+		markdown = markdown.replace("%userId%",    String.valueOf(userId));
+		markdown = markdown.replace("%resourceId%",String.valueOf(resourceId));
+		markdown = markdown.replace("%streamId%",  String.valueOf(streamId));
+		return markdown;
   }
 
 }
