@@ -112,6 +112,15 @@
         };
 
     };
+		function isNumber(evt) {
+				evt = (evt) ? evt : window.event;
+				var charCode = (evt.which) ? evt.which : evt.keyCode;
+				if (charCode>31 && (charCode<48 || charCode>57) && charCode!=46) {
+					return false;
+				}
+				return true;
+		}
+
     </script>
     <style type='text/css'>
     div {border: 0px solid black;}
@@ -123,8 +132,8 @@
     </style>
 </head>
 <body>
-    <h1>Stream monitor using Atmosphere's Javascript Library</h1>
-    <h3>Select transport to use for subscribing</h3>
+    <h1>Stream monitor using Atmosphere's Javascript Library<a href="https://github.com/Atmosphere/atmosphere-javascript">*</a></h1>
+    <h3>Select transport to use:</h3>
     <div id='select_transport'>
         <select id="transport">
             <option id="autodetect" value="websocket">autodetect</option>
@@ -138,14 +147,14 @@
     </div>
     <br/>
     <br/>
-    <h2 id="s_h" class='hidden'>POST data:</h2>
     <div id='sendMessage' class='hidden'>
-        <input id='phrase' type='text'/>
-        <input id='send_message' class='button' type='submit' name='Publish' value='Publish Message'/>
-    </div>
+	    <h2 id="s_h" class='hidden'>POST data value:</h2>
+      <input id='phrase' type='number' onkeypress="return isNumber(event)"/>
+      <input id='send_message' class='button' type='submit' name='Publish' value='Post'/>
     <br/>
     <br/>
     <h2>Real Time Updates:</h2>
     <ul></ul>
+    </div>
 </body>
 </html>
