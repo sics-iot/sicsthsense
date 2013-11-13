@@ -1,6 +1,6 @@
 /* Flot plugin for rendering pie charts.
 
-Copyright (c) 2007-2012 IOLA and Ole Laursen.
+Copyright (c) 2007-2013 IOLA and Ole Laursen.
 Licensed under the MIT license.
 
 The plugin assumes that each series has a single data value, and that each
@@ -180,13 +180,18 @@ More detail and specific examples can be found in the included HTML file.
 				// new one; this is more efficient and preserves any extra data
 				// that the user may have stored in higher indexes.
 
+				if ($.isArray(value) && value.length == 1) {
+    				value = value[0];
+				}
+
 				if ($.isArray(value)) {
-					if ($.isNumeric(value[1])) {
+					// Equivalent to $.isNumeric() but compatible with jQuery < 1.7
+					if (!isNaN(parseFloat(value[1])) && isFinite(value[1])) {
 						value[1] = +value[1];
 					} else {
 						value[1] = 0;
 					}
-				} else if ($.isNumeric(value)) {
+				} else if (!isNaN(parseFloat(value)) && isFinite(value)) {
 					value = [1, +value];
 				} else {
 					value = [1, 0];
@@ -195,23 +200,29 @@ More detail and specific examples can be found in the included HTML file.
 				data[i].data = [value];
 			}
 
-			// Calculate the total of all slices, so we can show percentages
+			// Sum up all the slices, so we can calculate percentages for each
 
 			for (var i = 0; i < data.length; ++i) {
 				total += data[i].data[0][1];
 			}
 
+			// Count the number of slices with percentages below the combine
+			// threshold; if it turns out to be just one, we won't combine.
+
 			for (var i = 0; i < data.length; ++i) {
-
 				var value = data[i].data[0][1];
-
 				if (value / total <= options.series.pie.combine.threshold) {
 					combined += value;
 					numCombined++;
 					if (!color) {
 						color = data[i].color;
 					}
-				} else {
+				}
+			}
+
+			for (var i = 0; i < data.length; ++i) {
+				var value = data[i].data[0][1];
+				if (numCombined < 2 || value / total > options.series.pie.combine.threshold) {
 					newdata.push({
 						data: [[1, value]],
 						color: data[i].color,
@@ -222,7 +233,7 @@ More detail and specific examples can be found in the included HTML file.
 				}
 			}
 
-			if (numCombined > 0) {
+			if (numCombined > 1) {
 				newdata.push({
 					data: [[1, combined]],
 					color: color,

@@ -20,19 +20,19 @@ var StreamPlots = {
 			overviewPlot.clearSelection();
 		},
 		setup : function(stream) {
-		var streamID = $('#'+stream.id).attr('stream_id');
-		var streamplot = '#streamplot' + streamID; // == '#'+stream.id
-		StreamPlots.activePlots.push(streamID);
-		var overview = '#overview' + streamID;
-		$('#'+stream.id).bind("plothover", StreamPlots.plotHoverHandler);
-		//console.debug("Hover bind.. ");
-		$('#'+stream.id).bind("plotpan", StreamPlots.plotPanHandler);
-		$('#'+stream.id).bind("plotzoom", StreamPlots.plotPanHandler);
-		$(overview).bind("plotselected", StreamPlots.plotSelectHandler); 
-		$('#'+stream.id).bind("click", StreamPlots.clearSelection);
-
+			var streamID = $('#'+stream.id).attr('stream_id');
+			var streamplot = '#streamplot' + streamID; // == '#'+stream.id
+			StreamPlots.activePlots.push(streamID);
+			var overview = '#overview' + streamID;
+//			$('#'+stream.id).bind("plothover", StreamPlots.plotHoverHandler);
+			//console.debug("Hover bind.. ");
+//			$('#'+stream.id).bind("plotpan", StreamPlots.plotPanHandler);
+//			$('#'+stream.id).bind("plotzoom", StreamPlots.plotPanHandler);
+			$(overview).bind("plotselected", StreamPlots.plotSelectHandler); 
+//			$('#'+stream.id).bind("click", StreamPlots.clearSelection);
 	},
 	plotPanHandler : function (event, plot) {
+		console.debug("panning");
 		var streamID = $(this).attr('stream_id');
 		var streamplot = '#streamplot' + streamID;
 		var overview = '#overview' + streamID;
@@ -40,7 +40,6 @@ var StreamPlots = {
 		var axes = plot.getAxes();
 		overviewPlot.setSelection({ xaxis: { from: axes.xaxis.min, to: axes.xaxis.max }, yaxis: { from: axes.yaxis.min, to: axes.yaxis.max } }, true);
 		//$('#tooltip'+streamID).remove();
-
 		console.debug("Panning to x: "  + axes.xaxis.min.toFixed(2)
 		+ " &ndash; " + axes.xaxis.max.toFixed(2)
 		+ " and y: " + axes.yaxis.min.toFixed(2)
@@ -146,7 +145,7 @@ var StreamPlots = {
 				//console.debug(data);
 				var time = data["time"].reverse();
 				var data = data["data"].reverse();
-				console.debug('Number of points to push: '+time.length);
+				//console.debug('Number of points to push: '+time.length);
 				for (var i=0; i< time.length; i++){
 					
 					stream.points.push(new Array(parseInt(time[i]) + StreamPlots.timezone, data[i]));
@@ -156,7 +155,7 @@ var StreamPlots = {
 				if (stream.points.length>0) {
 				
 					stream.since = (stream.points[stream.points.length-1][0]-StreamPlots.timezone) + 1;
-					console.debug('since: '+stream.since);				
+					//console.debug('since: '+stream.since);				
 	
 					while (stream.points[0][0] < stream.points[stream.points.length-1][0] - stream.window) {
 						// remove old plot points

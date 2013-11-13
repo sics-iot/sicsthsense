@@ -18,6 +18,11 @@ running under.
 If you have suggestions for new features, or changes to existing ones, we'd
 love to hear them! Please submit each suggestion as a separate new issue.
 
+If you would like to work on an existing issue, please make sure it is not
+already assigned to someone else. If an issue is assigned to someone, that
+person has already started working on it. So, pick unassigned issues to prevent
+duplicated efforts.
+
 ### Pull Requests ###
 
 To make merging as easy as possible, please keep these rules in mind:
@@ -27,7 +32,11 @@ To make merging as easy as possible, please keep these rules in mind:
 
  2. Format your code according to the style guidelines below.
 
- 3. Rebase against master, if necessary, before submitting your pull request.
+ 3. Submit new features or architectural changes to the <version>-work branch
+    for the next major release.  Submit bug fixes to the master branch.
+
+ 4. Rebase, if necessary, before submitting your pull request, to reduce the
+    work we need to do to merge it.
 
 ### Flot Style Guidelines ###
 
