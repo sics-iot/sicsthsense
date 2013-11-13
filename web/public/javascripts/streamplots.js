@@ -27,7 +27,7 @@ var StreamPlots = {
 //			$('#'+stream.id).bind("plothover", StreamPlots.plotHoverHandler);
 			//console.debug("Hover bind.. ");
 //			$('#'+stream.id).bind("plotpan", StreamPlots.plotPanHandler);
-//			$('#'+stream.id).bind("plotzoom", StreamPlots.plotPanHandler);
+			$('#'+stream.id).bind("plotzoom", StreamPlots.plotPanHandler);
 			$(overview).bind("plotselected", StreamPlots.plotSelectHandler); 
 //			$('#'+stream.id).bind("click", StreamPlots.clearSelection);
 	},
