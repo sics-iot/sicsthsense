@@ -26,8 +26,9 @@ print "Made resource: "+str(resourceId);
 
 # Use auto creation of streams and parsers
 if True:
+    tempname = "temperature"+str(random.randint(0,20)) 
     for x in range(0,10):
-        data = { "temperature"+str(random.randint(0,20)) : random.randint(0,20) }
+        data = { tempname : random.randint(0,20) }
         datastr = json.dumps(data)
         print "Sending....",datastr
         result = e.postResourceData(resourceId,json.dumps(data))
