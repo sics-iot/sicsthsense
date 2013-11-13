@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import simplejson as json
 import random
+import time
 from engine import *
 
 print "Testing SicsthSense python module..."
@@ -25,12 +26,13 @@ print "Made resource: "+str(resourceId);
 
 # Use auto creation of streams and parsers
 if True:
-	for x in range(0,3):
-			data = { "temperature"+str(random.randint(0,20)) : random.randint(0,20) }
-			datastr = json.dumps(data)
-			print "Sending....",datastr
-			result = e.postResourceData(resourceId,json.dumps(data))
-			print result
+    for x in range(0,10):
+        data = { "temperature"+str(random.randint(0,20)) : random.randint(0,20) }
+        datastr = json.dumps(data)
+        print "Sending....",datastr
+        result = e.postResourceData(resourceId,json.dumps(data))
+        print result
+        time.sleep(2)
 
 
 # Manually create stream and parser
@@ -51,11 +53,12 @@ if False:
 		print "new parser ID: "+str(newId);
 
 		# POST data to made stream
-		for x in range(0,3):
+		for x in range(0,10):
 			data = {"value": str(random.randint(0,99))}
 			result = e.postStreamData(resourceId,streamId,json.dumps(data))
 			print result
 			#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
+                        time.sleep(2)
 
 
 # GET data

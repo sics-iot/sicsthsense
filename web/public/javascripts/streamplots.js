@@ -1,4 +1,5 @@
 var StreamPlots = {
+		recentUpdate: 1280560649477,
 		activePlots : [ ],
 		clear : function(stream) {
 			var WIN_5M = 5*60*1000;
@@ -32,7 +33,7 @@ var StreamPlots = {
 //			$('#'+stream.id).bind("click", StreamPlots.clearSelection);
 	},
 	plotPanHandler : function (event, plot) {
-		console.debug("panning");
+		////console.debug("panning");
 		var streamID = $(this).attr('stream_id');
 		var streamplot = '#streamplot' + streamID;
 		var overview = '#overview' + streamID;
@@ -108,9 +109,7 @@ var StreamPlots = {
 		//console.debug(streamID + ' Hover: '+str);
 		if (item) {
 			if (previousPoint != item.dataIndex) {
-
 				previousPoint = item.dataIndex;
-
 				$('#tooltip'+streamID).remove();
 				//$('#'+streamID).tooltip('hide');
 				var x = item.datapoint[0],
@@ -147,22 +146,18 @@ var StreamPlots = {
 				var data = data["data"].reverse();
 				//console.debug('Number of points to push: '+time.length);
 				for (var i=0; i< time.length; i++){
-					
 					stream.points.push(new Array(parseInt(time[i]) + StreamPlots.timezone, data[i]));
 					//console.debug('pushed: '+parseInt(i));
 				}
 				
 				if (stream.points.length>0) {
-				
 					stream.since = (stream.points[stream.points.length-1][0]-StreamPlots.timezone) + 1;
 					//console.debug('since: '+stream.since);				
-	
 					while (stream.points[0][0] < stream.points[stream.points.length-1][0] - stream.window) {
 						// remove old plot points
 						console.debug('shifted: '+stream.points.shift());						
 					}
 				
-
 				var xaxis = stream.plot.getAxes().xaxis,
 						overview_xaxis = stream.overview.getAxes().xaxis;
         var opts = xaxis.options,
@@ -182,8 +177,14 @@ var StreamPlots = {
 				}
 				stream.plot.setData([stream.points]);
 				//will not redraw plot if overview is selected
+// dont redraw, to allow panning
 				if(stream.overview.getSelection() == null) {
-					stream.plot.setupGrid();
+					// avoid changing the pan/zoom
+					if (stream.isSetup) {
+					} else {
+						stream.plot.setupGrid();
+						stream.isSetup=true;
+					}
 	    		stream.plot.draw();
 				}
     		stream.overview.setData([stream.points]);
@@ -209,7 +210,9 @@ var StreamPlots = {
 			minTickSize: [1, "second"],
 			//ticks: 6,
 			max: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000,
-			zoomRange: [this.minTickSize, this.max],
+			//zoomRange: [this.minTickSize, this.max],
+			// sensible min and max for zoom
+			zoomRange: [500000, 50000000000],
 			panRange: [null, this.max]
 		},
 		yaxis: {
@@ -227,7 +230,8 @@ var StreamPlots = {
 //		},
 		grid: {
 			hoverable: true,
-			clickable: false
+			clickable: false,
+			markings: [{ color: '#900', lineWidth: 1, xaxis: { from: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000, to: parseInt(new Date().getTime())-new Date().getTimezoneOffset()*60*1000} }, ]
 		}
 	},
 	overview_options : {
