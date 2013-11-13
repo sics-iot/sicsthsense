@@ -43,7 +43,9 @@ public class Poller extends Controller {
         .findList();
     for(Resource resource: withPolling) {
 			//Logger.info("Poller poll a resource");
-      resource.poll();
+			if (resource!=null) {
+				resource.poll();
+			}
     }      
   }
 }

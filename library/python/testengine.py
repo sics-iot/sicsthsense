@@ -10,7 +10,7 @@ print "Testing SicsthSense python module..."
 e = Engine("presense.sics.se:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
-newUserId = 2 #e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+newUserId = 1 #e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
 e.setUserId(newUserId)
 print "User ID:",newUserId
 
