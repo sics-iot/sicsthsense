@@ -50,11 +50,11 @@
 </div>
 	</div>	
 @if(displayOverview || displayPlot){
-<div id="@{stream.id}" style="height: 300px; min-width: 500px"></div>
+<div id="@{stream.id}" style="height: 250px; min-width: 500px"></div>
 <script>
 $(function() {
 	var host = document.location.hostname;
-	var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=100";
+	var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=1000";
 	$.getJSON(url, function(data) {
 		//console.log("got json!" +data);
 
@@ -159,3 +159,6 @@ $(function() {
 	}
 	</div>
 }
+<br />
+<br />
+<br />
