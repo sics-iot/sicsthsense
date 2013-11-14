@@ -53,8 +53,8 @@
 <div id="@{stream.id}" style="height: 300px; min-width: 500px"></div>
 <script>
 $(function() {
-	var url = 
-	$.getJSON("http://localhost:8080/users/1/resources/1/streams/@{stream.id}/data?limit=100", function(data) {
+	var url = "http://localhost:8080/users/1/resources/1/streams/@{stream.id}/data?limit=100";
+	$.getJSON(url, function(data) {
 		//console.log("got json!" +data);
 
     var options = {
@@ -64,13 +64,16 @@ $(function() {
         xAxis: {
             type:'datetime'
         },
-        series: []
-    };
-
-    var names = [];
-		options.series.push({
+        series: [{
+				name: "Series",
 				data: [],
-				name: "Series"		});
+						type : 'area',
+						fillColor : {
+							linearGradient : { x1: 0, y1: 0, x2: 0, y2: 1 },
+							stops : [[0, 'rgba(76,120,230,0.6)'], [1, 'rgba(10,10,20,0.05)']]
+						}
+				}]
+    };
 
     $.each(data, function (i, item) {
         options.series[0].data.push([item.timestamp,item.value]);    
