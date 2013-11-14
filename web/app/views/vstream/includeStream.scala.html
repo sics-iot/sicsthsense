@@ -15,6 +15,7 @@
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
 <div class="stream_header_block @if(!displayHeader){hidden}">
 	<div id="streamtitle@{stream.id}" class="streamtitle">
+		<br />
 		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
 			Stream
 		} else { 
@@ -159,6 +160,4 @@ $(function() {
 	}
 	</div>
 }
-<br />
-<br />
 <br />
