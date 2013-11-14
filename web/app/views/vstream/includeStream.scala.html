@@ -50,11 +50,12 @@
 </div>
 	</div>	
 @if(displayOverview || displayPlot){
-<div id="container" style="height: 300px; min-width: 500px"></div>
+<div id="@{stream.id}" style="height: 300px; min-width: 500px"></div>
 <script>
 $(function() {
-	$.getJSON("http://localhost:8080/users/1/resources/1/streams/7/data?limit=100", function(data) {
-		console.log("got json!" +data);
+	var url = 
+	$.getJSON("http://localhost:8080/users/1/resources/1/streams/@{stream.id}/data?limit=100", function(data) {
+		//console.log("got json!" +data);
 
     var options = {
         chart: {
@@ -66,19 +67,17 @@ $(function() {
         series: []
     };
 
-    //data = JSON.parse(dataX);
     var names = [];
 		options.series.push({
 				data: [],
 				name: "Series"		});
 
-    $.each(data, function (i, ligne) {
-        options.series[0].data.push([ligne.timestamp,ligne.value]);    
+    $.each(data, function (i, item) {
+        options.series[0].data.push([item.timestamp,item.value]);    
     });
     
     //console.log(options);
-    //var chart = new Highcharts.Chart(options);
-	$('#container').highcharts('StockChart', options);
+		$('#@{stream.id}').highcharts('StockChart', options);
 	});
 });
 
