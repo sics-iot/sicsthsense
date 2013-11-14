@@ -103,7 +103,7 @@ public class StreamResource {
 	@Timed
 	public List<DataPoint> getData(
 		//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("10") IntParam limit) {
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit) {
 		User visitor = new User();
 		logger.info("Getting stream: "+streamId);
 		//Stream stream = storage.findStreamById(streamId);

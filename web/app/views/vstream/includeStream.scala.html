@@ -7,6 +7,9 @@
 @WIN_1W() = {7*24*60*60*1000}
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
+
+
+
 @if(stream != null) {
 <div id="streamblock@{stream.id}">
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
@@ -34,17 +37,53 @@
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate key</button>
 			}	
-			<input class="span7" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+			<input class="span8" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
 		}	
+		<!--
 	<span id="streamconfig@{stream.id}" class="span3 form-inline pull-right">
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1D" id="streamwindow@{stream.id}-4"><label for="streamwindow@{stream.id}-4">1d</label>
 	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
 	</span>
+-->
 </div>
 	</div>	
 @if(displayOverview || displayPlot){
+<div id="container" style="height: 300px; min-width: 500px"></div>
+<script>
+$(function() {
+	$.getJSON("http://localhost:8080/users/1/resources/1/streams/7/data?limit=100", function(data) {
+		console.log("got json!" +data);
+
+    var options = {
+        chart: {
+            renderTo: 'container'
+        },
+        xAxis: {
+            type:'datetime'
+        },
+        series: []
+    };
+
+    //data = JSON.parse(dataX);
+    var names = [];
+		options.series.push({
+				data: [],
+				name: "Series"		});
+
+    $.each(data, function (i, ligne) {
+        options.series[0].data.push([ligne.timestamp,ligne.value]);    
+    });
+    
+    //console.log(options);
+    //var chart = new Highcharts.Chart(options);
+	$('#container').highcharts('StockChart', options);
+	});
+});
+
+</script>
+<!--
 	<div class="plot-container">
 		<div class="row-fluid">
 			<div class="@if(!displayOverview){span12}else{span9} @if(!displayPlot){hidden}">
@@ -82,6 +121,7 @@
 			StreamPlots.poll(streamplot@{stream.id});
 		});
 	</script>
+	-->
 	}
 	} else {
 	@if(displayHeader){
