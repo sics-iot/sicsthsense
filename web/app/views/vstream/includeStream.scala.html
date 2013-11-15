@@ -51,39 +51,73 @@
 </div>
 	</div>	
 @if(displayOverview || displayPlot){
-<div id="@{stream.id}" style="height: 250px; min-width: 500px"></div>
+
+<div id="@{stream.id}" style="height: 270px; min-width: 500px"></div>
 <script>
-$(function() {
 	var host = document.location.hostname;
+	var lastPoint = 1;//new Date().getTime();
+	var options = {
+		xAxis: { type:'datetime' },
+		scrollbar : { enabled : false },
+		series: [{
+			name: "Stream "+@{stream.id},
+			data: [],
+			type : 'area',
+			fillColor : { linearGradient : { x1: 0, y1: 0, x2: 0, y2: 1 },
+				stops : [[0, 'rgba(76,120,230,0.3)'], [1, 'rgba(10,10,20,0.05)']] }
+		}],
+		chart: { 
+			renderTo: 'container',
+				events : {
+				load : function() {
+					// set up the updating of the chart each second
+					var series = this.series[0];
+					setInterval(function() {
+						var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?since="+lastPoint;
+						$.getJSON(url, function(update) {
+							//console.log("Get: "+url);
+							$.each(update, function (i, item) {
+								//console.log("add data point: "+item.timestamp);
+								series.addPoint([item.timestamp, item.value], true, true);
+								if (item.timestamp>lastPoint) {lastPoint=item.timestamp;}
+							});
+						}) } , 10000);
+				}
+			}
+		},
+		rangeSelector: {
+			buttons: [{
+				count: 5,
+				type: 'minute',
+				text: '5M'
+			}, {
+				count: 1,
+				type: 'hour',
+				text: '1H'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputEnabled: false,
+			selected: 3
+		}
+	};
+chartOptions["@{stream.id}"]=options;
+console.log("first series");
+console.log(chartOptions["@{stream.id}"].series);
+
+
+$(function() {
 	var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=1000";
+
 	$.getJSON(url, function(data) {
 		//console.log("got json!" +data);
-
-    var options = {
-        chart: {
-            renderTo: 'container'
-        },
-        xAxis: {
-            type:'datetime'
-        },
-				scrollbar : { enabled : false },
-        series: [{
-				name: "Series",
-				data: [],
-						type : 'area',
-						fillColor : {
-							linearGradient : { x1: 0, y1: 0, x2: 0, y2: 1 },
-							stops : [[0, 'rgba(76,120,230,0.3)'], [1, 'rgba(10,10,20,0.05)']]
-						}
-				}]
-    };
-
     $.each(data, function (i, item) {
-        options.series[0].data.push([item.timestamp,item.value]);    
+       chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]);    
     });
     
     //console.log(options);
-		$('#@{stream.id}').highcharts('StockChart', options);
+		$('#@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
 	});
 });
 

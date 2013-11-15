@@ -62,6 +62,7 @@ public class Poller extends UntypedActor {
 	public Poller(StorageDAO storage, ObjectMapper mapper, long resourceId, String url) throws MalformedURLException {
 		this.resourceId=resourceId;
 		this.storage = storage;
+		this.url = url;
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		parsedata = new ParseData(mapper);
 		rebuild();
@@ -74,17 +75,17 @@ public class Poller extends UntypedActor {
 		if (resource==null) {logger.error("Resource does not exist: "+resourceId); return; }
 		this.url=resource.getPolling_url();
 		if (this.url==null || this.url=="") {
+			logger.info("Url not valid");
 			return;
 		}
 		urlobj = new URL(url);
 		parsers = storage.findParsersByResourceId(resourceId);
-
 	}
 
 	public void applyParsers(String data) {
 		//logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
-			//logger.info("applying a parser "+parser.getInput_parser());
+			logger.info("applying a parser "+parser.getInput_parser());
 			try {
 				parsedata.apply(parser,data);
 			} catch (Exception e) {
@@ -108,8 +109,8 @@ public class Poller extends UntypedActor {
 		 
 				try {
 					int responseCode = con.getResponseCode();
-					System.out.print("Sending 'GET' request to URL : " + url);
-					System.out.println(" Response Code : " + responseCode);
+					logger.info("Sending 'GET' request to URL : " + url);
+					logger.info("Response Code : " + responseCode);
 			 
 					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 					StringBuffer response = new StringBuffer();

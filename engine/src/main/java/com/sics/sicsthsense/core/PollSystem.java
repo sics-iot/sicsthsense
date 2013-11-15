@@ -67,7 +67,6 @@ public class PollSystem {
 		return singleton;
 	}
 
-
 	public PollSystem(StorageDAO storage) {
 		this.storage = storage;
 		this.mapper = new ObjectMapper();
@@ -109,7 +108,6 @@ public class PollSystem {
 
 	// tell specified poller to rebuild from the database
 	public void rebuildResourcePoller(long resourceId) {
-
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) { // it may have been deleted
 			logger.error("No resource with ID: "+resourceId); 
@@ -124,7 +122,6 @@ public class PollSystem {
 		logger.info("Rebuilding poller: "+resourceId);
 		
 		createPoller(resource);
-
 	}
 
 }

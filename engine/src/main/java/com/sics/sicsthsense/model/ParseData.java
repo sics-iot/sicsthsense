@@ -71,6 +71,7 @@ public class ParseData {
 
 	// Apply this parser to the supplied data
 	public void apply(Parser parser, String data) throws Exception {
+		logger.info("Applying Parser to JSON data: "+parser);
 		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
 		Long currentTime = System.currentTimeMillis();
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
@@ -92,9 +93,8 @@ public class ParseData {
 	private boolean parseJsonResponse(Parser parser, JsonNode root, Long currentTime) {
 			// TODO check concat path against inputParser, get the goal and stop
 			// TODO (linear time) form a list of nested path elements from the gui, and
-			if (root == null) {
-					return false;
-			}
+			if (root == null) { logger.error("JSON Root is null"); return false; }
+			logger.info("node:"+root.getValueAsText() );
 			String[] levels = parser.getInput_parser().split("/");
 			JsonNode node = root;
 			for (int i = 1; i < levels.length; i++) {
@@ -106,7 +106,7 @@ public class ParseData {
 			}
 
 			if (node.isValueNode()) { // it is a simple primitive
-					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
+					logger.info("Posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
 					storage.insertDataPoint(parser.getStream_id(), node.getDoubleValue(), System.currentTimeMillis() );
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );

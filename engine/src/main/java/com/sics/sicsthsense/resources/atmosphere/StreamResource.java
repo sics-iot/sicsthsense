@@ -53,6 +53,7 @@ import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.IntParam;
+import com.yammer.dropwizard.jersey.params.LongParam;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -103,14 +104,18 @@ public class StreamResource {
 	@Timed
 	public List<DataPoint> getData(
 		//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit) {
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("since") @DefaultValue("-1") LongParam since) {
 		User visitor = new User();
 		logger.info("Getting stream: "+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
-		return storage.findPointsByStreamId(streamId,limit.get());
+		if (since.get() != -1) {
+			return storage.findPointsByStreamIdSince(streamId, since.get());
+		} else {
+			return storage.findPointsByStreamId(streamId, limit.get());
+		}
 	}
 
 	@POST
