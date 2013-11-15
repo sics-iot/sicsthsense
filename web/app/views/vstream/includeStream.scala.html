@@ -23,7 +23,7 @@
 		}
 		<a href="@routes.Application.viewStream(stream.id)" data-toggle="tooltip" title="id : @{stream.id}">@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</a>
 		@if(stream.resource != null && stream.canWrite(Secured.getCurrentUser())) {
-			(<a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
+			(from resource <a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
 		}
 		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
 		owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>
@@ -103,8 +103,8 @@
 		}
 	};
 chartOptions["@{stream.id}"]=options;
-console.log("first series");
-console.log(chartOptions["@{stream.id}"].series);
+//console.log("first series");
+//console.log(chartOptions["@{stream.id}"].series);
 
 
 $(function() {

@@ -242,5 +242,4 @@ public interface StorageDAO {
   @SqlUpdate("insert into data_point_double(stream_id, data, timestamp) values (:stream_id, :data, :timestamp)")
   void insertDataPoint(@Bind("stream_id") long stream_id, @Bind("data") double data, @Bind("timestamp") long timestamp);
 
-
 }
