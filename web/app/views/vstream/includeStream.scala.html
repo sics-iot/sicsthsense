@@ -26,7 +26,7 @@
 			(from resource <a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
 		}
 		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
-		owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>
+		(owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>)
 		}
 		@if(displayToolbar){
 		<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)</span>
@@ -75,9 +75,9 @@
 					setInterval(function() {
 						var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?since="+lastPoint;
 						$.getJSON(url, function(update) {
-							//console.log("Get: "+url);
+							console.log("Get: "+url);
 							$.each(update, function (i, item) {
-								//console.log("add data point: "+item.timestamp);
+								console.log("add new data point: "+item.timestamp);
 								series.addPoint([item.timestamp, item.value], true, true);
 								if (item.timestamp>lastPoint) {lastPoint=item.timestamp;}
 							});
@@ -102,26 +102,39 @@
 			selected: 3
 		}
 	};
+
 chartOptions["@{stream.id}"]=options;
 //console.log("first series");
 //console.log(chartOptions["@{stream.id}"].series);
 
 
-$(function() {
-	var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=1000";
-
-	$.getJSON(url, function(data) {
-		//console.log("got json!" +data);
-    $.each(data, function (i, item) {
-       chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]);    
-    });
-    
-    //console.log(options);
-		$('#@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
-	});
+$.ajax({
+  dataType: "json",
+  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=1000",
+	timeout: 1000,
+  success: function(data, textStatus, jqXHR) {
+		console.log("Ajax:"+textStatus);
+		if (data) {
+			//console.log("got json!" +data);
+			$.each(data, function (i, item) {
+				console.log("add initial data point: "+item.timestamp);
+				 chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]);    
+			});
+			
+			//console.log(options);
+			$('#@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
+			lastPoint = new Date().getTime();
+		}
+	},
+	error: function() {
+		console.log("got an error");
+			$('#@{stream.id}').hide()
+	}
 });
 
+
 </script>
+
 <!--
 	<div class="plot-container">
 		<div class="row-fluid">
