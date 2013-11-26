@@ -52,10 +52,10 @@
 	</div>	
 @if(displayOverview || displayPlot){
 
-<div id="@{stream.id}" style="height: 270px; min-width: 500px"></div>
+<div id="chart-@{stream.id}" style="height: 270px; min-width: 500px"></div>
 <script>
 	var host = document.location.hostname;
-	var lastPoint = 1;//new Date().getTime();
+	chartLastGet["@{stream.id}"] = 1;
 	var options = {
 		xAxis: { type:'datetime' },
 		scrollbar : { enabled : false },
@@ -68,20 +68,24 @@
 		}],
 		chart: { 
 			renderTo: 'container',
-				events : {
+				events: {
 				load : function() {
+					/*
 					// set up the updating of the chart each second
 					var series = this.series[0];
 					setInterval(function() {
-						var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?since="+lastPoint;
+						var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?since="+chartLastGet["@{stream.id}"];
 						$.getJSON(url, function(update) {
-							console.log("Get: "+url);
-							$.each(update, function (i, item) {
-								console.log("add new data point: "+item.timestamp);
-								series.addPoint([item.timestamp, item.value], true, true);
-								if (item.timestamp>lastPoint) {lastPoint=item.timestamp;}
-							});
+							if (update) {
+								console.log("Get: "+url);
+								$.each(update, function (i, item) {
+									console.log("add new data point: "+item.timestamp+" to Stream "+@{stream.id});
+									series.addPoint([item.timestamp, item.value]);
+									if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
+								});
+							}
 						}) } , 10000);
+			*/
 				}
 			}
 		},
@@ -107,28 +111,28 @@ chartOptions["@{stream.id}"]=options;
 //console.log("first series");
 //console.log(chartOptions["@{stream.id}"].series);
 
-
+// Perform initial loading of the chart, note the time of GET
 $.ajax({
   dataType: "json",
-  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=1000",
-	timeout: 1000,
+  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=10",
+	timeout: 3000,
   success: function(data, textStatus, jqXHR) {
-		console.log("Ajax:"+textStatus);
+		//console.log("Ajax:"+textStatus);
 		if (data) {
 			//console.log("got json!" +data);
 			$.each(data, function (i, item) {
 				console.log("add initial data point: "+item.timestamp);
-				 chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]);    
+				chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]); 
+				if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
 			});
 			
 			//console.log(options);
-			$('#@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
-			lastPoint = new Date().getTime();
+			$('#chart-@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
 		}
 	},
 	error: function() {
-		console.log("got an error");
-			$('#@{stream.id}').hide()
+		console.log("Got an AJAX JSON GET error");
+		$('#chart-@{stream.id}').hide();
 	}
 });
 
