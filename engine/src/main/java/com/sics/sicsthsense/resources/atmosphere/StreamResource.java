@@ -104,15 +104,19 @@ public class StreamResource {
 	@Timed
 	public List<DataPoint> getData(
 		//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("since") @DefaultValue("-1") LongParam since) {
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until) {
 		User visitor = new User();
 		logger.info("Getting stream: "+streamId);
 		//Stream stream = storage.findStreamById(streamId);
 /*		if (visitor.getId() != userId) {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
-		if (since.get() != -1) {
-			return storage.findPointsByStreamIdSince(streamId, since.get());
+		if (from.get() != -1) {
+			if (until.get() != -1) {
+				return storage.findPointsByStreamIdSince(streamId, from.get(), until.get());
+			} else {
+				return storage.findPointsByStreamIdSince(streamId, from.get());
+			}
 		} else {
 			return storage.findPointsByStreamId(streamId, limit.get());
 		}
@@ -147,23 +151,15 @@ public class StreamResource {
 		}
 		if (resource.getOwner_id() != userId) {
 			logger.error("User "+userId+" does not own resource "+resourceId);
-			throw new WebApplicationException(Status.NOT_FOUND);
+			//throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 	public void checkHierarchy(long userId, long resourceId, long streamId) {
-		Resource resource = storage.findResourceById(resourceId);
-		if (resource == null) {
-			logger.error("Resource "+resourceId+" does not exist!");
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		if (resource.getOwner_id() != userId) {
-			logger.error("User "+userId+" does not own resource "+resourceId);
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
+		checkHierarchy(userId, resourceId);
 		Stream stream = storage.findStreamById(streamId);
 		if (stream.getResource_id() != resourceId) {
 			logger.error("Resource "+resourceId+" does not own stream "+streamId);
-			throw new WebApplicationException(Status.NOT_FOUND);
+			//throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 

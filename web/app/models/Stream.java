@@ -483,6 +483,12 @@ public class Stream extends Model implements Comparable<Stream> {
         return null;
     }
 
+		public String getHierarchy() {
+			//System.out.println(this.owner);
+			//System.out.println(this.owner.id);
+			return "/users/"+0+"/resources/"+resource.id+"/streams/"+id;
+		}
+
     public boolean setPublicAccess(Boolean pub) {
         this.publicAccess = pub;
         this.update();

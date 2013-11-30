@@ -35,10 +35,13 @@
 		<div class="row-fluid controls controls-row">
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
-			@if(stream.owner.id==Secured.getCurrentUser().id) {
+			<!--@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate key</button>
 			}	
 			<input class="span8" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+			-->
+			<label class="span1">API URL:</label>
+			<input class="span11" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL():8080@stream.getHierarchy()" readonly="readonly">
 		}	
 		<!--
 	<span id="streamconfig@{stream.id}" class="span3 form-inline pull-right">
@@ -114,7 +117,7 @@ chartOptions["@{stream.id}"]=options;
 // Perform initial loading of the chart, note the time of GET
 $.ajax({
   dataType: "json",
-  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=10",
+  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=500",
 	timeout: 3000,
   success: function(data, textStatus, jqXHR) {
 		//console.log("Ajax:"+textStatus);
@@ -211,4 +214,3 @@ $.ajax({
 	}
 	</div>
 }
-<br />

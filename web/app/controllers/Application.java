@@ -262,7 +262,8 @@ public class Application extends Controller {
 	public static String getDomain() {
 		Setting setting = Setting.findName("domain");
 		if (setting.val.equalsIgnoreCase("unset")) {
-			setting.val="presense.sics.se"; // should set these defaults in a config file?
+			//setting.val="presense.sics.se"; // should set these defaults in a config file?
+			setting.val="localhost"; // should set these defaults in a config file?
 		}
 		return setting.val;
 	}
