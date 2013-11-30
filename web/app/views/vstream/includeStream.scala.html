@@ -43,14 +43,6 @@
 			<label class="span1">API URL:</label>
 			<input class="span11" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL():8080@stream.getHierarchy()" readonly="readonly">
 		}	
-		<!--
-	<span id="streamconfig@{stream.id}" class="span3 form-inline pull-right">
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_5M" id="streamwindow@{stream.id}-1"><label for="streamwindow@{stream.id}-1">5min</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1H" id="streamwindow@{stream.id}-3"><label for="streamwindow@{stream.id}-3">1h</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1D" id="streamwindow@{stream.id}-4"><label for="streamwindow@{stream.id}-4">1d</label>
-	    <input type="radio" name="streamwindow@{stream.id}" value="@WIN_1M" id="streamwindow@{stream.id}-6"><label for="streamwindow@{stream.id}-6">1m</label>
-	</span>
--->
 </div>
 	</div>	
 @if(displayOverview || displayPlot){
@@ -142,45 +134,6 @@ $.ajax({
 
 </script>
 
-<!--
-	<div class="plot-container">
-		<div class="row-fluid">
-			<div class="@if(!displayOverview){span12}else{span9} @if(!displayPlot){hidden}">
-				<div id="streamplot@{stream.id}" stream_id="@{stream.id}" class="streamplot"></div>
-			</div>
-			<div class="@if(!displayOverview){hidden}else{span3}">
-				<div id="overview@{stream.id}" stream_id="@{stream.id}" class="streamplot_overview"></div>
-			</div>
-		</div>
-	</div>
-	<script type="text/javascript">
-		// one global JavaScript object per stream
-		var streamplot@{stream.id} = new Object();
-		streamplot@{stream.id}.stream_id = '@{stream.id}';
-		streamplot@{stream.id}.id = 'streamplot@{stream.id}';
-		streamplot@{stream.id}.uri = '@{routes.CtrlStream.getDataById(stream.id)}';
-		streamplot@{stream.id}.path = '@{stream.file.getPath()}'; // for parsing the returned JSON
-		streamplot@{stream.id}.window = @WIN_1D; // in ms
-		streamplot@{stream.id}.since = parseInt(((new Date()).getTime() - streamplot@{stream.id}.window)); // in s for database
-		streamplot@{stream.id}.points = [];
-		streamplot@{stream.id}.timeout = null;
-		//streamplot@{stream.id}.overview = new Object();
-		//streamplot@{stream.id}.overview.plotID = @{stream.id};
-		$(function () {
-			// init Flot plot
-			streamplot@{stream.id}.plot = $.plot($("#streamplot@{stream.id}"), [ streamplot@{stream.id}.points ], StreamPlots.options);
-			streamplot@{stream.id}.overview = $.plot($("#overview@{stream.id}"), [ streamplot@{stream.id}.points ], StreamPlots.overview_options);
-			
-			// setup config form
-			$("input:radio[name='streamwindow@{stream.id}']").filter('[value="@WIN_1D"]').attr('checked', true);
-			$("input:radio[name='streamwindow@{stream.id}']").change( function(){
-				StreamPlots.setWindow(streamplot@{stream.id}, eval($("input:radio[name='streamwindow@{stream.id}']:checked").val()) ); });
-			StreamPlots.setup(streamplot@{stream.id});
-			// start polling
-			StreamPlots.poll(streamplot@{stream.id});
-		});
-	</script>
-	-->
 	}
 	} else {
 	@if(displayHeader){
@@ -201,10 +154,14 @@ $.ajax({
 		@**Show key?**@
 		@if(stream.showKey(Secured.getCurrentUser())!=null) {
 			<div class="row-fluid controls controls-row">
+			<!--
 			@if(stream.owner.id==Secured.getCurrentUser().id) {
 			<button class="span2 btn btn-danger btn-small streamRegenerateKey" id="streamRegenerateKey@{stream.id}" data-streamId="@{stream.id}"><i class="icon-refresh icon-white"></i> Regenerate key</button>
 			}	
 			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL()@{routes.CtrlStream.postByKey(stream.showKey(Secured.getCurrentUser()))}" readonly="readonly">
+			-->
+			<label class="span1">API URL:</label>
+			<input class="span11" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL():8080@stream.getHierarchy()" readonly="readonly">
 		</div>
 		}	
 		<div class="streamNoDataLine">
