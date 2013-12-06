@@ -19,30 +19,135 @@
 	<br /> <br />
   <h1 id='newResource'>Creating Resources</h1>
 
-	Once you have a user account, resources can also be made over the programmatic
-	API. Simply send a correctly formatted JSON file to the URL XXX and
-	SicsthSense will create the Resource that you specify. Of course, you should include
-	your HTTP authentication header in the request and correctly specify the Content-Type 
-	of your request ("application/json"). All fields are optional apart from "<i>label</i>".
+	
+	
+<p>
+Once you have a user account, resources can also be made over the programmatic API. 
+All entities in the SicsthSense system follow a RESTful resource orientated architecture. For example user 1 may be accessed from the URL: <code>http://HOSTNAME:8080/users/1</code>
+The engine will then return a JSON representation of the user. </p>
 
-	<br /> 
-  <pre>
-  {
-    "label": "New Resource",
-    "url": "http://example.com/data",
-    "description": "New resource made through the API",
-    "period": 15
-  }</pre>
+<p>This documentation  also contains a full description of the <a href="/docs/data">Data representation</a>.</p>
 
-	<br /> <br />
-  <h1 id='newParsers'>Creating Stream Parsers</h1>
+<p>Similarly, that user's resources can be listed via GETing the URL:
+<code>http://HOSTNAME:8080/users/1/resources</code>
+or individual resources by appending their resource ID:
+<code>http://HOSTNAME:8080/users/1/resources/999</code></p>
 
-	Stream parsers can also be created for you resources, through exactly the same process
-	as Resources. Indeed, this can even be combined into a single step by including the parser
-	specification in the Resource creation request. Only the "<i>resourceID</i>", "<i>parser</i>" and "<i>filePath</i>" 
-	elements are required.
+<p>A new resource can be added by POSTing a JSON representation of a resource to the URL: <code>http://HOSTNAME:8080/users/1/resources</code>, whereas they can be deleted by performing an HTTP DELETE request to their relevant URL: <code>http://HOSTNAME:8080/users/1/resources/999</code>
+It is possible to modify the representation stored on the server by PUTing a new JSON representation of that resource. Alternatively a new resource may be created by POSTing a JSON representation of the new resource. We have some explicit <a href="#Examples">Examples</a>.</p>
 
-	<br /> 
+<p>Resources contain <strong>Parsers</strong> that make sense of data and output <strong>Streams</strong> of data points. The parsers can simply be a JSON field path, allowing a given JSON field to be parsed as a datapoint from the incoming data and then stored in SicsthSense. Details of the parsing behaviour can be found at <a href="#parsing">Parsing data</a>.</p>
+
+
+<p>Data enters the system via SicsthSense receiving a <strong>POST</strong> or by it performing a <strong>Poll</strong>. Poll events can be scheduled by configuring the Resource. Simply specify the fields <strong>polling_url</strong> and <strong>polling_period</strong>, SicsthSense will then perform an HTTP GET on that <em>url</em> every <em>period</em> seconds.</p>
+	
+<h3 id='pollingDataHelp'>Polling data</h3>
+  
+The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
+This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
+After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
+The data will soon appear in graphs, and be available through our RESTful API.
+	
+<h1>Examples</h1>	
+<a id="Examples" />
+      <p>This page lists some simple ways to interact with the SicsthSense system via command line (such as with <a href="http://curl.haxx.se/">cURL</a>). This behaviour can be very easily implemented in the programming language of your choice.
+Examples just use <strong>HOST</strong> as placeholder for the hostname of the service you are using (probably either sense.sics.se or localhost if you are running your own copy). Variables are represented by all caps, e.g. USERID and RESOURCEID, they should be replaced with the class unique identifiers.</p>
+
+<h3> <a name="register-a-user" class="anchor" href="#register-a-user"><span class="octicon octicon-link"></span></a>Register a user</h3>
+
+<pre>$ curl -X POST -H "Content-Type: application/json" \
+ -d '{"username":"alice", "email":"alice@@wonderland.com"}' http://HOST:8080/users</pre>
+
+<p>This will return the USERID of the new user.</p>
+
+<h3> <a name="register-a-new-resource-for-the-user" class="anchor" href="#register-a-new-resource-for-the-user"><span class="octicon octicon-link"></span></a>Register a new resource for the user</h3>
+
+<p>A new resource can then be registered for polling and/or posting:</p>
+
+<pre>$ curl -X POST -H "Content-Type: application/json" \
+ -d '{"label": "resourceLabel", "polling_url":"http://datasource.com/test.json", "polling_period":100}' \
+ http://HOST:8080/users/USERID/resources</pre>
+
+<p>This will return the RESOURCEID of the new resource. The SicsthSense engine will then proceed to poll the URL every <em>polling_period</em> seconds.</p>
+
+<h3> <a name="post-some-data" class="anchor" href="#post-some-data"><span class="octicon octicon-link"></span></a>Post some data</h3>
+
+<p>Post a JSON data file and have the resource automatically create corresponding parsers and output streams.</p>
+
+<pre>$ curl -X POST -H "Content-Type: application/json" \
+ -d '{"temperature": 20.1, "humidity": 10}' http://HOST:8080/users/USERID/resources/RESOURCEID/data</pre>
+
+<p>This will create a parser for each JSON primitive in the first POST to the resource, and corresponding output stream. One of each for <em>/temperature</em> and one of each for the <em>/humidity</em>. If you would like to only parse and store a single JSON primitive, then it is best to manually create your parsers and streams. Note: once a resource has been interacted with, auto-creation of parsers/streams will not work.</p>
+
+<p>Alternatively a stream can be posted to directly, without being interpreted by any parsers. This will require the use of some <a class="internal absent" href="/sics-iot/sicsthsense/wiki/simple-formatting">simple formatting</a> for the JSON data file.</p>
+
+<pre>$ curl -X POST -H "Content-Type: application/json" \
+ -d '{"value": 20.1, "time": 10}' http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/data</pre>
+
+<p>To make the posting process more efficient, a stream can be posted to using <a href="https://github.com/Atmosphere/atmosphere">atmosphere</a> <a href="http://en.wikipedia.org/wiki/WebSocket">websockets</a> just send the JSON to the corresponding url:
+<code>http://HOST:8080/users/USERID/resources//RESOURCEID/streams/STREAMID/ws</code>
+Multiple JSON datapoints can be sent through a persistent websocket, saving on resources and simplifying the posting process. </p>
+
+<h1> <a name="retrieve-data" class="anchor" href="#retrieve-data"><span class="octicon octicon-link"></span></a>Retrieve data</h1>
+
+<p>Datapoints can be retrieved by simple get to the following URL:</p>
+
+<pre>$ curl http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/data</pre>
+
+<p>Which will return a JSON representation of the last 100 datapoints.</p>
+
+<h3> <a name="specific-data-request" class="anchor" href="#specific-data-request"><span class="octicon octicon-link"></span></a>Specific data request</h3>
+
+<p>It is possible to request variable amounts of data points by using the query parameter <em>limit</em>. For example, to only get the last 10 data points, get the following:</p>
+
+<pre>$ curl http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/data?limit=10</pre>
+
+<p>All data since a given time can also be requested using the query parameter <em>from</em>. The supplied value should be a time in <a href="http://en.wikipedia.org/wiki/Unix_time">seconds since the beginning of 1970</a>:</p>
+
+<pre>$ curl http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/data?from=1385763270458</pre>
+
+<p>The query parameter <em>until</em> can also be supplied to constrain the time period:</p>
+
+<pre>$ curl http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/data?from=1385763000000&amp;until=1385764000000</pre>
+
+<p>If both <em>limit</em> and <em>from/until</em> parameters are given, the limit option will take precedence.</p>
+
+<h3> <a name="websocket" class="anchor" href="#websocket"><span class="octicon octicon-link"></span></a>Websocket</h3>
+
+<p>If a websocket is opened to the URL <code>http://HOST:8080/users/USERID/resources/RESOURCEID/streams/STREAMID/ws</code>, then the connection will stay open, delivering each JSON data point in real time. This avoid polling and gives immediate access to new data.</p>
+
+
+<h1>Parsing data</h1>
+<a id="parsing" /></a>
+<p>Upon receipt of a HTTP POST to the resource, or a periodic poll, each of the
+resource's parser are applied to the whole data payload. The parsed data is then
+added to the data stream given by <em>stream_id</em>.</p>
+
+<p>The parsing system provide two methods to interpret values from a resource's
+pull/push data payload. First and most straight-forward is JSON parsing, where
+a parser JSON primitive has its complete path stated in a filesystem path
+style. For example, the floating point primitive called "<em>temperature</em>"
+situation at the top level of a JSON string would be referenced as
+"<em>/temperature</em>". If the primitive was contained in a JSON associative array
+called "<em>readings</em>" it would be called "<em>/readings/temperature</em>". Through this
+method, many different values can be parsed from a single JSON payload and turned
+into a stream in SicsthSense.
+This can be set in the parser representation through setting the primitive's path
+in the parser's <em>input_parser</em> field and setting the <em>input_type</em> to "application/json".</p>
+
+<p>The other, more powerful, technique uses Regexs pattern matching to enable parsing
+of arbitrary text payloads. The <em>input_parser</em> need only be set the regex that you would
+like to attempt to match against the payload. The <em>input_format</em> should be set as
+"XXX".
+Both a value and a timestamp can be capture by the given regex through the use of groups.
+By default, the first group is assumed to be the data value and the second group to be
+the timestamp. This behaviour can be changed by setting the <em>data_group</em> and <em>time_group</em> fields.
+If the time_group does not appear, then the current time will be used by the system.</p>
+
+<p>These parsing methods provide both and easy and a powerful method to parse data entering the
+SicsthSense system.</p>
+
+	
   <pre>
   {
     "resourceID": 999,
@@ -78,15 +183,6 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 
 
 	<br /> <br />
-  <h1 id='pollingDataHelp'>Polling data</h1>
-  
-	The easiest way to get your sensor data into Sics<sup>th</sup>Sense is to let us periodically <i>poll</i> your data resource (e.g. device or webpage).
-	This is solution is very flexible because it is entirely configured in the Cloud, through the Web interface.
-  After creating your resource, just discover or add new streams manually, with a corresponding polling interval.
-  The data will soon appear in graphs, and be available through our RESTful API.
-
-
-	<br /> <br />
   <h1 id='postingDataHelp'>Posting data</h1>
   
   Posting to Sics<sup>th</sup>Sense is also useful, for delay-sensitive notification, or for data collection from devices with no public URL (e.g. a smartphone).
@@ -111,8 +207,7 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 						</li>
 					</ul>
 				</li>
-				In this case you need to create a stream for which the system will provide a <code>key</code>, then you can post to the URL:
-			<pre> @sicsthSenseURL()@{routes.CtrlStream.postByKey("key")}</pre>
+				In this case you need to create a stream for which the system will provide a <code>key</code>, then you can post to the URL.
 			</ul>
 		</li>
 		<li id="parserHelp"> Posting complex data that needs to be parsed before feeding multiple streams
@@ -132,48 +227,15 @@ Other data formats can be easily parsed by specifying a <a href="http://en.wikip
 				See <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">this.</a></li>
 			</ul>
 			In this case you need to create a resource and define the needed stream parsers.
-			After creating the resource, the system will provide a <code id="keyHelp">key</code> that should be used for posting to the URL:
-			<pre> @sicsthSenseURL()@{routes.CtrlResource.postByKey("key")}</pre>
+			After creating the resource, the system will provide a <code id="keyHelp">key</code> that can be used for posting to the URL.
 		</li>
-
 			<li>
-			<pre>curl --url http://sense.sics.se/api/streams/[key] -d "0.5" --verbose --header "Content-Type:text/plain"
-			</pre>
 		</li>
 	</ul>
 
-	<em>PS</em> It is not possible to post to non-existing resources.	
-
-	<br /> <br />
-  <h1>Getting data</h1>
-  
-  You can fetch data from Sics<sup>th</sup>Sense's database through a <code>GET</code> at the following URI:
-	<pre> @sicsthSenseURL()@{routes.CtrlStream.postByKey("key")}</pre>
-  
-	Where <i>key</i> is a unique authorising key given by the system.
-
-  URI arguments allow to specify which subset of the dataset you want to get. Use <code>?tail=n</code> to get the <code>n</code> most recent samples. Use <code>?last=t</code>
-  to get samples posted during the last <code>t</code> seconds. Use <code>?since=t</code> to get the samples posted since (including) absolute UNIX time <code>t</code> (in seconds).
-
-	
-	<br /> <br />
-  <h1 id="proxyHelp">Interacting with resources</h1>
-  
-  Sics<sup>th</sup>Sense can act as a RESTful proxy towards resources. This allows to share your resources without making their actual URI public.
-  Just <code>GET</code>, <code>POST</code>, <code>PUT</code> or <code>DELETE</code> with <code>optional arguments</code> to: 
-  
-  <pre> @sicsthSenseURL()@{routes.Proxy.forwardByKey("key","optional arguments")}</pre>
 
 <!--
-	<br /> <br />
-  <h1>Inspecting Users, Resources and Streams</h1>
-  
-  You can access a subset of the data on users, devices and resources, in Json format.
-  Simply get the following URIs:
-  <pre>
-  GET        http://sense.sics.se/users/[user]
-  GET        http://sense.sics.se/resources/key
-  GET        http://sense.sics.se/streams/key</pre>
+
 	-->
 	<br /> <br />
 	<br /> <br />

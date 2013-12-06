@@ -75,13 +75,13 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public List<Stream> getStreams(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId //, @PathParam("resourceId") long resourceId
-		) {
-		User visitor = new User();
+	public List<Stream> getStreams(@PathParam("userId") long userId, @QueryParam("token") String token) {
 		long resourceId = Long.parseLong(topic.getID());
 		logger.info("Getting user/resource/streams "+userId+" "+resourceId);
 		checkHierarchy(userId,resourceId);
+		User user = storage.findUserById(userId);
+		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+
 		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 		return streams;
 	}
@@ -89,28 +89,46 @@ public class StreamResource {
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-					@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId) {
-		User visitor = new User();
-		logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId+" for "+visitor.getId());
+	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("token") String token) {
+		logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId);
 		checkHierarchy(userId,resourceId,streamId);
+		User user = storage.findUserById(userId);
+		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+
 		Stream stream = storage.findStreamById(streamId);
 		return stream;
+	}
+
+	@POST
+	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream, @QueryParam("token") String token) {
+		logger.info("Creating stream!:"+stream.toString());
+		checkHierarchy(userId,resourceId);
+		User user = storage.findUserById(userId);
+		if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
+
+		stream.setResource_id(resourceId);
+		stream.setOwner_id(userId);
+		long streamId = insertStream(stream);
+		return streamId;
+	}
+	void authoriseStreamKey(String key1, String key2) {
 	}
 
 	@GET
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public List<DataPoint> getData(
-		//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until) {
-		User visitor = new User();
-		logger.info("Getting stream: "+streamId);
-		//Stream stream = storage.findStreamById(streamId);
-/*		if (visitor.getId() != userId) {
+	public List<DataPoint> getData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
+		checkHierarchy(userId,resourceId,streamId);
+		User user = storage.findUserById(userId);
+		Stream stream = storage.findStreamById(streamId);
+		if (stream==null) {throw new WebApplicationException(Status.NOT_FOUND); }
+		if (!stream.getPublic_access() && !stream.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
+			logger.warn("User is not owner and has incorrect secret_key on stream!");
 			throw new WebApplicationException(Status.FORBIDDEN);
-		}*/
+		}
+
+		logger.info("Getting stream: "+streamId);
 		if (from.get() != -1) {
 			if (until.get() != -1) {
 				return storage.findPointsByStreamIdSince(streamId, from.get(), until.get());
@@ -127,14 +145,16 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postData( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint) {
-		User visitor = new User();
-		logger.info("Inserting into stream:"+streamId);
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
+		checkHierarchy(userId,resourceId,streamId);
+		User user = storage.findUserById(userId);
 		Stream stream = storage.findStreamById(streamId);
-/*		if (visitor.getId() != userId) {
-			throw new WebApplicationException(Status.FORBIDDEN);
-		}*/
 		if (stream==null) {return "Error: Stream does not exist";}
+		if (!stream.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
+			logger.warn("User is not owner and has incorrect secret_key on resource!");
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
+		logger.info("Inserting into stream:"+streamId);
 		datapoint.setStreamId(streamId); // keep consistency
 
 		insertDataPoint(datapoint); // insert first to fail early
@@ -174,20 +194,6 @@ public class StreamResource {
 		);
 	}
 
-
-	@POST
-	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream) {
-		logger.info("Creating stream!:"+stream.toString());
-		User visitor = new User();
-		if (visitor.getId() != userId) { // only owners
-			logger.error("Not allowed to post stream");
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
-		stream.setResource_id(resourceId);
-		stream.setOwner_id(userId);
-		long streamId = insertStream(stream);
-		return streamId;
-	}
 
 	public static long insertStream(Stream stream) {
 		StorageDAO storage = DAOFactory.getInstance();

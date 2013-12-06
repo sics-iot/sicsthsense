@@ -30,6 +30,7 @@
 package com.sics.sicsthsense.resources.atmosphere;
 
 import java.util.List;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -82,11 +83,21 @@ public class ResourceResource {
 
 	@GET
 	@Timed
-	public List<Resource> getResources(@PathParam("userId") long userId) {
-		User visitor = new User();
-		logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
+	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("token") String token) {
+		//User visitor = new User();
+		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
 		checkHierarchy(userId);
+		User user = storage.findUserById(userId);
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
+		if (!user.getToken().equals(token)) { 
+			throw new WebApplicationException(Status.FORBIDDEN);
+			/*
+			Iterator<Resource> it = resources.iterator();
+			while (it.hasNext()) {
+				Resource r = it.next();
+				if (r.) {it.remove();}
+			}*/
+		}
 		return resources;
 	}
 
@@ -94,10 +105,8 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	//public Resource getResource(@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
-		User visitor = new User();
-		logger.info("Getting user/resource: "+userId+"/"+resourceId+" for user "+visitor.getId());
+	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("token") String token) {
+		logger.info("Getting user/resource: "+userId+"/"+resourceId);
 		checkHierarchy(userId);
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource == null) {
@@ -108,26 +117,33 @@ public class ResourceResource {
 			logger.error("User "+userId+" does not own resource "+resourceId);
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
+		User user = storage.findUserById(userId);
+		if (!user.getToken().equals(token)) { throw new WebApplicationException(Status.FORBIDDEN); }
+		/*
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
 //		throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		}*/
 		return resource;
+	}
+
+	void authoriseResourceKey(String key1, String key2) {
+		if (!key1.equals(key2)) { 
+			logger.warn("User has incorrect secret_key on resource!");
+			throw new WebApplicationException(Status.FORBIDDEN);
+		}
 	}
 
 	// post new resource definition 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	//public void postResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, Resource resource) {
-	public long postResource( @PathParam("userId") long userId, Resource resource) {
-		User visitor = new User();
+	public long postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("token") String token) {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		checkHierarchy(userId);
-		if (visitor.getId() != userId) {
-			logger.error("Not allowed to add resource");
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		User user = storage.findUserById(userId);
+		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = insertResource(resource);
 		if (resource.getPolling_period() > 0) {
@@ -143,14 +159,11 @@ public class ResourceResource {
 	@Timed
 	@Path("/{resourceId}")
 	//public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
-	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
-		User visitor = new User();
+	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource, @QueryParam("secret_key") String secret_key) {
 		logger.info("Updating resourceId:"+resourceId);
 		checkHierarchy(userId);
-		if (visitor.getId() != userId) { // only owners
-			logger.error("Not allowed to modify resource: "+resourceId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		Resource oldresource = storage.findResourceById(resourceId);
+		authoriseResourceKey(oldresource.getSecret_key(),secret_key);
 		updateResource(resourceId, resource);
 	}
 
@@ -158,19 +171,16 @@ public class ResourceResource {
 	@Timed
 	@Path("/{resourceId}")
 	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
-			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("secret_key") String secret_key) {
 		logger.warn("Deleting resourceId:"+resourceId);
 		checkHierarchy(userId);
-		User visitor = new User();
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) {
 			logger.error("No resource to delete: "+resourceId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
+			throw new WebApplicationException(Status.NOT_FOUND);
 		}
-		if (visitor.getId() != userId) { // only owners
-			logger.error("Not allowed to delete resource: "+resourceId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		Resource oldresource = storage.findResourceById(resourceId);
+		authoriseResourceKey(oldresource.getSecret_key(),secret_key);
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
@@ -192,16 +202,18 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
 	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data) {
-		User visitor = new User();
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
 		checkHierarchy(userId);
+		User user = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		logger.info("Adding resource data to:"+resource.getLabel());
-		if (visitor.getId() != userId) {
-			//throw new WebApplicationException(Status.FORBIDDEN);
+		if (!resource.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
+			logger.warn("User is not owner and has incorrect secret_key on stream!");
+			throw new WebApplicationException(Status.FORBIDDEN);
 		}
+		logger.info("Adding resource data to:"+resource.getLabel());
 		// update Resource last_posted
 		storage.postedResource(resourceId,System.currentTimeMillis());
+
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
 		if (parsers==null || parsers.size()==0) { 
@@ -214,10 +226,6 @@ public class ResourceResource {
 				return "Error: JSON parsing for auto creation failed!";
 			}
 		}
-		/*
-		for (Parser parser: parsers) {
-			logger.info(parser.toString());
-		}*/
 		//run it through the parsers
 		applyParsers(resourceId, data);
 
@@ -241,7 +249,6 @@ public class ResourceResource {
 		User owner = storage.findUserById(userId);
 		if (owner==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
-
  
 
 	// add a resource 

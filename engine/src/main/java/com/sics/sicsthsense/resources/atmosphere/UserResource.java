@@ -43,6 +43,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.*;
+import javax.ws.rs.WebApplicationException;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -79,73 +80,68 @@ public class UserResource {
 		@GET
 		@Timed
 		@Path("/{userId}")
-		public User getUser(@PathParam("userId") long userId) {
+		public User getUser(@PathParam("userId") long userId, @QueryParam("token") String token) {
 			System.out.println("getting User!! "+userId);
 			User user = storage.findUserById(userId);
+			System.out.println("token "+token);
+			System.out.println("usertoken "+user.getToken());
+			if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
 			return user;
 		}
 
 		@POST
 		@Timed
-		public String post(User user) throws Exception {
-			//return Response.status(201).entity("posted alright").build();
-			logger.info("making a new user");
+		public User post(User user) throws Exception {
+			//logger.info("making a new user");
 
 			if (user.getEmail()==null || user.getEmail()=="") {
 				logger.info("new User email not set!");
-				return "Error: No user 'email' attribute set!";
+				//return "Error: No user 'email' attribute set!";
+				throw new WebApplicationException(Status.BAD_REQUEST); 
 			}
 			if (storage.findUserByUsername(user.getUsername())!=null) {
 				String errorMsg ="Error: Duplicate username: "+user.getUsername()+"!";
 				logger.error(errorMsg);
-				return errorMsg;
+				throw new WebApplicationException(Status.BAD_REQUEST); 
 			}
 			if (storage.findUserByEmail(user.getEmail())!=null) {
 				String errorMsg = "Error: Duplicate email: "+user.getEmail()+"!";
 				logger.error(errorMsg);
-				return errorMsg;
+				throw new WebApplicationException(Status.BAD_REQUEST); 
 			}
+			User newuser = new User();
+			logger.info("Adding new user: "+newuser.toString());
 
-			return Long.toString(insertUser(user));
+			newuser.update(newuser);
+
+			storage.insertUser(
+				newuser.getUsername(),
+				newuser.getEmail(),
+				newuser.getFirstName(),
+				newuser.getLastName(),
+				newuser.getToken()
+			);
+			return storage.findUserByUsername(newuser.getUsername());
 		}
 
 		@PUT
 		@Timed
 		@Path("/{userId}")
-		public User put(@PathParam("userId") long userId, User user) {
+		public User put(@PathParam("userId") long userId, User newuser, @QueryParam("token") String token) throws Exception {
 			// should check permissions...
+			User user = storage.findUserById(userId);
+			if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
-			user.setId(userId);
-			updateUser(userId,user);
+			newuser.setId(userId); // ensure we dont change other others!
+			user.update(newuser);
+			storage.updateUser(
+				user.getId(),
+				user.getUsername(),
+				user.getFirstName(),
+				user.getLastName(),
+				user.getEmail()
+			);
 			return user;
 		}
 
-		public long insertUser(User newuser) {
-				// check doesnt exist/allowed
-				logger.info("Adding new user: "+newuser.toString());
-
-				User user = new User();
-				user.update(newuser);
-
-				storage.insertUser(
-					user.getUsername(),
-					user.getEmail(),
-					user.getFirstName(),
-					user.getLastName(),
-					user.getToken()
-				);
-				return storage.findUserIdByUsername(newuser.getUsername());
-		}
-
-		public void updateUser(long userId, User newuser) {
-				User olduser = storage.findUserById(userId);
-				olduser.update(newuser);
-				storage.updateUser(
-					newuser.getId(),
-					newuser.getUsername(),
-					newuser.getFirstName(),
-					newuser.getLastName(),
-					newuser.getEmail()
-				);
-		}
 }

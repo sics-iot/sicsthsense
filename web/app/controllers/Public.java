@@ -50,6 +50,10 @@ public class Public extends Controller {
   public static Result api() {
     return ok(apiDocs.render());
   }
+
+  public static Result data() {
+    return ok(apiData.render());
+  }
     
     
 }
