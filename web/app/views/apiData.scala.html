@@ -1,0 +1,136 @@
+@import helper._
+
+@layout("Docs", "", session) {
+
+<div class="row-fluid">
+	<div class="span2 bs-docs-sidebar">
+		<div class="alert alert-info">
+  		<strong>New!</strong><br/> You can poll resources that use COAP protocol now!
+		</div>
+		<div class="alert alert-warning">
+  		<strong>Supported browsers</strong><br/> To ensure better compatibility of the webpages, please upgrade to Chrome (v26+) or Firefox (v20+) browsers.  
+		</div>
+	</div>
+	<div class="span9">
+  <h1>API Documentation</h1>
+
+	This page describes how to interact with SicsthSense through the API rather than the webpage.
+  
+      <p>This page gives examples of the JSON representation for the many different entities in the SicsthSense system. The JSON is how the system describes these entities, and will be returned on GETs, they can then be modified and POSTed back to the system.</p>
+
+<h2>
+<a name="user" class="anchor" href="#user"><span class="octicon octicon-link"></span></a>User</h2>
+
+<p>A <strong>User</strong> is represented by the following JSON structure. Note that the only required field is <em>username</em>, all the rest can be filled in automatically by the system, or be assigned some default values.
+The fields <em>id</em>, <em>creationDate</em> and <em>lastLogin</em> are handled internally by the system and are read-only.</p>
+
+<pre>{
+        "id":1,
+        "openIDIdentifier":null,
+        "authorities":[],
+        "creationDate":1383469440445,
+        "lastLogin":1383469440445,
+        "openIDDiscoveryInformationMemento":null,
+
+        "username":"username@@example.com",
+        "passwordDigest":null,
+        "firstName":"Alice",
+        "lastName":"Wonderland",
+        "description":"",
+        "email":null,
+        "latitude":40.0,
+        "longitude":18.0,
+        "password":null,
+        "admin":false,
+        "token":null,
+        "resources":[
+                ...
+        ]
+}</pre>
+
+<h2>
+<a name="resource" class="anchor" href="#resource"><span class="octicon octicon-link"></span></a>Resource</h2>
+
+<p>A <strong>Resource</strong> is represented by the following JSON structure. Note that the only required field is <em>label</em>, all the rest can be filled in automatically by the system, or be assigned some default values.
+Also, if you would like the resource to automatically poll a remote URL, the <em>polling_url</em> must be set to a valid HTTP URL, and the <em>polling_period</em> to a positive non-zero integer representing the period of polling in seconds.
+The fields <em>id</em>, <em>owner_id</em>, <em>parent_id</em>, <em>last_polled</em> and <em>last_posted</em> are handled internally by the system and are read-only.</p>
+
+<pre>{
+        "id":2,
+        "owner_id":1,
+        "parent_id":-1,
+        "last_polled":0,
+        "last_posted":0
+
+        "label":"New resource",
+        "description":"",
+        "polling_url":null,
+        "polling_authentication_key":null,
+        "polling_period":0,
+        "version":"1.0",
+        "secret_key":"32795d7d-b875-4aff-94b3-1a32f40f1015",
+}</pre>
+
+<h2>
+<a name="stream" class="anchor" href="#stream"><span class="octicon octicon-link"></span></a>Stream</h2>
+
+<p>A <strong>Stream</strong> is represented by the following JSON structure. Note that there are no required fields, all can be filled in automatically by the system, or be assigned some default values.
+The fields <em>id</em>, <em>owner_id</em> and <em>resource_id</em> are handled internally by the system and are read-only.</p>
+
+<pre>{
+        "id":3,
+        "owner_id":1,
+        "resource_id":13,
+
+        "type":"t",
+        "latitude":0.0,
+        "longitude":0.0,
+        "description":"light measure",
+        "public_access":false,
+        "public_search":false,
+        "frozen":false,
+        "version":0
+        "history_size":0,
+        "last_updated":0,
+        "secret_key":"8fbefad4-602c-4ce2-aecf-5f6ce16d2f3a"
+}</pre>
+
+<h2>
+<a name="parser" class="anchor" href="#parser"><span class="octicon octicon-link"></span></a>Parser</h2>
+
+<p>A <strong>Parser</strong> is represented by the following JSON structure. Note that there are no required fields, all can be filled in automatically by the system, or be assigned some default values.
+The fields <em>id</em> and <em>resource_id</em>  are handled internally by the system and are read-only.</p>
+
+<pre>{
+        "id":3,
+        "resource_id":13,
+        "stream_id":3,
+
+        "input_parser":"/tets",
+        "input_type":"application/json",
+        "timeformat":"unix",
+        "data_group":1,
+        "time_group":2,
+        "number_of_points":1
+}</pre>
+
+<h2>
+<a name="data" class="anchor" href="#data"><span class="octicon octicon-link"></span></a>Data</h2>
+
+<p>Actual data payloads can be represented through any format, though the preferred one is JSON. Any type of JSON primitive value can be consumed by Resources, depending on how the parsers are configured. If Streams are being directly interacted with, the format needs to be slightly more strict. It needs to contain <em>value</em> and can optionally contain a <em>timestamp</em> value.</p>
+
+<pre>{
+  "value": 2.5,
+  "timestamp": 1384249393
+}</pre>
+    </div>
+  </div>
+  </div>
+
+	
+	<br /> <br />
+	<br /> <br />
+  </div>
+</div>
+
+}
