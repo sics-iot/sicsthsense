@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DataPoint {
 	@JsonProperty
 	private long id;
-	@JsonProperty
+//	@JsonProperty("stream_id")
 	private long stream_id;
 	@JsonProperty
 	private long timestamp;

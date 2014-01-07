@@ -227,23 +227,23 @@ public interface StorageDAO {
 
 
 	// DataPoints
-  @SqlQuery("select * from data_point_double where id = :id limit 10")
+  @SqlQuery("SELECT * FROM data_point_double WHERE id = :id ORDER BY id DESC  LIMIT 10")
 	@Mapper(DataPointMapper.class)
   DataPoint findPointById(@Bind("id") long id);
 
-  @SqlQuery("select * from data_point_double where stream_id = :stream_id limit :limit")
+  @SqlQuery("SELECT * FROM data_point_double WHERE stream_id = :stream_id ORDER BY id DESC limit :limit")
 	@Mapper(DataPointMapper.class)
   List<DataPoint> findPointsByStreamId(@Bind("stream_id") long stream_id, @Bind("limit") int limit);
 
-  @SqlQuery("select * from data_point_double where stream_id = :stream_id AND timestamp > :from")
+  @SqlQuery("SELECT * FROM data_point_double WHERE stream_id = :stream_id AND timestamp > :from")
 	@Mapper(DataPointMapper.class)
   List<DataPoint> findPointsByStreamIdSince(@Bind("stream_id") long stream_id, @Bind("from") long from);
 
-  @SqlQuery("select * from data_point_double where stream_id = :stream_id AND timestamp > :from AND timestamp < :until")
+  @SqlQuery("SELECT * FROM data_point_double WHERE stream_id = :stream_id AND timestamp > :from AND timestamp < :until")
 	@Mapper(DataPointMapper.class)
   List<DataPoint> findPointsByStreamIdSince(@Bind("stream_id") long stream_id, @Bind("from") long from, @Bind("until") long until);
 
-  @SqlUpdate("insert into data_point_double(stream_id, data, timestamp) values (:stream_id, :data, :timestamp)")
+  @SqlUpdate("INSERT INTO data_point_double(stream_id, data, timestamp) VALUES (:stream_id, :data, :timestamp)")
   void insertDataPoint(@Bind("stream_id") long stream_id, @Bind("data") double data, @Bind("timestamp") long timestamp);
 
 }

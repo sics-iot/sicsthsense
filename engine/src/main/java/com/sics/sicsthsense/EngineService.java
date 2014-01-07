@@ -27,6 +27,7 @@ package com.sics.sicsthsense;
 import java.util.UUID;
 
 import org.skife.jdbi.v2.*; // For DBI
+import org.skife.jdbi.v2.exceptions.*; // For lack of connection Exception
 import org.eclipse.jetty.server.session.SessionHandler;
 
 import com.yammer.dropwizard.Service;
@@ -106,9 +107,14 @@ public class EngineService extends Service<EngineConfiguration> {
 		// register each resource type accessible through the API
 		DAOFactory.build(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
+		//if (storage==null) {System.out.println("No Storage engine!");}
 		pollSystem = PollSystem.build(storage);
-		pollSystem.createPollers();
-
+		try {
+			pollSystem.createPollers();
+		} catch (UnableToObtainConnectionException e) {
+			System.out.println("Error: Unable to obtain connection to SQL Server!\nExiting...");
+			System.exit(1);
+		}
 		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));

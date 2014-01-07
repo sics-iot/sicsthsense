@@ -34,6 +34,7 @@ import org.atmosphere.jersey.Broadcastable;
 import org.atmosphere.jersey.SuspendResponse;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -136,7 +137,9 @@ public class StreamResource {
 				return storage.findPointsByStreamIdSince(streamId, from.get());
 			}
 		} else {
-			return storage.findPointsByStreamId(streamId, limit.get());
+			List<DataPoint> points = storage.findPointsByStreamId(streamId, limit.get());
+			Collections.reverse(points);
+			return points;
 		}
 	}
 
