@@ -56,6 +56,9 @@ import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.jersey.params.IntParam;
 import com.yammer.dropwizard.jersey.params.LongParam;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.*;
+
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
@@ -117,10 +120,11 @@ public class StreamResource {
 
 	@GET
 	@Path("/{streamId}/data")
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
-	public List<DataPoint> getData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
+	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
 		checkHierarchy(userId,resourceId,streamId);
+		List<DataPoint> rv; // return value before conversion
 		User user = storage.findUserById(userId);
 		Stream stream = storage.findStreamById(streamId);
 		if (stream==null) {throw new WebApplicationException(Status.NOT_FOUND); }
@@ -128,18 +132,38 @@ public class StreamResource {
 			logger.warn("User is not owner and has incorrect secret_key on stream!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-
 		logger.info("Getting stream: "+streamId);
-		if (from.get() != -1) {
+
+		if (from.get() != -1) { // points since FROM
 			if (until.get() != -1) {
-				return storage.findPointsByStreamIdSince(streamId, from.get(), until.get());
+				rv = storage.findPointsByStreamIdSince(streamId, from.get(), until.get());
 			} else {
-				return storage.findPointsByStreamIdSince(streamId, from.get());
+				rv = storage.findPointsByStreamIdSince(streamId, from.get());
 			}
-		} else {
-			List<DataPoint> points = storage.findPointsByStreamId(streamId, limit.get());
-			Collections.reverse(points);
-			return points;
+		} else { // just get the most recent LIMIT points
+			rv = storage.findPointsByStreamId(streamId, limit.get());
+			Collections.reverse(rv);
+		}
+
+		try {
+			if ("csv".equals(format)) {
+				CsvMapper mapper = new CsvMapper();
+				CsvSchema schema = mapper.schemaFor(DataPoint.class).withHeader();; // schema from 'Pojo' definition
+				/*
+				CsvSchema schema = CsvSchema.builder()
+					.addColumn("id", CsvSchema.ColumnType.NUMBER)
+					.addColumn("streamrId", CsvSchema.ColumnType.NUMBER)
+					.addColumn("timestamp", CsvSchema.ColumnType.NUMBER)
+					.addColumn("value", CsvSchema.ColumnType.NUMBER);
+					*/
+				String csv = mapper.writer(schema).writeValueAsString(rv);
+				return csv;
+			} else { // default dump to JSON
+				ObjectMapper mapper = new ObjectMapper();
+				return mapper.writeValueAsString(rv);
+			}
+		} catch (Exception e) {
+			return "Error parsing data!";
 		}
 	}
 

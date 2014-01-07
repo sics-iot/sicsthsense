@@ -29,12 +29,14 @@
 package com.sics.sicsthsense.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "id", "streamId", "timestamp", "value" })
 public class DataPoint {
 	@JsonProperty
 	private long id;
-//	@JsonProperty("stream_id")
-	private long stream_id;
+	@JsonProperty("streamId")
+	private long streamId;
 	@JsonProperty
 	private long timestamp;
 	@JsonProperty
@@ -42,7 +44,7 @@ public class DataPoint {
 
 	public DataPoint() {
 		id=-1;
-		stream_id=-1;
+		streamId=-1;
 		timestamp=-1;
 		value=-1;
 	}
@@ -54,9 +56,9 @@ public class DataPoint {
 		this.timestamp	= timestamp;
 		this.value			= value;
 	}
-	public DataPoint(long id, long stream_id, long timestamp, double value) {
+	public DataPoint(long id, long streamId, long timestamp, double value) {
 		this.id					= id;
-		this.stream_id	= stream_id;
+		this.streamId	= streamId;
 		this.timestamp	= timestamp;
 		this.value			= value;
 	}
@@ -66,12 +68,12 @@ public class DataPoint {
 	}
 
 	public long getId()										{ return id; }
-	public long getStreamId()							{ return stream_id; }
+	public long getStreamId()							{ return streamId; }
 	public long getTimestamp()						{ return timestamp; }
 	public double getValue()							{ return value; }
 
 	public void setId(long id)								{ this.id = id; }
-	public void setStreamId(long stream_id)		{ this.stream_id = stream_id; }
+	public void setStreamId(long stream_id)		{ this.streamId = streamId; }
 	public void setTimestamp(long timestamp)	{ this.timestamp = timestamp; }
 	public void	setValue(double value)				{ this.value = value; }
 
