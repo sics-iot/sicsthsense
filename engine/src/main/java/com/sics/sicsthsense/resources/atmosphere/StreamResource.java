@@ -70,11 +70,17 @@ public class StreamResource {
 	private final StorageDAO storage;
   private final AtomicLong counter;
 	private final Logger logger = LoggerFactory.getLogger(StreamResource.class);
+	private ObjectMapper jsonmapper;
+	private CsvMapper csvmapper;
+	private CsvSchema schema;
   private @PathParam("resourceId") Broadcaster topic;
 
 	public StreamResource() {
 		this.storage = DAOFactory.getInstance();
 		this.counter = new AtomicLong();
+		jsonmapper = new ObjectMapper();
+		csvmapper = new CsvMapper();
+		schema = csvmapper.schemaFor(DataPoint.class).withHeader();; // schema from Pojo definition
 	}
 
 	@GET
@@ -147,20 +153,9 @@ public class StreamResource {
 
 		try {
 			if ("csv".equals(format)) {
-				CsvMapper mapper = new CsvMapper();
-				CsvSchema schema = mapper.schemaFor(DataPoint.class).withHeader();; // schema from 'Pojo' definition
-				/*
-				CsvSchema schema = CsvSchema.builder()
-					.addColumn("id", CsvSchema.ColumnType.NUMBER)
-					.addColumn("streamrId", CsvSchema.ColumnType.NUMBER)
-					.addColumn("timestamp", CsvSchema.ColumnType.NUMBER)
-					.addColumn("value", CsvSchema.ColumnType.NUMBER);
-					*/
-				String csv = mapper.writer(schema).writeValueAsString(rv);
-				return csv;
+				return csvmapper.writer(schema).writeValueAsString(rv);
 			} else { // default dump to JSON
-				ObjectMapper mapper = new ObjectMapper();
-				return mapper.writeValueAsString(rv);
+				return jsonmapper.writeValueAsString(rv);
 			}
 		} catch (Exception e) {
 			return "Error parsing data!";
