@@ -139,7 +139,7 @@ public class StreamResource {
 			if (user==null) {throw new WebApplicationException(Status.NOT_FOUND); }
 			if (!stream.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
 				logger.warn("User is not owner and has incorrect secret_key on stream!");
-				//throw new WebApplicationException(Status.FORBIDDEN);
+				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 		}
 		logger.info("Getting stream: "+streamId);

@@ -8,6 +8,9 @@
 @WIN_1M() = {30*24*60*60*1000}
 @WIN_1Y() = {365*24*60*60*1000}
 
+@helpMark(text: String, apiLocation: String="") = {
+<a href="@routes.Public.about()#@apiLocation" class="helptooltip" data-toggle="tooltip" title="@text"><i class="icon-question-sign"></i></a>
+}
 
 
 @if(stream != null) {
@@ -42,6 +45,11 @@
 			-->
 			<label class="span2">API URL:</label>
 			<input class="span10" type="text" id="streamKey@{stream.id}" name="apiUrl" value="@sicsthSenseURL():8080@stream.getHierarchy()" readonly="readonly">
+				<div class="row-fluid controls controls-row">
+					<label class="span2" for="">Key @helpMark("The hash/URI used to identify this resource","keyHelp")</label>
+					<input class="span8" type="text" id="Key" name="key" value="@stream.getKey" readonly>
+					<button class="span2 btn btn-danger resourceRegenerateKey" id="resourceRegenerateKey" data-resourceId="" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate</button>
+				</div>
 		}	
 </div>
 	</div>	
@@ -144,9 +152,11 @@ $.ajax({
 			} else {
 			<span>@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</span>
 			}
+
 @*		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
 			owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>
 		} *@
+
 			@if(displayToolbar){
 				<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)</span>
 			}
@@ -163,6 +173,11 @@ $.ajax({
 			<label class="span2">API URL:</label>
 			<input class="span10" type="text" id="streamKey@{stream.id}" name="keyUrl" value="@sicsthSenseURL():8080@stream.getHierarchy()" readonly="readonly">
 		</div>
+				<div class="row-fluid controls controls-row">
+					<label class="span2" for="">Key @helpMark("The hash/URI used to identify this resource","keyHelp")</label>
+					<input class="span8" type="text" id="Key" name="key" value="@stream.getKey" readonly>
+					<button class="span2 btn btn-danger resourceRegenerateKey" id="resourceRegenerateKey" data-resourceId="" data-toggle="tooltip" title="Click to generate a new key if compromised"><i class="icon-refresh icon-white"></i> Regenerate</button>
+				</div>
 		}	
 		<div class="streamNoDataLine">
 		 <span style="color: #888; padding-left: 10px;">No data currently available.</span>
