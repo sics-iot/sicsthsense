@@ -137,6 +137,9 @@ public class Resource extends Operator {
         this(null, null, "NewResource" + Utils.timeStr(Utils.currentTime()), 0L, null, null, "");
     }
 
+		public String getHierarchy() {
+			return "/users/"+owner.getId()+"/resources/"+id;
+		}
 
 		public boolean isUnused() {
 			if (lastPolled==0 && lastPosted==0) { return true; }

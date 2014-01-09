@@ -486,7 +486,8 @@ public class Stream extends Model implements Comparable<Stream> {
 		public String getHierarchy() {
 			//System.out.println(this.owner);
 			//System.out.println(this.owner.id);
-			return "/users/"+0+"/resources/"+resource.id+"/streams/"+id;
+			//return "/users/"+resource.owner.id+"/resources/"+resource.id+"/streams/"+id;
+			return resource.getHierarchy()+"/streams/"+id;
 		}
 
     public boolean setPublicAccess(Boolean pub) {

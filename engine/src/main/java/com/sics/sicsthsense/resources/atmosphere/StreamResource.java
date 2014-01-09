@@ -99,11 +99,11 @@ public class StreamResource {
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("token") String token) {
+	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("token") @DefaultValue("") String token) {
 		logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId);
 		checkHierarchy(userId,resourceId,streamId);
 		User user = storage.findUserById(userId);
-		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (user==null || !token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		Stream stream = storage.findStreamById(streamId);
 		return stream;
@@ -134,9 +134,13 @@ public class StreamResource {
 		User user = storage.findUserById(userId);
 		Stream stream = storage.findStreamById(streamId);
 		if (stream==null) {throw new WebApplicationException(Status.NOT_FOUND); }
-		if (!stream.getPublic_access() && !stream.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
-			logger.warn("User is not owner and has incorrect secret_key on stream!");
-			throw new WebApplicationException(Status.FORBIDDEN);
+		if (!stream.getPublic_access()) { // need to authenticate
+			logger.warn("Stream isnt public access!");
+			if (user==null) {throw new WebApplicationException(Status.NOT_FOUND); }
+			if (!stream.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
+				logger.warn("User is not owner and has incorrect secret_key on stream!");
+				//throw new WebApplicationException(Status.FORBIDDEN);
+			}
 		}
 		logger.info("Getting stream: "+streamId);
 

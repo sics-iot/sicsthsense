@@ -55,7 +55,7 @@
 				<!--div class="row-fluid"><span class="span1">Key</span><input class="span11" type="text" id="@{resource.id}Key" name="ResourceKey" value="@sicsthSenseURL()@{routes.CtrlResource.postByKey(resource.showKey(Secured.getCurrentUser()))}" readonly></div-->
 				<div class="row-fluid">
 				 <label class="span2" for="@{myForm("id").value}apiURL">API URL </label>
-				 <input class="span10" type="text" id="@{myForm("id").value}KeyURL" name="apiUrl" value="@sicsthSenseURL():8080/users/0/resources/1" readonly>
+				 <input class="span10" type="text" id="@{myForm("id").value}KeyURL" name="apiUrl" value="@sicsthSenseURL():8080@resource.getHierarchy()" readonly>
 				</div>
 				@if(resource.getUrl() != "" && resource.getUrl() != null) {
 				<div class="row-fluid"><span class="span1">URI</span><input class="span11" type="url" id="@{resource.id}URL" name="ResourceURL" value="@resource.getUrl()" readonly></div>
