@@ -58,6 +58,7 @@ import com.yammer.dropwizard.jersey.params.LongParam;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.*;
+import org.codehaus.jackson.JsonNode;
 
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
@@ -109,6 +110,7 @@ public class StreamResource {
 		return stream;
 	}
 
+	/*
 	@POST
 	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream, @QueryParam("token") String token) {
 		logger.info("Creating stream!:"+stream.toString());
@@ -120,7 +122,28 @@ public class StreamResource {
 		stream.setOwner_id(userId);
 		long streamId = insertStream(stream);
 		return streamId;
+	}*/
+	@POST
+	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream, @QueryParam("token") String token) throws Exception {
+		logger.info("Creating stream!:"+stream);
+		checkHierarchy(userId,resourceId);
+		User user = storage.findUserById(userId);
+		if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
+		long streamId=-1;
+
+		//check antecedant streams!
+		if (stream.antecedants !=null) {
+			logger.info("Antecedant streams: ");
+			for(Long antId: stream.antecedants) {
+				logger.info("Ant: "+antId);
+			}
+		}
+		stream.setResource_id(resourceId);
+		stream.setOwner_id(userId);
+		streamId = insertStream(stream);
+		return streamId;
 	}
+
 	void authoriseStreamKey(String key1, String key2) {
 	}
 
@@ -236,6 +259,7 @@ public class StreamResource {
 			stream.getSecret_key(),
 			stream.getOwner_id(),
 			stream.getResource_id(),
+			stream.getFunction(),
 			stream.getVersion()
 		);
 		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());

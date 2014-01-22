@@ -6,13 +6,16 @@ from engine import *
 
 print "Testing SicsthSense python module..."
 
-#e = Engine("localhost:8080")
-e = Engine("presense.sics.se:8080")
+e = Engine("localhost:8080")
+#e = Engine("presense.sics.se:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
-newUserId = 1 #e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+newUserId = 2 #e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+token = "0f593a09-19e6-4ae4-84e6-08fb99336dc2"
+
 e.setUserId(newUserId)
-print "User ID:",newUserId
+e.setToken(token)
+print "User ID:",newUserId," token: ",token
 
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
@@ -25,7 +28,7 @@ resourceId = e.createResource(jsonstr)
 print "Made resource: "+str(resourceId);
 
 # Use auto creation of streams and parsers
-if True:
+if False:
     tempname = "temperature"+str(random.randint(0,20)) 
     for x in range(0,10):
         data = { tempname : random.randint(0,20) }
@@ -37,13 +40,13 @@ if True:
 
 
 # Manually create stream and parser
-if False:
+if True:
 	if True:
-		newstream = { "description": "light measure" }
+                newstream = { "description": "group mean", "function": "mean" }
 		streamjsonstr = json.dumps(newstream)
 		#print streamjsonstr
 		streamId = e.createStream(resourceId,streamjsonstr)
-		print "Made stream: "+str(streamId);
+		print "Made stream: "+str(streamId)+" - "+streamjsonstr;
 
 	# Create a stream for this resource
 	if True:

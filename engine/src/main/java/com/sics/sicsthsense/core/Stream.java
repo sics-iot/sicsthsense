@@ -29,41 +29,59 @@
 package com.sics.sicsthsense.core;
 
 import java.util.UUID;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
+//import org.codehaus.jackson.map.annotate.JsonDeserialise;
+
+import com.sics.sicsthsense.jdbi.*;
 
 public class Stream {
 	@JsonProperty
-	private long id;
+	protected long id;
 	@JsonProperty
-	private String type;
+	protected String type;
 	@JsonProperty
-	private double latitude;
+	protected double latitude;
 	@JsonProperty
-	private double longitude;
+	protected double longitude;
 	@JsonProperty
-	private String description;
+	protected String description;
 	@JsonProperty
-	private boolean public_access;
+	protected boolean public_access;
 	@JsonProperty
-	private boolean public_search;
+	protected boolean public_search;
 	@JsonProperty
-	private boolean frozen;
+	protected boolean frozen;
 	@JsonProperty
-	private int history_size;
+	protected int history_size;
 	@JsonProperty
-	private long last_updated;
+	protected long last_updated;
 	@JsonProperty
-	private String secret_key;
+	protected String secret_key;
 	@JsonProperty
-	private long owner_id;
+	protected long owner_id;
 	@JsonProperty
-	private long resource_id;
+	protected long resource_id;
 	@JsonProperty
-	private int version;
+	protected int version;
+	// name of potential aggregation function
+	@JsonProperty
+	protected String function;
+	//@JsonDeserialize(as=ArrayList.class, contentAs=Long.class)
+	@JsonProperty
+	public List<Long> antecedants;
+
+	private final Logger logger = LoggerFactory.getLogger(Stream.class);
+	private StorageDAO storage;
 
     public Stream() {
 			this.type = "D";
 			this.secret_key = UUID.randomUUID().toString();
+			StorageDAO storage = DAOFactory.getInstance();
 		}
     public Stream(long id) {
 			this();
@@ -82,6 +100,7 @@ public class Stream {
 			String secret_key,
 			long owner_id,
 			long resource_id,
+			String function,
 			int version
 		) {
 			this(id);
@@ -97,7 +116,11 @@ public class Stream {
 			this.secret_key		= secret_key;
 			this.owner_id			= owner_id;
 			this.resource_id	= resource_id;
+			this.function			= function;
 			this.version			= version;
+		}
+		public Stream(JsonNode root) {
+
 		}
 
 	public boolean isReadable(User user) {
@@ -108,6 +131,27 @@ public class Stream {
 	public boolean isWritableable(User user) {
 		if (user.getId() == owner_id) {return true;} // owners can read
 		return false;
+	}
+
+	// when an antecedant input stream has changed, update this stream's datapoints
+	public void update() {
+		logger.info("Updating virtual stream: "+getId());
+
+		List<Long> antecedants = storage.getAntecedants(id);
+		//List<DataPoint> newPoints = this.function.perform(antecedants);
+		// add to stream
+		// StorageDAO.insert()
+
+		notifyDependants();
+	}
+
+	public void notifyDependants() {
+		List<Long> dependants = storage.getDependants(id);
+		// update dependants!
+		for (Long dependant: dependants) {
+			Stream ds = storage.findStreamById(dependant);
+			ds.update();
+		}
 	}
 
 	public long getId()								{ return id; }
@@ -123,6 +167,7 @@ public class Stream {
 	public String getSecret_key()			{ return secret_key; }
 	public long getOwner_id()					{ return owner_id; }
 	public long getResource_id()			{ return resource_id; }
+	public String getFunction()				{ return function; }
 	public int getVersion()						{ return version; }
 
 	public void setId(long id)										{ this.id = id; }
@@ -138,5 +183,6 @@ public class Stream {
 	public void setSecret_key(String secret_key)	{ this.secret_key = secret_key; }
 	public void setOwner_id(long owner_id)				{ this.owner_id = owner_id; }
 	public void setResource_id(long resource_id)	{ this.resource_id = resource_id; }
+	public void setFunction(String function)			{ this.function = function; }
 	public void setVersion(int version)						{ this.version = version; }
 }

@@ -88,8 +88,10 @@ public class ResourceResource {
 		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
+		if (user==null) {logger.info("No userId match"); throw new WebApplicationException(Status.NOT_FOUND);}
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		if (!user.getToken().equals(token)) { 
+			logger.warn("User token doesn't match");
 			throw new WebApplicationException(Status.FORBIDDEN);
 			/*
 			Iterator<Resource> it = resources.iterator();
@@ -118,6 +120,7 @@ public class ResourceResource {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		User user = storage.findUserById(userId);
+		if (user==null || token==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.getToken().equals(token)) { throw new WebApplicationException(Status.FORBIDDEN); }
 		/*
 		if (!resource.isReadable(visitor)) {
@@ -142,6 +145,7 @@ public class ResourceResource {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
+		if (user==null || token==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		resource.setOwner_id(userId); // should know the owner
@@ -201,10 +205,10 @@ public class ResourceResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
-	//public void postData(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, DataPoint datapoint) {
 	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
+		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		Resource resource = storage.findResourceById(resourceId);
 		if (!resource.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
 			logger.warn("User is not owner and has incorrect secret_key on stream!");

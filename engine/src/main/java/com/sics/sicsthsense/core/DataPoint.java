@@ -56,6 +56,11 @@ public class DataPoint {
 		this.timestamp	= timestamp;
 		this.value			= value;
 	}
+	public DataPoint(long streamId, long timestamp, double value) {
+		this.streamId	= streamId;
+		this.timestamp	= timestamp;
+		this.value			= value;
+	}
 	public DataPoint(long id, long streamId, long timestamp, double value) {
 		this.id					= id;
 		this.streamId	= streamId;

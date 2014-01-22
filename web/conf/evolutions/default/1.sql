@@ -145,6 +145,12 @@ create table vfiles (
   constraint pk_vfiles primary key (id))
 ;
 
+create table dependants (
+  id                      bigint auto_increment not null,
+  stream_id               bigint,
+  dependant_id            bigint,
+  constraint pk_dependants primary key (id))
+;
 
 create table functions_streams (
   functions_id                   bigint not null,
@@ -183,6 +189,9 @@ alter table vfiles add constraint fk_vfiles_owner_12 foreign key (owner_id) refe
 create index ix_vfiles_owner_12 on vfiles (owner_id);
 alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
 create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
+
+create index ix_dependants_stream_14 on dependants (stream_id);
+create index ix_dependants_dependant_15 on dependants (dependant_id);
 
 
 

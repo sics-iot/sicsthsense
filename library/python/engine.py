@@ -42,6 +42,7 @@ class Engine:
 	"""Handle for interacting with the SicsthSense Engine"""
 	#hostname = "http://sense.sics.se:8080"
 	hostname = "localhost:8080"
+        user_token = None
 
 	# create the Engine handle, should specify user, maybe hostname
 	def __init__(self, hostname="localhost:8080", userId=1 ):
@@ -58,6 +59,9 @@ class Engine:
 	def updateUser(userId, userJSON):
 		# should work in future
 		pass
+
+        def setToken(self, token):
+            self.user_token = token
 
 	# Resource CRUD
 	def createResource(self, resourceJSON):
@@ -165,6 +169,9 @@ class Engine:
 		if not self.validJSON(data):
 			print "JSON not valid!:\n"+data
 			return False
+                url += "?" # for Query string
+                if self.user_token!=None:
+                    url += "token="+self.user_token
 		print "url: "+url
 		headers = {'Content-Type':'application/json'}
 		try:

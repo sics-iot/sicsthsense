@@ -153,7 +153,7 @@ public interface StorageDAO {
   @SqlQuery("select id from streams where resource_id = :resource_id and secret_key = :secret_key limit 1")
   long findStreamId(@Bind("resource_id") long id, @Bind("secret_key") String secret_key);
 
-  @SqlUpdate("insert into streams( type, latitude, longitude, description, public_access, public_search, frozen, history_size, last_updated, secret_key, owner_id, resource_id, version) values (  :type, :latitude, :longitude, :description, :public_access, :public_search, :frozen, :history_size, :last_updated, :secret_key, :owner_id, :resource_id, :version)")
+  @SqlUpdate("insert into streams( type, latitude, longitude, description, public_access, public_search, frozen, history_size, last_updated, secret_key, owner_id, resource_id, function, version) values (  :type, :latitude, :longitude, :description, :public_access, :public_search, :frozen, :history_size, :last_updated, :secret_key, :owner_id, :resource_id, :function, :version)")
   void insertStream(
 		@Bind("type")        String type, 
 		@Bind("latitude")    double latitude, 
@@ -167,15 +167,22 @@ public interface StorageDAO {
 		@Bind("secret_key")   String secret_key, 
 		@Bind("owner_id")     long owner_id, 
 		@Bind("resource_id")  long resource_id, 
+		@Bind("function")			String function, 
 		@Bind("version")      int version 
 	);
 
   @SqlUpdate("update streams set last_updated=:time where id = :id")
   void updatedStream(@Bind("id") long id, @Bind("time") long time);
 
-
   @SqlUpdate("delete from streams where id = :id")
   void deleteStream(@Bind("id") long id);
+
+
+  @SqlQuery("select id from dependants where dependant_id = :dependant_id")
+	List<Long> getAntecedants(@Bind("dependant_id") long dependant_id);
+
+  @SqlQuery("select id from dependants where stream_id = :stream_id")
+	List<Long> getDependants(@Bind("stream_id") long stream_id);
 
 
 	// VFiles
