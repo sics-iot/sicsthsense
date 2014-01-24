@@ -109,13 +109,15 @@ public class StreamResource {
 		Stream stream = storage.findStreamById(streamId);
 
 		// add back in the antecedents
-		logger.info("Antecedant streams: ");
 		List<Long> antecedents = storage.findAntecedents(streamId);
 		for(Long antId: antecedents) {
-			logger.info("Antecedent: "+antId);
-			// check ability to access antecedent!
-			// XXX
-			stream.antecedents.add(antId);
+			Stream antStream = storage.findStreamById(antId);
+			//logger.info("Antecedent: "+antId);
+			if (antStream==null) {continue;}
+			// Check ability to access antecedent!
+			if (antStream.isReadable(token)) {
+				stream.antecedents.add(antId);
+			}
 		}
 
 		return stream;
@@ -219,7 +221,7 @@ public class StreamResource {
 			logger.warn("User is not owner and has incorrect secret_key on resource!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		logger.info("Inserting into stream: "+streamId);
+		logger.info("Inserting data into stream: "+streamId);
 		datapoint.setStreamId(streamId); // keep consistency
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
