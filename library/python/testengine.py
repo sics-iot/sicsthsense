@@ -55,7 +55,7 @@ if True:
 		antStreamId2 = e.createStream(resourceId,streamjsonstr)
 		print "Made ant stream: "+str(antStreamId2)+" - "+streamjsonstr;
 
-                newstream = { "description": "group mean", "function": "mean", "antecedents": [antStreamId1,antStreamId2] }
+                newstream = { "description": "group median", "function": "median", "antecedents": [antStreamId1,antStreamId2] }
 		streamjsonstr = json.dumps(newstream)
 		#print streamjsonstr
 		streamId = e.createStream(resourceId,streamjsonstr)

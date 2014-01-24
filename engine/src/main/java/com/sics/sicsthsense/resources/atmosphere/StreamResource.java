@@ -220,11 +220,7 @@ public class StreamResource {
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		logger.info("Inserting into stream: "+streamId);
-
-		logger.info("Inserting into stream With: "+datapoint.getStreamId());
 		datapoint.setStreamId(streamId); // keep consistency
-		logger.info("Inserting into stream With: "+datapoint.getStreamId());
-
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
 		stream.notifyDependents();

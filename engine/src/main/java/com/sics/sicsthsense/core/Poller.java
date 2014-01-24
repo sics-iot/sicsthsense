@@ -75,7 +75,7 @@ public class Poller extends UntypedActor {
 		if (resource==null) {logger.error("Resource does not exist: "+resourceId); return; }
 		this.url=resource.getPolling_url();
 		if (this.url==null || this.url=="") {
-			logger.info("Url not valid");
+			logger.error("Url not valid");
 			return;
 		}
 		urlobj = new URL(url);
@@ -85,11 +85,12 @@ public class Poller extends UntypedActor {
 	public void applyParsers(String data) {
 		//logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
-			logger.info("applying a parser "+parser.getInput_parser());
+			//logger.info("Applying a parser "+parser.getInput_parser());
 			try {
 				parsedata.apply(parser,data);
 			} catch (Exception e) {
-				logger.error("Parsing "+data+" failed!"+e);
+				//logger.error("Parsing "+data+" failed!"+e);
+				logger.error("Parsing data failed!"+e);
 			}
 		}
 	}
