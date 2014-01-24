@@ -41,25 +41,42 @@ if False:
 
 # Manually create stream and parser
 if True:
+        # Create streams in resource
 	if True:
-                newstream = { "description": "group mean", "function": "mean" }
+                newstream = { "description": "input1" }
+		streamjsonstr = json.dumps(newstream)
+		#print streamjsonstr
+		antStreamId1 = e.createStream(resourceId,streamjsonstr)
+		print "Made ant stream: "+str(antStreamId1)+" - "+streamjsonstr;
+
+                newstream = { "description": "input2" }
+		streamjsonstr = json.dumps(newstream)
+		#print streamjsonstr
+		antStreamId2 = e.createStream(resourceId,streamjsonstr)
+		print "Made ant stream: "+str(antStreamId2)+" - "+streamjsonstr;
+
+                newstream = { "description": "group mean", "function": "mean", "antecedents": [antStreamId1,antStreamId2] }
 		streamjsonstr = json.dumps(newstream)
 		#print streamjsonstr
 		streamId = e.createStream(resourceId,streamjsonstr)
 		print "Made stream: "+str(streamId)+" - "+streamjsonstr;
 
-	# Create a stream for this resource
-	if True:
-		newparser = { "stream_id":streamId, "input_parser":"/tets" }
+	# Create a Parser for this resource
+	if False:
+		newparser = { "streamId":streamId, "input_parser":"/tets" }
 		parserjsonstr = json.dumps(newparser)
 		#print parserjsonstr
 		newId = e.createParser(resourceId,parserjsonstr)
 		print "new parser ID: "+str(newId);
 
+        if True:
 		# POST data to made stream
 		for x in range(0,10):
 			data = {"value": str(random.randint(0,99))}
-			result = e.postStreamData(resourceId,streamId,json.dumps(data))
+			result = e.postStreamData(resourceId,antStreamId1,json.dumps(data))
+
+			data = {"value": str(random.randint(0,99))}
+			result = e.postStreamData(resourceId,antStreamId2,json.dumps(data))
 			print result
 			#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
                         time.sleep(2)

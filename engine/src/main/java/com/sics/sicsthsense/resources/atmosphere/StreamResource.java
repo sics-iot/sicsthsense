@@ -107,6 +107,17 @@ public class StreamResource {
 		if (user==null || !token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		Stream stream = storage.findStreamById(streamId);
+
+		// add back in the antecedents
+		logger.info("Antecedant streams: ");
+		List<Long> antecedents = storage.findAntecedents(streamId);
+		for(Long antId: antecedents) {
+			logger.info("Antecedent: "+antId);
+			// check ability to access antecedent!
+			// XXX
+			stream.antecedents.add(antId);
+		}
+
 		return stream;
 	}
 
@@ -131,16 +142,21 @@ public class StreamResource {
 		if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
 		long streamId=-1;
 
-		//check antecedant streams!
-		if (stream.antecedants !=null) {
-			logger.info("Antecedant streams: ");
-			for(Long antId: stream.antecedants) {
-				logger.info("Ant: "+antId);
-			}
-		}
+		// initialise the stream correctly
 		stream.setResource_id(resourceId);
 		stream.setOwner_id(userId);
 		streamId = insertStream(stream);
+
+		//create antecedant streams correctly!
+		if (stream.antecedents !=null) {
+			logger.info("Antecedant streams: ");
+			for(Long antId: stream.antecedents) {
+				logger.info("Antecedent: "+antId);
+				// check ability to access antecedent!
+				// XXX
+				insertDependent(antId.longValue(),streamId);
+			}
+		}
 		return streamId;
 	}
 
@@ -203,11 +219,15 @@ public class StreamResource {
 			logger.warn("User is not owner and has incorrect secret_key on resource!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		logger.info("Inserting into stream:"+streamId);
+		logger.info("Inserting into stream: "+streamId);
+
+		logger.info("Inserting into stream With: "+datapoint.getStreamId());
 		datapoint.setStreamId(streamId); // keep consistency
+		logger.info("Inserting into stream With: "+datapoint.getStreamId());
 
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
+		stream.notifyDependents();
 
 		return "Posted successfully!";
 	}
@@ -263,6 +283,11 @@ public class StreamResource {
 			stream.getVersion()
 		);
 		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
+	}
+	// create the dependency relationship between streams
+	public static void insertDependent(long stream, long dependent) {
+		StorageDAO storage = DAOFactory.getInstance();
+		storage.insertDependent(stream,dependent);
 	}
 
 	public static long insertVFile(String path, long owner_id, String type, long stream_id) {

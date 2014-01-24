@@ -178,11 +178,24 @@ public interface StorageDAO {
   void deleteStream(@Bind("id") long id);
 
 
-  @SqlQuery("select id from dependants where dependant_id = :dependant_id")
-	List<Long> getAntecedants(@Bind("dependant_id") long dependant_id);
+  @SqlQuery("select stream_id from dependents where dependent_id = :dependent_id")
+	List<Long> findAntecedents(@Bind("dependent_id") long dependent_id);
 
-  @SqlQuery("select id from dependants where stream_id = :stream_id")
-	List<Long> getDependants(@Bind("stream_id") long stream_id);
+  @SqlQuery("select dependent_id from dependents where stream_id = :stream_id")
+	List<Long> findDependents(@Bind("stream_id") long stream_id);
+
+	// Dependent / Antecedent relation
+  @SqlUpdate("insert into dependents(stream_id, dependent_id) values (:stream_id, :dependent_id)")
+  void insertDependent(
+		@Bind("stream_id")     long stream_id,
+		@Bind("dependent_id")	 long dependent_id 
+	);
+	
+
+  @SqlUpdate("delete from dependents where dependent_id=:dependent_id")
+  void deleteDependent(
+		@Bind("dependent_id")	 long dependent_id 
+	);
 
 
 	// VFiles

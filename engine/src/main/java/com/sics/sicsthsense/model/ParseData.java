@@ -95,13 +95,13 @@ public class ParseData {
 			if (root == null) { logger.error("JSON Root is null"); return false; }
 			logger.info("node:"+root.getValueAsText() );
 			String[] levels = parser.getInput_parser().split("/");
+			Stream stream = storage.findStreamById(parser.getStream_id());
 			JsonNode node = root;
+
 			for (int i = 1; i < levels.length; i++) {
 					//Logger.info(levels[i]);
 					node = node.get(levels[i]);
-					if (node == null) {
-							return false;
-					}
+					if (node == null) { return false; }
 			}
 
 			if (node.isValueNode()) { // it is a simple primitive
@@ -123,7 +123,8 @@ public class ParseData {
 					}
 					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(value, currentTime);
-					//storage.insertDataPoint(-1,stream_id,currentTime,value); 
+					storage.insertDataPoint(parser.getStream_id(),value,currentTime); 
+					stream.notifyDependents();
 					return true;
 			}
 			return false;
@@ -137,6 +138,7 @@ public class ParseData {
 	private boolean parseTextResponse(Parser parser, String textBody, Long currentTime)
 					throws NumberFormatException, Exception {
 			logger.info("parsing Text");
+			Stream stream = storage.findStreamById(parser.getStream_id());
 			boolean success = false;
 			// try {
 			double number = 0.0;
@@ -185,10 +187,12 @@ public class ParseData {
 				}
 				//logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
 				storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+				stream.notifyDependents();
 			} else {
 					number = Double.parseDouble(textBody);
 					//success |= stream.post(number, currentTime);
 					storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+					stream.notifyDependents();
 			}
 			return success;
 	}

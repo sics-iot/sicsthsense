@@ -30,6 +30,7 @@ package com.sics.sicsthsense.core;
 
 import java.util.UUID;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 //import org.codehaus.jackson.map.annotate.JsonDeserialise;
 
 import com.sics.sicsthsense.jdbi.*;
+import com.sics.sicsthsense.core.functions.*;
 
 public class Stream {
 	@JsonProperty
@@ -73,10 +75,10 @@ public class Stream {
 	protected String function;
 	//@JsonDeserialize(as=ArrayList.class, contentAs=Long.class)
 	@JsonProperty
-	public List<Long> antecedants;
+	public List<Long> antecedents;
 
 	private final Logger logger = LoggerFactory.getLogger(Stream.class);
-	private StorageDAO storage;
+	private StorageDAO storage = null;
 
     public Stream() {
 			this.type = "D";
@@ -119,9 +121,6 @@ public class Stream {
 			this.function			= function;
 			this.version			= version;
 		}
-		public Stream(JsonNode root) {
-
-		}
 
 	public boolean isReadable(User user) {
 		if (user.getId() == owner_id) {return true;} // owners can read
@@ -133,25 +132,52 @@ public class Stream {
 		return false;
 	}
 
-	// when an antecedant input stream has changed, update this stream's datapoints
+	// when an antecedent input stream has changed, update this stream's datapoints
 	public void update() {
-		logger.info("Updating virtual stream: "+getId());
+		logger.info("Updating stream: "+getId());
+		if (storage==null) {storage = DAOFactory.getInstance();}
 
-		List<Long> antecedants = storage.getAntecedants(id);
-		//List<DataPoint> newPoints = this.function.perform(antecedants);
+		List<Long> antecedents = storage.findAntecedents(getId());
+		if (antecedents==null) { logger.error("Antecedents are null! ID:"+getId()); return; }
+		List<DataPoint> newPoints = performFunction(antecedents);
 		// add to stream
-		// StorageDAO.insert()
+		for (DataPoint p: newPoints) {
+			storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
+		}
 
-		notifyDependants();
+		notifyDependents();
 	}
 
-	public void notifyDependants() {
-		List<Long> dependants = storage.getDependants(id);
-		// update dependants!
-		for (Long dependant: dependants) {
-			Stream ds = storage.findStreamById(dependant);
+	public void notifyDependents() {
+		logger.info("Notify dependents of stream "+getId());
+		if (storage==null) {storage = DAOFactory.getInstance();}
+		List<Long> dependents = storage.findDependents(getId());
+		// update dependents!
+		for (Long dependent: dependents) {
+			Stream ds = storage.findStreamById(dependent);
 			ds.update();
 		}
+	}
+
+	public List<DataPoint> performFunction(List<Long> antecedents) {
+		Function function = null;
+		logger.info("Performing function of stream "+getId());
+		//if (antecedents==null) { logger.error("Antecedents are null!!"); return null;	}
+
+		// do nothing if the function is not set
+		if (this.getFunction()==null || this.getFunction()=="") {return new ArrayList<DataPoint>();}
+
+		if ("mean".equals(this.getFunction())) {
+			function = new Mean();
+		} else if ("median".equals(this.getFunction())) {
+		} else if ("min".equals(this.getFunction())) {
+		} else if ("max".equals(this.getFunction())) {
+
+		} else {
+			logger.error("Unknown function "+this.getFunction()+"! Stream ID: "+getId());
+			return new ArrayList<DataPoint>();
+		}
+		return function.apply(antecedents);
 	}
 
 	public long getId()								{ return id; }
