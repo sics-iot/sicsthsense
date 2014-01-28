@@ -117,7 +117,7 @@ create table IF NOT EXISTS parsers (
 create table IF NOT EXISTS users (
   id                        bigint auto_increment not null,
   email                     varchar(255) not null,
-  user_name                 varchar(255) not null,
+  username                 varchar(255) not null,
   password                  varchar(255),
   first_name                varchar(255),
   last_name                 varchar(255),
@@ -130,8 +130,15 @@ create table IF NOT EXISTS users (
   admin                     tinyint(1) default 0,
   version                   integer not null,
   constraint uq_users_email unique (email),
-  constraint uq_users_user_name unique (user_name),
+  constraint uq_users_username unique (username),
   constraint pk_users primary key (id))
+;
+
+create table dependants (
+  id                      bigint auto_increment not null,
+  stream_id               bigint,
+  dependant_id            bigint,
+  constraint pk_dependants primary key (id))
 ;
 
 create table IF NOT EXISTS vfiles (
@@ -185,6 +192,8 @@ create index ix_vfiles_owner_12 on vfiles (owner_id);
 alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
 create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
+create index ix_dependants_stream_14 on dependants (stream_id);
+create index ix_dependants_dependant_15 on dependants (dependant_id);
 
 
 alter table functions_streams add constraint fk_functions_streams_functions_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;
