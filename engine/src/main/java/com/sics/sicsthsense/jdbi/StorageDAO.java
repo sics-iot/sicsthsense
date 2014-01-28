@@ -49,12 +49,12 @@ public interface StorageDAO {
 	@Mapper(UserMapper.class)
   User findUserById(@Bind("id") long id);
 
-  @SqlQuery("select * from users where user_name = :user_name limit 1")
+  @SqlQuery("select * from users where username = :username limit 1")
 	@Mapper(UserMapper.class)
-  User findUserByUsername(@Bind("user_name") String user_name);
+  User findUserByUsername(@Bind("username") String username);
 
-  @SqlQuery("select id from users where user_name = :user_name limit 1")
-  long findUserIdByUsername(@Bind("user_name") String user_name);
+  @SqlQuery("select id from users where username = :username limit 1")
+  long findUserIdByUsername(@Bind("username") String username);
 
   @SqlQuery("select * from users where email = :email limit 1")
 	@Mapper(UserMapper.class)
@@ -63,22 +63,22 @@ public interface StorageDAO {
   @SqlQuery("select id from users where email = :email limit 1")
   long findUserIdByEmail(@Bind("email") String email);
 
-  @SqlQuery("select user_name from users where id = :id limit 1")
+  @SqlQuery("select username from users where id = :id limit 1")
   String findUsernameById(@Bind("id") long id);
 
-  @SqlUpdate("insert into users (user_name, email, first_name, last_name, creation_date, version, token) VALUES (:user_name, :email, :first_name, :last_name, NOW(), 1, :token)")
+  @SqlUpdate("insert into users (username, email, first_name, last_name, creation_date, version, token) VALUES (:username, :email, :first_name, :last_name, NOW(), 1, :token)")
   void insertUser(
-		@Bind("user_name") String user_name, 
+		@Bind("username") String username, 
 		@Bind("email") String email,
 		@Bind("first_name") String first_name,
 		@Bind("last_name") String last_name,
 		@Bind("token") String token
 	);
 	
-  @SqlUpdate("update resources set user_name = :user_name, first_name=:first_name, last_name=:last_name, email where id = :id")
+  @SqlUpdate("update resources set username = :username, first_name=:first_name, last_name=:last_name, email where id = :id")
   void updateUser(
 		@Bind("id") long id,
-		@Bind("user_name") String user_name,
+		@Bind("username") String username,
 		@Bind("first_name") String first_name,
 		@Bind("last_name")  String last_name,
 		@Bind("email") String email

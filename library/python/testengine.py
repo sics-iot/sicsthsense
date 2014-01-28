@@ -10,13 +10,14 @@ e = Engine("localhost:8080")
 #e = Engine("presense.sics.se:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
-newUserId = 2 #e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+newUserId = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
 token = "0f593a09-19e6-4ae4-84e6-08fb99336dc2"
 
 e.setUserId(newUserId)
 e.setToken(token)
 print "User ID:",newUserId," token: ",token
 
+exit(1);
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
 #newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":0}

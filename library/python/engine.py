@@ -27,7 +27,7 @@ import urllib, urllib2
 import simplejson as json
 #from websocket import create_connection
 
-version = 0.2
+version = 0.3
 
 # Class to provide PUT and DELETE methods on HTTP Requests
 class RequestWithMethod(urllib2.Request):
