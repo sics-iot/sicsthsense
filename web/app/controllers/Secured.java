@@ -48,7 +48,7 @@ public class Secured extends Security.Authenticator {
 	public static String getUsername(Session session) {
 		Long id = getUserId(session);
 		if(id != null){
-			return User.get(id).getUserName();
+			return User.get(id).getUsername();
 		}
 		return null;
 	}
@@ -56,7 +56,7 @@ public class Secured extends Security.Authenticator {
 	public static String getUsername(Request request) {
 		Long id = getUserId(request);
 		if(id != null){
-			return User.get(id).getUserName();
+			return User.get(id).getUsername();
 		}
 		return null;
 	}

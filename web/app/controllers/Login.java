@@ -112,7 +112,7 @@ public class Login extends Controller {
 		}
 		//validate username/pass
 		User user = new User();
-		user.userName=username;
+		user.username=username;
 		user.setEmail(username);
 		user.setPassword(password);
 		//and register in database

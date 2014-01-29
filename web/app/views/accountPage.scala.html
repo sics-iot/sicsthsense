@@ -16,9 +16,10 @@
 			</div>
 	    }
 
-   	  <legend>Welcome @user.userName!</legend>
+   	  <legend>Welcome @user.username!</legend>
    	  @forms.input(userForm!=null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
-	    @forms.input(userForm!=null, "text", "userName", "Username", user.userName)
+	    @forms.input(userForm!=null, "text", "username", "Username", user.username)
+	    @forms.input(userForm!=null, "text", "id", "ID", user.id.toString())
    	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(),"", true)
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)

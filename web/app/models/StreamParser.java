@@ -382,7 +382,7 @@ public class StreamParser extends Model {
             if (stream == null) {
                 stream = Stream.create(new Stream(resource.owner, this.resource));
                 f.setLink(stream);
-                Logger.info("[StreamParser] Creating stream at: " + resource.owner.getUserName()
+                Logger.info("[StreamParser] Creating stream at: " + resource.owner.getUsername()
                         + path);
             }
             return f;

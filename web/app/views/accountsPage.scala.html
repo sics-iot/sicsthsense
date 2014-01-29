@@ -4,7 +4,7 @@
 
 @displayUser(user: User) = {
    @forms.form(routes.CtrlUser.submit()) {
-   	  <legend>Profile of @user.userName!</legend>
+   	  <legend>Profile of @user.username!</legend>
    	  @forms.input(userForm!=null, "text", "emailREADONLY", "Email", user.getEmail(), "", true)
 			@if(user.firstName!="") {@forms.input(userForm!=null, "text", "firstName", "First name", user.firstName, "", true) }
 			@if(user.lastName!="") {@forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName, "", true) }

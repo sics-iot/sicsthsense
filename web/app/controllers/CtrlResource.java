@@ -537,7 +537,7 @@ public class CtrlResource extends Controller {
 			resourceLog.updateParsedSuccessfully(parsedSuccessfully);
 		} catch (Exception e) {
 			String msg = "[CtrlResource] Exception while receiving a post in Resource: "+resource.label
-					+ " Owner " + resource.owner.userName + "\n"
+					+ " Owner " + resource.owner.username + "\n"
 					+ e.getMessage() + e.getStackTrace()[0].toString();
 			Logger.error(msg);
 			if (resourceLog != null) { resourceLog.updateMessages(msg); }

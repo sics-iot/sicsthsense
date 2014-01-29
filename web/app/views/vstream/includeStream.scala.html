@@ -28,8 +28,8 @@
 		@if(stream.resource != null && stream.canWrite(Secured.getCurrentUser())) {
 			(from resource <a href="@routes.CtrlResource.getById(stream.resource.id)">@{stream.resource.label}</a>)
 		}
-		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
-		(owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>)
+		@if(stream.owner.username!=Secured.getCurrentUser().username) {
+		(owner: <a href="/accounts/@stream.owner.username">@stream.owner.username</a>)
 		}
 		@if(displayToolbar){
 		<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)</span>
@@ -153,8 +153,8 @@ $.ajax({
 			<span>@if(stream.file != null) {@stream.file.getPath()} else {id: @{stream.id}}</span>
 			}
 
-@*		@if(stream.owner.userName!=Secured.getCurrentUser().userName) {
-			owner: <a href="/accounts/@stream.owner.userName">@stream.owner.userName</a>
+@*		@if(stream.owner.username!=Secured.getCurrentUser().username) {
+			owner: <a href="/accounts/@stream.owner.username">@stream.owner.username</a>
 		} *@
 
 			@if(displayToolbar){

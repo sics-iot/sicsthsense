@@ -182,7 +182,7 @@ public class CtrlStream extends Controller {
 		final List<? extends DataPoint> dataSet = stream.getDataPoints();
 		
 		if (stream.canRead(currentUser)) {
-			final String streamName = "# SicsthSense "+currentUser.userName+" "+stream.file.getPath()+"\n";
+			final String streamName = "# SicsthSense "+currentUser.username+" "+stream.file.getPath()+"\n";
 			response().setContentType("text/plain");
 			response().setHeader("Content-Disposition", "attachment; filename="+stream.resource.label+"-Stream.txt");
 			
@@ -301,7 +301,7 @@ public class CtrlStream extends Controller {
 		if(user == null) {
 			return notFound();
 		}
-		return getByUserPath(user.userName, path, tail, last, since);
+		return getByUserPath(user.username, path, tail, last, since);
 	}
 
 	public static Result getByUserPath(String username, String path, Long tail,
@@ -323,7 +323,7 @@ public class CtrlStream extends Controller {
 		if (user == null) {
 			return notFound();
 		}
-		String username = user.userName;
+		String username = user.username;
 		path = Utils.decodePath(path);
 		final Stream stream = Stream.getByUserPath(username, "/" + path);
 		if (stream == null)

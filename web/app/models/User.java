@@ -74,7 +74,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	@Constraints.MaxLength(255)
 	@Constraints.Required
 	@Formats.NonEmpty
-	public String userName;
+	public String username;
 	
 	public String password; // only for username/password login
 	
@@ -120,10 +120,10 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public static Model.Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
 	// constructor userd by OpenID callback
-	public User(String email, String userName, String firstName, String lastName) {
+	public User(String email, String username, String firstName, String lastName) {
 		this();
 		this.email     = email.toLowerCase();
-		this.userName  = userName.toLowerCase();
+		this.username  = username.toLowerCase();
 		this.firstName = firstName;
 		this.lastName  = lastName;
 	}
@@ -141,7 +141,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public String  getEmail()             { return email; }
 	public void    setEmail(String email) { this.email=email; }
 	public String  getToken()             { return token; }
-	public String  getUserName()          { return userName; }
+	public String  getUsername()          { return username; }
 	public String  getFirstName()         { return firstName; }
 	public String  getLastName()          { return lastName; }
 	public String  description()          { return description; }
@@ -153,7 +153,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public void		 setAdmin(boolean admin){ this.admin = admin; }
 
 	public void updateUser(User user) {
-		this.userName  = user.userName.toLowerCase();
+		this.username  = user.username.toLowerCase();
 		this.firstName = user.firstName;
 		this.lastName  = user.lastName;
 		this.password  = user.password;
@@ -184,7 +184,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 	//don't remove strange chars from username
 	public void verify() {
-		userName = userName.replaceAll("[\\/:\"*?<>|']+", "");
+		username = username.replaceAll("[\\/:\"*?<>|']+", "");
 	}
 	@Override
 	public void save() {
@@ -256,7 +256,7 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 
 	public static List<User> all() {
-		return find.where().orderBy("userName asc").findList();
+		return find.where().orderBy("username asc").findList();
 	}
 
 	public static boolean exists(Long id) {
@@ -271,8 +271,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		return find.where().eq("email", email).findUnique();
 	}
 
-	public static User getByUserName(String userName) {
-		return find.where().eq("user_name", userName).findUnique();
+	public static User getByUserName(String username) {
+		return find.where().eq("username", username).findUnique();
 	}
 
 	public static void delete(Long id) {

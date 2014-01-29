@@ -52,8 +52,8 @@ public class CtrlUser extends Controller {
 		return ok(accountPage.render(getUser(), null, "", ""));
 	}
 
-	public static Result getByName(String userName) {
-		User user = User.getByUserName(userName);
+	public static Result getByName(String username) {
+		User user = User.getByUserName(username);
 		if (user == null) {
 			return notFound("User not found");
 		}
