@@ -183,12 +183,12 @@ public class User {
 	}
 	public void update(User user) {
 		this.firstName = user.firstName;
-		this.username = user.username;
+		this.username  = user.username;
 		this.lastName  = user.lastName;
 		this.email     = user.email;
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
-		this.token			= user.token;
+		this.token		 = user.token;
 	}
 
 	// XXX Need to hash and check password!

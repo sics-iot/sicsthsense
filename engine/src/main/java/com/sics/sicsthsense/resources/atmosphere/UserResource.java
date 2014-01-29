@@ -92,7 +92,7 @@ public class UserResource {
 		@POST
 		@Timed
 		public User post(User user) throws Exception {
-			//logger.info("making a new user");
+			logger.info("making a new user: "+user.toString());
 
 			if (user.getEmail()==null || user.getEmail()=="") {
 				logger.info("new User email not set!");
@@ -110,9 +110,9 @@ public class UserResource {
 				throw new WebApplicationException(Status.BAD_REQUEST); 
 			}
 			User newuser = new User();
-			logger.info("Adding new user: "+newuser.toString());
 
-			newuser.update(newuser);
+			newuser.update(user);
+			logger.info("Adding new user: "+newuser.toString());
 
 			storage.insertUser(
 				newuser.getUsername(),
