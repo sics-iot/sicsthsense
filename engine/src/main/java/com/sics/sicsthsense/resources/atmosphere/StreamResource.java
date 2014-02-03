@@ -120,6 +120,9 @@ public class StreamResource {
 			}
 		}
 
+		// and triggers
+		stream.triggers = storage.findTriggersByStreamId(streamId);
+
 		return stream;
 	}
 
@@ -159,6 +162,13 @@ public class StreamResource {
 				insertDependent(antId.longValue(),streamId);
 			}
 		}
+		if (stream.triggers!=null) {
+			logger.info("Trigger processing..");
+			for(Trigger t: stream.triggers) {
+				insertTrigger(streamId, t.getUrl(), t.getOperator(), t.getOperand(), t.getPayload());
+			}
+		}
+
 		return streamId;
 	}
 
@@ -225,7 +235,8 @@ public class StreamResource {
 		datapoint.setStreamId(streamId); // keep consistency
 		insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
-		stream.notifyDependents();
+		stream.notifyDependents(); // notify all streams that depend on this
+		stream.testTriggers(datapoint); // see if any of the actions are triggered
 
 		return "Posted successfully!";
 	}
@@ -261,7 +272,6 @@ public class StreamResource {
 		);
 	}
 
-
 	public static long insertStream(Stream stream) {
 		StorageDAO storage = DAOFactory.getInstance();
 		storage.insertStream(
@@ -282,10 +292,16 @@ public class StreamResource {
 		);
 		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
 	}
+
 	// create the dependency relationship between streams
 	public static void insertDependent(long stream, long dependent) {
 		StorageDAO storage = DAOFactory.getInstance();
 		storage.insertDependent(stream,dependent);
+	}
+	
+	public static void insertTrigger(long stream_id, String url, String operator, double operand, String payload) {
+		StorageDAO storage = DAOFactory.getInstance();
+		storage.insertTrigger(stream_id, url, operator, operand, payload);
 	}
 
 	public static long insertVFile(String path, long owner_id, String type, long stream_id) {

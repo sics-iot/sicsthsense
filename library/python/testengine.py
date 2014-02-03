@@ -10,23 +10,27 @@ e = Engine("localhost:8080")
 #e = Engine("presense.sics.se:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
-newUserId = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
-token = "0f593a09-19e6-4ae4-84e6-08fb99336dc2"
+newUserJSONStr = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
+
+newUserJSON = json.loads(newUserJSONStr)
+newUserId = newUserJSON["id"]
+#token = "0f593a09-19e6-4ae4-84e6-08fb99336dc2"
+token = newUserJSON["token"]
 
 e.setUserId(newUserId)
 e.setToken(token)
 print "User ID:",newUserId," token: ",token
 
-exit(1);
+#exit(1);
 # create a resource
 resourceLabel = "demo"+str(random.randint(0,99))
 #newresource = {"label": resourceLabel,"polling_url":"http://130.238.8.151:8888/test.json","polling_period":0}
 newresource = {"label": resourceLabel}
 jsonstr = json.dumps(newresource)
-print jsonstr
+print "Resource JSON: "+jsonstr
 
 resourceId = e.createResource(jsonstr)
-print "Made resource: "+str(resourceId);
+print "Made resource ID: "+str(resourceId);
 
 # Use auto creation of streams and parsers
 if False:
@@ -44,15 +48,16 @@ if False:
 if True:
         # Create streams in resource
 	if True:
+                print "Making streams..."
                 newstream = { "description": "input1" }
 		streamjsonstr = json.dumps(newstream)
 		#print streamjsonstr
 		antStreamId1 = e.createStream(resourceId,streamjsonstr)
-		print "Made ant stream: "+str(antStreamId1)+" - "+streamjsonstr;
+		print "Made antecedent stream: "+str(antStreamId1)+" - "+streamjsonstr;
 
-                newstream = { "description": "input2" }
+                newstream = { "description": "input2", "triggers": [{"url":"http://actuate.com", "operator":">", "operand":"50"}] }
 		streamjsonstr = json.dumps(newstream)
-		#print streamjsonstr
+                print "JSON Stream: "+streamjsonstr
 		antStreamId2 = e.createStream(resourceId,streamjsonstr)
 		print "Made ant stream: "+str(antStreamId2)+" - "+streamjsonstr;
 
@@ -71,6 +76,7 @@ if True:
 		print "new parser ID: "+str(newId);
 
         if True:
+                print "Post data..."
 		# POST data to made stream
 		for x in range(0,10):
 			data = {"value": str(random.randint(0,99))}

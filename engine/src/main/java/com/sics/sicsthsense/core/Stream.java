@@ -77,6 +77,9 @@ public class Stream {
 	@JsonProperty
 	public List<Long> antecedents;
 
+	// actions to take on triggers
+	public List<Trigger> triggers;
+
 	private final Logger logger = LoggerFactory.getLogger(Stream.class);
 	private StorageDAO storage = null;
 
@@ -151,6 +154,7 @@ public class Stream {
 		// add to stream
 		for (DataPoint p: newPoints) {
 			storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
+			testTriggers(p);
 		}
 
 		notifyDependents();
@@ -189,6 +193,16 @@ public class Stream {
 		}
 		return function.apply(antecedents);
 	}
+
+	public void testTriggers(DataPoint dp) {
+		if (triggers!=null) {
+			for (Trigger t: triggers) {
+				logger.warn("Testing trigger: "+t.toString());
+				t.test(dp);
+			}
+		}
+	}
+
 
 	public long getId()								{ return id; }
 	public String getType()						{ return type; }

@@ -191,10 +191,28 @@ public interface StorageDAO {
 		@Bind("dependent_id")	 long dependent_id 
 	);
 	
-
   @SqlUpdate("delete from dependents where dependent_id=:dependent_id")
   void deleteDependent(
 		@Bind("dependent_id")	 long dependent_id 
+	);
+
+
+	// Triggers
+  @SqlQuery("select * from triggers where stream_id = :stream_id")
+	List<Trigger> findTriggersByStreamId(@Bind("stream_id") long stream_id);
+
+  @SqlUpdate("insert into triggers(stream_id, url, operator, operand, payload) values (:stream_id, :url, :operator, :operand, :payload)")
+  void insertTrigger(
+		@Bind("stream_id")  long stream_id,
+		@Bind("url")				String url, 
+		@Bind("operator")		String operator,
+		@Bind("operand")		double operand,
+		@Bind("payload")		String payload 
+	);
+	
+  @SqlUpdate("delete from triggers where id = :id")
+  void deleteTrigger(
+		@Bind("trigger_id")	 long dependent_id 
 	);
 
 
@@ -204,7 +222,7 @@ public interface StorageDAO {
 		@Bind("path")       String path, 
 		@Bind("owner_id")		long owner_id, 
 		@Bind("type")       String type, 
-		@Bind("linked_stream_id")     long linked_stream_id
+		@Bind("linked_stream_id")   long linked_stream_id
 	);
 
 	// Parsers

@@ -134,11 +134,21 @@ create table IF NOT EXISTS users (
   constraint pk_users primary key (id))
 ;
 
-create table dependants (
+create table IF NOT EXISTS dependants (
   id                      bigint auto_increment not null,
   stream_id               bigint,
   dependant_id            bigint,
   constraint pk_dependants primary key (id))
+;
+
+create table IF NOT EXISTS triggers (
+  id                      bigint auto_increment not null,
+  stream_id               bigint not null,
+  url											varchar(255) not null,
+  operator								varchar(5) not null,
+  operand									double not null,
+  payload									varchar(255),
+  constraint pk_triggers primary key (id))
 ;
 
 create table IF NOT EXISTS vfiles (
@@ -194,7 +204,7 @@ create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
 create index ix_dependants_stream_14 on dependants (stream_id);
 create index ix_dependants_dependant_15 on dependants (dependant_id);
-
+create index ix_triggers_stream_16 on triggers (stream_id);
 
 alter table functions_streams add constraint fk_functions_streams_functions_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;
 
