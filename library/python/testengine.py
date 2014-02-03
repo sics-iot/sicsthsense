@@ -55,7 +55,7 @@ if True:
 		antStreamId1 = e.createStream(resourceId,streamjsonstr)
 		print "Made antecedent stream: "+str(antStreamId1)+" - "+streamjsonstr;
 
-                newstream = { "description": "input2", "triggers": [{"url":"http://actuate.com", "operator":">", "operand":"50"}] }
+                newstream = { "description": "input2", "triggers": [{"url":"http://localhost:8000", "operator":">", "operand":"50", "payload":"ON"}] }
 		streamjsonstr = json.dumps(newstream)
                 print "JSON Stream: "+streamjsonstr
 		antStreamId2 = e.createStream(resourceId,streamjsonstr)
@@ -64,8 +64,8 @@ if True:
                 newstream = { "description": "group median", "function": "median", "antecedents": [antStreamId1,antStreamId2] }
 		streamjsonstr = json.dumps(newstream)
 		#print streamjsonstr
-		streamId = e.createStream(resourceId,streamjsonstr)
-		print "Made stream: "+str(streamId)+" - "+streamjsonstr;
+		#streamId = e.createStream(resourceId,streamjsonstr)
+		#print "Made stream: "+str(streamId)+" - "+streamjsonstr;
 
 	# Create a Parser for this resource
 	if False:
@@ -79,12 +79,12 @@ if True:
                 print "Post data..."
 		# POST data to made stream
 		for x in range(0,10):
-			data = {"value": str(random.randint(0,99))}
-			result = e.postStreamData(resourceId,antStreamId1,json.dumps(data))
+			#data = {"value": str(random.randint(0,99))}
+			#result = e.postStreamData(resourceId,antStreamId1,json.dumps(data))
 
 			data = {"value": str(random.randint(0,99))}
 			result = e.postStreamData(resourceId,antStreamId2,json.dumps(data))
-			print result
+			print str(data)+" -> "+str(result)
 			#print json.dumps(json.loads(result), sort_keys = False, indent = 4)
                         time.sleep(2)
 

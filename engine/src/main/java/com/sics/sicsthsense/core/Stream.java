@@ -195,12 +195,15 @@ public class Stream {
 	}
 
 	public void testTriggers(DataPoint dp) {
+		//logger.info("testing triggers on point :"+dp.toString());
+
+		this.triggers =  storage.findTriggersByStreamId(this.getId());
 		if (triggers!=null) {
 			for (Trigger t: triggers) {
-				logger.warn("Testing trigger: "+t.toString());
+				//logger.warn("Testing trigger: "+t.toString());
 				t.test(dp);
 			}
-		}
+		} 
 	}
 
 

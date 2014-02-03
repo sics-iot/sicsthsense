@@ -199,6 +199,7 @@ public interface StorageDAO {
 
 	// Triggers
   @SqlQuery("select * from triggers where stream_id = :stream_id")
+	@Mapper(TriggerMapper.class)
 	List<Trigger> findTriggersByStreamId(@Bind("stream_id") long stream_id);
 
   @SqlUpdate("insert into triggers(stream_id, url, operator, operand, payload) values (:stream_id, :url, :operator, :operand, :payload)")

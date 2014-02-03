@@ -66,6 +66,15 @@ public class Trigger {
   public Trigger() {
 		StorageDAO storage = DAOFactory.getInstance();
 	}
+  public Trigger(Long id, Long stream_id, String url, String operator, double operand, String payload) {
+		super();
+		this.id = id;
+		this.stream_id = stream_id;
+		this.url =	url;
+		this.operator =	operator;
+		this.operand = operand;
+		this.payload = payload;
+	}
 
 	public void test(DataPoint dp) {
 		double value = dp.getValue();
@@ -83,6 +92,14 @@ public class Trigger {
 	}
 
 	public void perform() {
+		if (payload != null && !"".equals(payload)) {
+			performPost();
+		} else {
+			performGet();
+		}
+	}
+
+	public void performGet() {
 		String inputLine; 
 		HttpURLConnection con = null;
 		logger.info("Performing Trigger: "+toString());
@@ -95,18 +112,39 @@ public class Trigger {
 
 		try {
 			int responseCode = con.getResponseCode();
-			logger.info("Sending 'GET' request to URL : " + url);
-			logger.info("Response Code : " + responseCode);
+			logger.info("Sending 'GET' request to URL : " + url+" Response: " + responseCode);
 	 
 			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 			StringBuffer response = new StringBuffer();
-
 			while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 			in.close();
+		} catch (Exception e) { logger.error("Network problem: "+e); }
+	}
+	public void performPost() {
+		String inputLine; 
+		HttpURLConnection con = null;
+		logger.info("Performing Trigger: "+toString());
+		try {
+			URL urlobj = new URL(url);
+			con = (HttpURLConnection)urlobj.openConnection();
+			con.setRequestMethod("POST"); // optional default is GET
+			con.setRequestProperty("User-Agent", "SICSthSense"); //add request header
+			con.setDoOutput(true);
+		} catch (Exception e) { logger.error("Problem with URL: "+url);}
+
+		try {
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(this.payload);
+			wr.flush();
+			wr.close();
 	 
-//			storage.polledResource(resourceId,System.currentTimeMillis());
-			//System.out.println(response.toString());
-//			applyParsers(response.toString());
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'POST' request to URL : "+url+" Payload: "+payload+" response: "+responseCode);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			StringBuffer response = new StringBuffer();
+	 
+			while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
+			in.close();
 		} catch (Exception e) { logger.error("Network problem: "+e); }
 	}
 
