@@ -90,7 +90,7 @@ public class Poller extends UntypedActor {
 				parsedata.apply(parser,data);
 			} catch (Exception e) {
 				//logger.error("Parsing "+data+" failed!"+e);
-				logger.error("Parsing data failed!"+e);
+				logger.error("Parsing data failed! "+e+"\nParser: "+parser+"\nData: "+data.substring(0,100));
 			}
 		}
 	}
@@ -123,7 +123,7 @@ public class Poller extends UntypedActor {
 					//System.out.println(response.toString());
 					applyParsers(response.toString());
 				} catch (Exception e) {
-					logger.error("Network problem: "+e);
+					logger.error("Network problem: "+e+" URL: "+url);
 				}
 			}
     } else {
