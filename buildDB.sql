@@ -96,6 +96,7 @@ create table IF NOT EXISTS streams (
   secret_key                varchar(255),
   owner_id                  bigint,
   resource_id               bigint,
+	function									varchar(255),
   version                   integer not null,
   constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
@@ -134,11 +135,11 @@ create table IF NOT EXISTS users (
   constraint pk_users primary key (id))
 ;
 
-create table IF NOT EXISTS dependants (
+create table IF NOT EXISTS dependents (
   id                      bigint auto_increment not null,
   stream_id               bigint,
-  dependant_id            bigint,
-  constraint pk_dependants primary key (id))
+  dependent_id            bigint,
+  constraint pk_dependents primary key (id))
 ;
 
 create table IF NOT EXISTS triggers (
@@ -202,8 +203,8 @@ create index ix_vfiles_owner_12 on vfiles (owner_id);
 alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
 create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
-create index ix_dependants_stream_14 on dependants (stream_id);
-create index ix_dependants_dependant_15 on dependants (dependant_id);
+create index ix_dependents_stream_14 on dependents (stream_id);
+create index ix_dependents_dependent_15 on dependents (dependent_id);
 create index ix_triggers_stream_16 on triggers (stream_id);
 
 alter table functions_streams add constraint fk_functions_streams_functions_01 foreign key (functions_id) references functions (id) on delete restrict on update restrict;

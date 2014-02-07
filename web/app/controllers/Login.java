@@ -87,7 +87,7 @@ public class Login extends Controller {
 			return notFound("User doesnt exist!");
 		}
 		if (!user.password.equals(User.hash(password))) {
-			return notFound("Password incorrect:" +user.password+" != "+User.hash(password)+ " : "+password);
+			return notFound("Password incorrect: " +user.password+" != "+User.hash(password)+ " : "+password);
 		}
 		return doLogin(user, routes.Application.home());
 	}
