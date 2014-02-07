@@ -123,7 +123,7 @@ public class Poller extends UntypedActor {
 					//System.out.println(response.toString());
 					applyParsers(response.toString());
 				} catch (Exception e) {
-					logger.error("Network problem: "+e+" URL: "+url);
+					//logger.error("Network problem: "+e+" URL: "+url);
 				}
 			}
     } else {
