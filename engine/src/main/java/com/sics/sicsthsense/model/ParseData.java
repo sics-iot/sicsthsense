@@ -76,11 +76,11 @@ public class ParseData {
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
-			logger.info("Applying JSON Parser to JSON data");
+			//logger.info("Applying JSON Parser to JSON data");
 			JsonNode rootNode = PollSystem.getInstance().mapper.readTree(data);
 			parseJsonResponse(parser, rootNode, currentTime);
 		} else {
-			logger.info("Applying Parser to text data");
+			//logger.info("Applying Parser to text data");
 			parseTextResponse(parser, data, currentTime);
 		}
 	}
@@ -137,7 +137,7 @@ public class ParseData {
 	 */
 	private boolean parseTextResponse(Parser parser, String textBody, Long currentTime)
 					throws NumberFormatException, Exception {
-			logger.info("parsing Text");
+			//logger.info("parsing Text");
 			Stream stream = storage.findStreamById(parser.getStream_id());
 			boolean success = false;
 			// try {

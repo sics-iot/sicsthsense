@@ -110,8 +110,7 @@ public class Poller extends UntypedActor {
 		 
 				try {
 					int responseCode = con.getResponseCode();
-					logger.info("Sending 'GET' request to URL : " + url);
-					logger.info("Response Code : " + responseCode);
+					//logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
 			 
 					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 					StringBuffer response = new StringBuffer();
