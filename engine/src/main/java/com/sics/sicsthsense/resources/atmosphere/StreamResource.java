@@ -91,7 +91,7 @@ public class StreamResource {
 		logger.info("Getting user/resource/streams "+userId+" "+resourceId);
 		checkHierarchy(userId,resourceId);
 		User user = storage.findUserById(userId);
-		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (token==null ||"".equals(token) || !token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 		return streams;
