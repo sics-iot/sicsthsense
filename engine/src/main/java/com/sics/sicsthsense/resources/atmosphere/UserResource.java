@@ -80,12 +80,12 @@ public class UserResource {
 		@GET
 		@Timed
 		@Path("/{userId}")
-		public User getUser(@PathParam("userId") long userId, @QueryParam("token") String token) {
+		public User getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
 			System.out.println("getting User!! "+userId);
 			User user = storage.findUserById(userId);
-			System.out.println("token "+token);
-			System.out.println("usertoken "+user.getToken());
-			if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
+			//System.out.println("key "+key);
+			//System.out.println("user key "+user.getToken());
+			if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 			return user;
 		}
 
@@ -127,10 +127,10 @@ public class UserResource {
 		@PUT
 		@Timed
 		@Path("/{userId}")
-		public User put(@PathParam("userId") long userId, User newuser, @QueryParam("token") String token) throws Exception {
+		public User put(@PathParam("userId") long userId, User newuser, @QueryParam("key") String key) throws Exception {
 			// should check permissions...
 			User user = storage.findUserById(userId);
-			if (!user.getToken().equals(token)) {throw new WebApplicationException(Status.FORBIDDEN);}
+			if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 			newuser.setId(userId); // ensure we dont change other others!
 			user.update(newuser);

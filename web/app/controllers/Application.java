@@ -129,6 +129,7 @@ public class Application extends Controller {
   public static Result viewStream(Long id) {
   	User currentUser = Secured.getCurrentUser();
 		Stream stream = Stream.get(id);
+		if (stream==null) {return notFound("No Stream by that ID!");}
 		Form<Stream> form = streamForm.fill(stream);
     return ok(streamPage.render(currentUser.streamList, stream, form, ""));
   }

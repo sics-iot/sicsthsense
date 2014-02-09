@@ -13,7 +13,7 @@
 }
 
 
-@if(stream != null) {
+@if(stream!=null && stream.resource!=null) {
 <div id="streamblock@{stream.id}">
 @if(stream.hasData() && stream.canRead(Secured.getCurrentUser())) {
 <div class="stream_header_block @if(!displayHeader){hidden}">
@@ -143,7 +143,7 @@ $.ajax({
 </script>
 
 	}
-	} else {
+} else {
 	@if(displayHeader){
 		<div id="streamtitle@{stream.id}" class="streamtitle">
 			Stream 

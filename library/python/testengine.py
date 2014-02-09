@@ -6,8 +6,8 @@ from engine import *
 
 print "Testing SicsthSense python module..."
 
-#e = Engine("localhost:8080")
-e = Engine("presense.sics.se:8080")
+e = Engine("localhost:8080")
+#e = Engine("presense.sics.se:8080")
 print e.hostname
 username = "newuser"+str(random.randint(0,99))
 newUserJSONStr = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com"}')
@@ -15,10 +15,10 @@ newUserJSONStr = e.registerUser('{"username": "'+username+'", "email":"'+usernam
 newUserJSON = json.loads(newUserJSONStr)
 newUserId = newUserJSON["id"]
 #token = "0f593a09-19e6-4ae4-84e6-08fb99336dc2"
-token = newUserJSON["token"]
+key = newUserJSON["token"]
 
 e.setUserId(newUserId)
-e.setToken(token)
+e.setKey(key)
 print "User ID:",newUserId," token: ",token
 
 #exit(1);

@@ -64,11 +64,11 @@ var chartLastGet = {};
 			 <div class="nav-collapse collapse">
 				<ul class="nav">
 					<li class='@selectNavbarTab("Home")'><a href="@routes.Application.home()">Home</a></li>
-					<li class='@selectNavbarTab("Search")'><a href="@routes.Application.explore()">Search</a></li>
-					@if(session != null && Secured.getUsername(session) != null) {
 					<li class='@selectNavbarTab("Resources")'><a href="@routes.CtrlResource.resources()" >Resources</a></li>
+					<li class='@selectNavbarTab("Search")'><a href="@routes.Application.explore()">Streams</a></li>
+					@if(session != null && Secured.getUsername(session) != null) {
 					<!--li class='@selectNavbarTab("Streams")'><a href="@routes.Application.streams()"></a></li-->
-					<li class='@selectNavbarTab("Streams")'><a href="@routes.Application.files()">Streams</a></li>
+					<!--<li class='@selectNavbarTab("Streams")'><a href="@routes.Application.files()">Streams</a></li> -->
 					@**<li class='@selectNavbarTab("Account")'><a href="@routes.CtrlUser.get()">Account</a></li>*@
 					} else {
 					<li class='@selectNavbarTab("Log In")'><a href="@routes.Application.home()">Log In</a></li> 

@@ -138,6 +138,11 @@ public class Resource extends Operator {
     }
 
 		public String getHierarchy() {
+      Logger.error("getH: "+id);
+			if (owner==null) {
+				Logger.error("null owner");
+				return "NullResource";
+			}
 			return "/users/"+owner.getId()+"/resources/"+id;
 		}
 
@@ -368,7 +373,8 @@ public class Resource extends Operator {
     public void delete() {
         this.pollingPeriod = 0L;
         // remove references
-        Stream.dattachResource(this);
+				// Liam: stopped detaching resources, so they are deleted
+        //Stream.dattachResource(this);
         ResourceLog.deleteByResource(this);
         // Indexer thisIndexer = Indexer.find.byId(id.toString());
         // if(thisIndexer != null) {
@@ -376,12 +382,14 @@ public class Resource extends Operator {
         // //TODO: check for success
         // }
         // delete sub resources and their sub resources, etc...
-        List<Resource> subResList =
-                Ebean.find(Resource.class).select("id, parent, pollingPeriod").where()
-                        .eq("parent_id", this.id).findList();
+        List<Resource> subResList = Ebean.find(Resource.class).select("id, parent, pollingPeriod").where().eq("parent_id", this.id).findList();
         for (Resource sub : subResList) {
             sub.delete();
         }
+				List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",this.id).findList();
+				for (Stream stream: streams) {
+					stream.delete();
+				}
         super.delete();
     }
 

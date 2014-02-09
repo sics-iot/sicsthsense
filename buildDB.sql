@@ -200,7 +200,8 @@ alter table parsers add constraint fk_parsers_stream_11 foreign key (stream_id) 
 create index ix_parsers_stream_11 on parsers (stream_id);
 alter table vfiles add constraint fk_vfiles_owner_12 foreign key (owner_id) references users (id) on delete restrict on update restrict;
 create index ix_vfiles_owner_12 on vfiles (owner_id);
-alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
+#Liam:causes awkwardness
+#alter table vfiles add constraint fk_vfiles_linkedStream_13 foreign key (linked_stream_id) references streams (id) on delete restrict on update restrict;
 create index ix_vfiles_linkedStream_13 on vfiles (linked_stream_id);
 
 create index ix_dependents_stream_14 on dependents (stream_id);

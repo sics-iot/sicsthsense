@@ -83,15 +83,15 @@ public class ResourceResource {
 
 	@GET
 	@Timed
-	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("token") String token) {
+	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
 		//User visitor = new User();
 		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		if (user==null) {logger.info("No userId match"); throw new WebApplicationException(Status.NOT_FOUND);}
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
-		if (!user.getToken().equals(token)) { 
-			logger.warn("User token doesn't match");
+		if (!user.getToken().equals(key)) { 
+			logger.warn("User token/key doesn't match");
 			throw new WebApplicationException(Status.FORBIDDEN);
 			/*
 			Iterator<Resource> it = resources.iterator();
@@ -107,7 +107,7 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("token") String token) {
+	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") String key) {
 		logger.info("Getting user/resource: "+userId+"/"+resourceId);
 		checkHierarchy(userId);
 		Resource resource = storage.findResourceById(resourceId);
@@ -120,8 +120,8 @@ public class ResourceResource {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		User user = storage.findUserById(userId);
-		if (user==null || token==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!user.getToken().equals(token)) { throw new WebApplicationException(Status.FORBIDDEN); }
+		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
+		if (!user.getToken().equals(key)) { throw new WebApplicationException(Status.FORBIDDEN); }
 		/*
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
@@ -141,12 +141,12 @@ public class ResourceResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public long postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("token") String token) {
+	public long postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
-		if (user==null || token==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!token.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
+		if (!key.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = insertResource(resource);
@@ -205,26 +205,26 @@ public class ResourceResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("token") String token, @QueryParam("secret_key") String secret_key) {
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("key") String key) {
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
-		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		Resource resource = storage.findResourceById(resourceId);
-		if (!resource.getSecret_key().equals(secret_key) && !user.getToken().equals(token)) { 
-			logger.warn("User is not owner and has incorrect secret_key on stream!");
+		if (user==null || resource==null) {throw new WebApplicationException(Status.NOT_FOUND);}
+		if (!resource.getSecret_key().equals(key) && !user.getToken().equals(key)) { 
+			logger.warn("Incorrect authorisation key!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		logger.info("Adding resource data to:"+resource.getLabel());
+		logger.info("Adding data to resource: "+resource.getLabel());
 		// update Resource last_posted
 		storage.postedResource(resourceId,System.currentTimeMillis());
 
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
 		if (parsers==null || parsers.size()==0) { 
-			logger.info("No parsers defined! Trying to auto create for:"+resource.getLabel());
+			logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
 			try {
 				// staticness is a mess...
-				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper,resource,data); 
+				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data); 
 			} catch (Exception e) {
 				logger.error("JSON parsing for auto creation failed!");
 				return "Error: JSON parsing for auto creation failed!";

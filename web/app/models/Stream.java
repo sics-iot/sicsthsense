@@ -487,6 +487,7 @@ public class Stream extends Model implements Comparable<Stream> {
 			//System.out.println(this.owner);
 			//System.out.println(this.owner.id);
 			//return "/users/"+resource.owner.id+"/resources/"+resource.id+"/streams/"+id;
+			if (resource==null) {return "Error: resource is null";}
 			return resource.getHierarchy()+"/streams/"+id;
 		}
 
@@ -523,6 +524,7 @@ public class Stream extends Model implements Comparable<Stream> {
 
     public int compareTo(Stream other) {
         // Logger.info("paths: "+file.getPath()+" "+other.file.getPath());
+				if (other==null) {return -1;}
         return file.getPath().compareTo(other.file.getPath());
     }
 

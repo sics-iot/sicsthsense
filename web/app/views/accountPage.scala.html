@@ -21,7 +21,7 @@
 	    @forms.input(userForm!=null, "text", "username", "Username", user.username)
 	    @forms.input(userForm!=null, "text", "id", "ID", user.id.toString())
 	    @forms.input(userForm!=null, "text", "API URL", "API URL", "http://HOST:8080/users/"+user.id.toString())
-   	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Token", user.getToken(),"", true)
+   	  @forms.input(userForm!=null, "text", "SecretTokenREADONLY", "Secret Key", user.getToken(),"", true)
 	    @forms.input(userForm!=null, "text", "firstName", "First name", user.firstName)
 	    @forms.input(userForm!=null, "text", "lastName", "Last name", user.lastName)
 	    @forms.textarea(userForm!=null, "", "description", "Description", user.description)
