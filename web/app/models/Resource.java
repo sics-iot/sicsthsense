@@ -138,7 +138,6 @@ public class Resource extends Operator {
     }
 
 		public String getHierarchy() {
-      Logger.error("getH: "+id);
 			if (owner==null) {
 				Logger.error("null owner");
 				return "NullResource";
