@@ -120,7 +120,7 @@ chartOptions["@{stream.id}"]=options;
 // Perform initial loading of the chart, note the time of GET
 $.ajax({
   dataType: "json",
-  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=500&"+streamKey,
+	url: "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey,
 	timeout: 3000,
   success: function(data, textStatus, jqXHR) {
 		//console.log("Ajax:"+textStatus);

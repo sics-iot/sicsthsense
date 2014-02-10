@@ -531,7 +531,7 @@ public class Stream extends Model implements Comparable<Stream> {
     public static List<Stream> availableStreams(User currentUser) {
         List<Stream> available =
                 find.where().or(Expr.eq("publicSearch", true), Expr.eq("owner", currentUser))
-                        .orderBy("owner").findList();
+                        .orderBy("owner").orderBy("last_updated desc").findList();
         return available;
     }
 
