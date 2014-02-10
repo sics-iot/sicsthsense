@@ -60,8 +60,10 @@
 	var host = document.location.hostname;
   var streamKey = "key=@{stream.getKey()}"
 	chartLastGet["@{stream.id}"] = 1;
+	chartMinValue["@{stream.id}"] = null;
 	var options = {
-		xAxis: { type:'datetime' },
+		xAxis: { type:'datetime',ordinal: false},
+		yAxis: { min:null},
 		scrollbar : { enabled : false },
 		series: [{
 			name: "Stream "+@{stream.id},
@@ -128,6 +130,7 @@ $.ajax({
 				console.log("add initial data point: "+item.timestamp);
 				chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]); 
 				if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
+				//if (chartMinValue["@{stream.id}"]==null || item.value<chartMinValue["@{stream.id}"]) { chartOptions["@{stream.id}"].yAxis.min=item.value*0.99; }
 			});
 			
 			//console.log(options);
