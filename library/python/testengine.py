@@ -2,7 +2,7 @@
 import simplejson as json
 import random
 import time
-from engine import *
+from Engine import *
 
 print "Testing SicsthSense python module..."
 

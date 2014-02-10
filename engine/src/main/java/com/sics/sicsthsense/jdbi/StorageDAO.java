@@ -213,7 +213,7 @@ public interface StorageDAO {
 	
   @SqlUpdate("delete from triggers where id = :id")
   void deleteTrigger(
-		@Bind("trigger_id")	 long dependent_id 
+		@Bind("id")	 long dependent_id 
 	);
 
 
@@ -224,6 +224,14 @@ public interface StorageDAO {
 		@Bind("owner_id")		long owner_id, 
 		@Bind("type")       String type, 
 		@Bind("linked_stream_id")   long linked_stream_id
+	);
+  @SqlUpdate("delete from vfiles where id = :id")
+  void deleteVFile(
+		@Bind("id")	 long id 
+	);
+  @SqlUpdate("delete from vfiles where stream_id = :stream_id")
+  void deleteStreamsVFile(
+		@Bind("stream_id")	 long stream_id 
 	);
 
 	// Parsers

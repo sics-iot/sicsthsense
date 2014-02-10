@@ -19,7 +19,7 @@
 <div class="stream_header_block @if(!displayHeader){hidden}">
 	<div id="streamtitle@{stream.id}" class="streamtitle">
 		<br />
-		@if(stream.file.getPath()!="" && stream.file.getPath()!=null ) {
+		@if(stream.file!=null && stream.file.getPath()!=null && stream.file.getPath()!="" ) {
 			Stream
 		} else { 
 			Unnamed Stream
@@ -58,6 +58,7 @@
 <div id="chart-@{stream.id}" style="height: 270px; min-width: 500px"></div>
 <script>
 	var host = document.location.hostname;
+  var streamKey = "key=@{stream.getKey()}"
 	chartLastGet["@{stream.id}"] = 1;
 	var options = {
 		xAxis: { type:'datetime' },
@@ -117,7 +118,7 @@ chartOptions["@{stream.id}"]=options;
 // Perform initial loading of the chart, note the time of GET
 $.ajax({
   dataType: "json",
-  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=500",
+  url: "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?limit=500&"+streamKey,
 	timeout: 3000,
   success: function(data, textStatus, jqXHR) {
 		//console.log("Ajax:"+textStatus);

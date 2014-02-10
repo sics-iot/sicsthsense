@@ -39,6 +39,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
@@ -71,7 +72,7 @@ public class ParserResource {
 	@GET
 	@Timed
 	public List<Parser> getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
-		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId) {
+		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") @DefaultValue("") String key) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
 			checkHierarchy(userId);
 			List<Parser> parsers = storage.findParsersByResourceId(resourceId);
@@ -81,7 +82,7 @@ public class ParserResource {
 	@GET
 	@Path("/{parserId}")
 	@Timed
-	public Parser getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+	public Parser getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		checkHierarchy(userId);
 		Parser parser = storage.findParserById(parserId);
@@ -91,7 +92,7 @@ public class ParserResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public long postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser) {
+	public long postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser, @QueryParam("key") @DefaultValue("") String key) {
 		logger.info("Creating parser!:"+parser.toString());
 		checkHierarchy(userId,resourceId);
 		User visitor = new User();
@@ -109,7 +110,7 @@ public class ParserResource {
 	@Path("/{parserId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser) {
+	public void putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		logger.info("Updating parserId:"+parserId);
 		checkHierarchy(userId,resourceId);
@@ -124,7 +125,7 @@ public class ParserResource {
 	@DELETE
 	@Path("/{parserId}")
 	@Timed
-	public void deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId) {
+	public void deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		logger.warn("Deleting parserId:"+parserId);
 		checkHierarchy(userId,resourceId);

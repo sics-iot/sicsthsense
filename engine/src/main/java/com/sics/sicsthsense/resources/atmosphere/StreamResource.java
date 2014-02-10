@@ -270,6 +270,7 @@ public class StreamResource {
 			datapoint.getValue(),
 			datapoint.getTimestamp()
 		);
+		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
 	}
 
 	public static long insertStream(Stream stream) {
@@ -290,7 +291,10 @@ public class StreamResource {
 			stream.getFunction(),
 			stream.getVersion()
 		);
-		return storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
+		long streamID = storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
+		//already performed by other code
+		//storage.insertVFile("/stream/"+String.valueOf(streamID),stream.getOwner_id(),"D",streamID);
+		return streamID;
 	}
 
 	// create the dependency relationship between streams

@@ -72,6 +72,7 @@ class Engine:
 		url = "http://"+self.genResourceURL(resourceId)
 		return self.putToURL(url, resourceJSON)
 
+
 	def deleteResource(self, resourceId):
 		url = "http://"+self.genResourceURL(resourceId)
 		return self.deleteURL(url)
