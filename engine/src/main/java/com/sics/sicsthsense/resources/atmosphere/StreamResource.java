@@ -181,20 +181,19 @@ public class StreamResource {
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
 	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
-		checkHierarchy(userId,resourceId,streamId);
 		List<DataPoint> rv; // return value before conversion
-		User user = storage.findUserById(userId);
-		Stream stream = storage.findStreamById(streamId);
-		if (stream==null) {throw new WebApplicationException(Status.NOT_FOUND); }
+		User user =					storage.findUserById(userId);
+		Resource resource = storage.findResourceById(resourceId);
+		Stream stream =			storage.findStreamById(streamId);
+		checkHierarchy(user,resource,stream);
 		if (!stream.getPublic_access()) { // need to authenticate
-			logger.warn("Stream isnt public access!");
-			if (user==null) {throw new WebApplicationException(Status.NOT_FOUND); }
-			if (!stream.getSecret_key().equals(key) && !user.getToken().equals(key)) { 
+			//logger.warn("Stream isnt public access!");
+			if (!user.isAuthorised(key) && !stream.isAuthorised(key) && !resource.isAuthorised(key)) {
 				logger.warn("User is not owner and has incorrect key on stream!");
 				throw new WebApplicationException(Status.FORBIDDEN);
 			}
 		}
-		logger.info("Getting stream: "+streamId);
+		//logger.info("Getting stream: "+streamId);
 
 		if (from.get() != -1) { // points since FROM
 			if (until.get() != -1) {
@@ -225,7 +224,7 @@ public class StreamResource {
 	@Timed
 	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("key") String key) {
 		User user =					storage.findUserById(userId);
-		Resource resource = storage.findResourceById(userId);
+		Resource resource = storage.findResourceById(resourceId);
 		Stream stream =			storage.findStreamById(streamId);
 		checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
