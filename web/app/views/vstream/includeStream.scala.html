@@ -127,7 +127,7 @@ $.ajax({
 		if (data) {
 			//console.log("got json!" +data);
 			$.each(data, function (i, item) {
-				console.log("add initial data point: "+item.timestamp);
+				//console.log("add initial data point: "+item.timestamp);
 				chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]); 
 				if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
 				//if (chartMinValue["@{stream.id}"]==null || item.value<chartMinValue["@{stream.id}"]) { chartOptions["@{stream.id}"].yAxis.min=item.value*0.99; }
@@ -137,8 +137,8 @@ $.ajax({
 			$('#chart-@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
 		}
 	},
-	error: function() {
-		console.log("Got an AJAX JSON GET error");
+	error: function(error) {
+		console.log("Got an AJAX JSON GETing "+ "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey+" error:"+error);
 		$('#chart-@{stream.id}').hide();
 	}
 });
