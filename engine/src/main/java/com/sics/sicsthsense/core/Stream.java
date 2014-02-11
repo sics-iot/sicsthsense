@@ -205,6 +205,13 @@ public class Stream {
 			}
 		} 
 	}
+	public boolean isAuthorised(String key) {
+		if (this.secret_key.equals(key)) {
+			return true;
+		}
+		return false;
+	}
+
 
 
 	public long getId()								{ return id; }

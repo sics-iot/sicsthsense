@@ -121,6 +121,13 @@ public class Resource {
 		if (newresource.getPolling_url()!="") {setPolling_url(newresource.getPolling_url());}		
 		if (newresource.getPolling_authentication_key()!="") {setPolling_authentication_key(newresource.getPolling_authentication_key());}		
 	}
+	public boolean isAuthorised(String key) {
+		if (this.secret_key.equals(key)) {
+			return true;
+		}
+		return false;
+	}
+
 
 
 	public long   getId()						{ return id; }

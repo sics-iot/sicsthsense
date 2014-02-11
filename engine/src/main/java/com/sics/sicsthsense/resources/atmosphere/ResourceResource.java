@@ -81,6 +81,7 @@ public class ResourceResource {
 		this.parseData = new ParseData();;
 	}
 
+
 	@GET
 	@Timed
 	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
@@ -90,7 +91,7 @@ public class ResourceResource {
 		User user = storage.findUserById(userId);
 		if (user==null) {logger.info("No userId match"); throw new WebApplicationException(Status.NOT_FOUND);}
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
-		if (!user.getToken().equals(key)) { 
+		if (!user.isAuthorised(key)) {
 			logger.warn("User token/key doesn't match");
 			throw new WebApplicationException(Status.FORBIDDEN);
 			/*
@@ -121,7 +122,7 @@ public class ResourceResource {
 		}
 		User user = storage.findUserById(userId);
 		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!user.getToken().equals(key)) { throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		/*
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
@@ -132,7 +133,7 @@ public class ResourceResource {
 
 	void authoriseResourceKey(String key1, String key2) {
 		if (!key1.equals(key2)) { 
-			logger.warn("User has incorrect secret_key on resource!");
+			logger.warn("User has incorrect key on resource!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 	}
@@ -146,7 +147,7 @@ public class ResourceResource {
 		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!key.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = insertResource(resource);
@@ -163,11 +164,12 @@ public class ResourceResource {
 	@Timed
 	@Path("/{resourceId}")
 	//public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
-	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource, @QueryParam("secret_key") String secret_key) {
+	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Updating resourceId:"+resourceId);
-		checkHierarchy(userId);
+		User user = storage.findUserById(userId);
 		Resource oldresource = storage.findResourceById(resourceId);
-		authoriseResourceKey(oldresource.getSecret_key(),secret_key);
+		checkHierarchy(user,oldresource);
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		updateResource(resourceId, resource);
 	}
 
@@ -175,16 +177,13 @@ public class ResourceResource {
 	@Timed
 	@Path("/{resourceId}")
 	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
-			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("secret_key") String secret_key) {
+			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") String key) {
 		logger.warn("Deleting resourceId:"+resourceId);
-		checkHierarchy(userId);
+		User user = storage.findUserById(resourceId);
 		Resource resource = storage.findResourceById(resourceId);
-		if (resource==null) {
-			logger.error("No resource to delete: "+resourceId);
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
+		checkHierarchy(user,resource);
 		Resource oldresource = storage.findResourceById(resourceId);
-		authoriseResourceKey(oldresource.getSecret_key(),secret_key);
+		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
@@ -206,17 +205,14 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
 	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("key") String key) {
-		checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		if (user==null || resource==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!resource.getSecret_key().equals(key) && !user.getToken().equals(key)) { 
+		checkHierarchy(user,resource);
+		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { 
 			logger.warn("Incorrect authorisation key!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		logger.info("Adding data to resource: "+resource.getLabel());
-		// update Resource last_posted
-		storage.postedResource(resourceId,System.currentTimeMillis());
+		//logger.info("Adding data to resource: "+resource.getLabel());
 
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
@@ -232,6 +228,9 @@ public class ResourceResource {
 		}
 		//run it through the parsers
 		applyParsers(resourceId, data);
+
+		// update Resource last_posted
+		storage.postedResource(resourceId,System.currentTimeMillis());
 
 		return "Success";
 	}
@@ -250,8 +249,25 @@ public class ResourceResource {
 	}
 
 	public void checkHierarchy(long userId) {
-		User owner = storage.findUserById(userId);
-		if (owner==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+		User user = storage.findUserById(userId);
+		checkHierarchy(user);
+	}
+	public void checkHierarchy(User user) {
+		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+	}
+
+	public void checkHierarchy(long userId, long resourceId) {
+		User user = storage.findUserById(userId);
+		Resource resource = storage.findResourceById(resourceId);
+		checkHierarchy(user,resource);
+	}
+	public void checkHierarchy(User user, Resource resource) {
+		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+		if (resource==null) { throw new WebApplicationException(Status.NOT_FOUND); }
+		if (resource.getOwner_id() != user.getId()) {
+			logger.error("User "+user.getId()+" does not own resource "+resource.getId());
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 	}
  
 

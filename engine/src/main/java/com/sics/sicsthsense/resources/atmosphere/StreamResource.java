@@ -89,9 +89,10 @@ public class StreamResource {
 	public List<Stream> getStreams(@PathParam("userId") long userId, @QueryParam("key") String key) {
 		long resourceId = Long.parseLong(topic.getID());
 		logger.info("Getting user/resource/streams "+userId+" "+resourceId);
-		checkHierarchy(userId,resourceId);
 		User user = storage.findUserById(userId);
-		if (key==null ||"".equals(key) || !key.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		Resource resource = storage.findResourceById(resourceId);
+		checkHierarchy(user,resource);
+		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
 		return streams;
@@ -223,12 +224,12 @@ public class StreamResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("key") String key) {
-		checkHierarchy(userId,resourceId,streamId);
-		User user = storage.findUserById(userId);
-		Stream stream = storage.findStreamById(streamId);
-		if (stream==null) {return "Error: Stream does not exist";}
-		if (!stream.getSecret_key().equals(key) && !user.getToken().equals(key)) { 
-			logger.warn("User is not owner and has incorrect key on resource!");
+		User user =					storage.findUserById(userId);
+		Resource resource = storage.findResourceById(userId);
+		Stream stream =			storage.findStreamById(streamId);
+		checkHierarchy(user,resource,stream);
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
+			logger.warn("User is not owner and has incorrect key on resource/stream!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		logger.info("Inserting data into stream: "+streamId);
@@ -242,22 +243,35 @@ public class StreamResource {
 	}
 
 	public void checkHierarchy(long userId, long resourceId) {
+		User user = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		if (resource == null) {
-			logger.error("Resource "+resourceId+" does not exist!");
+		checkHierarchy(user,resource);
+	}
+	public void checkHierarchy(User user, Resource resource) {
+		if (user == null) {
+			logger.error("User does not exist!");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
-		if (resource.getOwner_id() != userId) {
-			logger.error("User "+userId+" does not own resource "+resourceId);
-			//throw new WebApplicationException(Status.NOT_FOUND);
+		if (resource == null) {
+			logger.error("Resource does not exist!");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
+		if (resource.getOwner_id() != user.getId()) {
+			logger.error("User "+user.getId()+" does not own resource "+resource.getId());
+			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 	public void checkHierarchy(long userId, long resourceId, long streamId) {
-		checkHierarchy(userId, resourceId);
+		User user = storage.findUserById(userId);
+		Resource resource = storage.findResourceById(resourceId);
 		Stream stream = storage.findStreamById(streamId);
-		if (stream.getResource_id() != resourceId) {
-			logger.error("Resource "+resourceId+" does not own stream "+streamId);
-			//throw new WebApplicationException(Status.NOT_FOUND);
+		checkHierarchy(user,resource,stream);
+	}
+	public void checkHierarchy(User user, Resource resource, Stream stream) {
+		checkHierarchy(user, resource);
+		if (stream.getResource_id() != resource.getId()) {
+			logger.error("Resource "+resource.getId()+" does not own stream "+stream.getId());
+			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
 

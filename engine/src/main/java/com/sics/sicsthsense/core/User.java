@@ -195,6 +195,12 @@ public class User {
 	public boolean hasPassword(String password) {
 		return true;
 	}
+	public boolean isAuthorised(String key) {
+		if (this.token.equals(key)) {
+			return true;
+		}
+		return false;
+	}
 
 	public List<Resource> getResources() {
 		List<Resource> resources = new ArrayList<Resource>();
