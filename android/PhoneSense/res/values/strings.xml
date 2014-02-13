@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PhoneSense</string>
+    <string name="action_settings">Settings</string>
+    <string name="quit">Quit</string>
+   
+    <string name="startposting">Start Posting</string>
+    <string name="stopposting">Stop Posting</string>
+    
+    
+    <string name="urltitle">SicsthSense Resource URL:</string>
+    <string name="urlhint">http://sicssense/users/...</string>
+    <string name="http">http://</string>
+    
+    <string name="output">Status:</string>
+    <string name="statusbox">..</string>
+
+</resources>

@@ -137,8 +137,9 @@ $.ajax({
 			$('#chart-@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
 		}
 	},
-	error: function(error) {
-		console.log("Got an AJAX JSON GETing "+ "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey+" error:"+error);
+	error: function(xhr, status, error) {
+		var errorMessage = exception || xhr.statusText;
+		console.log("Got an AJAX JSON GETing "+ "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey+" error:"+errorMessage);
 		$('#chart-@{stream.id}').hide();
 	}
 });
