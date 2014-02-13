@@ -11,7 +11,7 @@ This repository contain many different aspects of the SicsthSense system:
 * `Library`: A python library for easily interacting with the SicsthSense engine.
 * `Contiki`: Code for installing on small devices that can then talk to SicsthSense.
 * `Android`: Preliminary code to run on Android phones.
-* `Depricated`: old code and prototypes.
+* `Deprecated`: old code and prototypes.
 
 The `INSTALL.sh` script will build the database (using `buildDB.sql`) and copy the required configuration files (for Play in `web`)
 

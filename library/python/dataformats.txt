@@ -1,0 +1,115 @@
+
+
+A *User* is represented by the following JSON structure. Note that the only required field is _username_, all the rest can be filled in automatically by the system, or be assigned some default values. 
+The fields id, creationDate and lastLogin are handled internally by the system and are read-only.
+{
+	"id":1,
+	"openIDIdentifier":null,
+	"authorities":[],
+	"creationDate":1383469440445,
+	"lastLogin":1383469440445,
+	"openIDDiscoveryInformationMemento":null,
+
+	"username":"username@example.com",
+	"passwordDigest":null,
+	"firstName":"Alice",
+	"lastName":"Wonderland",
+	"description":"",
+	"email":null,
+	"latitude":40.0,
+	"longitude":18.0,
+	"password":null,
+	"admin":false,
+	"token":null,
+	"resources":[
+		...
+	]
+}
+
+
+A *Resource* is represented by the following JSON structure. Note that the only required field is _label, all the rest can be filled in automatically by the system, or be assigned some default values. 
+Also, if you would like the resource to automatically poll a remote URL, the _polling_url_ must be set to a valid HTTP URL, and the _polling_period_ to a posittive non-zero integer representing the period of polling in seconds.
+The fields id, owner_id, parent_id, last_polled and last_posted are handled internally by the system and are read-only.
+{
+	"id":2,
+	"owner_id":1,
+	"parent_id":-1,
+	"last_polled":0,
+	"last_posted":0
+
+	"label":"New resource",
+	"description":"",
+	"polling_url":null,
+	"polling_authentication_key":null,
+	"polling_period":0,
+	"version":"1.0",
+
+	"secret_key":"32795d7d-b875-4aff-94b3-1a32f40f1015",
+}
+
+A *Stream* is represented by the following JSON structure. Note that there are no required fields, all can be filled in automatically by the system, or be assigned some default values. 
+The fields id, owner_id and resource_id are handled internally by the system and are read-only.
+{
+	"id":3,
+	"owner_id":1,
+	"resource_id":13,
+
+	"type":"t",
+	"latitude":0.0,
+	"longitude":0.0,
+	"description":"light measure",
+	"public_access":false,
+	"public_search":false,
+	"frozen":false,
+	"version":0
+
+	"history_size":0,
+	"last_updated":0,
+	"secret_key":"8fbefad4-602c-4ce2-aecf-5f6ce16d2f3a",
+}
+
+A *Parser* is represented by the following JSON structure. Note that there are no required fields, all can be filled in automatically by the system, or be assigned some default values. 
+The fields id and resource_id  are handled internally by the system and are read-only.
+{
+	"id":3,
+	"resource_id":13,
+	"stream_id":3,
+
+	"input_parser":"/tets",
+	"input_type":"application/json",
+	"timeformat":"unix",
+	"data_group":1,
+	"time_group":2,
+	"number_of_points":1
+}
+
+--
+Upon receipt of a HTTP POST to the resource, or a periodic poll, each of the
+resource's parser are applied to the whole data payload. The parsed data is then
+added to the data stream given by _stream_id_.
+
+The parsing system provide two methods to interpret values from a resource's
+pull/push data payload. First and most straight-forward is JSON parsing, where
+a parser JSON primitive has its complete path stated in a filesystem path
+style. For example, the floating point primitive called "_temperature_"
+situation at the top level of a JSON string would be referenced as
+"_/temperature_". If the primative was contained in a JSON associative array
+called "_readings_" it would be called "_/readings/temperature_". Through this 
+method, many different values can be parsed from a single JSON payload and turned
+into a stream in SicsthSense.
+This can be set in the parser representation through setting the primitve's path
+in the parser's _input_parser_ field and setting the _input_type_ to "application/json".
+
+The other, more powerful, technique uses Regexs pattern matching to enable parsing
+of arbitrary text payloads. The _input_parser_ need only be set the regex that you would 
+like to attempt to match against the payload. The _input_format_ should be set as
+"XXX".
+Both a value and a timestamp can be capture by the given regex through the use of groups.
+By default, the first group is assumed to be the data value and the second group to be
+the timestamp. This behaviour can be changed by setting the _data_group_ and _time_group_ fields.
+If the time_group does not appear, then the current time will be used by the system.
+
+These parsing methods provide both and easy and a powerful method to parse data entering the
+SicsthSense system.
+
+
