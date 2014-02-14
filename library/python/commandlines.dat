@@ -1,0 +1,25 @@
+
+# Some basic posting
+curl -XPOST -H "Content-Type: application/json" -d '{"temperature": 20.1, "humidity": 10}' HOST/users/USERID/resources/RESOURCEID/data
+
+curl -X POST -H "Content-Type: application/json" -d '{"temperature": 23, "humidity": 20}' http://HOST/users/USERID/resources/RESOURCEID/data
+curl -X POST -H "Content-Type: application/json" -d '{"temperature": 21.1, "humidity": 25}' http://HOST/users/USERID/resources/RESOURCEID/data
+
+
+# GETing data
+curl HOST:8080/users/X/resources/Y/streams/Z/data?limit=10
+
+curl HOST:8080/users/X/resources/Y/streams/Z/data?from=1385763270458
+
+curl HOST:8080/users/X/resources/Y/streams/Z/data?from=1385763000000&until=1385764000000
+
+# Alternate format GET
+curl HOST/users/1/resources/1/streams/1/data?token=KEY&format=csv
+
+# POST with a regular polling event 
+curl -X POST -H "Content-Type: application/json" -d '{"label": "resourceLabel", "polling url":"http://url.com/test.json", "polling period":100}' http://HOST/users/X/resources
+
+# POST directly into a Stream (with no parsers)
+curl -X POST -H "Content-Type: application/json" -d '{ "value": 2.5, "timestamp": 1384249393 }' http://HOST/users/X/resources/Y/streams/Z/data
+
+

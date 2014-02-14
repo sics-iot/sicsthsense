@@ -130,8 +130,10 @@ class Engine:
 		return ws
 
 	# GET data from a Stream
-	def getStreamData(self, resourceId, streamId, count=10):
+	def getStreamData(self, resourceId, streamId, query=None):
 		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
+                if query!=None:
+                    url += dictToQueryStr(query)
 		return self.getFromURL(url)
 
 
@@ -139,6 +141,12 @@ class Engine:
 	###########
 	# Utility methods
 	###########
+
+        # Turn a dict into a HTTP query string ?key=val
+        def dictToQueryStr(dictionary):
+            str="?"
+            for key in dictionary:
+                str+=key+"="+dictionary[key]+"&"
 
 	# Ensure hostname and userId are set
 	def valid(self):

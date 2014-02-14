@@ -55,15 +55,15 @@ manualCreation=True
 if manualCreation:
         # Create streams in resource
         print "Making streams..."
-        newstream = { "description": "input1" }
+        newstream = { "description": "ManualStream" }
         streamjsonstr = json.dumps(newstream)
         #print streamjsonstr
         streamId = e.createStream(resourceId,streamjsonstr)
-        print "Made antecedent stream: "+str(streamId)+" - "+streamjsonstr;
+        print "Manually made a stream: "+str(streamId)+" - "+streamjsonstr;
 
 
 	# Create a Parser for this resource
-        newparser = { "stream_id":streamId, "input_parser":"/tets" }
+        newparser = { "stream_id":streamId, "input_parser":"/temp" }
         parserjsonstr = json.dumps(newparser)
         #print parserjsonstr
         newId = e.createParser(resourceId,parserjsonstr)
@@ -72,13 +72,10 @@ if manualCreation:
 postData=True
 if postData:
         print "Posting data..."
-        # POST 10 data items to created stream
+        # POST 10 data items to the created resource
         for x in range(0,10):
-                #data = {"value": str(random.randint(0,99))}
-                #result = e.postStreamData(resourceId,antStreamId1,json.dumps(data))
-
-                data = {"value": str(random.randint(0,99))}
-                result = e.postStreamData(resourceId,streamId,json.dumps(data))
+                data = {"temp": str(random.randint(0,99))}
+                result = e.postResourceData(resourceId,json.dumps(data))
                 print str(data)+" -> "+str(result)
                 #print json.dumps(json.loads(result), sort_keys = False, indent = 4)
                 time.sleep(2)
