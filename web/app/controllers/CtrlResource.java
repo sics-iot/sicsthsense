@@ -28,6 +28,7 @@ package controllers;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
@@ -44,6 +45,8 @@ import controllers.Utils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+
+import com.avaje.ebean.Ebean;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -199,7 +202,8 @@ public class CtrlResource extends Controller {
 			} catch (Exception e) {
 				Logger.error("CtrlResource: " + e.getMessage() + " Stack trace:\n"
 						+ e.getStackTrace()[0].toString());
-				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
+				List<Stream> streams = new ArrayList<Stream>();
+				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, streams, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
 			}
 			return redirect(routes.CtrlResource.getById(id));
 		}
@@ -229,7 +233,8 @@ public class CtrlResource extends Controller {
 				Logger.error("Auto add parser failed: "+e.toString());
 				SkeletonResource skeleton = new SkeletonResource(resource);
 				Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
-				return ok(resourcePage.render(currentUser.resourceList, myForm, false, "Error polling resource URL: "+resource.getPollingUrl()));
+				List<Stream> streams = new ArrayList<Stream>();
+				return ok(resourcePage.render(currentUser.resourceList, myForm, streams, false, "Error polling resource URL: "+resource.getPollingUrl()));
 			}
 
 			Logger.warn("Probed and found contentType: " + contentType);
@@ -253,8 +258,9 @@ public class CtrlResource extends Controller {
 		final Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm
 				.fill(skeleton);
 
+				List<Stream> streams = new ArrayList<Stream>();
 		return ok(views.html.resourcePage.render(currentUser.resourceList,
-				skeletonResourceFormNew, false, "Parsers automatically added."));
+				skeletonResourceFormNew, streams, false, "Parsers automatically added."));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -297,8 +303,9 @@ public class CtrlResource extends Controller {
 
 		Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm
 				.fill(skeleton);
+				List<Stream> streams = new ArrayList<Stream>();
 		return ok(views.html.resourcePage.render(currentUser.resourceList,
-				skeletonResourceFormNew, true, "Parsers automatically filled in."));
+				skeletonResourceFormNew, streams, true, "Parsers automatically filled in."));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -313,8 +320,9 @@ public class CtrlResource extends Controller {
 
 		Form<SkeletonResource> skeletonResourceFormNew = skeletonResourceForm
 				.fill(skeleton);
+				List<Stream> streams = new ArrayList<Stream>();
 		return ok(views.html.resourcePage.render(currentUser.resourceList,
-				skeletonResourceFormNew, true, "Regex parser assumed."));
+				skeletonResourceFormNew, streams, true, "Regex parser assumed."));
 	}
 
 	// create the source and corresponding StreamParser objects
@@ -633,12 +641,13 @@ public class CtrlResource extends Controller {
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();
 		Resource resource = Resource.get(id, currentUser);
+		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
 		if (resource == null) {
 			return badRequest("Resource does not exist: " + id);
 		}
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
-		return ok(resourcePage.render(currentUser.resourceList, myForm, false, ""));
+		return ok(resourcePage.render(currentUser.resourceList, myForm, streams, false, ""));
 	}
 
 	private static Result getData(String ownerName, String path, Long tail,

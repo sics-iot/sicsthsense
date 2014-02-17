@@ -85,6 +85,10 @@ public class PollSystem {
 			createPoller(resource.getId(), resource.getLabel(), resource.getPolling_url(), resource.getPolling_period(), null);
 		}
 	}
+	public void createPoller(long resourceId) {
+		Resource resource = storage.findResourceById(resourceId):
+		createPoller(resource);
+	}
 	public void createPoller(Resource resource) {
 		createPoller(resource.getId(), resource.getLabel(), resource.getPolling_url(), resource.getPolling_period(), null);
 	}

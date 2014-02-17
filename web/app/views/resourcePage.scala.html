@@ -1,4 +1,4 @@
-@(resources: List[Resource], myForm: Form[SkeletonResource], autoParserForm: Boolean, message: String="")
+@(resources: List[Resource], myForm: Form[SkeletonResource],streams : List[Stream], autoParserForm: Boolean, message: String="")
 
 @import helper._
 @import helper.twitterBootstrap._
@@ -134,7 +134,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 						<label class="span4" for="ParentUrl@myForm("id").value">Parent [<a href="@routes.CtrlResource.getById(parentResource.id)">@parentResource.label</a>]</label>
 						<label class="span3" for="@myForm("pollingUrl").id">Resource sub-path @helpMark("The path to access this subresource under the parent URI","pollingDataHelp")</label>
 						} else {
-						<label class="span8" for="@myForm("pollingUrl").id">Resource URI @helpMark("Public address. Suppoted protocols: coap:// and http://","pollingDataHelp")</label>
+						<label class="span8" for="@myForm("pollingUrl").id">External URI to poll @helpMark("Public address. Suppoted protocols: coap:// and http://","pollingDataHelp")</label>
 						}
 						<label class="span2" for="@myForm("pollingPeriod").id">Polling period (s) @helpMark("Minimum polling period is 120s","pollingDataHelp")</label>
 					</div>
@@ -144,9 +144,9 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 						@** Is this a sub-resource? **@
 						@if(parentResource != null) {
 						<input class="span4" type="url" id="ParentUrl@myForm("id").value" name="ParentUrl" value="@parentResource.getUrl()" placeholder="ParentUrl!" readonly>
-						<input class="span3" type="text" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="Type an URL to enable interaction!">
+						<input class="span3" type="text" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="Type an URL to enable polling!">
 						} else {
-						<input class="span8" type="url" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="Type an URL to enable interaction!">
+						<input class="span8" type="url" id="@myForm("pollingUrl").id" name="@myForm("pollingUrl").name" value="@myForm("pollingUrl").value" placeholder="Type an URL to enable polling!">
 						}
 						<input class="span2" type="number" id="@myForm("pollingPeriod").id" name="@myForm("pollingPeriod").name" value="@myForm("pollingPeriod").value" placeholder="0">
 					</div>
@@ -178,7 +178,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	<!-- Parsers -->
 
 <fieldset>
-		      <legend>Stream Parsers 
+		      <legend>Data Parsers 
 <span class="pull-right">
 <a class="addParser btn btn-success btn-small"><span class="icon-plus icon-white"></span></a>
 </span></legend>
@@ -203,8 +203,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 				}
 	      </fieldset>
 				<br />
-
-	<!-- Subresources -->
+	<!-- Subresources 
 	@if(Resource.get(myForm("id").value.toLong, Secured.getCurrentUser()).subResources.length > 0) {
 	<br />
 <div class="row-fluid ">
@@ -228,8 +227,8 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 </div></div>
 </div>
 		}
-
-	<!-- Add subresource form -->
+-->
+	<!-- Add subresource form 
 <div class="row-fluid ">
 	@helper.form(action = routes.CtrlResource.addSubResource(), 'class -> "controls-row") {
 	<br />
@@ -245,6 +244,22 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	 </fieldset>
   }
   </div>
+	-->
+
+
+	<!--Body content-->
+	<!-- Stream listing and visualizing -->
+	@if(streams.length > 0) {
+		<h3>Resource Streams</h3>
+		@for(stream <- streams) {					
+			<br />
+			@vstream.includeStream(stream)
+			<br />
+		}
+	} else {
+		No streams contained! Add some Resource's to your dashboard through the <a href="/resources">Resources page</a>.
+	}
+	<br /> <br />
 
   <!-- Log view --->
 	     @if(!autoParserForm) {

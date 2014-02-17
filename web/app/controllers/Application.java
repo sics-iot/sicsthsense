@@ -182,6 +182,9 @@ public class Application extends Controller {
 		List<User> users = User.all();
 		return ok(userManagementPage.render(users,""));
   }
+	public static Result deprecated() {
+		return notFound("Deprecated feature! Please check documentation.");
+	}
 
 	public static boolean canPasswordLogin() {
 		String value = Setting.getSetting("passwordLogin");
