@@ -2,25 +2,26 @@
 
 import subprocess
 import time
-import Engine
+import random
+from Engine import *
 
 #
 # Set your userID and key here!
 #
-key = "4cb13dfc-b34e-4411-982b-2a0137162aa1"
-newUserId = -1
-resourceId= -1
+key = "baf339d0-b565-4a14-a998-d14251a1844e"
+newUserId = 1
+resourceId= 34
 
 
 # Create the ENgine module giving the running instance's hostname and port
-e = Engine("localhost:8080")
-#e = Engine("presense.sics.se:8080")
+#e = Engine("localhost:8080")
+e = Engine("presense.sics.se:8080")
 print "Hostname: "+e.hostname
 # Configure our user ID and user Key
 e.setUserId(newUserId)
 e.setKey(key)
 
-makeNewResource=True
+makeNewResource=False
 if makeNewResource:
     # Generate random label name
     resourceLabel = "uptime"+str(random.randint(0,99))
@@ -42,9 +43,10 @@ while running:
 
     # extract the CPU load measurements
     upfields = upstring.split()
-    avg1 =upfields[9]
-    avg5 =upfields[10]
-    avg15=upfields[11]
+    #print upfields
+    avg1 =upfields[7]
+    avg5 =upfields[8]
+    avg15=upfields[9]
 
     data = { "avg1":avg1, "avg5":avg5, "avg15":avg15}
     datastr = json.dumps(data)
@@ -54,5 +56,6 @@ while running:
     result = e.postResourceData(resourceId,json.dumps(data))
     print "Posted: "+result
 
+    time.sleep(10)
 
 
