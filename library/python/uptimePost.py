@@ -10,7 +10,7 @@ from Engine import *
 #
 key = "baf339d0-b565-4a14-a998-d14251a1844e"
 newUserId = 1
-resourceId= 34
+resourceId= 39
 
 
 # Create the ENgine module giving the running instance's hostname and port
@@ -44,9 +44,9 @@ while running:
     # extract the CPU load measurements
     upfields = upstring.split()
     #print upfields
-    avg1 =upfields[7]
-    avg5 =upfields[8]
-    avg15=upfields[9]
+    avg1 =float(upfields[7])
+    avg5 =float(upfields[8])
+    avg15=float(upfields[9])
 
     data = { "avg1":avg1, "avg5":avg5, "avg15":avg15}
     datastr = json.dumps(data)

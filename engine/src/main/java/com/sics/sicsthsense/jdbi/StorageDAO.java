@@ -94,6 +94,10 @@ public interface StorageDAO {
 	@Mapper(ResourceMapper.class)
   Resource findResourceById(@Bind("id") long id);
 
+  @SqlQuery("select * from resources where label = :label limit 1")
+	@Mapper(ResourceMapper.class)
+  Resource findResourceByLabel(@Bind("label") String label);
+
   @SqlQuery("select * from resources where polling_period>0")
 	@Mapper(ResourceMapper.class)
   List<Resource> findPolledResources();

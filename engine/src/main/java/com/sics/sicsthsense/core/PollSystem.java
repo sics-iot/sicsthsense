@@ -86,7 +86,7 @@ public class PollSystem {
 		}
 	}
 	public void createPoller(long resourceId) {
-		Resource resource = storage.findResourceById(resourceId):
+		Resource resource = storage.findResourceById(resourceId);
 		createPoller(resource);
 	}
 	public void createPoller(Resource resource) {

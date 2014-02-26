@@ -60,6 +60,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.*;
 import org.codehaus.jackson.JsonNode;
 
+import com.sics.sicsthsense.Utils;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.auth.annotation.RestrictedTo;
@@ -86,28 +87,28 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public List<Stream> getStreams(@PathParam("userId") long userId, @QueryParam("key") String key) {
-		long resourceId = Long.parseLong(topic.getID());
-		logger.info("Getting user/resource/streams "+userId+" "+resourceId);
+	public List<Stream> getStreams(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
+		//long resourceId = Long.parseLong(topic.getID());
+		logger.info("Getting user/resource/streams "+userId+" "+resourceName);
 		User user = storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
-		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
+		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		return streams;
 	}
 
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("key") @DefaultValue("") String key) {
-		logger.info("Getting user/resource/stream: "+userId+"/"+resourceId+"/"+streamId);
-		checkHierarchy(userId,resourceId,streamId);
-		User user = storage.findUserById(userId);
+	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, @QueryParam("key") @DefaultValue("") String key) {
+		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamId);
+		User user =					storage.findUserById(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Stream stream =			storage.findStreamById(streamId);
+		Utils.checkHierarchy(user,resource,stream);
 		if (user==null || !key.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
-
-		Stream stream = storage.findStreamById(streamId);
 
 		// add back in the antecedents
 		List<Long> antecedents = storage.findAntecedents(streamId);
@@ -141,17 +142,18 @@ public class StreamResource {
 		return streamId;
 	}*/
 	@POST
-	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Stream stream, @QueryParam("key") String key) throws Exception {
+	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Stream stream, @QueryParam("key") String key) throws Exception {
 		logger.info("Creating stream!:"+stream);
-		checkHierarchy(userId,resourceId);
 		User user = storage.findUserById(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Utils.checkHierarchy(user,resource);
 		if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 		long streamId=-1;
 
 		// initialise the stream correctly
-		stream.setResource_id(resourceId);
+		stream.setResource_id(resource.getId());
 		stream.setOwner_id(userId);
-		streamId = insertStream(stream);
+		streamId = Utils.insertStream(stream);
 
 		//create antecedant streams correctly!
 		if (stream.antecedents !=null) {
@@ -160,13 +162,13 @@ public class StreamResource {
 				logger.info("Antecedent: "+antId);
 				// check ability to access antecedent!
 				// XXX
-				insertDependent(antId.longValue(),streamId);
+				Utils.insertDependent(antId.longValue(),streamId);
 			}
 		}
 		if (stream.triggers!=null) {
 			logger.info("Trigger processing..");
 			for(Trigger t: stream.triggers) {
-				insertTrigger(streamId, t.getUrl(), t.getOperator(), t.getOperand(), t.getPayload());
+				Utils.insertTrigger(streamId, t.getUrl(), t.getOperator(), t.getOperand(), t.getPayload());
 			}
 		}
 
@@ -180,12 +182,12 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
-	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
+	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
 		List<DataPoint> rv; // return value before conversion
 		User user =					storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			storage.findStreamById(streamId);
-		checkHierarchy(user,resource,stream);
+		Utils.checkHierarchy(user,resource,stream);
 		if (!stream.getPublic_access()) { // need to authenticate
 			//logger.warn("Stream isnt public access!");
 			if (!user.isAuthorised(key) && !stream.isAuthorised(key) && !resource.isAuthorised(key)) {
@@ -222,109 +224,24 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("key") String key) {
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("key") String key) {
 		User user =					storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+
 		Stream stream =			storage.findStreamById(streamId);
-		checkHierarchy(user,resource,stream);
+		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
 			logger.warn("User is not owner and has incorrect key on resource/stream!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		logger.info("Inserting data into stream: "+streamId);
 		datapoint.setStreamId(streamId); // keep consistency
-		insertDataPoint(datapoint); // insert first to fail early
+		Utils.insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
 		stream.notifyDependents(); // notify all streams that depend on this
 		stream.testTriggers(datapoint); // see if any of the actions are triggered
 
 		return "Posted successfully!";
-	}
-
-	public void checkHierarchy(long userId, long resourceId) {
-		User user = storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
-	}
-	public void checkHierarchy(User user, Resource resource) {
-		if (user == null) {
-			logger.error("User does not exist!");
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		if (resource == null) {
-			logger.error("Resource does not exist!");
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		if (resource.getOwner_id() != user.getId()) {
-			logger.error("User "+user.getId()+" does not own resource "+resource.getId());
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-	}
-	public void checkHierarchy(long userId, long resourceId, long streamId) {
-		User user = storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
-		Stream stream = storage.findStreamById(streamId);
-		checkHierarchy(user,resource,stream);
-	}
-	public void checkHierarchy(User user, Resource resource, Stream stream) {
-		checkHierarchy(user, resource);
-		if (stream.getResource_id() != resource.getId()) {
-			logger.error("Resource "+resource.getId()+" does not own stream "+stream.getId());
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-	}
-
-	void insertDataPoint(DataPoint datapoint) {
-		if (datapoint.getTimestamp()<=0) {
-			datapoint.setTimestamp(java.lang.System.currentTimeMillis());
-		}
-		storage.insertDataPoint(
-			datapoint.getStreamId(),
-			datapoint.getValue(),
-			datapoint.getTimestamp()
-		);
-		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
-	}
-
-	public static long insertStream(Stream stream) {
-		StorageDAO storage = DAOFactory.getInstance();
-		storage.insertStream(
-			stream.getType(),
-			stream.getLatitude(),
-			stream.getLongitude(),
-			stream.getDescription(),
-			stream.getPublic_access(),
-			stream.getPublic_search(),
-			stream.getFrozen(),
-			stream.getHistory_size(),
-			stream.getLast_updated(),
-			stream.getSecret_key(),
-			stream.getOwner_id(),
-			stream.getResource_id(),
-			stream.getFunction(),
-			stream.getVersion()
-		);
-		long streamID = storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
-		//already performed by other code
-		//storage.insertVFile("/stream/"+String.valueOf(streamID),stream.getOwner_id(),"D",streamID);
-		return streamID;
-	}
-
-	// create the dependency relationship between streams
-	public static void insertDependent(long stream, long dependent) {
-		StorageDAO storage = DAOFactory.getInstance();
-		storage.insertDependent(stream,dependent);
-	}
-	
-	public static void insertTrigger(long stream_id, String url, String operator, double operand, String payload) {
-		StorageDAO storage = DAOFactory.getInstance();
-		storage.insertTrigger(stream_id, url, operator, operand, payload);
-	}
-
-	public static long insertVFile(String path, long owner_id, String type, long stream_id) {
-		StorageDAO storage = DAOFactory.getInstance();
-		storage.insertVFile( path,owner_id,type,stream_id);
-		return -1;
 	}
 
 

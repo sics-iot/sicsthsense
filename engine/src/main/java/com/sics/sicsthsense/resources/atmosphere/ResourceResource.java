@@ -32,6 +32,7 @@ package com.sics.sicsthsense.resources.atmosphere;
 import java.util.List;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
+import java.net.URI;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -54,6 +55,7 @@ import com.yammer.dropwizard.auth.Auth;
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.annotation.Suspend;
 
+import com.sics.sicsthsense.Utils;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.model.*;
@@ -87,7 +89,7 @@ public class ResourceResource {
 	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
 		//User visitor = new User();
 		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
-		checkHierarchy(userId);
+		Utils.checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		if (user==null) {logger.info("No userId match"); throw new WebApplicationException(Status.NOT_FOUND);}
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
@@ -104,20 +106,21 @@ public class ResourceResource {
 		return resources;
 	}
 
+	// resourceName can be the resourceID or the URL-encoded resource label
 	@GET
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") String key) {
-		logger.info("Getting user/resource: "+userId+"/"+resourceId);
-		checkHierarchy(userId);
-		Resource resource = storage.findResourceById(resourceId);
+	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
+		logger.info("Getting user/resource: "+userId+"/"+resourceName);
+		Utils.checkHierarchy(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
 		if (resource == null) {
-			logger.error("Resource "+resourceId+" does not exist!");
+			logger.error("Resource "+resourceName+" does not exist!");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		if (resource.getOwner_id() != userId) {
-			logger.error("User "+userId+" does not own resource "+resourceId);
+			logger.error("User "+userId+" does not own resource "+resourceName);
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		User user = storage.findUserById(userId);
@@ -131,26 +134,19 @@ public class ResourceResource {
 		return resource;
 	}
 
-	void authoriseResourceKey(String key1, String key2) {
-		if (!key1.equals(key2)) { 
-			logger.warn("User has incorrect key on resource!");
-			throw new WebApplicationException(Status.FORBIDDEN);
-		}
-	}
-
 	// post new resource definition 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	public long postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Adding user/resource:"+resource.getLabel());
-		checkHierarchy(userId);
+		Utils.checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		resource.setOwner_id(userId); // should know the owner
-		long resourceId = insertResource(resource);
+		long resourceId = Utils.insertResource(resource);
 		if (resource.getPolling_period() > 0) {
 			// remake pollers with updated Resource attribtues
 			pollSystem.rebuildResourcePoller(resourceId);
@@ -163,35 +159,33 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	@Path("/{resourceId}")
-	//public void updateResource(@RestrictedTo(Authority.ROLE_USER) User visitor, @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource) {
-	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, Resource resource, @QueryParam("key") String key) {
-		logger.info("Updating resourceId:"+resourceId);
+	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Resource resource, @QueryParam("key") String key) {
+		logger.info("Updating resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
-		Resource oldresource = storage.findResourceById(resourceId);
-		checkHierarchy(user,oldresource);
+		Resource oldresource = Utils.findResourceByIdName(resourceName);
+		Utils.checkHierarchy(user,oldresource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
-		updateResource(resourceId, resource);
+		Utils.updateResource(oldresource.getId(), resource);
 	}
 
 	@DELETE
 	@Timed
 	@Path("/{resourceId}")
 	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
-			@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") String key) {
-		logger.warn("Deleting resourceId:"+resourceId);
-		User user = storage.findUserById(resourceId);
-		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
-		Resource oldresource = storage.findResourceById(resourceId);
+			@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
+		logger.warn("Deleting resourceName:"+resourceName);
+		User user = storage.findUserById(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		// delete child streams and parsers
-		List<Stream> streams = storage.findStreamsByResourceId(resourceId);
-		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
+		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
+		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
 		for (Parser p: parsers) {storage.deleteParser(p.getId());}
 		for (Stream s: streams) {storage.deleteStream(s.getId());}
-		storage.deleteResource(resourceId);
+		storage.deleteResource(resource.getId());
 		// remake pollers with updated Resource attribtues
-		pollSystem.rebuildResourcePoller(resourceId);
+		pollSystem.rebuildResourcePoller(resource.getId());
 	}
 
 	@GET
@@ -204,10 +198,10 @@ public class ResourceResource {
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, String data, @QueryParam("key") String key) {
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, String data, @QueryParam("key") String key) {
 		User user = storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Utils.checkHierarchy(user,resource);
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { 
 			logger.warn("Incorrect authorisation key!");
 			throw new WebApplicationException(Status.FORBIDDEN);
@@ -215,7 +209,7 @@ public class ResourceResource {
 		//logger.info("Adding data to resource: "+resource.getLabel());
 
 		// if parsers are undefined, create them!
-		List<Parser> parsers = storage.findParsersByResourceId(resourceId);
+		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
 		if (parsers==null || parsers.size()==0) { 
 			logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
 			try {
@@ -227,10 +221,10 @@ public class ResourceResource {
 			}
 		}
 		//run it through the parsers
-		applyParsers(resourceId, data);
+		applyParsers(resource.getId(), data);
 
 		// update Resource last_posted
-		storage.postedResource(resourceId,System.currentTimeMillis());
+		storage.postedResource(resource.getId(),System.currentTimeMillis());
 
 		return "Success";
 	}
@@ -248,69 +242,5 @@ public class ResourceResource {
 		}
 	}
 
-	public void checkHierarchy(long userId) {
-		User user = storage.findUserById(userId);
-		checkHierarchy(user);
-	}
-	public void checkHierarchy(User user) {
-		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
-	}
-
-	public void checkHierarchy(long userId, long resourceId) {
-		User user = storage.findUserById(userId);
-		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
-	}
-	public void checkHierarchy(User user, Resource resource) {
-		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
-		if (resource==null) { throw new WebApplicationException(Status.NOT_FOUND); }
-		if (resource.getOwner_id() != user.getId()) {
-			logger.error("User "+user.getId()+" does not own resource "+resource.getId());
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-	}
  
-
-	// add a resource 
-	long insertResource(Resource resource) {
-		// should check if label exists!
-
-		storage.insertResource( 
-			resource.getLabel(),
-			resource.getVersion(), 
-			resource.getOwner_id(), 
-			-1,
-			resource.getPolling_url(), 
-			resource.getPolling_authentication_key(), 
-			resource.getPolling_period(), 
-			resource.getSecret_key(), 
-			resource.getDescription() 
-		);
-		return storage.findResourceId(resource.getLabel());
-	}
-
-	// add a resource 
-	void updateResource(long resourceId, Resource newresource) {
-		logger.info("Updating resourceID "+resourceId+" to: "+newresource);
-
-		Resource resource = storage.findResourceById(resourceId);
-		resource.update(newresource);
-	
-		storage.updateResource( 
-			resourceId, // the resource ID from the PUT'd URL
-			resource.getLabel(),
-			resource.getVersion(), 
-			resource.getOwner_id(), 
-			-1,
-			resource.getPolling_url(), 
-			resource.getPolling_authentication_key(), 
-			resource.getPolling_period(), 
-			resource.getSecret_key(), 
-			resource.getDescription(), 
-			resource.getLast_polled(), 
-			resource.getLast_posted() 
-		);
-		// remake pollers with updated Resource attribtues
-		pollSystem.rebuildResourcePoller(resourceId);
-	}
 }

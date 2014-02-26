@@ -47,6 +47,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import com.sics.sicsthsense.Utils;
 import com.sics.sicsthsense.jdbi.*;
 import com.sics.sicsthsense.core.*;
 import com.sics.sicsthsense.resources.atmosphere.*;
@@ -202,8 +203,8 @@ public class ParseData {
 			Stream stream = new Stream();
 			stream.setResource_id(resource.getId());
 			stream.setOwner_id(resource.getOwner_id());
-			long streamId = StreamResource.insertStream(stream);
-			long vfileId = StreamResource.insertVFile(nodePath,resource.getOwner_id(),"D",streamId);
+			long streamId = Utils.insertStream(stream);
+			long vfileId =  Utils.insertVFile(nodePath,resource.getOwner_id(),"D",streamId);
 
 			Parser parser = new Parser();
 			parser.setResource_id(resource.getId());
