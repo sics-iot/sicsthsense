@@ -643,10 +643,10 @@ public class CtrlResource extends Controller {
 	public static Result getById(Long id) {
 		User currentUser = Secured.getCurrentUser();
 		Resource resource = Resource.get(id, currentUser);
-		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
 		if (resource == null) {
 			return badRequest("Resource does not exist: " + id);
 		}
+		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
 		return ok(resourcePage.render(currentUser.resourceList, myForm, streams, false, ""));
