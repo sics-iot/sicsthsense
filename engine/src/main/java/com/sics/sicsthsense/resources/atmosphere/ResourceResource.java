@@ -193,6 +193,13 @@ public class ResourceResource {
 	public String getData() {
 		return "Error: Only Streams can have data read";
 	}
+	@GET
+	@Path("/{resourceId}/rebuild")
+	public void rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
+		Resource resource = Utils.findResourceByIdName(resourceName,userId);
+		pollSystem.rebuildResourcePoller(resource.getId());
+		logger.info("Rebuilt resource: "+resourceName);
+	}
 
 	// Post data to the resource, and run data through its parsers
 	@POST

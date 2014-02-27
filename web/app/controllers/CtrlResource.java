@@ -771,6 +771,7 @@ public class CtrlResource extends Controller {
 		//return ok("Resource key reset successfully: " + id + " New key: " + key);
 		return ok(key);
 	}
+
 	
 	/*
 	 * poll the source data and fill the stream definition form // with default

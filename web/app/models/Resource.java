@@ -32,6 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -160,6 +165,7 @@ public class Resource extends Operator {
 				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
 			}
 			this.pollingUrl = pollingUrl;
+			rebuildEngineResource(this.owner.getId(), this.id);
     }
 
     /** Call to create, or update an access token */
@@ -314,7 +320,8 @@ public class Resource extends Operator {
     }
 
     public void setPeriod(Long period) {
-        this.pollingPeriod = period;
+			this.pollingPeriod = period;
+			rebuildEngineResource(this.owner.getId(), this.id);
     }
 
     public boolean parseAndPost(Request req, Long currentTime) throws Exception {
@@ -350,6 +357,7 @@ public class Resource extends Operator {
         update();
         // update indexes
         Resource.index(this);
+				rebuildEngineResource(this.owner.getId(), this.id);
     }
     
     public void verify() {
@@ -360,12 +368,14 @@ public class Resource extends Operator {
     public void update() {
     	verify();
     	super.update();
+			rebuildEngineResource(this.owner.getId(), this.id);
     }
     
     @Override
     public void save() {
     	verify();
     	super.save();
+			rebuildEngineResource(this.owner.getId(), this.id);
     }
     
     @Override
@@ -390,6 +400,7 @@ public class Resource extends Operator {
 					stream.delete();
 				}
         super.delete();
+				rebuildEngineResource(this.owner.getId(), this.id);
     }
 
     public static Resource getById(Long id) {
@@ -456,15 +467,41 @@ public class Resource extends Operator {
             Resource.index(resource);
             return resource;
         }
+				rebuildEngineResource(resource.owner.getId(), resource.id);
         return null;
     }
 
     public static void delete(Long id) {
         Resource resource = find.ref(id);
         if (resource != null) resource.delete();
+				rebuildEngineResource(resource.owner.getId(), resource.id);
 
         // Liam: need to delete index for this resource
         // Beshr: Maybe in the resource.delete()?
     }
+
+
+		// Tell the engine to rebuild the Polling System, so that the resource's GETs will be
+		// performed correctly.
+		public static void rebuildEngineResource(long userId, long resourceId) {
+			HttpURLConnection conn;
+			BufferedReader rd;
+			String line;
+			String result = "";
+			try {
+				 URL url = new URL("http://localhost:8080/users/"+userId+"/resources/"+resourceId+"/rebuild");
+				 conn = (HttpURLConnection) url.openConnection();
+				 conn.setRequestMethod("GET");
+				 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				 while ((line = rd.readLine()) != null) { result += line; }
+				 rd.close();
+			} catch (IOException e) {
+				 e.printStackTrace();
+			} catch (Exception e) {
+				 e.printStackTrace();
+			}
+			//return result;
+		}
+
 
 }
