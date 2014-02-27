@@ -68,8 +68,12 @@ public class Utils {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
-	// return a resource after searching for its ID or URL-encoded name
+
 	public static Resource findResourceByIdName(String resourceName) {
+		return findResourceByIdName(resourceName, -1);
+	}
+	// return a resource after searching for its ID or URL-encoded name
+	public static Resource findResourceByIdName(String resourceName, long userId) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		Resource resource = null;
@@ -81,7 +85,8 @@ public class Utils {
 		if (resource==null) { // treat the Name as a resource label
 			try {
 				String label = new URI(resourceName).toString();
-				resource = storage.findResourceByLabel(label);
+				if (userId==-1) { resource = storage.findResourceByLabel(label); } 
+				else { resource = storage.findResourceByLabel(label, userId); }
 			} catch (java.net.URISyntaxException e) {
 				logger.error("Can't turn URL-encoded resource label into valid String: "+e);
 			}

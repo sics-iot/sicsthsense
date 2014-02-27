@@ -68,20 +68,20 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into users (username, email, first_name, last_name, creation_date, version, token) VALUES (:username, :email, :first_name, :last_name, NOW(), 1, :token)")
   void insertUser(
-		@Bind("username") String username, 
-		@Bind("email") String email,
+		@Bind("username")   String username, 
+		@Bind("email")      String email,
 		@Bind("first_name") String first_name,
-		@Bind("last_name") String last_name,
-		@Bind("token") String token
+		@Bind("last_name")  String last_name,
+		@Bind("token")      String token
 	);
 	
   @SqlUpdate("update resources set username = :username, first_name=:first_name, last_name=:last_name, email where id = :id")
   void updateUser(
-		@Bind("id") long id,
-		@Bind("username") String username,
+		@Bind("id")         long id,
+		@Bind("username")   String username,
 		@Bind("first_name") String first_name,
 		@Bind("last_name")  String last_name,
-		@Bind("email") String email
+		@Bind("email")      String email
 	);
 
 
@@ -97,6 +97,10 @@ public interface StorageDAO {
   @SqlQuery("select * from resources where label = :label limit 1")
 	@Mapper(ResourceMapper.class)
   Resource findResourceByLabel(@Bind("label") String label);
+
+  @SqlQuery("select * from resources where label = :label and owner_id = :owner_id limit 1")
+	@Mapper(ResourceMapper.class)
+  Resource findResourceByLabel(@Bind("label") String label, @Bind("owner_id") long owner_id);
 
   @SqlQuery("select * from resources where polling_period>0")
 	@Mapper(ResourceMapper.class)

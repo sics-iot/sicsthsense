@@ -114,7 +114,7 @@ public class ResourceResource {
 	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.info("Getting user/resource: "+userId+"/"+resourceName);
 		Utils.checkHierarchy(userId);
-		Resource resource = Utils.findResourceByIdName(resourceName);
+		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		if (resource == null) {
 			logger.error("Resource "+resourceName+" does not exist!");
 			throw new WebApplicationException(Status.NOT_FOUND);
@@ -162,7 +162,7 @@ public class ResourceResource {
 	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Resource resource, @QueryParam("key") String key) {
 		logger.info("Updating resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
-		Resource oldresource = Utils.findResourceByIdName(resourceName);
+		Resource oldresource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,oldresource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		Utils.updateResource(oldresource.getId(), resource);
@@ -175,7 +175,7 @@ public class ResourceResource {
 			@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.warn("Deleting resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
-		Resource resource = Utils.findResourceByIdName(resourceName);
+		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		// delete child streams and parsers
