@@ -68,6 +68,8 @@
 			name: "Stream "+@{stream.id},
 			data: [],
 			type : 'area',
+			shadow : false,
+			//enableMouseTracking : false,
 			marker : { enabled: true, radius: 2, states: { hover: { enabled: true } } },
 			fillColor : { linearGradient : { x1: 0, y1: 0, x2: 0, y2: 1 },
 				stops : [[0, 'rgba(76,120,230,0.3)'], [1, 'rgba(10,10,20,0.05)']] }
@@ -75,6 +77,7 @@
 		chart: { 
 			renderTo: 'container',
 				events: {
+					/*
 				load : function() {
 					// set up the updating of the chart each second
 					var series = this.series[0];
@@ -91,6 +94,7 @@
 							}
 						}) } , 30000);
 				}
+				*/
 			}
 		},
 		rangeSelector: {
