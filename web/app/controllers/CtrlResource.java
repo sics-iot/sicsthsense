@@ -485,7 +485,7 @@ public class CtrlResource extends Controller {
 	}
 
 	public static Result postByKey(String key) {
-		if (key==null) {return notFound();}
+		if (key==null || "".equals(key)) {return notFound();}
 		Resource resource = Resource.getByKey(key);
 		if (resource==null) {
 			Logger.error("Resource with key "+key+" does not exist!");
