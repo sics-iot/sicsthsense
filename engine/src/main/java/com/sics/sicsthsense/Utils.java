@@ -50,7 +50,6 @@ public class Utils {
 	public static void checkHierarchy(User user) {
 		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
-
 	public static void checkHierarchy(long userId, long resourceId) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		//final Logger logger = LoggerFactory.getLogger(Utils.class);

@@ -78,7 +78,11 @@ public class Poller extends UntypedActor {
 			logger.error("Url not valid");
 			return;
 		}
-		urlobj = new URL(url);
+		try {
+			urlobj = new URL(url);
+		} catch (Exception e) {
+			//logger.error("Bad url: "+e);
+		}
 		parsers = storage.findParsersByResourceId(resourceId);
 	}
 

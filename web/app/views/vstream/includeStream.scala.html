@@ -58,7 +58,6 @@
 <div id="chart-@{stream.id}" style="height: 270px; min-width: 500px"></div>
 <script>
 	var host = document.location.hostname;
-  var streamKey = "key=@{stream.getKey()}"
 	chartLastGet["@{stream.id}"] = 1;
 	chartMinValue["@{stream.id}"] = null;
 	var options = {
@@ -69,6 +68,7 @@
 			name: "Stream "+@{stream.id},
 			data: [],
 			type : 'area',
+			marker : { enabled: true, radius: 2, states: { hover: { enabled: true } } },
 			fillColor : { linearGradient : { x1: 0, y1: 0, x2: 0, y2: 1 },
 				stops : [[0, 'rgba(76,120,230,0.3)'], [1, 'rgba(10,10,20,0.05)']] }
 		}],
@@ -76,22 +76,20 @@
 			renderTo: 'container',
 				events: {
 				load : function() {
-					/*
 					// set up the updating of the chart each second
 					var series = this.series[0];
 					setInterval(function() {
-						var url = "http://"+host+":8080/users/1/resources/1/streams/@{stream.id}/data?since="+chartLastGet["@{stream.id}"];
+						var url = "http://"+host+":8080@{stream.getHierarchy()}/data?since="+chartLastGet["@{stream.id}"]+"&key=@{stream.getKey()}"
 						$.getJSON(url, function(update) {
 							if (update) {
-								console.log("Get: "+url);
+								//console.log("Get: "+url);
 								$.each(update, function (i, item) {
-									console.log("add new data point: "+item.timestamp+" to Stream "+@{stream.id});
+									//console.log("add new data point: "+item.timestamp+" to Stream "+@{stream.id});
 									series.addPoint([item.timestamp, item.value]);
 									if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
 								});
 							}
-						}) } , 10000);
-			*/
+						}) } , 30000);
 				}
 			}
 		},
@@ -120,7 +118,7 @@ chartOptions["@{stream.id}"]=options;
 // Perform initial loading of the chart, note the time of GET
 $.ajax({
   dataType: "json",
-	url: "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey,
+	url: "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&key=@{stream.getKey()}",
 	timeout: 3000,
   success: function(data, textStatus, jqXHR) {
 		//console.log("Ajax:"+textStatus);

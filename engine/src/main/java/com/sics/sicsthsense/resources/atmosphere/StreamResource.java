@@ -93,7 +93,7 @@ public class StreamResource {
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
-		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		return streams;
@@ -108,7 +108,7 @@ public class StreamResource {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			storage.findStreamById(streamId);
 		Utils.checkHierarchy(user,resource,stream);
-		if (user==null || !key.equals(user.getToken())) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		// add back in the antecedents
 		List<Long> antecedents = storage.findAntecedents(streamId);
@@ -147,7 +147,7 @@ public class StreamResource {
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
-		if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 		long streamId=-1;
 
 		// initialise the stream correctly
