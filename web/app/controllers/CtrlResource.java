@@ -79,12 +79,14 @@ public class CtrlResource extends Controller {
 		try {
 			theForm = resourceForm.bindFromRequest();
 		} catch (Exception e) {
+			Logger.error("addSimple() Form has errors");
 			return badRequest("Bad parsing of form");
 		}
 
 		// validate form
 		if (theForm.hasErrors()) {
-			return badRequest("Bad request");
+			Logger.error("addSimple() Form has errors: "+theForm);
+			return badRequest("Bad request: Form has errors:"+theForm);
 		} else {
 			Resource submitted = theForm.get();
 			Logger.info("preurl"+submitted.getPollingUrl());

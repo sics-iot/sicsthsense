@@ -195,10 +195,15 @@ public class ResourceResource {
 	}
 	@GET
 	@Path("/{resourceId}/rebuild")
-	public void rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
+	public String rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
+		if (resource==null) {
+			logger.error("Resource name does not exist for rebuild: "+resourceName);
+			return "Error: resource name does not exist";
+		}
 		pollSystem.rebuildResourcePoller(resource.getId());
 		logger.info("Rebuilt resource: "+resourceName);
+		return "rebuild";
 	}
 
 	// Post data to the resource, and run data through its parsers

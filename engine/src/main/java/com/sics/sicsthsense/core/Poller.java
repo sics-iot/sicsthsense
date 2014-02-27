@@ -97,6 +97,7 @@ public class Poller extends UntypedActor {
  
 	@Override
   public void onReceive(Object message) throws Exception {
+		//logger.info("Received String message: to probe: {}");
     if (message instanceof String) {
 			if (message.equals("rebuild")) {
 				rebuild();
@@ -106,15 +107,15 @@ public class Poller extends UntypedActor {
 
 				HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();
 				con.setRequestMethod("GET"); // optional default is GET
+				con.setInstanceFollowRedirects(true);
 				con.setRequestProperty("User-Agent", "SICSthSense"); //add request header
 		 
 				try {
 					int responseCode = con.getResponseCode();
-					//logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
+					logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
 			 
 					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 					StringBuffer response = new StringBuffer();
-
 					while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 					in.close();
 			 
@@ -122,7 +123,7 @@ public class Poller extends UntypedActor {
 					//System.out.println(response.toString());
 					applyParsers(response.toString());
 				} catch (Exception e) {
-					//logger.error("Network problem: "+e+" URL: "+url);
+					logger.error("Network problem: "+e+" URL: "+url);
 				}
 			}
     } else {

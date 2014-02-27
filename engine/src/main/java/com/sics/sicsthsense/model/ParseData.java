@@ -77,11 +77,11 @@ public class ParseData {
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
-			//logger.info("Applying JSON Parser to JSON data");
+			logger.info("Applying JSON Parser to JSON data");
 			JsonNode rootNode = PollSystem.getInstance().mapper.readTree(data);
 			parseJsonResponse(parser, rootNode, currentTime);
 		} else {
-			//logger.info("Applying Parser to text data");
+			logger.info("Applying Text Parser to text data");
 			parseTextResponse(parser, data, currentTime);
 		}
 	}
@@ -138,7 +138,7 @@ public class ParseData {
 	 */
 	private boolean parseTextResponse(Parser parser, String textBody, Long currentTime)
 					throws NumberFormatException, Exception {
-			//logger.info("parsing Text");
+			logger.info("parsing Text");
 			Stream stream = storage.findStreamById(parser.getStream_id());
 			boolean success = false;
 			// try {
@@ -150,28 +150,25 @@ public class ParseData {
 				Matcher matcher = regexPattern.matcher(textBody);
 				for (int i = 0; (i < parser.getNumber_of_points() || parser.getNumber_of_points() < 1) && textBody != null
 								&& matcher.find(); i++) {
-					/*
 						// try to match value from the group called :value: otherwise, use the first
 						// matching group
-						try { value = matcher.group("value");
-						} catch (IllegalArgumentException iae) {
+						//try { value = matcher.group("value");
+						//} catch (IllegalArgumentException iae) {
 							//logger.error("Illegal Argument Exception");
 							try { value = matcher.group(parser.getData_group()); } 
 							catch (IndexOutOfBoundsException iob) { value = matcher.group(1); }
-						} */
-						value = matcher.group(parser.getData_group());
+						//}
 						number = Double.parseDouble(value);
 
-						/*
 						// try to match time from the group called :time: otherwise, use the second matching
 						// group
-						try { time = matcher.group("time");
-						} catch (IllegalArgumentException iae) {
+						//try { time = matcher.group("time");
+						//} catch (IllegalArgumentException iae) {
 							//logger.error("Illegal Argument Exception");
 							try { time = matcher.group(parser.getTime_group()); } 
 							catch (IndexOutOfBoundsException iob) { time = null; }
-						}	*/
-						time = matcher.group(parser.getTime_group());
+						//}
+						//time = matcher.group(parser.getTime_group());
 
 						// if there is a match for time, parse it; otherwise, use the system time (provided
 						// in the parameter currentTime)
@@ -186,13 +183,15 @@ public class ParseData {
 								}
 						}
 				}
-				//logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
+				logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
 				storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+				storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 				stream.notifyDependents();
 			} else {
 					number = Double.parseDouble(textBody);
 					//success |= stream.post(number, currentTime);
 					storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 					stream.notifyDependents();
 			}
 			return success;

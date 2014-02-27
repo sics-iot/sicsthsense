@@ -82,7 +82,7 @@ public class Resource extends Operator {
     public Resource parent = null;
     // if parent is not null, pollingUrl should be a subpath under parent
     // never use field access. Always use getter...
-    private String pollingUrl = "";
+    public String pollingUrl = "";
     public String pollingAuthenticationKey = null;
     public String description = "";
 
@@ -165,7 +165,7 @@ public class Resource extends Operator {
 				pollingUrl = pollingUrl.substring(0, pollingUrl.length() - 1);
 			}
 			this.pollingUrl = pollingUrl;
-			rebuildEngineResource(this.owner.getId(), this.id);
+			//rebuildEngineResource(this.owner.getId(), this.id);
     }
 
     /** Call to create, or update an access token */
