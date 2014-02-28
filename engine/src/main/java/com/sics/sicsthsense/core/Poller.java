@@ -82,6 +82,7 @@ public class Poller extends UntypedActor {
 			urlobj = new URL(url);
 		} catch (Exception e) {
 			//logger.error("Bad url: "+e);
+			return;
 		}
 		parsers = storage.findParsersByResourceId(resourceId);
 	}
@@ -108,7 +109,7 @@ public class Poller extends UntypedActor {
 			} else { // "probe"
 				//logger.info("Received String message: to probe: {}", url);
 				//getSender().tell(message, getSelf());
-
+				if (urlobj==null) {return;}
 				HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();
 				con.setRequestMethod("GET"); // optional default is GET
 				con.setInstanceFollowRedirects(true);
