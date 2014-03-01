@@ -495,6 +495,8 @@ public class Resource extends Operator {
 				 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				 while ((line = rd.readLine()) != null) { result += line; }
 				 rd.close();
+			} catch (java.net.ConnectException e) {
+				logger.error("SicsthSense Engine server seems uncontactable!");
 			} catch (IOException e) {
 				 e.printStackTrace();
 			} catch (Exception e) {
