@@ -55,6 +55,130 @@
 	</div>	
 @if(displayOverview || displayPlot){
 
+
+
+
+
+<!--Load the AJAX API-->
+<!--
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+      google.load('visualization', '1.1', {packages: ['corechart', 'controls']});
+    </script>
+    <script type="text/javascript">
+      function drawVisualization() {
+        var dashboard = new google.visualization.Dashboard(
+             document.getElementById('dashboard'));
+      
+         var control = new google.visualization.ControlWrapper({
+           'controlType': 'ChartRangeFilter',
+           'containerId': 'control',
+           'options': {
+             // Filter by the date axis.
+             'filterColumnIndex': 0,
+             'ui': {
+               'chartType': 'LineChart',
+               'chartOptions': {
+                 'chartArea': {'width': '90%'},
+                 'hAxis': {'baselineColor': 'none'}
+               },
+               // Display a single series that shows the closing value of the stock.
+               // Thus, this view has two columns: the date (axis) and the stock value (line series).
+               'chartView': {
+                 'columns': [0, 1]
+               },
+               // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+               'minRangeSize': 86400000
+             }
+           },
+           // Initial range: 2012-02-09 to 2012-03-20.
+           'state': {'range': {'start': new Date(2012, 1, 9), 'end': new Date(2012, 2, 20)}}
+         });
+      
+         var chart = new google.visualization.ChartWrapper({
+           'chartType': 'LineChart',
+           'containerId': 'chart',
+           'options': {
+             // Use the same chart area width as the control for axis alignment.
+             'chartArea': {'height': '80%', 'width': '90%'},
+             'hAxis': {'slantedText': false},
+             'vAxis': {'viewWindow': {'min': 0, 'max': 10}},
+             'legend': {'position': 'none'}
+           },
+           // Convert the first column from 'date' to 'string'.
+           'view': {
+             'columns': [
+               {
+                 'calc': function(dataTable, rowIndex) {
+                   return dataTable.getFormattedValue(rowIndex, 0);
+                 },
+                 'type': 'string'
+               }, 1]
+           }
+         });
+$.ajax({
+  dataType: "json",
+	url: "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&key=@{stream.getKey()}",
+	timeout: 3000,
+  success: function(d, textStatus, jqXHR) {
+		//console.log("Ajax:"+textStatus);
+		if (d) {
+			//console.log("got json!" +data);
+			$.each(d, function (i, item) {
+				console.log("add initial data point: "+item.timestamp);
+        dat.addRow([new Date(item.timestamp/1000),item.value]);
+				//chartOptions["@{stream.id}"].series[0].data.push([item.timestamp,item.value]); 
+//				if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
+				//if (chartMinValue["@{stream.id}"]==null || item.value<chartMinValue["@{stream.id}"]) { chartOptions["@{stream.id}"].yAxis.min=item.value*0.99; }
+			});
+			
+			//console.log(options);
+//			$('#chart-@{stream.id}').highcharts('StockChart', chartOptions["@{stream.id}"]);
+		}
+	},
+	error: function(xhr, status, error) {
+		var errorMessage = exception || xhr.statusText;
+		console.log("Got an AJAX JSON GETing "+ "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&"+streamKey+" error:"+errorMessage);
+		$('#chart-@{stream.id}').hide();
+	}
+});
+      
+         var data = new google.visualization.DataTable();
+         data.addColumn('datetime', 'Date');
+         data.addColumn('number', 'Stock low');
+      
+/*
+         // Create random stock values, just like it works in reality.
+         var open, close = 300;
+         var low, high;
+         for (var day = 1; day < 121; ++day) {
+           var change = (Math.sin(day / 2.5 + Math.PI) + Math.sin(day / 3) - Math.cos(day * 0.7)) * 150;
+           change = change >= 0 ? change + 10 : change - 10;
+           open = close;
+           close = Math.max(50, open + change);
+           low = Math.min(open, close) - (Math.cos(day * 1.7) + 1) * 15;
+           low = Math.max(0, low);
+           var date = new Date(2012, 0 ,day);
+           data.addRow([date, Math.round(low)]);
+         }
+  */    
+         dashboard.bind(control, chart);
+         dashboard.draw(data);
+      }
+      
+
+      google.setOnLoadCallback(drawVisualization);
+
+</script>
+    <div id="dashboard">
+        <div id="chart" style='width: 800px; height: 200px;'></div>
+        <div id="control" style='width: 800px; height: 50px;'></div>
+    </div>
+		-->
+
+
+
 <div id="chart-@{stream.id}" style="height: 270px; min-width: 500px"></div>
 <script>
 	var host = document.location.hostname;
