@@ -77,11 +77,11 @@ public class ParseData {
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
-			logger.info("Applying JSON Parser to JSON data");
+			//logger.info("Applying JSON Parser to JSON data");
 			JsonNode rootNode = PollSystem.getInstance().mapper.readTree(data);
 			parseJsonResponse(parser, rootNode, currentTime);
 		} else {
-			logger.info("Applying Text Parser to text data");
+			//logger.info("Applying Text Parser to text data");
 			parseTextResponse(parser, data, currentTime);
 		}
 	}
@@ -94,7 +94,7 @@ public class ParseData {
 			// TODO check concat path against inputParser, get the goal and stop
 			// TODO (linear time) form a list of nested path elements from the gui, and
 			if (root == null) { logger.error("JSON Root is null"); return false; }
-			logger.info("node:"+root.getValueAsText() );
+			//logger.info("node:"+root.getValueAsText() );
 			String[] levels = parser.getInput_parser().split("/");
 			Stream stream = storage.findStreamById(parser.getStream_id());
 			JsonNode node = root;
@@ -141,59 +141,48 @@ public class ParseData {
 			logger.info("parsing Text");
 			Stream stream = storage.findStreamById(parser.getStream_id());
 			boolean success = false;
-			// try {
 			double number = 0.0;
 			String value = "";
 			String time = "";
-			if (parser.getInput_parser() != null && !parser.getInput_parser().equalsIgnoreCase("")) {
-				regexPattern = Pattern.compile(parser.getInput_parser());
-				Matcher matcher = regexPattern.matcher(textBody);
-				for (int i = 0; (i < parser.getNumber_of_points() || parser.getNumber_of_points() < 1) && textBody != null
-								&& matcher.find(); i++) {
-						// try to match value from the group called :value: otherwise, use the first
-						// matching group
-						//try { value = matcher.group("value");
-						//} catch (IllegalArgumentException iae) {
-							//logger.error("Illegal Argument Exception");
-							try { value = matcher.group(parser.getData_group()); } 
-							catch (IndexOutOfBoundsException iob) { value = matcher.group(1); }
-						//}
-						number = Double.parseDouble(value);
-
-						// try to match time from the group called :time: otherwise, use the second matching
-						// group
-						//try { time = matcher.group("time");
-						//} catch (IllegalArgumentException iae) {
-							//logger.error("Illegal Argument Exception");
-							try { time = matcher.group(parser.getTime_group()); } 
-							catch (IndexOutOfBoundsException iob) { time = null; }
-						//}
-						//time = matcher.group(parser.getTime_group());
-
-						// if there is a match for time, parse it; otherwise, use the system time (provided
-						// in the parameter currentTime)
-						if (time != null) {
-								if (parser.getTimeformat() != null && !"".equalsIgnoreCase(parser.getTimeformat())
-												&& !"unix".equalsIgnoreCase(parser.getTimeformat())) {
-										// inputParser REGEX should match the whole date/time string! It is
-										// not enough to provide the time format only!
-										currentTime = parseDateTime(time, parser.getTimeformat());
-								} else {
-										currentTime = Long.parseLong(time);
-								}
-						}
-				}
-				logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
+			if (textBody==null) {return false;}
+			if (parser.getInput_parser() == null || parser.getInput_parser().equalsIgnoreCase("")) {
+				// no parser to speak of just try and eat a number
+				number = Double.parseDouble(textBody);
 				storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
 				storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 				stream.notifyDependents();
-			} else {
-					number = Double.parseDouble(textBody);
-					//success |= stream.post(number, currentTime);
+				return true;
+			}
+
+			if (parser.getNumber_of_points() < 1) {return false;} // apparently, we dont want any points
+			regexPattern = Pattern.compile(parser.getInput_parser());
+			Matcher matcher = regexPattern.matcher(textBody);
+			if (!matcher.find()) { logger.info("Did not manage to match the regex for parser: "+parser.getId()); return false; }
+
+			for (int i = 0; i < parser.getNumber_of_points(); i++) {
+					try { value = matcher.group(parser.getData_group()); } 
+					catch (IndexOutOfBoundsException iob) { continue; }
+					number = Double.parseDouble(value);
+
+					try { time = matcher.group(parser.getTime_group()); } 
+					catch (IndexOutOfBoundsException iob) { time = null; }
+
+					// if there is a match for time, parse it; otherwise, use the system time (provided in the param  currentTime)
+					if (time != null) {
+							if (parser.getTimeformat() != null && !"".equalsIgnoreCase(parser.getTimeformat())
+											&& !"unix".equalsIgnoreCase(parser.getTimeformat())) {
+									// inputParser REGEX should match the whole date/time string! It is
+									// not enough to provide the time format only!
+									currentTime = parseDateTime(time, parser.getTimeformat());
+							} else {
+									currentTime = Long.parseLong(time);
+							}
+					}
+					logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
 					storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 					stream.notifyDependents();
-			}
+				}
 			return success;
 	}
 
