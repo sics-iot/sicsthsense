@@ -124,6 +124,7 @@ public class StreamResource {
 
 		// and triggers
 		stream.triggers = storage.findTriggersByStreamId(streamId);
+		stream.setLabel(storage.findPathByStreamId(streamId));
 
 		return stream;
 	}
