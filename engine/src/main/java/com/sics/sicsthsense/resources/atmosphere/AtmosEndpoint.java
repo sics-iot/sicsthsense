@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.cpr.Broadcaster;

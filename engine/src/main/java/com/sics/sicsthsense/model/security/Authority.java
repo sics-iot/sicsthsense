@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.model.security;
+package se.sics.sicsthsense.model.security;
 /**
  * <p>Enumeration to provide the following to application:</p>
  * <ul>

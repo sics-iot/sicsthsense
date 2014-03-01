@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 public class Message {
     private final long id;

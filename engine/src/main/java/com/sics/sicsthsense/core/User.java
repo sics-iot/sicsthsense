@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.Set;
 import java.util.UUID;
@@ -46,8 +46,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
-import com.sics.sicsthsense.model.openid.DiscoveryInformationMemento;
-import com.sics.sicsthsense.model.security.*;
+import se.sics.sicsthsense.model.openid.DiscoveryInformationMemento;
+import se.sics.sicsthsense.model.security.*;
 
 
 /**

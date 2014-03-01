@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.cpr.Broadcaster;
@@ -60,11 +60,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.*;
 import org.codehaus.jackson.JsonNode;
 
-import com.sics.sicsthsense.Utils;
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.auth.annotation.RestrictedTo;
-import com.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.Utils;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.auth.annotation.RestrictedTo;
+import se.sics.sicsthsense.model.security.Authority;
 
 @Path("/{userId}/resources/{resourceId}/streams")
 @Produces(MediaType.APPLICATION_JSON)

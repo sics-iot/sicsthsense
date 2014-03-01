@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.List;
 import java.io.BufferedReader;
@@ -44,9 +44,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.DeserializationConfig;
-import com.sics.sicsthsense.core.Parser;
-import com.sics.sicsthsense.model.ParseData;
-import com.sics.sicsthsense.jdbi.StorageDAO;
+import se.sics.sicsthsense.core.Parser;
+import se.sics.sicsthsense.model.ParseData;
+import se.sics.sicsthsense.jdbi.StorageDAO;
  
 public class Poller extends UntypedActor {
 	private final Logger logger = LoggerFactory.getLogger(Poller.class);

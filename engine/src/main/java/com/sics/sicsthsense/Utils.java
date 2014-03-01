@@ -22,7 +22,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-package com.sics.sicsthsense;
+package se.sics.sicsthsense;
 
 import java.util.UUID;
 import java.net.URI;
@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import com.sics.sicsthsense.resources.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.auth.*;
-import com.sics.sicsthsense.model.*;
-import com.sics.sicsthsense.auth.openid.*;
-import com.sics.sicsthsense.model.security.*;
+import se.sics.sicsthsense.resources.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.auth.*;
+import se.sics.sicsthsense.model.*;
+import se.sics.sicsthsense.auth.openid.*;
+import se.sics.sicsthsense.model.security.*;
 
 public class Utils {
 

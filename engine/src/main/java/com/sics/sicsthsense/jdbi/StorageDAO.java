@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.jdbi;
+package se.sics.sicsthsense.jdbi;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.*;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
 
-import com.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.core.*;
 
 public interface StorageDAO {
 

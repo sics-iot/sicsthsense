@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;

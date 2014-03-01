@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth.openid;
+package se.sics.sicsthsense.auth.openid;
 
 import java.util.UUID;
 
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 
-import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.core.InMemoryUserCache;
+import se.sics.sicsthsense.core.User;
 
 /**
  * <p>Authenticator to provide the following to application:</p>

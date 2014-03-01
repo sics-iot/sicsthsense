@@ -27,7 +27,7 @@
  * contains the Parsers and Streams of the associated Resource. 
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 import java.util.List;
 import java.util.Iterator;
@@ -55,13 +55,13 @@ import com.yammer.dropwizard.auth.Auth;
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.annotation.Suspend;
 
-import com.sics.sicsthsense.Utils;
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.model.*;
-import com.sics.sicsthsense.auth.*;
-import com.sics.sicsthsense.auth.annotation.RestrictedTo;
-import com.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.Utils;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.model.*;
+import se.sics.sicsthsense.auth.*;
+import se.sics.sicsthsense.auth.annotation.RestrictedTo;
+import se.sics.sicsthsense.model.security.Authority;
 
 // publicly reachable path of the resource
 @Path("/{userId}/resources")

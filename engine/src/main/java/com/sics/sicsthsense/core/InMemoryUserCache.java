@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.Map;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.core.User;
 
 /**
  * <p>Cache to provide the following to {@link User} authenticators:</p>

@@ -1,4 +1,4 @@
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 /**
  * Created with IntelliJ IDEA.

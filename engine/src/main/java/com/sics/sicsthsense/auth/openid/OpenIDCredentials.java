@@ -2,11 +2,11 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth.openid;
+package se.sics.sicsthsense.auth.openid;
 
 
 import com.google.common.base.Objects;
-import com.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.model.security.Authority;
 
 import java.util.Set;
 import java.util.UUID;

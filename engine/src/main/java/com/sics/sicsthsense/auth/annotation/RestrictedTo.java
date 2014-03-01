@@ -2,9 +2,9 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth.annotation;
+package se.sics.sicsthsense.auth.annotation;
 
-import com.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.model.security.Authority;
 
 import java.lang.annotation.*;
 

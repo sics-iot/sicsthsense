@@ -26,13 +26,13 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core.functions;
+package se.sics.sicsthsense.core.functions;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

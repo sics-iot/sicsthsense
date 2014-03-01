@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package se.sics.sicsthsense.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -39,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.metrics.annotation.Timed;
 
-import com.sics.sicsthsense.model.BaseModel;
-import com.sics.sicsthsense.views.PublicFreemarkerView;
+import se.sics.sicsthsense.model.BaseModel;
+import se.sics.sicsthsense.views.PublicFreemarkerView;
 
 /**
  * <p>Resource to provide the following to application:</p>

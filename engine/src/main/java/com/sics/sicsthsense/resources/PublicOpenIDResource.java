@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources;
+package se.sics.sicsthsense.resources;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,13 +63,13 @@ import org.slf4j.LoggerFactory;
 
 import com.yammer.dropwizard.views.View;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.model.*;
-import com.sics.sicsthsense.model.security.*;
-import com.sics.sicsthsense.EngineConfiguration;
-import com.sics.sicsthsense.model.openid.DiscoveryInformationMemento;
-import com.sics.sicsthsense.views.PublicFreemarkerView;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.model.*;
+import se.sics.sicsthsense.model.security.*;
+import se.sics.sicsthsense.EngineConfiguration;
+import se.sics.sicsthsense.model.openid.DiscoveryInformationMemento;
+import se.sics.sicsthsense.views.PublicFreemarkerView;
 
 /**
  * <p>Resource to provide the following to application:</p>

@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.Date;
 import java.util.Locale;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.jdbi.*;
 
 public class Parser {
 	private final Logger logger = LoggerFactory.getLogger(Parser.class);

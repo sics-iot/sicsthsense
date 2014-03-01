@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.model;
+package se.sics.sicsthsense.model;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -12,9 +12,9 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sics.sicsthsense.EngineConfiguration;
-import com.sics.sicsthsense.core.InMemoryUserCache;
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.EngineConfiguration;
+import se.sics.sicsthsense.core.InMemoryUserCache;
+import se.sics.sicsthsense.core.User;
 
 /**
  * <p>Builder to provide the following to resources:</p>

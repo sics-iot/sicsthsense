@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth.openid;
+package se.sics.sicsthsense.auth.openid;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -12,9 +12,9 @@ import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.sics.sicsthsense.model.security.Authority;
-import com.sics.sicsthsense.model.security.Authority;
-import com.sics.sicsthsense.EngineConfiguration;
+import se.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.EngineConfiguration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Cookie;
@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 
 // bad behaviour!
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.core.User;
 
 /**
  * <p>Injectable to provide the following to {@link OpenIDRestrictedToProvider}:</p>

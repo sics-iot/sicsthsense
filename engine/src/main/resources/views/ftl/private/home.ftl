@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="com.sics.sicsthsense.PublicFreemarkerView" -->
+<#-- @ftlvariable name="" type="se.sics.sicsthsense.PublicFreemarkerView" -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

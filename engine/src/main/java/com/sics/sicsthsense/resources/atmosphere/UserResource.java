@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.Date;
@@ -55,8 +55,8 @@ import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)

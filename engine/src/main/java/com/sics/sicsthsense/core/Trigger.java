@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.UUID;
 import java.util.List;
@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.functions.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.functions.*;
 
 public class Trigger {
 	@JsonProperty

@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.List;
 import java.util.Map;
@@ -46,8 +46,8 @@ import akka.actor.Cancellable;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.StorageDAO;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.StorageDAO;
  
 public class PollSystem {
 	private static PollSystem singleton;

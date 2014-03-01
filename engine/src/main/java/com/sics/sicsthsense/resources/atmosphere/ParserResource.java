@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,10 +51,10 @@ import com.yammer.dropwizard.auth.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.auth.annotation.RestrictedTo;
-import com.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.auth.annotation.RestrictedTo;
+import se.sics.sicsthsense.model.security.Authority;
 
 @Path("/{userId}/resources/{resourceId}/parsers")
 @Produces(MediaType.APPLICATION_JSON)

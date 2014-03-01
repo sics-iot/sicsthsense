@@ -2,14 +2,14 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.model;
+package se.sics.sicsthsense.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 import org.pegdown.PegDownProcessor;
 
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.core.User;
 
 import java.io.IOException;
 import java.net.URL;

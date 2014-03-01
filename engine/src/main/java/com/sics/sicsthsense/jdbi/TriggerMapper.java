@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.jdbi;
+package se.sics.sicsthsense.jdbi;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,7 +37,7 @@ import org.skife.jdbi.v2.tweak.*;
 
 import com.yammer.dropwizard.jdbi.*;
 
-import com.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.core.*;
 
 public class TriggerMapper implements ResultSetMapper<Trigger> {
 	public Trigger map(int index, ResultSet r, StatementContext ctx) throws SQLException {

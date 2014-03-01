@@ -2,12 +2,12 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.views;
+package se.sics.sicsthsense.views;
 
 import com.yammer.dropwizard.views.View;
 
-import com.sics.sicsthsense.model.BaseModel;
-import com.sics.sicsthsense.core.User;
+import se.sics.sicsthsense.model.BaseModel;
+import se.sics.sicsthsense.core.User;
 
 /**
  * <p>View to provide the following to resources:</p>

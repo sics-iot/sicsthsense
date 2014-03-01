@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.core;
+package se.sics.sicsthsense.core;
 
 import java.util.UUID;
 import java.util.List;
@@ -38,8 +38,8 @@ import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 //import org.codehaus.jackson.map.annotate.JsonDeserialise;
 
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.functions.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.functions.*;
 
 public class Stream {
 	@JsonProperty

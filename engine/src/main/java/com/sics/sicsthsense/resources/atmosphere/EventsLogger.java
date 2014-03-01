@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 //package org.atmosphere.samples.pubsub;
 
 import org.atmosphere.cpr.AtmosphereResourceEvent;

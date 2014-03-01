@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.resources.atmosphere;
+package se.sics.sicsthsense.resources.atmosphere;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,8 +47,8 @@ import org.pegdown.PegDownProcessor;
 import java.io.IOException;
 import java.net.URL;
 
-import com.sics.sicsthsense.model.BaseModel;
-import com.sics.sicsthsense.views.PublicFreemarkerView;
+import se.sics.sicsthsense.model.BaseModel;
+import se.sics.sicsthsense.views.PublicFreemarkerView;
 
 /**
  *

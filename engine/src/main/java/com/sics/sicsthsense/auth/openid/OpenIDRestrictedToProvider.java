@@ -2,7 +2,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth.openid;
+package se.sics.sicsthsense.auth.openid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 import com.yammer.dropwizard.auth.Authenticator;
 
-import com.sics.sicsthsense.auth.annotation.RestrictedTo;
+import se.sics.sicsthsense.auth.annotation.RestrictedTo;
 
 /**
  * <p>Authentication provider to provide the following to Jersey:</p>

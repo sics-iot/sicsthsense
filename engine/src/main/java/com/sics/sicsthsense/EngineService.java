@@ -22,7 +22,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
-package com.sics.sicsthsense;
+package se.sics.sicsthsense;
 
 import java.util.UUID;
 
@@ -60,12 +60,12 @@ import akka.actor.Cancellable;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
-import com.sics.sicsthsense.resources.*;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.auth.*;
-import com.sics.sicsthsense.auth.openid.*;
-import com.sics.sicsthsense.model.security.*;
+import se.sics.sicsthsense.resources.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.auth.*;
+import se.sics.sicsthsense.auth.openid.*;
+import se.sics.sicsthsense.model.security.*;
 
 public class EngineService extends Service<EngineConfiguration> {
 	private final Logger logger = LoggerFactory.getLogger(EngineService.class);
@@ -88,7 +88,7 @@ public class EngineService extends Service<EngineConfiguration> {
 
 	public void addServlet(Environment environment) {
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "com.sics.sicsthsense.resources.atmosphere");
+		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "se.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");

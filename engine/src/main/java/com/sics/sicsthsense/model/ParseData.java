@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.model;
+package se.sics.sicsthsense.model;
 
 import java.util.Date;
 import java.util.Locale;
@@ -47,10 +47,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
-import com.sics.sicsthsense.Utils;
-import com.sics.sicsthsense.jdbi.*;
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.resources.atmosphere.*;
+import se.sics.sicsthsense.Utils;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.resources.atmosphere.*;
 
 public class ParseData {
 	private final Logger logger = LoggerFactory.getLogger(ParseData.class);

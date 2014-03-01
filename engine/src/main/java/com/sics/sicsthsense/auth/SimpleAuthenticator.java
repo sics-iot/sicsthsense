@@ -26,7 +26,7 @@
 /* Description:
  * TODO:
  * */
-package com.sics.sicsthsense.auth;
+package se.sics.sicsthsense.auth;
 
 import com.google.common.base.Optional;
 
@@ -36,8 +36,8 @@ import com.yammer.dropwizard.auth.basic.BasicCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sics.sicsthsense.core.*;
-import com.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
 
 public class SimpleAuthenticator implements Authenticator<BasicCredentials, User> {
 		private final StorageDAO storage;
