@@ -124,7 +124,7 @@ public class ResourceResource {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 		User user = storage.findUserById(userId);
-		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
+		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 		/*
 		if (!resource.isReadable(visitor)) {
@@ -142,7 +142,7 @@ public class ResourceResource {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		Utils.checkHierarchy(userId);
 		User user = storage.findUserById(userId);
-		if (user==null || key==null) {throw new WebApplicationException(Status.NOT_FOUND);}
+		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		resource.setOwner_id(userId); // should know the owner
