@@ -226,7 +226,7 @@ public interface StorageDAO {
 
 
 	// VFiles
-  @SqlQuery("select path from vfiles where linked_stream_id = :stream_id")
+  @SqlQuery("select path from vfiles where linked_stream_id = :stream_id limit 1")
 	String findPathByStreamId(@Bind("stream_id") long stream_id);
 
   @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (:path, :owner_id, :type, :linked_stream_id )")

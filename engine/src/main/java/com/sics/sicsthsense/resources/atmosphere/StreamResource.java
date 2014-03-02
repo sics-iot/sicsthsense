@@ -96,6 +96,10 @@ public class StreamResource {
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
 
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
+		for (Stream stream: streams) {
+			stream.triggers = storage.findTriggersByStreamId(stream.getId());
+			stream.setLabel(storage.findPathByStreamId(stream.getId()));
+		}
 		return streams;
 	}
 
