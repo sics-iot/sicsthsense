@@ -158,6 +158,17 @@ public interface StorageDAO {
 	@Mapper(StreamMapper.class)
   Stream findStreamById(@Bind("id") long id);
 
+  @SqlQuery("select streams.id from streams inner join vfiles on vfiles.linked_stream_id=streams.id where vfiles.path=':name'")
+  long findStreamIdByName(@Bind("name") String name);
+
+  @SqlQuery("select * from streams inner join vfiles on vfiles.linked_stream_id=streams.id where vfiles.path=':name'")
+	@Mapper(StreamMapper.class)
+  Stream findStreamByName(@Bind("name") String name);
+
+  @SqlQuery("select * from streams inner join vfiles on vfiles.linked_stream_id=streams.id where vfiles.path=':name'")
+	@Mapper(StreamMapper.class)
+  Stream findStreamByName(@Bind("name") String name, @Bind("userId") long userId);
+
   @SqlQuery("select id from streams where resource_id = :resource_id and secret_key = :secret_key limit 1")
   long findStreamId(@Bind("resource_id") long id, @Bind("secret_key") String secret_key);
 
@@ -228,6 +239,9 @@ public interface StorageDAO {
 	// VFiles
   @SqlQuery("select path from vfiles where linked_stream_id = :stream_id limit 1")
 	String findPathByStreamId(@Bind("stream_id") long stream_id);
+
+  @SqlQuery("select linked_stream_id from vfiles where path = :path limit 1")
+	long findStreamIdByPath(@Bind("path") String path);
 
   @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (:path, :owner_id, :type, :linked_stream_id )")
   void insertVFile(

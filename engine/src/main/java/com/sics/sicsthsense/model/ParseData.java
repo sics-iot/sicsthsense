@@ -138,7 +138,7 @@ public class ParseData {
 	 */
 	private boolean parseTextResponse(Parser parser, String textBody, Long currentTime)
 					throws NumberFormatException, Exception {
-			logger.info("parsing Text");
+			//logger.info("Parsing Text");
 			Stream stream = storage.findStreamById(parser.getStream_id());
 			boolean success = false;
 			double number = 0.0;

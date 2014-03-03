@@ -93,6 +93,37 @@ public class Utils {
 		return resource;
 	}
 
+	public static Stream findStreamByIdName(String streamName) {
+		return findStreamByIdName(streamName, -1);
+	}
+	// return a resource after searching for its ID or URL-encoded name
+	public static Stream findStreamByIdName(String streamName, long userId) {
+		final StorageDAO storage = DAOFactory.getInstance();
+		final Logger logger = LoggerFactory.getLogger(Utils.class);
+		Stream stream = null;
+		logger.error("finding stream: "+streamName);
+
+		try { // see if we can turn the Name into an Id, and if that Id exists in the DB
+			stream = storage.findStreamById(Long.parseLong(streamName));
+		} catch (NumberFormatException e) { 
+			logger.error("could not long() stream: "+streamName);
+			stream=null; 
+		}
+		
+		if (stream==null) { // treat the Name as a stream label
+			try {
+				final String name = new URI(streamName).toString();
+				logger.error("finding stream name: "+name);
+				final long streamId = storage.findStreamIdByPath(name); 
+				if (streamId==0) {logger.error("name lookup failed!");}
+				stream = storage.findStreamById(streamId);
+			} catch (java.net.URISyntaxException e) {
+				logger.error("Can't turn URL-encoded stream label into valid String: "+e);
+			}
+		}	
+		return stream;
+	}
+
 	// add a resource 
 	public static long insertResource(Resource resource) {
 		final StorageDAO storage = DAOFactory.getInstance();
@@ -164,6 +195,10 @@ public class Utils {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		checkHierarchy(user, resource);
+		if (stream==null) {
+			logger.error("Stream could not be found!");
+			throw new WebApplicationException(Status.NOT_FOUND);
+		}
 		if (stream.getResource_id() != resource.getId()) {
 			logger.error("Resource "+resource.getId()+" does not own stream "+stream.getId());
 			throw new WebApplicationException(Status.NOT_FOUND);

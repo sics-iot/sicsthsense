@@ -106,16 +106,16 @@ public class StreamResource {
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, @QueryParam("key") @DefaultValue("") String key) {
-		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamId);
+	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") @DefaultValue("") String key) {
+		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamName);
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-		Stream stream =			storage.findStreamById(streamId);
+		Stream stream =			Utils.findStreamByIdName("/"+streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
 		// add back in the antecedents
-		List<Long> antecedents = storage.findAntecedents(streamId);
+		List<Long> antecedents = storage.findAntecedents(stream.getId());
 		for(Long antId: antecedents) {
 			Stream antStream = storage.findStreamById(antId);
 			//logger.info("Antecedent: "+antId);
@@ -127,8 +127,8 @@ public class StreamResource {
 		}
 
 		// and triggers
-		stream.triggers = storage.findTriggersByStreamId(streamId);
-		stream.setLabel(storage.findPathByStreamId(streamId));
+		stream.triggers = storage.findTriggersByStreamId(stream.getId());
+		stream.setLabel(storage.findPathByStreamId(stream.getId()));
 
 		return stream;
 	}
@@ -187,11 +187,11 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
-	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
+	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
 		List<DataPoint> rv; // return value before conversion
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-		Stream stream =			storage.findStreamById(streamId);
+		Stream stream =			Utils.findStreamByIdName("/"+streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!stream.getPublic_access()) { // need to authenticate
 			//logger.warn("Stream isnt public access!");
@@ -204,12 +204,12 @@ public class StreamResource {
 
 		if (from.get() != -1) { // points since FROM
 			if (until.get() != -1) {
-				rv = storage.findPointsByStreamIdSince(streamId, from.get(), until.get());
+				rv = storage.findPointsByStreamIdSince(stream.getId(), from.get(), until.get());
 			} else {
-				rv = storage.findPointsByStreamIdSince(streamId, from.get());
+				rv = storage.findPointsByStreamIdSince(stream.getId(), from.get());
 			}
 		} else { // just get the most recent LIMIT points
-			rv = storage.findPointsByStreamId(streamId, limit.get());
+			rv = storage.findPointsByStreamId(stream.getId(), limit.get());
 			Collections.reverse(rv);
 		}
 
@@ -229,18 +229,17 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") long streamId, DataPoint datapoint, @QueryParam("key") String key) {
+	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-
-		Stream stream =			storage.findStreamById(streamId);
+		Stream stream =			Utils.findStreamByIdName("/"+streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
 			logger.warn("User is not owner and has incorrect key on resource/stream!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
-		logger.info("Inserting data into stream: "+streamId);
-		datapoint.setStreamId(streamId); // keep consistency
+		logger.info("Inserting data into stream: "+streamName);
+		datapoint.setStreamId(stream.getId()); // keep consistency
 		Utils.insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
 		stream.notifyDependents(); // notify all streams that depend on this
