@@ -101,7 +101,7 @@ public class Utils {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		Stream stream = null;
-		logger.error("finding stream: "+streamName);
+		//logger.error("Finding stream: "+streamName);
 
 		try { // see if we can turn the Name into an Id, and if that Id exists in the DB
 			stream = storage.findStreamById(Long.parseLong(streamName));
@@ -113,10 +113,14 @@ public class Utils {
 		if (stream==null) { // treat the Name as a stream label
 			try {
 				final String name = new URI(streamName).toString();
-				logger.error("finding stream name: /"+name);
+				//logger.error("finding stream name: /"+name);
 				final long streamId = storage.findStreamIdByPath("/"+name); 
-				if (streamId==0) {logger.error("name lookup failed!");}
-				stream = storage.findStreamById(streamId);
+				if (streamId==0) {
+					logger.error("Stream Name lookup failed! /"+name);
+					return null;
+				} else{
+					stream = storage.findStreamById(streamId);
+				}
 			} catch (java.net.URISyntaxException e) {
 				logger.error("Can't turn URL-encoded stream label into valid String: "+e);
 			}
