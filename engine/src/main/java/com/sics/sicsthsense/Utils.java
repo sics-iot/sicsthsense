@@ -113,8 +113,8 @@ public class Utils {
 		if (stream==null) { // treat the Name as a stream label
 			try {
 				final String name = new URI(streamName).toString();
-				logger.error("finding stream name: "+name);
-				final long streamId = storage.findStreamIdByPath(name); 
+				logger.error("finding stream name: /"+name);
+				final long streamId = storage.findStreamIdByPath("/"+name); 
 				if (streamId==0) {logger.error("name lookup failed!");}
 				stream = storage.findStreamById(streamId);
 			} catch (java.net.URISyntaxException e) {

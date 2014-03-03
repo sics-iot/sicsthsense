@@ -110,7 +110,7 @@ public class StreamResource {
 		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamName);
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-		Stream stream =			Utils.findStreamByIdName("/"+streamName);
+		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
@@ -191,7 +191,7 @@ public class StreamResource {
 		List<DataPoint> rv; // return value before conversion
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-		Stream stream =			Utils.findStreamByIdName("/"+streamName);
+		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!stream.getPublic_access()) { // need to authenticate
 			//logger.warn("Stream isnt public access!");
@@ -232,7 +232,7 @@ public class StreamResource {
 	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
-		Stream stream =			Utils.findStreamByIdName("/"+streamName);
+		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
 			logger.warn("User is not owner and has incorrect key on resource/stream!");
