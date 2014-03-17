@@ -42,6 +42,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.*;
 import javax.ws.rs.WebApplicationException;
 import javax.validation.Valid;
@@ -55,6 +56,7 @@ import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
 
+import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.*;
 
@@ -73,42 +75,28 @@ public class UserResource {
 
 		@GET
 		@Timed
-		public String listUsers() {
-			return "Can not list users...";
+		public Response listUsers() {
+			return Utils.resp(Status.FORBIDDEN, "Error: Can not list users", logger);
 		}
 
 		@GET
 		@Timed
 		@Path("/{userId}")
-		public User getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
-			System.out.println("getting User!! "+userId);
+		public Response getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
+			//System.out.println("getting User!! "+userId);
 			User user = storage.findUserById(userId);
-			//System.out.println("key "+key);
-			//System.out.println("user key "+user.getToken());
-			if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
-			return user;
+			if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+			return Utils.resp(Status.OK, user, logger);
 		}
 
 		@POST
 		@Timed
-		public User post(User user) throws Exception {
+		public Response post(User user) throws Exception {
 			logger.info("making a new user: "+user.toString());
 
-			if (user.getEmail()==null || user.getEmail()=="") {
-				logger.info("new User email not set!");
-				//return "Error: No user 'email' attribute set!";
-				throw new WebApplicationException(Status.BAD_REQUEST); 
-			}
-			if (storage.findUserByUsername(user.getUsername())!=null) {
-				String errorMsg ="Error: Duplicate username: "+user.getUsername()+"!";
-				logger.error(errorMsg);
-				throw new WebApplicationException(Status.BAD_REQUEST); 
-			}
-			if (storage.findUserByEmail(user.getEmail())!=null) {
-				String errorMsg = "Error: Duplicate email: "+user.getEmail()+"!";
-				logger.error(errorMsg);
-				throw new WebApplicationException(Status.BAD_REQUEST); 
-			}
+			if (user.getEmail()==null || user.getEmail()=="") { return Utils.resp(Status.BAD_REQUEST, "Error: new User email not set!", logger); }
+			if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate username: "+user.getUsername()+"!", logger); }
+			if (storage.findUserByEmail(user.getEmail())!=null) { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate email: "+user.getEmail()+"!", logger); }
 			User newuser = new User();
 
 			newuser.update(user);
@@ -121,13 +109,13 @@ public class UserResource {
 				newuser.getLastName(),
 				newuser.getToken()
 			);
-			return storage.findUserByUsername(newuser.getUsername());
+			return Utils.resp(Status.OK, storage.findUserByUsername(newuser.getUsername()), logger);
 		}
 
 		@PUT
 		@Timed
 		@Path("/{userId}")
-		public User put(@PathParam("userId") long userId, User newuser, @QueryParam("key") String key) throws Exception {
+		public Response put(@PathParam("userId") long userId, User newuser, @QueryParam("key") String key) throws Exception {
 			// should check permissions...
 			User user = storage.findUserById(userId);
 			if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
@@ -141,7 +129,7 @@ public class UserResource {
 				user.getLastName(),
 				user.getEmail()
 			);
-			return user;
+			return Utils.resp(Status.OK, user, logger);
 		}
 
 }

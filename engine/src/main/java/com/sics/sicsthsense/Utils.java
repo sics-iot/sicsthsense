@@ -30,7 +30,9 @@ import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import se.sics.sicsthsense.resources.*;
 import se.sics.sicsthsense.jdbi.*;
@@ -41,6 +43,11 @@ import se.sics.sicsthsense.auth.openid.*;
 import se.sics.sicsthsense.model.security.*;
 
 public class Utils {
+
+	public static Response resp(Response.Status status, Object message, Logger logger) {
+		if (logger!=null && message instanceof String) { logger.info((String)message); }
+		return Response.status(status).entity(message).build();
+	}
 
 	public static void checkHierarchy(long userId) {
 		final StorageDAO storage = DAOFactory.getInstance();
@@ -106,23 +113,21 @@ public class Utils {
 		try { // see if we can turn the Name into an Id, and if that Id exists in the DB
 			stream = storage.findStreamById(Long.parseLong(streamName));
 		} catch (NumberFormatException e) { 
-			logger.error("could not long() stream: "+streamName);
+			//logger.error("could not long() stream: "+streamName);
 			stream=null; 
 		}
 		
 		if (stream==null) { // treat the Name as a stream label
-			try {
-				final String name = new URI(streamName).toString();
-				//logger.error("finding stream name: /"+name);
-				final long streamId = storage.findStreamIdByPath("/"+name); 
-				if (streamId==0) {
-					logger.error("Stream Name lookup failed! /"+name);
-					return null;
-				} else{
-					stream = storage.findStreamById(streamId);
-				}
-			} catch (java.net.URISyntaxException e) {
-				logger.error("Can't turn URL-encoded stream label into valid String: "+e);
+			String name;
+			try { name = new URI(streamName).toString(); } 
+			catch (java.net.URISyntaxException e) { logger.error("Can't turn URL-encoded stream label into valid String: "+e); return null;}
+			//logger.error("finding stream name: /"+name);
+			final long streamId = storage.findStreamIdByPath("/"+name); 
+			if (streamId==0) {
+				logger.error("Stream Name lookup failed! /"+name);
+				return null;
+			} else {
+				stream = storage.findStreamById(streamId);
 			}
 		}	
 		return stream;

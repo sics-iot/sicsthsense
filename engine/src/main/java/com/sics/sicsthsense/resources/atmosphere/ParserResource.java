@@ -43,6 +43,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Optional;
@@ -51,6 +52,7 @@ import com.yammer.dropwizard.auth.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.auth.annotation.RestrictedTo;
@@ -71,28 +73,28 @@ public class ParserResource {
 
 	@GET
 	@Timed
-	public List<Parser> getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+	public Response getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
 		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") @DefaultValue("") String key) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
 			checkHierarchy(userId);
 			List<Parser> parsers = storage.findParsersByResourceId(resourceId);
-			return parsers;
+			return Utils.resp(Status.OK, parsers, logger);
 	}
 
 	@GET
 	@Path("/{parserId}")
 	@Timed
-	public Parser getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
+	public Response getParser( @PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		checkHierarchy(userId);
 		Parser parser = storage.findParserById(parserId);
-		return parser;
+		return Utils.resp(Status.OK, parser, logger);
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public long postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser, @QueryParam("key") @DefaultValue("") String key) {
+	public Response postParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,  Parser parser, @QueryParam("key") @DefaultValue("") String key) {
 		logger.info("Creating parser!:"+parser.toString());
 		checkHierarchy(userId,resourceId);
 		User visitor = new User();
@@ -102,7 +104,7 @@ public class ParserResource {
 		}
 		parser.setResource_id(resourceId);
 		long parserId = insertParser(parser);
-		return parserId;
+		return Utils.resp(Status.OK, parserId, logger);
 	}
 
 	// put updated resource definition 
@@ -110,35 +112,30 @@ public class ParserResource {
 	@Path("/{parserId}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public void putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser, @QueryParam("key") @DefaultValue("") String key) {
+	public Response putParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, Parser parser, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		logger.info("Updating parserId:"+parserId);
 		checkHierarchy(userId,resourceId);
 		if (visitor.getId() != userId) { // only owners
-			logger.error("Not allowed to modify parser: "+parserId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
+			return Utils.resp(Status.FORBIDDEN, "Not allowed to modify parser: "+parserId, logger);
 		}
 		parser.setResource_id(resourceId);
 		updateParser(parserId, parser);
+		return Utils.resp(Status.OK, "Updated Parser", logger);
 	}
 
 	@DELETE
 	@Path("/{parserId}")
 	@Timed
-	public void deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
+	public Response deleteParser(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @PathParam("parserId") long parserId, @QueryParam("key") @DefaultValue("") String key) {
 		User visitor = new User();
 		logger.warn("Deleting parserId:"+parserId);
 		checkHierarchy(userId,resourceId);
 		Parser parser = storage.findParserById(parserId);
-		if (parser==null) {
-			logger.error("No parser to delete: "+parserId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
-		if (visitor.getId() != userId) { // only owners
-			logger.error("Not allowed to delete parser: "+parserId);
-			//throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		if (parser==null) { return Utils.resp(Status.NOT_FOUND, "No parser to delete: "+parserId, logger); }
+		if (visitor.getId() != userId) { return Utils.resp(Status.FORBIDDEN, "No authorised to delete parser: "+parserId, logger); }
 		storage.deleteParser(parserId);
+		return Utils.resp(Status.OK, "Deleted Parser", logger);
 	}
 
 	public void checkHierarchy(long userId) {

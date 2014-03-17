@@ -45,6 +45,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -86,16 +87,16 @@ public class ResourceResource {
 
 	@GET
 	@Timed
-	public List<Resource> getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
-		//User visitor = new User();
+	public Response getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
 		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
 		Utils.checkHierarchy(userId);
 		User user = storage.findUserById(userId);
-		if (user==null) {logger.info("No userId match"); throw new WebApplicationException(Status.NOT_FOUND);}
+		if (user==null) {
+			return Utils.resp(Status.NOT_FOUND, "Error: No userId match.", logger);
+		}
 		List<Resource> resources = storage.findResourcesByOwnerId(userId);
 		if (!user.isAuthorised(key)) {
-			logger.warn("User token/key doesn't match");
-			throw new WebApplicationException(Status.FORBIDDEN);
+			return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger);
 			/*
 			Iterator<Resource> it = resources.iterator();
 			while (it.hasNext()) {
@@ -103,7 +104,7 @@ public class ResourceResource {
 				if (r.) {it.remove();}
 			}*/
 		}
-		return resources;
+		return Utils.resp(Status.OK, resources, logger);
 	}
 
 	// resourceName can be the resourceID or the URL-encoded resource label
@@ -111,39 +112,33 @@ public class ResourceResource {
 	@Path("/{resourceId}")
 	@Produces({MediaType.APPLICATION_JSON})
 	@Timed
-	public Resource getResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
+	public Response getResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.info("Getting user/resource: "+userId+"/"+resourceName);
 		Utils.checkHierarchy(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
-		if (resource == null) {
-			logger.error("Resource "+resourceName+" does not exist!");
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
-		if (resource.getOwner_id() != userId) {
-			logger.error("User "+userId+" does not own resource "+resourceName);
-			throw new WebApplicationException(Status.NOT_FOUND);
-		}
+		if (resource == null) { return Utils.resp(Status.NOT_FOUND, "Resource "+resourceName+" does not exist!", logger); }
+		if (resource.getOwner_id() != userId) { return Utils.resp(Status.NOT_FOUND, "User "+userId+" does not own resource "+resourceName, logger); }
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 		/*
 		if (!resource.isReadable(visitor)) {
 			logger.warn("Resource "+resource.getId()+" is not readable to user "+visitor.getId());
 //		throw new WebApplicationException(Status.FORBIDDEN);
 		}*/
-		return resource;
+		return Utils.resp(Status.OK, resource, logger);
 	}
 
 	// post new resource definition 
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public long postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
+	public Response postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		Utils.checkHierarchy(userId);
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
-		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = Utils.insertResource(resource);
@@ -151,7 +146,7 @@ public class ResourceResource {
 			// remake pollers with updated Resource attribtues
 			pollSystem.rebuildResourcePoller(resourceId);
 		}
-		return resourceId;
+		return Utils.resp(Status.OK, resourceId, logger);
 	}
 
 	// put updated resource definition 
@@ -159,25 +154,26 @@ public class ResourceResource {
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	@Path("/{resourceId}")
-	public void updateResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Resource resource, @QueryParam("key") String key) {
+	public Response updateResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Resource resource, @QueryParam("key") String key) {
 		logger.info("Updating resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
 		Resource oldresource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,oldresource);
-		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 		Utils.updateResource(oldresource.getId(), resource);
+		return Response.ok().build();
 	}
 
 	@DELETE
 	@Timed
 	@Path("/{resourceId}")
-	public void deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
+	public Response deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
 			@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.warn("Deleting resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,resource);
-		if (!user.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
@@ -186,38 +182,34 @@ public class ResourceResource {
 		storage.deleteResource(resource.getId());
 		// remake pollers with updated Resource attribtues
 		pollSystem.rebuildResourcePoller(resource.getId());
+		return Response.ok().build();
 	}
 
 	@GET
 	@Path("/{resourceId}/data")
-	public String getData() {
-		return "Error: Only Streams can have data read";
+	public Response getData() {
+		return Utils.resp(Status.FORBIDDEN, "Error: Only Streams can have data read", logger);
 	}
 	@GET
 	@Path("/{resourceId}/rebuild")
-	public String rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
+	public Response rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		if (resource==null) {
-			logger.error("Resource name does not exist for rebuild: "+resourceName);
-			return "Error: resource name does not exist";
+			return Utils.resp(Status.NOT_FOUND, "Error: resource name does not exist: "+resourceName, logger);
 		}
 		pollSystem.rebuildResourcePoller(resource.getId());
-		logger.info("Rebuilt resource: "+resourceName);
-		return "rebuild";
+		return Utils.resp(Status.OK, "Rebuilt: "+resourceName, logger);
 	}
 
 	// Post data to the resource, and run data through its parsers
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Path("/{resourceId}/data")
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, String data, @QueryParam("key") String key) {
+	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, String data, @QueryParam("key") String key) {
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
-		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { 
-			logger.warn("Incorrect authorisation key!");
-			throw new WebApplicationException(Status.FORBIDDEN);
-		}
+		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 		//logger.info("Adding data to resource: "+resource.getLabel());
 
 		// if parsers are undefined, create them!
@@ -228,8 +220,7 @@ public class ResourceResource {
 				// staticness is a mess...
 				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data); 
 			} catch (Exception e) {
-				logger.error("JSON parsing for auto creation failed!");
-				return "Error: JSON parsing for auto creation failed!";
+				return Utils.resp(Status.BAD_REQUEST, "Error: JSON parsing for auto creation failed!", logger);
 			}
 		}
 		//run it through the parsers
@@ -238,7 +229,7 @@ public class ResourceResource {
 		// update Resource last_posted
 		storage.postedResource(resource.getId(),System.currentTimeMillis());
 
-		return "Success";
+		return Utils.resp(Status.OK, "Success", logger);
 	}
 
 	public void applyParsers(long resourceId, String data) {

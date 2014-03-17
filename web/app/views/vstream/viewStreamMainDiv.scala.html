@@ -35,6 +35,15 @@ stream.file.getParentPath()
 				} </span>
 					</legend>
 					@vstream.includeStream(stream, displayHeader =true, displayOverview =true, displayPlot =true, displayToolbar =false)
+			<br />
+			
+			<div class="row-fluid">
+				<b><a href="@sicsthSenseURL():8080@{stream.getHierarchy()}?key=@{stream.getKey()}">Stream's API representation</a></b>
+			</div>
+			<div class="row-fluid">
+				<b><a href="@sicsthSenseURL():8080@{stream.getHierarchy()}/data?key=@{stream.getKey()}">Stream's data from the API</a></b>
+			</div>
+			<br />
 
 			<div class="row-fluid">
 			<label class="span2" for="@myForm("description").id"><h4>Description</h4></label>
@@ -42,14 +51,17 @@ stream.file.getParentPath()
 			</div>
 
 					<fieldset>
+						<br />
 
 		      <legend>Location</legend>
 					<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
 					<br />
 			<div class="row-fluid">
-			<label>Latitude</label>
+			<label class="span2">Latitude</label>
 			<input class="span4 streamLat" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
-			<label>Longtitude</label>
+			</div>
+			<div class="row-fluid">
+			<label class="span2">Longtitude</label>
 			<input class="span4 streamLong" type="number" step="any" id="@myForm("longitude").id" name="@myForm("longitude").name" value="@myForm("longitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
 			</div>
 					</fieldset>

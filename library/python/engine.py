@@ -188,6 +188,7 @@ class Engine:
 			response = urllib2.urlopen(req)
 		except Exception as e:
 			print "Error: Connection to "+url+" failed!\n",e
+                        print "Is the SicsthSense server running?\n"
                         raise e
 		# check response code
 		if response.getcode() > 400:

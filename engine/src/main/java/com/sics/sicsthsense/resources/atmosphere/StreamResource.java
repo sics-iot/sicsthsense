@@ -46,6 +46,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -87,32 +89,37 @@ public class StreamResource {
 
 	@GET
 	@Timed
-	public List<Stream> getStreams(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
+	public Response getStreams(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		//long resourceId = Long.parseLong(topic.getID());
 		logger.info("Getting user/resource/streams "+userId+" "+resourceName);
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
-		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {
+			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to get streams", logger);
+		}
 
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		for (Stream stream: streams) {
 			stream.triggers = storage.findTriggersByStreamId(stream.getId());
 			stream.setLabel(storage.findPathByStreamId(stream.getId()));
 		}
-		return streams;
+		//return streams;
+		return Utils.resp(Status.OK, streams, logger);
 	}
 
 	@GET
 	@Path("/{streamId}")
 	@Timed
-	public Stream getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") @DefaultValue("") String key) {
+	public Response getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") @DefaultValue("") String key) {
 		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamName);
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
-		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
+			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to get stream", logger);
+		}
 
 		// add back in the antecedents
 		List<Long> antecedents = storage.findAntecedents(stream.getId());
@@ -130,7 +137,7 @@ public class StreamResource {
 		stream.triggers = storage.findTriggersByStreamId(stream.getId());
 		stream.setLabel(storage.findPathByStreamId(stream.getId()));
 
-		return stream;
+		return Utils.resp(Status.OK, stream, logger);
 	}
 
 	/*
@@ -147,12 +154,14 @@ public class StreamResource {
 		return streamId;
 	}*/
 	@POST
-	public long postStream(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Stream stream, @QueryParam("key") String key) throws Exception {
+	public Response postStream(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Stream stream, @QueryParam("key") String key) throws Exception {
 		logger.info("Creating stream!:"+stream);
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
-		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {
+			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to POST to stream", logger);
+		}
 		long streamId=-1;
 
 		// initialise the stream correctly
@@ -177,7 +186,7 @@ public class StreamResource {
 			}
 		}
 
-		return streamId;
+		return Utils.resp(Status.OK, streamId, logger);
 	}
 
 	void authoriseStreamKey(String key1, String key2) {
@@ -187,7 +196,7 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
-	public String getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
+	public Response getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
 		List<DataPoint> rv; // return value before conversion
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
@@ -196,8 +205,7 @@ public class StreamResource {
 		if (!stream.getPublic_access()) { // need to authenticate
 			//logger.warn("Stream isnt public access!");
 			if (!user.isAuthorised(key) && !stream.isAuthorised(key) && !resource.isAuthorised(key)) {
-				logger.warn("User is not owner and has incorrect key on stream!");
-				throw new WebApplicationException(Status.FORBIDDEN);
+				return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to POST to stream", logger);
 			}
 		}
 		//logger.info("Getting stream: "+streamId);
@@ -215,12 +223,12 @@ public class StreamResource {
 
 		try {
 			if ("csv".equals(format)) {
-				return csvmapper.writer(schema).writeValueAsString(rv);
+				return Utils.resp(Status.OK, csvmapper.writer(schema).writeValueAsString(rv), null);
 			} else { // default dump to JSON
-				return jsonmapper.writeValueAsString(rv);
+				return Utils.resp(Status.OK, jsonmapper.writeValueAsString(rv), null);
 			}
 		} catch (Exception e) {
-			return "Error parsing data!";
+				return Utils.resp(Status.BAD_REQUEST, "Error: Can't parse data!", logger);
 		}
 	}
 
@@ -229,14 +237,13 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public String postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
+	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
-			logger.warn("User is not owner and has incorrect key on resource/stream!");
-			throw new WebApplicationException(Status.FORBIDDEN);
+			return Utils.resp(Status.FORBIDDEN, "User is not owner and has incorrect key on resource/stream!", logger);
 		}
 		logger.info("Inserting data into stream: "+streamName);
 		datapoint.setStreamId(stream.getId()); // keep consistency
@@ -245,7 +252,7 @@ public class StreamResource {
 		stream.notifyDependents(); // notify all streams that depend on this
 		stream.testTriggers(datapoint); // see if any of the actions are triggered
 
-		return "Posted successfully!";
+		return Response.ok("Posted").build();
 	}
 
 
