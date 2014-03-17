@@ -133,7 +133,7 @@ public class ParserResource {
 		checkHierarchy(userId,resourceId);
 		Parser parser = storage.findParserById(parserId);
 		if (parser==null) { return Utils.resp(Status.NOT_FOUND, "No parser to delete: "+parserId, logger); }
-		if (visitor.getId() != userId) { return Utils.resp(Status.FORBIDDEN, "No authorised to delete parser: "+parserId, logger); }
+		if (visitor.getId() != userId) { return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to delete parser: "+parserId, logger); }
 		storage.deleteParser(parserId);
 		return Utils.resp(Status.OK, "Deleted Parser", logger);
 	}

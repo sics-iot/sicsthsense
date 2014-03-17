@@ -8,7 +8,7 @@
 <div class="row-fluid ">
 	 <form id="proxy@resourceId" action="@routes.Proxy.forwardById(resourceId, "")" class="controls-row " >
 <fieldset>
-  @if(showHeader) {<legend>Interact with 	@helpMark("Send requests to the resource directly","proxyHelp")<span id="ajax_wait@resourceId" style="display: none" class="pull-right">
+  @if(showHeader) {<legend>Interact with External URI 	@helpMark("Send requests to the external resource directly","proxyHelp")<span id="ajax_wait@resourceId" style="display: none" class="pull-right">
 <img src='@routes.Assets.at("images/ajax_wait.gif")' alt="wait-spin"></span></legend>}
 	 	 <select class="span2" id="method@resourceId" name="method" >
    		<option value="GET" selected="selected">GET</option>
