@@ -23,8 +23,7 @@ stream.file.getParentPath()
 		<h1>Stream '@streamPath'</h1>
 				<br />
 				@helper.form(action = routes.CtrlStream.modify(stream.id), 'id -> "streamFormId") {
-
-					<legend>View
+					<legend>Details
 						<span class="pull-right">@vstream.streamToolbar(stream, stream.canWrite(Secured.getCurrentUser()), false, stream.publicAccess || stream.publicSearch)
 						
 				@if( stream.canWrite(Secured.getCurrentUser()) ) {
@@ -50,12 +49,15 @@ stream.file.getParentPath()
 			<textarea class="span10" wrap="soft" id="@myForm("description").id" name="@myForm("description").name" value="" placeholder="Stream description..." @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>@myForm("description").value</textarea>
 			</div>
 
-					<fieldset>
 						<br />
+					<br />
+					<fieldset>
 
 		      <legend>Location</legend>
+					@if(myForm("longitude").value!="0.0" && myForm("latitude").value!="0.0") {
 					<div id="map-canvas" style="width: 600px; height: 300px; float: center; border: 1px solid black;"></div>
 					<br />
+					}
 			<div class="row-fluid">
 			<label class="span2">Latitude</label>
 			<input class="span4 streamLat" type="number" step="any" id="@myForm("latitude").id" name="@myForm("latitude").name" value="@myForm("latitude").value" placeholder="0" @if(!stream.canWrite(Secured.getCurrentUser())){readonly}>
