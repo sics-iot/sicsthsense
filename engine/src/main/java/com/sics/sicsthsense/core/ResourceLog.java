@@ -176,6 +176,7 @@ public class ResourceLog {
 	}
 
 	public static void createOrUpdate(Resource resource) {
+		/*
 		if (resource==null) {return;}
 		StorageDAO storage = DAOFactory.getInstance();
 		ResourceLog resourceLog = storage.findResourceLogByResourceId(resource.getId());
@@ -184,7 +185,7 @@ public class ResourceLog {
 		} else {
 			//resourceLog.update(resource);
 		}
-		
+		*/
 	}
 
 	public void setMessage(String message) {
