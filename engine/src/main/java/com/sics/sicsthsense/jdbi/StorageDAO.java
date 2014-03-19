@@ -301,7 +301,7 @@ public interface StorageDAO {
 	//ResourceLog
   @SqlQuery("SELECT * FROM resource_log WHERE resource_id = :resource_id  LIMIT 1")
 	@Mapper(ResourceLogMapper.class)
-  ResourceLog findResourceLogByResourceId(@Bind("resourceId") long resourceId);
+  ResourceLog findResourceLogByResourceId(@Bind("resource_id") long resource_id);
 
   @SqlQuery("SELECT * FROM resource_log WHERE id = :id  LIMIT 1")
 	@Mapper(ResourceLogMapper.class)
