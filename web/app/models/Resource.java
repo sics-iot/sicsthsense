@@ -268,9 +268,7 @@ public class Resource extends Operator {
                     }
                 }
                 // Logger.info("[asynchPoll] before resourceLog");
-                ResourceLog resourceLog =
-                        new ResourceLog(thisResource, response, thisResource.lastPolled,
-                                currentTime);
+                ResourceLog resourceLog = new ResourceLog(thisResource, response, thisResource.lastPolled, currentTime);
                 // Logger.info("[asynchPoll] after resourceLog");
 
                 resourceLog = ResourceLog.createOrUpdate(resourceLog);

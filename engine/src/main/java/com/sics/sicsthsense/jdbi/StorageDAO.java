@@ -298,6 +298,52 @@ public interface StorageDAO {
   void deleteParser(@Bind("id") long id);
 
 
+	//ResourceLog
+  @SqlQuery("SELECT * FROM resource_log WHERE resourceId = :resourceId  LIMIT 1")
+	@Mapper(ResourceLogMapper.class)
+  ResourceLog findResourceLogByResourceId(@Bind("resourceId") long resourceId);
+
+  @SqlQuery("SELECT * FROM resource_log WHERE id = :id  LIMIT 1")
+	@Mapper(ResourceLogMapper.class)
+  ResourceLog findResourceLogById(@Bind("id") long id);
+	
+  @SqlUpdate("insert into resource_log (resource_id, creation_timestamp, response_timestamp, parsed_successfully, is_poll, body, method, host_name, uri, headers, message, version) values (:resource_id, :creation_timestamp, :response_timestamp, :parsed_successfully, :is_poll, :body, :method, :host_name, :uri, :headers, :message, :version)")
+  void insertResourceLog(
+		@Bind("resource_id") long resource_id,
+		@Bind("creation_timestamp") long creation_timestamp,
+		@Bind("response_timestamp") long response_timestamp,
+		@Bind("parsed_successfully") boolean parsed_successfully,
+		@Bind("is_poll") boolean is_poll, 
+		@Bind("body")   String body,
+		@Bind("method") String method ,   
+		@Bind("host_name") String host_name, 
+		@Bind("uri")     String uri,
+		@Bind("headers") String headers, 
+		@Bind("message") String message,
+		@Bind("version") int version
+	);
+
+  @SqlUpdate("update resource_log set id=:id, resource_id=:resource_id, creation_timestamp=:creation_timestamp, response_timestamp=:response_timestamp, parsed_successfully=:parsed_successfully, is_poll=:is_poll, body=:body, method=:method, host_name=:host_name, uri=:uri, headers=:headers, message=:message, version=:version WHERE id=:id")
+  void updateResourceLog(
+		@Bind("id") long id,
+		@Bind("resource_id") long resource_id,
+		@Bind("creation_timestamp") long creation_timestamp,
+		@Bind("response_timestamp") long response_timestamp,
+		@Bind("parsed_successfully") boolean parsed_successfully,
+		@Bind("is_poll") boolean is_poll, 
+		@Bind("body")   String body,
+		@Bind("method") String method ,   
+		@Bind("host_name") String host_name, 
+		@Bind("uri")     String uri,
+		@Bind("headers") String headers, 
+		@Bind("message") String message,
+		@Bind("version") int version
+	);
+
+  @SqlUpdate("delete from resource_log where id = :id")
+  void deleteResourceLog(@Bind("id") long id);
+
+
 	// DataPoints
   @SqlQuery("SELECT * FROM data_point_double WHERE id = :id ORDER BY id DESC  LIMIT 10")
 	@Mapper(DataPointMapper.class)

@@ -109,6 +109,7 @@ public class Poller extends UntypedActor {
 			} else { // "probe"
 				//logger.info("Received String message: to probe: {}", url);
 				//getSender().tell(message, getSelf());
+				ResourceLog rlog = storage.findResourceLogByResourceId(resourceId);
 				if (urlobj==null) {return;}
 				HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();
 				con.setRequestMethod("GET"); // optional default is GET
