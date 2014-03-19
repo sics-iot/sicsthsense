@@ -142,6 +142,8 @@ public class ResourceResource {
 
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = Utils.insertResource(resource);
+		ResourceLog.createOrUpdate(resource);
+
 		if (resource.getPolling_period() > 0) {
 			// remake pollers with updated Resource attribtues
 			pollSystem.rebuildResourcePoller(resourceId);

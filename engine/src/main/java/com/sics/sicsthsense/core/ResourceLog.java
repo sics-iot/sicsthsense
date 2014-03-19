@@ -68,6 +68,9 @@ public class ResourceLog {
 	public ResourceLog() {
 		StorageDAO storage = DAOFactory.getInstance();
 	}
+	public ResourceLog(Resource resource) {
+	}
+	// deprecated
 	public ResourceLog(long id, long resourceId, long creationTimestamp,
 			long responseTimestamp, boolean parsedSuccessfully, boolean isPoll,
 			String body, String method, String host, String uri, String headers,
@@ -170,6 +173,18 @@ public class ResourceLog {
 			logger.error(e.getMessage() + e.getStackTrace()[0].toString()
 					+ e.toString());
 		}
+	}
+
+	public static void createOrUpdate(Resource resource) {
+		if (resource==null) {return;}
+		StorageDAO storage = DAOFactory.getInstance();
+		ResourceLog resourceLog = storage.findResourceLogByResourceId(resource.getId());
+		if (resourceLog==null) { // make a new one
+			resourceLog = new ResourceLog(resource);
+		} else {
+			//resourceLog.update(resource);
+		}
+		
 	}
 
 	public void setMessage(String message) {
