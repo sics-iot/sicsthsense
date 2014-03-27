@@ -238,7 +238,7 @@ chartOptions["@{stream.id}"]=options;
 $.ajax({
   dataType: "json",
 	url: "http://"+host+":8080@{stream.getHierarchy()}/data?limit=500&key=@{stream.getKey()}",
-	timeout: 3000,
+	timeout: 7000,
   success: function(data, textStatus, jqXHR) {
 		//console.log("Ajax:"+textStatus);
 		if (data) {
@@ -256,7 +256,7 @@ $.ajax({
 	},
 	error: function(xhr, status, exception) {
 		var errorMessage = exception || xhr.statusText;
-		console.log("Got an AJAX JSON GETing "+ "http://"+host+"8080@{stream.getHierarchy()}/data?limit=500&key=@{stream.getKey()}"+errorMessage);
+		console.log("Got an AJAX JSON GETing problem "+ "http://"+host+"8080@{stream.getHierarchy()}/data?limit=500&key=@{stream.getKey()} "+errorMessage);
 		$('#chart-@{stream.id}').hide();
 	}
 });
