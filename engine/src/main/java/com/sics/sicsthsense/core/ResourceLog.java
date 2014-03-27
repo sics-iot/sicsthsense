@@ -176,10 +176,12 @@ public class ResourceLog {
 
 	public static ResourceLog createOrUpdate(long resourceId) {
 		//if (resource==null) {logger.error("Resource is null"); return;}
-		StorageDAO storage = DAOFactory.getInstance();
+		final StorageDAO storage = DAOFactory.getInstance();
+		final Logger logger = LoggerFactory.getLogger(ResourceLog.class);
 		ResourceLog resourceLog = storage.findResourceLogByResourceId(resourceId);
 		if (resourceLog==null) { // make a new one
 			Resource resource = storage.findResourceById(resourceId);
+			if (resource==null) {logger.error("Resource does not exist!"); return null;}
 			resourceLog = new ResourceLog(resource);
 			resourceLog.create();
 		} else {

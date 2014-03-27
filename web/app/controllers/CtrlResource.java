@@ -433,7 +433,9 @@ public class CtrlResource extends Controller {
 	public static Result delete(Long id) {
 		User currentUser = Secured.getCurrentUser();
 		// check permission?
+		//Resource resource = Resource.getById(resourceId);
 		Resource.delete(id);
+		//Engine.rebuildPollers(resource.owner.getId(),id);
 		return redirect(routes.CtrlResource.resources());
 	}
 
