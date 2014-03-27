@@ -254,10 +254,7 @@ public class ResourceResource {
 		}
 		// append interaction to resource log!
 		logger.info("Updating log!");
-		ResourceLog rl = storage.findResourceLogByResourceId(resourceId);
-		if (rl != null) {
-			logger.error("ResourceLog does not exist!");
-		}
+		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
 		//TODO: update the actual log message!
 		rl.update(parsedSuccessfully, false, "received POST", System.currentTimeMillis());
 		rl.save();
