@@ -207,7 +207,7 @@ public class CtrlResource extends Controller {
 				List<Stream> streams = new ArrayList<Stream>();
 				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, streams, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
 			}
-			Engine.rebuildPollers(resource.getOwner(),id);
+			Engine.rebuildPollers(resource.owner.getId(),id);
 			return redirect(routes.CtrlResource.getById(id));
 		}
 	}

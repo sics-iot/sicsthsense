@@ -195,6 +195,7 @@ public class ResourceResource {
 		return Utils.resp(Status.FORBIDDEN, "Error: Only Streams can have data read", logger);
 	}
 	@GET
+	@Consumes({MediaType.WILDCARD})
 	@Path("/{resourceId}/rebuild")
 	public Response rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);

@@ -56,14 +56,21 @@ public class Engine {
 	public Engine() {
 	}
 
-	public static void rebuildPollers(long userId, long resourceId) throws Exception  {
-		URL url = new URL(hostname+"/users/"+userId+"/resources/"+resourceId);
-		HttpURLConnection httpCon = (HttpURLConnection)url.openConnection();
-		httpCon.setDoOutput(true);
-		httpCon.setRequestMethod("PUT");
-		OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
-		out.write("");
-		out.close();
-		httpCon.getInputStream();
+	public static boolean rebuildPollers(long userId, long resourceId)  {
+		try {
+			URL url = new URL(hostname+"/users/"+userId+"/resources/"+resourceId);
+			HttpURLConnection httpCon = (HttpURLConnection)url.openConnection();
+			httpCon.setDoOutput(true);
+			httpCon.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
+			httpCon.setRequestMethod("GET");
+			OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
+			out.write("");
+			out.close();
+			httpCon.getInputStream();
+		} catch (Exception e) {
+			Logger.error("Failed to tell Engine to rebuild parsers!"+e);
+			return false;
+		}
+		return true;
 	}
 }
