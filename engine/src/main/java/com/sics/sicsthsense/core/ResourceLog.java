@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.sics.sicsthsense.*;
+import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.*;
 
 //@Table(name = "resource_log", uniqueConstraints = { @UniqueConstraint(columnNames = { "resource_id", "is_poll" }) })
@@ -49,45 +50,47 @@ public class ResourceLog {
 	public long resourceId;
 	public long creationTimestamp;
 	public long responseTimestamp;
+	public long responseTime;
 	public boolean parsedSuccessfully = false;
 	public boolean isPoll = false;
 	public String body = "";
 	public String method = "";
-	public String host = "";
-	public String uri = "";
 	public String headers = "";
 	public String message = "";
 	private int version;
-	public String timestamp = "";
-	// Poll roundtrip time
-	public String responseTime = "";
 
 	private final Logger logger = LoggerFactory.getLogger(ResourceLog.class);
 	private StorageDAO storage = null;
 
 	public ResourceLog() {
 		StorageDAO storage = DAOFactory.getInstance();
+		this.creationTimestamp = 0;
+		this.responseTimestamp = 0;
+		this.parsedSuccessfully = true;
+		this.isPoll = false;
+		this.body = "";
+		this.method = "";
+		this.headers = "";
+		this.message = "";
 	}
-	public ResourceLog(Resource resource) {
-	}
-	// deprecated
-	public ResourceLog(long id, long resourceId, long creationTimestamp,
-			long responseTimestamp, boolean parsedSuccessfully, boolean isPoll,
-			String body, String method, String host, String uri, String headers,
-			String message) {
+	public ResourceLog(long id, long resourceId, 
+			long creationTimestamp, long responseTimestamp,
+			boolean parsedSuccessfully, boolean isPoll, 
+			String body, String method, String headers, String message) {
 		super();
-		this.id = id;
 		this.resourceId = resourceId;
+		this.creationTimestamp = creationTimestamp;
+		this.responseTimestamp = responseTimestamp;
 		this.parsedSuccessfully = parsedSuccessfully;
 		this.isPoll = isPoll;
 		this.body = body;
 		this.method = method;
-		this.host = host;
-		this.uri = uri;
 		this.headers = headers;
 		this.message = message;
-		setCreationTimestamp(creationTimestamp);
-		setResponseTimestamp(responseTimestamp);
+	}
+	public ResourceLog(Resource resource) {
+		super();
+		this.resourceId = resource.getId();
 	}
 
 
@@ -109,8 +112,6 @@ public class ResourceLog {
 				// String requestHeader = "" + rpl.request.headers().keySet() +
 				// rpl.request.headers().values().toArray(String[] )
 				method = conn.getRequestMethod();
-				host = conn.getURL().toString();
-				uri = conn.getURL().toString();
 				headers = "headerplaceholder";
 				/*
 					HeaderNames.CONTENT_TYPE + " "
@@ -148,8 +149,6 @@ public class ResourceLog {
 				// String requestHeader = "" + rpl.request.headers().keySet() +
 				// rpl.request.headers().values().toArray(String[] )
 				method = "";
-				host = "";
-				uri = conn.getURL().toString();
 				headers = "header placeholder";
 					/*
 					  "Status " + response.statusText() + "\n"
@@ -175,17 +174,18 @@ public class ResourceLog {
 		}
 	}
 
-	public static void createOrUpdate(Resource resource) {
-		/*
-		if (resource==null) {return;}
+	public static ResourceLog createOrUpdate(long resourceId) {
+		//if (resource==null) {logger.error("Resource is null"); return;}
 		StorageDAO storage = DAOFactory.getInstance();
-		ResourceLog resourceLog = storage.findResourceLogByResourceId(resource.getId());
+		ResourceLog resourceLog = storage.findResourceLogByResourceId(resourceId);
 		if (resourceLog==null) { // make a new one
+			Resource resource = storage.findResourceById(resourceId);
 			resourceLog = new ResourceLog(resource);
+			resourceLog.create();
 		} else {
 			//resourceLog.update(resource);
 		}
-		*/
+		return resourceLog;
 	}
 
 	public void setMessage(String message) {
@@ -198,22 +198,57 @@ public class ResourceLog {
 
 	public void setCreationTimestamp(long creationTimestamp) {
 		this.creationTimestamp = (creationTimestamp <= 0) ? System.currentTimeMillis() : creationTimestamp;
-		this.timestamp = new Date(creationTimestamp).toString();
 	}
 
 	public void setResponseTimestamp(long responseTimestamp) {
 		this.responseTimestamp = (responseTimestamp <= 0) ? System.currentTimeMillis() : responseTimestamp;
-//		this.responseTime = controllers.Utils.timeStr(this.responseTimestamp - creationTimestamp);
 	}
 
-	public String getTimestamp() {
-		setCreationTimestamp(this.creationTimestamp);
-		return timestamp;
-	}
-
-	public String getResponseTime() {
+	public long getResponseTime() {
 		setResponseTimestamp(this.responseTimestamp);
 		return responseTime;
+	}
+
+	public void update(boolean success, boolean is_poll, String message, long responseTimestamp) {
+		this.parsedSuccessfully = parsedSuccessfully;
+		this.isPoll = isPoll;
+		this.message = message;
+		this.responseTimestamp = responseTimestamp;
+	}
+
+  public void create() {
+		StorageDAO storage = DAOFactory.getInstance();
+		// should check already exists
+		storage.insertResourceLog(
+			this.resourceId,
+			System.currentTimeMillis(),
+			-1,
+			this.parsedSuccessfully,
+			this.isPoll, 
+			this.body,
+			this.method,   
+			this.headers, 
+			this.message,
+			1	
+		);
+		logger.info("Just created resource log:"+this.resourceId);
+	}
+
+  public void save() {
+		StorageDAO storage = DAOFactory.getInstance();
+		storage.updateResourceLog(
+			this.resourceId,
+			this.creationTimestamp,
+			this.responseTimestamp,
+			this.parsedSuccessfully,
+			this.isPoll, 
+			this.body,
+			this.method,   
+			this.headers, 
+			this.message,
+			1	
+		);
+		logger.info("Just updated resource log:"+this.resourceId);
 	}
 
 	public void updateParsedSuccessfully(boolean parsedSuccessfully) {
@@ -238,11 +273,8 @@ public class ResourceLog {
 		this.isPoll = rl.isPoll;
 		this.body = rl.body;
 		this.method = rl.method;
-		this.host = rl.host;
-		this.uri = rl.uri;
 		this.headers = rl.headers;
 		this.message = rl.message;
-		this.timestamp = rl.timestamp;
 		this.responseTime = rl.responseTime;
 		if (id != -1) {
 			this.update();
@@ -293,20 +325,6 @@ public class ResourceLog {
 			// body);
 		}
 
-		uri = uri.trim();
-		if (uri.length() > 255) {
-			uri = uri.substring(0, 255 - 2) + "";
-			// logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
-			// body);
-		}
-
-		host = host.trim();
-		if (host.length() > 255) {
-			host = host.substring(0, 255 - 2) + "";
-			// logger.warn("[ResourceLog] trimming body: " + resource.label + " " +
-			// body);
-		}
-
 		method = method.trim();
 		if (method.length() > 255) {
 			body = body.substring(0, 255 - 2) + "";
@@ -322,10 +340,11 @@ public class ResourceLog {
 		// trimString(message);
 	}
 
+	/*
 	public void save() {
 		verify();
 		//super.save();
-	}
+	}*/
 
 	public void update() {
 		verify();
@@ -368,8 +387,6 @@ public class ResourceLog {
 	public boolean getIsPoll()				{ return isPoll; } 
 	public String getBody()						{ return body; } 
 	public String getMethod()					{ return method; }
-	public String getHost()						{ return host; }
-	public String getUri()						{ return uri; } 
 	public String getHeaders()				{ return headers; }
 	public String getMessage()				{ return message; } 
 	public int getVersion()						{ return version; }
@@ -380,12 +397,9 @@ public class ResourceLog {
 	public void getIsPoll(boolean isPoll)					{ this.isPoll = isPoll; } 
 	public void getBody(String body)							{ this.body = body; } 
 	public void getMethod(String method)					{ this.method = method; }
-	public void getHost(String host)							{ this.host = host; }
-	public void getUri(String uri)								{ this.uri = uri; } 
 	public void getHeaders(String headers)				{ this.headers = headers; }
 	public void getMessage(String message)				{ this.message = message; } 
 	public void getVersion(int version)						{ this.version = version; }
-	public void getTimestamp(String timestamp)		{ this.timestamp = timestamp; } 
 	public void getResponseTime(String responseTIme)							{ this.responseTime = responseTime; } 
 	public void getCreationTimestamp(long creationTimestamp)			{ this.creationTimestamp = creationTimestamp; }
 	public void getResponseTimestamp(long responseTimestamp)			{ this.responseTimestamp = responseTimestamp; }

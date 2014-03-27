@@ -43,15 +43,13 @@ public class ResourceLogMapper implements ResultSetMapper<ResourceLog> {
 	public ResourceLog map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 		return new ResourceLog(
 				r.getLong("id"), 
-				r.getLong("resourceId"), 
-				r.getLong("creationTimestamp"),
-				r.getLong("responseTimestamp"), 
-				r.getBoolean("parsedSuccessfully"), 
-				r.getBoolean("isPoll"),
+				r.getLong("resource_id"), 
+				r.getLong("creation_timestamp"),
+				r.getLong("response_timestamp"), 
+				r.getBoolean("parsed_successfully"), 
+				r.getBoolean("is_poll"),
 				r.getString("body"), 
 				r.getString("method"), 
-				r.getString("host"), 
-				r.getString("uri"), 
 				r.getString("headers"),
 				r.getString("message")
 				);

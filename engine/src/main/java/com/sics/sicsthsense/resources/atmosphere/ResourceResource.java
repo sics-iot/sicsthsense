@@ -142,7 +142,8 @@ public class ResourceResource {
 
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = Utils.insertResource(resource);
-		//ResourceLog.createOrUpdate(resource);
+		ResourceLog rl = new ResourceLog(resource);
+		Utils.insertResourceLog(rl);
 
 		if (resource.getPolling_period() > 0) {
 			// remake pollers with updated Resource attribtues
@@ -182,6 +183,7 @@ public class ResourceResource {
 		for (Parser p: parsers) {storage.deleteParser(p.getId());}
 		for (Stream s: streams) {storage.deleteStream(s.getId());}
 		storage.deleteResource(resource.getId());
+		// TODO: should delete resource log
 		// remake pollers with updated Resource attribtues
 		pollSystem.rebuildResourcePoller(resource.getId());
 		return Response.ok().build();
@@ -225,7 +227,7 @@ public class ResourceResource {
 				return Utils.resp(Status.BAD_REQUEST, "Error: JSON parsing for auto creation failed!", logger);
 			}
 		}
-		//run it through the parsers
+		//run it through the parsers and update resource log
 		applyParsers(resource.getId(), data);
 
 		// update Resource last_posted
@@ -235,16 +237,29 @@ public class ResourceResource {
 	}
 
 	public void applyParsers(long resourceId, String data) {
-		//logger.info("Applying all parsers to data: "+data);
+		boolean parsedSuccessfully=true;
+		String parseError = "";
+		logger.info("Applying all parsers to data: "+data);
 		if (parsers==null) { parsers = storage.findParsersByResourceId(resourceId); }
 		for (Parser parser: parsers) {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
 				parseData.apply(parser,data);
 			} catch (Exception e) {
+				parsedSuccessfully=false;
 				logger.error("Parsing "+data+" failed!"+e);
+				parseError += "Parsing "+data+" failed!"+e;
 			}
 		}
+		// append interaction to resource log!
+		logger.info("Updating log!");
+		ResourceLog rl = storage.findResourceLogByResourceId(resourceId);
+		if (rl != null) {
+			logger.error("ResourceLog does not exist!");
+		}
+		//TODO: update the actual log message!
+		rl.update(parsedSuccessfully, false, "received POST", System.currentTimeMillis());
+		rl.save();
 	}
 
  

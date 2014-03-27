@@ -307,7 +307,7 @@ public interface StorageDAO {
 	@Mapper(ResourceLogMapper.class)
   ResourceLog findResourceLogById(@Bind("id") long id);
 	
-  @SqlUpdate("insert into resource_log (resource_id, creation_timestamp, response_timestamp, parsed_successfully, is_poll, body, method, host_name, uri, headers, message, version) values (:resource_id, :creation_timestamp, :response_timestamp, :parsed_successfully, :is_poll, :body, :method, :host_name, :uri, :headers, :message, :version)")
+  @SqlUpdate("insert into resource_log (resource_id, creation_timestamp, response_timestamp, parsed_successfully, is_poll, body, method, headers, message, version) values (:resource_id, :creation_timestamp, :response_timestamp, :parsed_successfully, :is_poll, :body, :method, :headers, :message, :version)")
   void insertResourceLog(
 		@Bind("resource_id") long resource_id,
 		@Bind("creation_timestamp") long creation_timestamp,
@@ -316,25 +316,20 @@ public interface StorageDAO {
 		@Bind("is_poll") boolean is_poll, 
 		@Bind("body")   String body,
 		@Bind("method") String method ,   
-		@Bind("host_name") String host_name, 
-		@Bind("uri")     String uri,
 		@Bind("headers") String headers, 
 		@Bind("message") String message,
 		@Bind("version") int version
 	);
 
-  @SqlUpdate("update resource_log set id=:id, resource_id=:resource_id, creation_timestamp=:creation_timestamp, response_timestamp=:response_timestamp, parsed_successfully=:parsed_successfully, is_poll=:is_poll, body=:body, method=:method, host_name=:host_name, uri=:uri, headers=:headers, message=:message, version=:version WHERE id=:id")
+  @SqlUpdate("update resource_log set creation_timestamp=:creation_timestamp, response_timestamp=:response_timestamp, parsed_successfully=:parsed_successfully, is_poll=:is_poll, body=:body, method=:method, headers=:headers, message=:message, version=:version WHERE resource_id=:resource_id")
   void updateResourceLog(
-		@Bind("id") long id,
 		@Bind("resource_id") long resource_id,
 		@Bind("creation_timestamp") long creation_timestamp,
 		@Bind("response_timestamp") long response_timestamp,
 		@Bind("parsed_successfully") boolean parsed_successfully,
 		@Bind("is_poll") boolean is_poll, 
 		@Bind("body")   String body,
-		@Bind("method") String method ,   
-		@Bind("host_name") String host_name, 
-		@Bind("uri")     String uri,
+		@Bind("method") String method,
 		@Bind("headers") String headers, 
 		@Bind("message") String message,
 		@Bind("version") int version

@@ -151,6 +151,25 @@ public class Utils {
 		);
 		return storage.findResourceId(resource.getLabel());
 	}
+	public static long insertResourceLog(ResourceLog rl) {
+		final StorageDAO storage = DAOFactory.getInstance();
+		// should check if label exists!
+
+		storage.insertResourceLog( 
+			rl.resourceId,
+			rl.creationTimestamp,
+			rl.responseTimestamp,
+			rl.parsedSuccessfully,
+			rl.isPoll,
+			rl.body,
+			rl.method,
+			rl.headers,
+			rl.message,
+			1
+		);
+		//return storage.findResourceId(resource.getLabel());
+		return -1;
+	}
 
 	// add a resource 
 	public static void updateResource(long resourceId, Resource newresource) {

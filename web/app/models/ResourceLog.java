@@ -395,7 +395,9 @@ public class ResourceLog extends Model {
 		ResourceLog rpl = find.where().eq("resource_id", resource.id)
 				.eq("is_poll", isPoll).findUnique();
 		if (rpl == null) {
-			Logger.warn("[ResourceLog] Could not find a " + ((isPoll) ? "poll" : "post") + " log for resource: " + resource.id.toString() +", id: "+ resource.label);
+			Logger.warn("[ResourceLog] Could not find a "
+					+ ((isPoll) ? "poll" : "post") + " log for resource: "
+					+ resource.id.toString() +", id: "+ resource.label);
 		}
 		return rpl;
 	}

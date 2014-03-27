@@ -87,17 +87,34 @@ public class Poller extends UntypedActor {
 		parsers = storage.findParsersByResourceId(resourceId);
 	}
 
-	public void applyParsers(String data) {
+	public void applyParsers(long resourceId, String data) {
+		boolean parsedSuccessfully = true;
+		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
+		String allMsgs = "";
+		String synopsis;
+		if (data.length()<100)  {
+			synopsis=data;
+		} else {
+			synopsis=data.substring(0,100);
+		}
 		//logger.info("Applying all parsers to data: "+data);
 		for (Parser parser: parsers) {
-			//logger.info("Applying a parser "+parser.getInput_parser());
+			logger.info("Applying a parser "+parser.getInput_parser());
 			try {
 				parsedata.apply(parser,data);
+				String msg = "Parser succeeded: "+parser+"\n";
+				allMsgs += msg;
 			} catch (Exception e) {
 				//logger.error("Parsing "+data+" failed!"+e);
-				logger.error("Parsing data failed! "+e+"\nParser: "+parser+"\nData: "+data.substring(0,100));
+
+				String msg = "Parser failed: "+parser+" Error:"+e+"\n";
+				allMsgs += msg;
+				logger.error(msg);
+				parsedSuccessfully=false;
 			}
 		}
+		rl.update(parsedSuccessfully, true, allMsgs+"\nReceived data:"+synopsis+"...", System.currentTimeMillis());
+		rl.save();
 	}
  
 	@Override
@@ -109,8 +126,7 @@ public class Poller extends UntypedActor {
 			} else { // "probe"
 				//logger.info("Received String message: to probe: {}", url);
 				//getSender().tell(message, getSelf());
-				ResourceLog rlog = storage.findResourceLogByResourceId(resourceId);
-				if (urlobj==null) {return;}
+				if (urlobj==null) { logger.error("URL object was null!"); return;}
 				HttpURLConnection con = (HttpURLConnection)urlobj.openConnection();
 				con.setRequestMethod("GET"); // optional default is GET
 				con.setInstanceFollowRedirects(true);
@@ -127,9 +143,14 @@ public class Poller extends UntypedActor {
 			 
 					storage.polledResource(resourceId,System.currentTimeMillis());
 					//System.out.println(response.toString());
-					applyParsers(response.toString());
+					applyParsers(resourceId,response.toString());
 				} catch (Exception e) {
-					logger.error("Network problem: "+e+" URL: "+url);
+					ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
+					String msg = "Network problem: "+e+" URL: "+url;
+					logger.error(msg);
+					e.printStackTrace();
+					rl.update(false, true, msg, System.currentTimeMillis());
+					rl.save();
 				}
 			}
     } else {

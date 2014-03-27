@@ -40,6 +40,7 @@ import models.Stream;
 import models.StreamParser;
 import models.User;
 import models.Vfile;
+import models.Engine;
 import controllers.Utils;
 
 import org.codehaus.jackson.JsonNode;
@@ -105,9 +106,9 @@ public class CtrlResource extends Controller {
 
 				Logger.info("Adding a new resource: " + "Label: " + submitted.label
 						+ " URL: " + submitted.getUrl());
-				// if(submitted != null && submitted.id != null) {
-				// return redirect(routes.CtrlResource.getById(submitted.id));
-				// }
+				if(submitted != null && submitted.id != null) {
+					return redirect(routes.CtrlResource.getById(submitted.id));
+				}
 			}
 		}
 
@@ -202,11 +203,11 @@ public class CtrlResource extends Controller {
 					}
 				} // else { Ebean.delete( source.streamParsers ); }
 			} catch (Exception e) {
-				Logger.error("CtrlResource: " + e.getMessage() + " Stack trace:\n"
-						+ e.getStackTrace()[0].toString());
+				Logger.error("CtrlResource: " + e.getMessage() + " Stack trace:\n" + e.getStackTrace()[0].toString());
 				List<Stream> streams = new ArrayList<Stream>();
 				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, streams, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
 			}
+			Engine.rebuildPollers(resource.getOwner(),id);
 			return redirect(routes.CtrlResource.getById(id));
 		}
 	}

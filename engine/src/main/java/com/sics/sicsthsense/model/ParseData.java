@@ -106,7 +106,10 @@ public class ParseData {
 			}
 
 			if (node.isValueNode()) { // it is a simple primitive
-					logger.info("Posting: " + node.getDoubleValue() + " " + currentTime);
+					String value = node.asText();
+					// the following should exception and bubble up so we know this parser failed!
+					logger.info("Posting value: " + Double.parseDouble(value) + " " + currentTime);
+					//logger.info("Posting value: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
 					storage.insertDataPoint(parser.getStream_id(), node.getDoubleValue(), System.currentTimeMillis() );
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
