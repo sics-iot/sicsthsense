@@ -209,6 +209,7 @@ public class CtrlResource extends Controller {
 			}
 			Resource.rebuildEngineResource(resource.owner.getId(),id);
 			return redirect(routes.CtrlResource.getById(id));
+
 		}
 	}
 
