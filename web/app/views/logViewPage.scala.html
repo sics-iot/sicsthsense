@@ -24,8 +24,8 @@
 	<fieldset>
   <legend>@title</legend>
 <div class="form-horizontal">
-		@viewField("Timestamp", resourceLog.getTimestamp(), "span9")
-		@if(!resourceLog.isPoll) { @viewField("Poll roundtrip time", resourceLog.getResponseTime(), "span9") }
+@**		@viewField("Timestamp", resourceLog.getTimestamp(), "span9") 
+		@if(!resourceLog.isPoll) { @viewField("Poll roundtrip time", resourceLog.getResponseTime(), "span9") }**@
 		@viewField("Method ", resourceLog.method, "span9")
 		@viewField("Host ", resourceLog.host, "span9")
 		@viewField("URI ", resourceLog.uri, "span9")

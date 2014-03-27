@@ -89,7 +89,6 @@ public class Poller extends UntypedActor {
 
 	public void applyParsers(long resourceId, String data) {
 		boolean parsedSuccessfully = true;
-		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
 		String allMsgs = "";
 		String synopsis;
 		if (data.length()<100)  {
@@ -97,7 +96,11 @@ public class Poller extends UntypedActor {
 		} else {
 			synopsis=data.substring(0,100);
 		}
-		//logger.info("Applying all parsers to data: "+data);
+
+		parsers = storage.findParsersByResourceId(resourceId);
+		logger.info("Applying all parsers to data: "+synopsis);
+		if (parsers.size()==0) {logger.error("No parsers exist!"); return;}
+
 		for (Parser parser: parsers) {
 			logger.info("Applying a parser "+parser.getInput_parser());
 			try {
@@ -113,6 +116,7 @@ public class Poller extends UntypedActor {
 				parsedSuccessfully=false;
 			}
 		}
+		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
 		rl.update(parsedSuccessfully, true, allMsgs+"\nReceived data:"+synopsis+"...", System.currentTimeMillis());
 		rl.save();
 	}

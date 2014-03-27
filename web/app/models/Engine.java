@@ -68,7 +68,7 @@ public class Engine {
 			out.close();
 			httpCon.getInputStream();
 		} catch (Exception e) {
-			Logger.error("Failed to tell Engine to rebuild parsers!"+e);
+			Logger.error("Failed to tell Engine to rebuild parsers! "+e);
 			return false;
 		}
 		return true;

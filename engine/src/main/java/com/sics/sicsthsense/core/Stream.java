@@ -156,6 +156,7 @@ public class Stream {
 		// add to stream
 		for (DataPoint p: newPoints) {
 			storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
+			storage.updatedStream(getId(), p.getTimestamp());
 			testTriggers(p);
 		}
 

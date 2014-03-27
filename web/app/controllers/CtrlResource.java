@@ -207,7 +207,7 @@ public class CtrlResource extends Controller {
 				List<Stream> streams = new ArrayList<Stream>();
 				return ok(views.html.resourcePage.render(currentUser.resourceList, theForm, streams, true, "Error: Problem compiling the definition of a parser! (likely Regex mistake)"));
 			}
-			Engine.rebuildPollers(resource.owner.getId(),id);
+			Resource.rebuildEngineResource(resource.owner.getId(),id);
 			return redirect(routes.CtrlResource.getById(id));
 		}
 	}
@@ -435,7 +435,7 @@ public class CtrlResource extends Controller {
 		// check permission?
 		//Resource resource = Resource.getById(resourceId);
 		Resource.delete(id);
-		//Engine.rebuildPollers(resource.owner.getId(),id);
+		//Resource.rebuildEngineResource(resource.owner.getId(),id);
 		return redirect(routes.CtrlResource.resources());
 	}
 
