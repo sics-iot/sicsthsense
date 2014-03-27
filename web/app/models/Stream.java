@@ -234,7 +234,8 @@ public class Stream extends Model implements Comparable<Stream> {
     }
 
     public Boolean hasData() {
-        return lastUpdated != 0L;
+				return true;
+        //return lastUpdated != 0L;
     }
 
     public boolean post(double data, long time) {
