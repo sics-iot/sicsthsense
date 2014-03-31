@@ -356,6 +356,10 @@ public interface StorageDAO {
 	@Mapper(DataPointMapper.class)
   List<DataPoint> findPointsByStreamIdSince(@Bind("stream_id") long stream_id, @Bind("from") long from, @Bind("until") long until);
 
+  @SqlQuery("SELECT * FROM data_point_double WHERE stream_id = :stream_id AND timestamp > :from LIMIT :limit")
+	@Mapper(DataPointMapper.class)
+  List<DataPoint> findPointsByStreamIdSinceLimit(@Bind("stream_id") long stream_id, @Bind("from") long from, @Bind("limit") int limit);
+
   @SqlUpdate("INSERT INTO data_point_double(stream_id, data, timestamp) VALUES (:stream_id, :data, :timestamp)")
   void insertDataPoint(@Bind("stream_id") long stream_id, @Bind("data") double data, @Bind("timestamp") long timestamp);
 

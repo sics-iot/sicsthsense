@@ -196,7 +196,7 @@ public class StreamResource {
 	@Path("/{streamId}/data")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
-	public Response getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("50") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
+	public Response getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("-1") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
 		List<DataPoint> rv; // return value before conversion
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
@@ -209,15 +209,26 @@ public class StreamResource {
 			}
 		}
 		//logger.info("Getting stream: "+streamId);
+		boolean limitSet=true;
+		int limitValue = limit.get();
+		if (limit.get()==-1) {
+			limitSet=false; 
+			limitValue=50; // give default value
+		} 
+		
 
-		if (from.get() != -1) { // points since FROM
-			if (until.get() != -1) {
+		if (from.get() != -1) { // from is set
+			if (until.get() != -1) { // until is set
 				rv = storage.findPointsByStreamIdSince(stream.getId(), from.get(), until.get());
-			} else {
-				rv = storage.findPointsByStreamIdSince(stream.getId(), from.get());
+			} else { // until is not set
+				if (limitSet) { // limit was set
+					rv = storage.findPointsByStreamIdSinceLimit(stream.getId(), from.get(), limitValue);
+				} else { // limit was not set, only from
+					rv = storage.findPointsByStreamIdSince(stream.getId(), from.get());
+				}
 			}
 		} else { // just get the most recent LIMIT points
-			rv = storage.findPointsByStreamId(stream.getId(), limit.get());
+			rv = storage.findPointsByStreamId(stream.getId(), limitValue);
 			Collections.reverse(rv);
 		}
 
