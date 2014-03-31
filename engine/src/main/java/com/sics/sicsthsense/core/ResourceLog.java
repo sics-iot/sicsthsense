@@ -250,7 +250,7 @@ public class ResourceLog {
 			this.message,
 			1	
 		);
-		logger.info("Just updated resource log:"+this.resourceId);
+		//logger.info("Just updated resource log:"+this.resourceId);
 	}
 
 	public void updateParsedSuccessfully(boolean parsedSuccessfully) {

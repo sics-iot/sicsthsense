@@ -72,7 +72,7 @@ public class ParseData {
 
 	// Apply this parser to the supplied data
 	public void apply(Parser parser, String data) throws Exception {
-		logger.info("apply()");
+		//logger.info("apply()");
 		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
 		Long currentTime = System.currentTimeMillis();
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
@@ -103,10 +103,13 @@ public class ParseData {
 			for (int i = 1; i < levels.length; i++) {
 					//Logger.info(levels[i]);
 					node = node.get(levels[i]);
-					if (node == null) { logger.error("Root is NULL!"); return false; }
+					if (node == null) { 
+						//logger.error("Root is NULL!"); 
+						return false; 
+					}
 			}
 
-			logger.info("Will negotiate");
+			//logger.info("Will negotiate");
 			if (node.isValueNode()) { // it is a simple primitive
 					String value = node.asText();
 					// the following should exception and bubble up so we know this parser failed!
