@@ -56,7 +56,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	 * 
 	 */
     private static final long serialVersionUID = -8823372604684774587L;
-		static private int pageSize = 5;
+		static private int pageSize = 8;
 
     /* Type of data points this stream stores */
     public static enum StreamType {
