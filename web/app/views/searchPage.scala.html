@@ -1,4 +1,4 @@
-@(resources: List[Resource], streams: List[Stream], query: String, message: String="")
+@(resources: List[Resource], streams: List[Stream], query: String, page:Integer=0, message: String="")
 
 @import helper._
 
@@ -31,6 +31,13 @@
 			@vstream.includeStream(stream)
 			<hr class="dashed" />
 		}
+		<ul class="pager">
+			@if(page>0) {
+			<li><a href="/explore?p=@{page-1}">Previous</a></li>
+			}
+				<li><a href="/explore?p=@{page+1}">Next</a></li>
+		</ul>
+
 	} else {
 			No matches available!<br /> <br /> View/add your own through the <a href="/resources">Resources page</a>.
 	}

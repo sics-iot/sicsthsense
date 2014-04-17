@@ -63,10 +63,11 @@ import views.html.resourcePage;
 import views.html.resourcesPage;
 import java.util.regex.PatternSyntaxException;
 
+
 public class CtrlResource extends Controller {
 
-	static private Form<SkeletonResource> skeletonResourceForm = Form
-			.form(SkeletonResource.class);
+	static private int pageSize = 5;
+	static private Form<SkeletonResource> skeletonResourceForm = Form.form(SkeletonResource.class);
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
 
 	// static private Form<ResourceLogView> logViewForm =
@@ -112,7 +113,7 @@ public class CtrlResource extends Controller {
 			}
 		}
 
-		return redirect(routes.CtrlResource.resources());
+		return redirect(routes.CtrlResource.resources(0));
 	}
 
 	// check the JSON describes a new Resource sufficiently
@@ -375,7 +376,7 @@ public class CtrlResource extends Controller {
 				// added Resource
 				return redirect(routes.CtrlResource.getById(submitted.id));
 			}
-			return redirect(routes.CtrlResource.resources());
+			return redirect(routes.CtrlResource.resources(0));
 		}
 	}
 
@@ -411,12 +412,12 @@ public class CtrlResource extends Controller {
 
 	//only list root resources (parent =null)
 	@Security.Authenticated(Secured.class)
-	public static Result resources() {
+	public static Result resources(Integer p) {
 		User currentUser = Secured.getCurrentUser();
-		List<Resource> rootResourcesList = Resource.find
-				.select("id, owner, label, parent").where().eq("owner", currentUser)
-				.eq("parent", null).orderBy("label asc").findList();
-		return ok(resourcesPage.render(rootResourcesList, resourceForm, ""));
+		Logger.info("page: "+p.toString());
+		List<Resource> rootResourcesList = Resource.find.select("id, owner, label, parent").where().eq("owner", currentUser)
+				.eq("parent", null).orderBy("label asc").findPagingList(pageSize).getPage(p.intValue()).getList();
+		return ok(resourcesPage.render(rootResourcesList, resourceForm, p, ""));
 	}
 
 	@Security.Authenticated(Secured.class)
@@ -437,7 +438,7 @@ public class CtrlResource extends Controller {
 		//Resource resource = Resource.getById(resourceId);
 		Resource.delete(id);
 		//Resource.rebuildEngineResource(resource.owner.getId(),id);
-		return redirect(routes.CtrlResource.resources());
+		return redirect(routes.CtrlResource.resources(0));
 	}
 
 	@Security.Authenticated(Secured.class)

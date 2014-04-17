@@ -56,6 +56,7 @@ public class Stream extends Model implements Comparable<Stream> {
 	 * 
 	 */
     private static final long serialVersionUID = -8823372604684774587L;
+		static private int pageSize = 5;
 
     /* Type of data points this stream stores */
     public static enum StreamType {
@@ -529,27 +530,22 @@ public class Stream extends Model implements Comparable<Stream> {
         return file.getPath().compareTo(other.file.getPath());
     }
 
-    public static List<Stream> availableStreams(User currentUser) {
+    public static List<Stream> availableStreams(User currentUser, Integer p) {
         List<Stream> available =
                 find.where().or(Expr.eq("publicSearch", true), Expr.eq("owner", currentUser))
-                        .orderBy("owner").orderBy("last_updated desc").findList();
+                        .orderBy("owner").orderBy("last_updated desc").findPagingList(pageSize).getPage(p.intValue()).getList();
         return available;
     }
 
     // get the recently updated public streams that are not followed by currentUser
     public static List<Stream> getLastUpdatedStreams(User currentUser, int count) {
-        List<Stream> available =
-                find.where()
-                        .and(
-                        // Expr.and( Expr.eq("publicSearch", true), Expr.eq("publicAccess", true) ),
-                        Expr.eq("publicSearch", true), Expr.ne("owner", currentUser))
-                        // do not include already followed streams
-                        .not(Expr.in(
-                                "id",
-                                Stream.find.where().join("followingUsers").where()
-                                        .eq("followingUsers.id", currentUser.id).findIds())) // User.find.where().join("streams").where().eq("id",
-                                                                                             // currentUser.id)))
-                        .orderBy("lastUpdated").setMaxRows(count).findList();
+        List<Stream> available = find.where().and(
+								// Expr.and( Expr.eq("publicSearch", true), Expr.eq("publicAccess", true) ),
+								Expr.eq("publicSearch", true), Expr.ne("owner", currentUser))
+								// do not include already followed streams
+								.not(Expr.in( "id", Stream.find.where().join("followingUsers").where().eq("followingUsers.id", currentUser.id).findIds())) 
+								// User.find.where().join("streams").where().eq("id",currentUser.id)))
+								.orderBy("lastUpdated").setMaxRows(count).findList();
         return available;
     }
 

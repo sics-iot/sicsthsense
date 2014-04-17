@@ -79,7 +79,7 @@ public class Application extends Controller {
   	User currentUser = Secured.getCurrentUser();
 		DynamicForm dynamicForm = Form.form().bindFromRequest();
 		String q = dynamicForm.field("q").value();
-		Logger.warn("q: "+q);
+		Integer p = Integer.parseInt(dynamicForm.field("p").value());
 		List<Resource> matches = new ArrayList<Resource>();
 		IndexQuery<Indexer> indexQuery = Indexer.find.query();
 		indexQuery.setBuilder(QueryBuilders.multiMatchQuery("description",q));
@@ -100,13 +100,13 @@ public class Application extends Controller {
 			}
 		}
 		//Resources.availableResources(currentUser);
-    return ok(searchPage.render(matches,Stream.availableStreams(currentUser),q, ""));
+    return ok(searchPage.render(matches,Stream.availableStreams(currentUser,p),q, 0,""));
   }
   
-  public static Result explore() {
+  public static Result explore(Integer p) {
   	User currentUser = Secured.getCurrentUser();
 		List<Resource> available = Resource.availableResources(currentUser);
-    return ok(searchPage.render(available,Stream.availableStreams(currentUser),null, ""));
+    return ok(searchPage.render(available,Stream.availableStreams(currentUser,p),null, p.intValue(), ""));
   }
   
   public static Result streams() {
@@ -115,7 +115,7 @@ public class Application extends Controller {
   }
 
   public static Result resources() {
-    return CtrlResource.resources();
+    return CtrlResource.resources(0);
   }
   public static Result sitemap() {
     return ok(sitemap.render(""));
