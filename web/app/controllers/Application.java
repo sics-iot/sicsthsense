@@ -71,7 +71,7 @@ public class Application extends Controller {
   
   public static Result home() {
   	User currentUser = Secured.getCurrentUser();
-  	List<Stream> lastUpdatedPublic = Stream.getLastUpdatedStreams(currentUser, 10);
+  	List<Stream> lastUpdatedPublic = Stream.getLastUpdatedStreams(currentUser, 15);
     return ok(homePage.render(currentUser.followedStreams, lastUpdatedPublic, ""));
   }
   

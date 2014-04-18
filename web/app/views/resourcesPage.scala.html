@@ -66,9 +66,13 @@
 			<fieldset>
 		</div></div>
 	</div>
+	<br />
 		<ul class="pager">
+			<lh><b>Page @{page}&nbsp;</b> </lh>
 			@if(page>0) {
 			<li><a href="/resources?p=@{page-1}">Previous</a></li>
+			} else {
+			<li><a>Previous</a></li>
 			}
 				<li><a href="/resources?p=@{page+1}">Next</a></li>
 		</ul>

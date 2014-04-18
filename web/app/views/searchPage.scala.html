@@ -22,18 +22,30 @@
 		@if((query!=null) && (query!="")) {
 		<Legend>Search results for "@query"</Legend>
 		} else {
-		<Legend>Search results</Legend>
+		<Legend>Streams</Legend>
 		}
-
+		<ul class="pager">
+			<lh><b>Page @{page}&nbsp;</b> </lh>
+			@if(page>0) {
+			<li><a href="/explore?p=@{page-1}">Previous</a></li>
+			} else {
+			<li><a>Previous</a></li>
+			}
+				<li><a href="/explore?p=@{page+1}">Next</a></li>
+		</ul>
 	@if(streams.length > 0) {
 		@for(stream <- streams) {
 			@**vstream.includeStreamResult(stream)*@
 			@vstream.includeStream(stream)
 			<hr class="dashed" />
 		}
+		<br \>
 		<ul class="pager">
+			<lh><b>Page @{page}&nbsp;</b> </lh>
 			@if(page>0) {
 			<li><a href="/explore?p=@{page-1}">Previous</a></li>
+			} else {
+			<li><a>Previous</a></li>
 			}
 				<li><a href="/explore?p=@{page+1}">Next</a></li>
 		</ul>
