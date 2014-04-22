@@ -1,4 +1,9 @@
 This is your new Play 2.0 application
 =====================================
 
-This file will be packaged with your application, when using `play dist`.
+To install Play go to: http://www.playframework.com/
+
+This file will be packaged with your application, when using `play dist` it can then be started with `play start`.
+
+If you would like to simply run it in a live testing mode then just `play run` will work.
+
