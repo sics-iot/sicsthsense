@@ -40,9 +40,9 @@ import models.User;
 import models.Vfile;
 import controllers.CtrlResource;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import play.Logger;
 import play.data.Form;
@@ -390,19 +390,18 @@ public class CtrlStream extends Controller {
 		JsonNode node = root;
 
 		if (node.isValueNode()) { // it is a simple primitive
-			Logger.info("posting: " + node.getDoubleValue() + " "
+			Logger.info("posting: " + node.asDouble() + " "
 					+ Utils.currentTime());
-			return stream.post(node.getDoubleValue(), Utils.currentTime());
+			return stream.post(node.asDouble(), Utils.currentTime());
 
 		} else if (node.get("value") != null) { // it may be value:X
-			double value = node.get("value").getDoubleValue();
+			double value = node.get("value").asDouble();
 			// should be resource timestamp
 
 			if (node.get("time") != null) { // it may have time:Y
-				currentTime = node.get("time").getLongValue();
+				currentTime = node.get("time").asLong();
 			}
-			Logger.info("posting: " + node.getDoubleValue() + " "
-					+ Utils.currentTime());
+			Logger.info("posting: " + node.asDouble() + " " + Utils.currentTime());
 			return stream.post(value, currentTime);
 		}
 		return false;

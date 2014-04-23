@@ -239,3 +239,9 @@ img.screenshot {
 	margin-left: auto; 
 	margin-right: auto; 
 }
+
+#map_canvas img { max-width: none; }
+.gm-style img { max-width: none; }
+.gm-style label { width: auto; display: inline; }
+
+

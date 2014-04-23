@@ -39,7 +39,9 @@ import javax.persistence.*;
 
 import com.avaje.ebean.*;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import play.Logger;
 import play.db.ebean.*;

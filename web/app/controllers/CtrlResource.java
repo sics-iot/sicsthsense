@@ -43,9 +43,9 @@ import models.Vfile;
 import models.Engine;
 import controllers.Utils;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import com.avaje.ebean.Ebean;
 
@@ -272,7 +272,7 @@ public class CtrlResource extends Controller {
 	public static void parseJsonNode(JsonNode node, SkeletonResource skeleton,
 			String parents) {
 		// descend to all nodes to find all primitive element paths...
-		Iterator<String> nodeIt = node.getFieldNames();
+		Iterator<String> nodeIt = node.fieldNames();
 		while (nodeIt.hasNext()) {
 			String field = nodeIt.next();
 			// Logger.info("field: "+field);
@@ -588,7 +588,7 @@ public class CtrlResource extends Controller {
   //@Security.Authenticated(Secured.class)
   public static void parseJsonNode(Resource resource, JsonNode node, String parents) {
     // descend to all nodes to find all primitive element paths...
-    Iterator<String> nodeIt = node.getFieldNames();
+    Iterator<String> nodeIt = node.fieldNames();
     while (nodeIt.hasNext()) {
       String field = nodeIt.next();
       //Logger.info("field: "+field);

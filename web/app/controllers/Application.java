@@ -29,7 +29,6 @@
 
 package controllers;
 
-import index.Indexer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,6 @@ import models.Stream;
 import models.User;
 import models.Setting;
 
-import org.elasticsearch.index.query.QueryBuilders;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -60,8 +58,10 @@ import views.html.streamsPage;
 import views.html.sitemap;
 import views.html.userManagementPage;
 
-import com.github.cleverage.elasticsearch.IndexQuery;
-import com.github.cleverage.elasticsearch.IndexResults;
+//import org.elasticsearch.index.query.QueryBuilders;
+//import com.github.cleverage.elasticsearch.IndexQuery;
+//import com.github.cleverage.elasticsearch.IndexResults;
+//import index.Indexer;
 
 @Security.Authenticated(Secured.class)
 public class Application extends Controller {
@@ -81,7 +81,7 @@ public class Application extends Controller {
 		String q = dynamicForm.field("q").value();
 		Integer p = Integer.parseInt(dynamicForm.field("p").value());
 		List<Resource> matches = new ArrayList<Resource>();
-		IndexQuery<Indexer> indexQuery = Indexer.find.query();
+		/*IndexQuery<Indexer> indexQuery = Indexer.find.query();
 		indexQuery.setBuilder(QueryBuilders.multiMatchQuery("description",q));
 		IndexResults<Indexer> indexResults = null;
 		try {
@@ -89,7 +89,6 @@ public class Application extends Controller {
 		} catch (Exception e) {
 			Logger.warn("Search execution failed");
 		}
-
 		if (indexResults != null) {
 			for (Indexer result: indexResults.results) {
 				if (result.id == null) { Logger.error("Index id was null!"); continue; }
@@ -101,6 +100,8 @@ public class Application extends Controller {
 		}
 		//Resources.availableResources(currentUser);
     return ok(searchPage.render(matches,Stream.availableStreams(currentUser,p),q, 0,""));
+*/
+		return TODO;
   }
   
   public static Result explore(Integer p) {

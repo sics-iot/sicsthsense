@@ -41,7 +41,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import play.Logger;
 import play.db.ebean.Model;
@@ -337,18 +337,18 @@ public class StreamParser extends Model {
 
         if (node.isValueNode()) { // it is a simple primitive
             //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
-            return stream.post(node.getDoubleValue(), Utils.currentTime());
+            return stream.post(node.asDouble(), Utils.currentTime());
 
         } else if (node.get("value") != null) { // it may be value:X
-            double value = node.get("value").getDoubleValue();
+            double value = node.get("value").asDouble();
             // should be resource timestamp
 
             if (node.get("time") != null) { // it may have time:Y
                 if (timeformat != null && !"".equalsIgnoreCase(timeformat.trim())
                         && !"unix".equalsIgnoreCase(timeformat.trim())) {
-                    currentTime = parseDateTime(node.get("time").getTextValue());
+                    currentTime = parseDateTime(node.get("time").asText());
                 } else {
-                    currentTime = node.get("time").getLongValue();
+                    currentTime = node.get("time").asLong();
                 }
             }
             //Logger.info("posting: " + node.getDoubleValue() + " " + Utils.currentTime());
