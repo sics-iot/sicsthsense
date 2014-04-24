@@ -161,6 +161,7 @@ public class Stream extends Model implements Comparable<Stream> {
         this(null, null, StreamType.UNDEFINED);
     }
 
+
     public void updateStream(Stream modified) {
         this.description = modified.description;
         this.longitude = modified.longitude;
@@ -235,8 +236,12 @@ public class Stream extends Model implements Comparable<Stream> {
     }
 
     public Boolean hasData() {
-				return true;
         //return lastUpdated != 0L;
+        List<? extends DataPoint> set = DataPointDouble.find.where().eq("stream", this).setMaxRows(1).findList();
+				if (set.size()==0) {
+					return false;
+				} 
+				return true;
     }
 
     public boolean post(double data, long time) {
@@ -272,8 +277,7 @@ public class Stream extends Model implements Comparable<Stream> {
         return false;
     }
 
-    public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(Long.class,
-            Stream.class);
+    public static Model.Finder<Long, Stream> find = new Model.Finder<Long, Stream>(Long.class, Stream.class);
 
     public static Stream findByKey(String key) {
         if (key == null) {
@@ -326,13 +330,9 @@ public class Stream extends Model implements Comparable<Stream> {
     public List<? extends DataPoint> getDataPoints() {
         List<? extends DataPoint> set = null;
         if (type == StreamType.STRING) {
-            set =
-                    DataPointString.find.where().eq("stream", this).orderBy("timestamp desc")
-                            .findList();
+            set = DataPointString.find.where().eq("stream", this).orderBy("timestamp desc") .findList();
         } else if (type == StreamType.DOUBLE) {
-            set =
-                    DataPointDouble.find.where().eq("stream", this).orderBy("timestamp desc")
-                            .findList();
+            set = DataPointDouble.find.where().eq("stream", this).orderBy("timestamp desc") .findList();
         }
         return set;
     }
@@ -345,13 +345,9 @@ public class Stream extends Model implements Comparable<Stream> {
         }
         List<? extends DataPoint> set = null;
         if (type == StreamType.STRING) {
-            set =
-                    DataPointString.find.where().eq("stream", this).setMaxRows((int) tail)
-                            .orderBy("timestamp desc").findList();
+            set = DataPointString.find.where().eq("stream", this).setMaxRows((int) tail) .orderBy("timestamp desc").findList();
         } else if (type == StreamType.DOUBLE) {
-            set =
-                    DataPointDouble.find.where().eq("stream", this).setMaxRows((int) tail)
-                            .orderBy("timestamp desc").findList();
+            set = DataPointDouble.find.where().eq("stream", this).setMaxRows((int) tail) .orderBy("timestamp desc").findList();
         }
         return set;
     }
@@ -363,13 +359,9 @@ public class Stream extends Model implements Comparable<Stream> {
     public List<? extends DataPoint> getDataPointsSince(long since) {
         List<? extends DataPoint> set = null;
         if (type == StreamType.STRING) {
-            set =
-                    DataPointString.find.where().eq("stream", this).ge("timestamp", since)
-                            .orderBy("timestamp desc").findList();
+            set = DataPointString.find.where().eq("stream", this).ge("timestamp", since) .orderBy("timestamp desc").findList();
         } else if (type == StreamType.DOUBLE) {
-            set =
-                    DataPointDouble.find.where().eq("stream", this).ge("timestamp", since)
-                            .orderBy("timestamp desc").findList();
+            set = DataPointDouble.find.where().eq("stream", this).ge("timestamp", since) .orderBy("timestamp desc").findList();
         }
         // Logger.info(this.id + " : Points since: " + since + set.toString());
         return set;
