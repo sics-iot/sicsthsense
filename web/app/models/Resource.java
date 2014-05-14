@@ -496,9 +496,11 @@ public class Resource extends Operator {
 			} catch (java.net.ConnectException e) {
 				Logger.error("SicsthSense Engine server seems uncontactable!");
 			} catch (IOException e) {
-				 e.printStackTrace();
+				Logger.error("Problem contacting SicsthSense Engine server!");
+				//e.printStackTrace();
 			} catch (Exception e) {
-				 e.printStackTrace();
+				Logger.error("Problem contacting SicsthSense Engine server!");
+				//e.printStackTrace();
 			}
 			//return result;
 		}
