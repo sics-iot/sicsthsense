@@ -3,7 +3,9 @@ This is your new Play 2.0 application
 
 To install Play go to: http://www.playframework.com/
 
-This file will be packaged with your application, when using `play dist` it can then be started with `play start`.
+There is a default configuration file in 'conf/application.conf.default' simply copy this to 'conf/application.conf' and modify the SQL password.
 
-If you would like to simply run it in a live testing mode then just `play run` will work.
+Your application can be compiled and packaged using `play dist`, it can then be started with `play start`.
+
+If you would like to simply run the web interface in a live testing mode then just `play run` will work. This mode will be slower than dist/start.
 
