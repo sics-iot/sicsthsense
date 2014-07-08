@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
  */
 
 /**
@@ -48,7 +47,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
 #define PRINTF(...) printf(__VA_ARGS__)
 #else
@@ -61,16 +60,10 @@ static const char RESOURCEID[] = "3";
 static const char http_content_type_json[] = "application/json";
 
 /* Maximum 40 chars in host name?: 5 x 8 */
-static char callback_host[40] = "[aaaa::1]";
-static uint16_t callback_port = CALLBACK_PORT;
-static uint16_t callback_interval = SEND_INTERVAL;
-static char callback_path[80] = "/debug/";
-static char callback_appdata[80] = "";
-static char callback_proto[8] = CALLBACK_PROTO;
-static const char *callback_json_path = NULL;
-static struct jsontree_object *tree;
-static struct ctimer periodic_timer;
-long json_time_offset = 0;
+static int size = 10;
+static int port = 10;
+static char host[40] = "[aaaa::1]";
+static char path[80] = "/debug/";
 
 /*---------------------------------------------------------------------------*/
 
@@ -80,34 +73,48 @@ char* make_json() {
 }
 
 char* make_url() {
-	return HOST+"/users/"+USERID+"/resources/"+RESOURCEID+"/data";
+	// no bounds checking!
+	char rv[255];
+	strcpy(rv,HOST);
+	strcat(rv,"/users/"); 
+	strcat(rv,USERID); 
+	strcat(rv,"/resources/"); 
+	strcat(rv,RESOURCEID); 
+	strcat(rv,"/data"); 
+	return rv;
 }
 
-void post_json(char* json) {
+void post_json() {
 	char* data = make_json();
 	char* url = make_url();
 
 	PRINTF("JSON data: %s\n",data);
 	PRINTF("URL: %s\n",url);
-	/*
-	s = httpd_ws_request(HTTPD_WS_PUT, callback_host, HOST,
-		callback_port, callback_path,
-		http_content_type_json, callback_size, send_values);
-	*/
+	
+	struct httpd_ws_state *s;
+	httpd_ws_script_t send_values = NULL;
+	s = httpd_ws_request(HTTPD_WS_PUT, host, HOST, port, path,
+		http_content_type_json, size, send_values);
 }
 
-PROCESS(program_process, "JSON poster");
 static struct etimer timer;
 
-PROCESS_THREAD(program_process, ev, data) {
-  PROCESS_BEGIN();
-	while (1) {
-		etimer_set(&timer, CLOCK_SECOND);
-		PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
+PROCESS(sense_process, "SICSense process");
+AUTOSTART_PROCESSES(&sense_process);
 
-		post_json();
-	}
+PROCESS_THREAD(sense_process, ev, data) {
+  PROCESS_BEGIN();
+
+  etimer_set(&timer, CLOCK_SECOND*5);
+  while (1) {
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
+
+    post_json();
+    etimer_reset(&timer);
+  }
+  
   PROCESS_END();
 }
+
 
 
