@@ -15,7 +15,9 @@
  */
 package se.sics.sicsthsense.resources.atmosphere;
 
+import java.util.List;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -42,7 +44,7 @@ import se.sics.sicsthsense.model.*;
  * @author Liam McNamara (minor changes)
  */
 //@Path("/users/{user}/resources/{resourceId}")
-@Path("/{user}/resources/{resourceId}/streams/{streamId}/ws")
+@Path("/{userId}/resources/{resourceId}/streams/{streamId}/ws")
 public class AtmosEndpoint {
 
     private @PathParam("streamId") Broadcaster topic;
@@ -68,9 +70,35 @@ public class AtmosEndpoint {
     @POST
     @Broadcast
     @Produces("text/html;charset=ISO-8859-1")
-    public Broadcastable publish(@FormParam("message") String data) {
+    //public Broadcastable publish(@FormParam("message") String data) {
+    public Broadcastable publish(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key, @FormParam("message") String data) {
+			User user = storage.findUserById(userId);
+			Resource resource = Utils.findResourceByIdName(resourceName);
+			Stream stream =			Utils.findStreamByIdName(topic.getID());
+			Utils.checkHierarchy(user,resource,stream);
+			
+			//if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+
 			logger.info(" Just received message: "+data);
 
+			// if parsers are undefined, create them!
+			List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
+			if (parsers==null || parsers.size()==0) { 
+				logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
+				try {
+					// staticness is a mess...
+					parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data); 
+				} catch (Exception e) {
+					//return Utils.resp(Status.BAD_REQUEST, "Error: JSON parsing for auto creation failed!", logger);
+					logger.error("Error: JSON parsing for auto creation failed!");
+					return null;
+				}
+			}
+			//run it through the parsers and update resource log
+			Utils.applyParsers(resource, data);
+
+			// update Resource last_posted
+			storage.postedResource(resource.getId(),System.currentTimeMillis());
       return new Broadcastable(data, "", topic);
     }
 }

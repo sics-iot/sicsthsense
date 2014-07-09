@@ -84,13 +84,8 @@
             var keyc = getKeyCode(event);
             if (keyc == 13 || keyc == 10) {
 
-                var m = " sent using " + detectedTransport;
-                if (detectedTransport == null) {
-                    detectedTransport = getElementByIdValue('transport');
-                    m = " sent trying to use " + detectedTransport;
-                }
-
-                subSocket.push({data: 'message=' + getElementByIdValue('phrase') + m});
+								var json = "{ 'value': "+getElementByIdValue('phrase')+"} ";
+								subSocket.push({data: 'message=' + json});
 
                 getElementById('phrase').value = '';
                 return false;
@@ -100,13 +95,8 @@
 
         getElementById('send_message').onclick = function(event) {
 
-            var m = " sent using " + detectedTransport;
-            if (detectedTransport == null) {
-                detectedTransport = getElementByIdValue('transport');
-                m = " sent trying to use " + detectedTransport;
-            }
-
-            subSocket.push({data: 'message=' + getElementByIdValue('phrase') + m});
+						var json = "{ 'value': "+getElementByIdValue('phrase')+"} ";
+            subSocket.push({data: 'message=' + json});
 
             getElementById('phrase').value = '';
             return false;
