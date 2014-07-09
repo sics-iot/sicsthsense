@@ -82,6 +82,8 @@ public class EngineService extends Service<EngineConfiguration> {
     bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
     bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
     bootstrap.addBundle(new AssetsBundle("/assets/atmos", "/atmos"));
+		bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
+
     bootstrap.addBundle(new ViewBundle());
 		bootstrap.addBundle(new DBIExceptionsBundle());
 	}

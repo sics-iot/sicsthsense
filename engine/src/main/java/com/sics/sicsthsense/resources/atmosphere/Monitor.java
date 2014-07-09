@@ -32,12 +32,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.metrics.annotation.Timed;
 import com.google.common.base.Charsets;
@@ -47,8 +51,11 @@ import org.pegdown.PegDownProcessor;
 import java.io.IOException;
 import java.net.URL;
 
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.model.BaseModel;
 import se.sics.sicsthsense.views.PublicFreemarkerView;
+import se.sics.sicsthsense.Utils;
 
 /**
  *
@@ -57,6 +64,12 @@ import se.sics.sicsthsense.views.PublicFreemarkerView;
 @Path("/{userId}/resources/{resourceId}/streams/{streamId}/monitor")
 @Produces(MediaType.TEXT_HTML)
 public class Monitor {
+	private final StorageDAO storage;
+	private final Logger logger = LoggerFactory.getLogger(Monitor.class);
+
+	public Monitor() {
+		this.storage = DAOFactory.getInstance();
+	}
 
   /**
 	 *
@@ -64,16 +77,20 @@ public class Monitor {
   @GET
   @Timed
   //public PublicFreemarkerView monitor() {
-  public String monitor(@PathParam("userId") long userId, @PathParam("resourceId") long resourceId,
-					@PathParam("streamId") String streamId) throws IOException {
-		System.out.println("stream ID: "+streamId);
+  public Response monitor(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName,
+					@PathParam("streamId") String streamName, @QueryParam("key") String key) throws IOException {
+		User user = storage.findUserById(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Stream stream =			Utils.findStreamByIdName(streamName);
+		Utils.checkHierarchy(user,resource,stream);
+		if (!resource.isAuthorised(key) && !user.isAuthorised(key) && !stream.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 
     URL url = Monitor.class.getResource("/views/pub.html");
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();
 		markdown = markdown.replace("%userId%",    String.valueOf(userId));
-		markdown = markdown.replace("%resourceId%",String.valueOf(resourceId));
-		markdown = markdown.replace("%streamId%",  String.valueOf(streamId));
-		return markdown;
+		markdown = markdown.replace("%resourceId%",String.valueOf(resource.getId()));
+		markdown = markdown.replace("%streamId%",  String.valueOf(streamName));
+		return Utils.resp(Status.OK, markdown, null); 
   }
 
 }

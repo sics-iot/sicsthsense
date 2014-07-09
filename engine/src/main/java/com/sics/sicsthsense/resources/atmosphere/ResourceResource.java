@@ -229,7 +229,7 @@ public class ResourceResource {
 			}
 		}
 		//run it through the parsers and update resource log
-		applyParsers(resource.getId(), data);
+		Utils.applyParsers(resource, data);
 
 		// update Resource last_posted
 		storage.postedResource(resource.getId(),System.currentTimeMillis());
@@ -237,28 +237,6 @@ public class ResourceResource {
 		return Utils.resp(Status.OK, "Success", logger);
 	}
 
-	public void applyParsers(long resourceId, String data) {
-		boolean parsedSuccessfully=true;
-		String parseError = "";
-		//logger.info("Applying all parsers to data: "+data);
-		if (parsers==null) { parsers = storage.findParsersByResourceId(resourceId); }
-		for (Parser parser: parsers) {
-			//logger.info("applying a parser "+parser.getInput_parser());
-			try {
-				parseData.apply(parser,data);
-			} catch (Exception e) {
-				parsedSuccessfully=false;
-				logger.error("Parsing "+data+" failed!"+e);
-				parseError += "Parsing "+data+" failed!"+e;
-			}
-		}
-		// append interaction to resource log!
-	//	logger.info("Updating log!");
-		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
-		//TODO: update the actual log message!
-		rl.update(parsedSuccessfully, false, "received POST", System.currentTimeMillis());
-		rl.save();
-	}
 
  
 }

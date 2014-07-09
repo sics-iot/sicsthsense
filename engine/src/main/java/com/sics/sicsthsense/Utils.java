@@ -24,6 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package se.sics.sicsthsense;
 
+import java.util.List;
 import java.util.UUID;
 import java.net.URI;
 
@@ -288,5 +289,36 @@ public class Utils {
 		storage.insertVFile( path,owner_id,type,stream_id);
 		return -1;
 	}
+
+
+	public static void applyParsers(Resource resource, String data) {
+		final StorageDAO storage = DAOFactory.getInstance();
+		final Logger logger = LoggerFactory.getLogger(Utils.class);
+		ParseData parseData = new ParseData(); // should really be static somewhere
+		boolean parsedSuccessfully=true;
+
+		//#long resourceId
+		String parseError = "";
+		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
+		//logger.info("Applying all parsers to data: "+data);
+		if (parsers==null) { parsers = storage.findParsersByResourceId(resource.getId()); }
+		for (Parser parser: parsers) {
+			//logger.info("applying a parser "+parser.getInput_parser());
+			try {
+				parseData.apply(parser,data);
+			} catch (Exception e) {
+				parsedSuccessfully=false;
+				logger.error("Parsing "+data+" failed!"+e);
+				parseError += "Parsing "+data+" failed!"+e;
+			}
+		}
+		// append interaction to resource log!
+	//	logger.info("Updating log!");
+		ResourceLog rl = ResourceLog.createOrUpdate(resource.getId());
+		//TODO: update the actual log message!
+		rl.update(parsedSuccessfully, false, "received POST", System.currentTimeMillis());
+		rl.save();
+	}
+
 
 }

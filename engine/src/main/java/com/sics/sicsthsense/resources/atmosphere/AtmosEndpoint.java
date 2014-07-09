@@ -15,17 +15,24 @@
  */
 package se.sics.sicsthsense.resources.atmosphere;
 
-import org.atmosphere.annotation.Broadcast;
-import org.atmosphere.cpr.Broadcaster;
-import org.atmosphere.jersey.Broadcastable;
-import org.atmosphere.jersey.SuspendResponse;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+
+import org.atmosphere.annotation.Broadcast;
+import org.atmosphere.cpr.Broadcaster;
+import org.atmosphere.jersey.Broadcastable;
+import org.atmosphere.jersey.SuspendResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.sics.sicsthsense.Utils;
+import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.jdbi.*;
+import se.sics.sicsthsense.model.*;
 
 /**
  * Simple PubSub resource that demonstrate many functionality supported by
@@ -38,22 +45,32 @@ import javax.ws.rs.Produces;
 @Path("/{user}/resources/{resourceId}/streams/{streamId}/ws")
 public class AtmosEndpoint {
 
-    private
-    @PathParam("streamId") Broadcaster topic;
+    private @PathParam("streamId") Broadcaster topic;
+		private final Logger logger = LoggerFactory.getLogger(AtmosEndpoint.class);
+		private final StorageDAO storage;
+		public ParseData parseData;
+
+		public AtmosEndpoint() {
+			this.storage = DAOFactory.getInstance();
+			this.parseData = new ParseData();;
+		}
 
     @GET
     public SuspendResponse<String> subscribe() {
-        return new SuspendResponse.SuspendResponseBuilder<String>()
-                .broadcaster(topic)
-                .outputComments(true)
-                .addListener(new EventsLogger())
-                .build();
+			logger.info("Just received subscription");
+      return new SuspendResponse.SuspendResponseBuilder<String>()
+        .broadcaster(topic)
+        .outputComments(true)
+        .addListener(new EventsLogger())
+        .build();
     }
 
     @POST
     @Broadcast
     @Produces("text/html;charset=ISO-8859-1")
-    public Broadcastable publish(@FormParam("message") String message) {
-        return new Broadcastable(message, "", topic);
+    public Broadcastable publish(@FormParam("message") String data) {
+			logger.info(" Just received message: "+data);
+
+      return new Broadcastable(data, "", topic);
     }
 }

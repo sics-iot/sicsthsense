@@ -36,9 +36,10 @@
 						resourceId = '%resourceId%';
 						streamId = '%streamId%';
             var request = {
-                url : 'http://localhost:8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws", //getElementByIdValue('topic'),
+                url : 'http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws",
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
+						console.log('http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws")
 
             var ul = document.createElement('ul');
             document.body.appendChild(ul)
