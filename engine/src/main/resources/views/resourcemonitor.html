@@ -36,10 +36,10 @@
 						resourceId = '%resourceId%';
 						streamId = '%streamId%';
             var request = {
-                url : 'http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws",
+                url : 'http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+'"/ws",
                 trackMessageLength : true,
                 transport: getElementByIdValue('transport')};
-						console.log('http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+'/streams/'+streamId+"/ws")
+						console.log('http://'+window.location.hostname+':8080/users/'+userId+'/resources/'+resourceId+"/ws")
 
             var ul = document.createElement('ul');
             document.body.appendChild(ul)
@@ -84,7 +84,7 @@
             var keyc = getKeyCode(event);
             if (keyc == 13 || keyc == 10) {
 
-								var json = "{ 'value': "+getElementByIdValue('phrase')+"} ";
+								var json = '{ "value": '+getElementByIdValue('phrase')+"} ";
 								subSocket.push({data: 'message=' + json});
 
                 getElementById('phrase').value = '';
@@ -95,7 +95,7 @@
 
         getElementById('send_message').onclick = function(event) {
 
-						var json = "{ 'value': "+getElementByIdValue('phrase')+"} ";
+						var json = '{ "value": '+getElementByIdValue('phrase')+"} ";
             subSocket.push({data: 'message=' + json});
 
             getElementById('phrase').value = '';
@@ -123,7 +123,7 @@
     </style>
 </head>
 <body>
-    <h1>Stream monitor using Atmosphere's Javascript Library<a href="https://github.com/Atmosphere/atmosphere-javascript">*</a></h1>
+    <h1>Resource monitor using Atmosphere's Javascript Library<a href="https://github.com/Atmosphere/atmosphere-javascript">*</a></h1>
     <h3>Select transport to use:</h3>
     <div id='select_transport'>
         <select id="transport">
@@ -140,7 +140,7 @@
     <br/>
     <div id='sendMessage' class='hidden'>
 	    <h2 id="s_h" class='hidden'>POST data value:</h2>
-      <input id='phrase' type='number' onkeypress="return isNumber(event)"/>
+      <input id='phrase' type='textarea' onkeypress="return isNumber(event)"/>
       <input id='send_message' class='button' type='submit' name='Publish' value='Post'/>
     <br/>
     <br/>

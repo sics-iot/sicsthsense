@@ -37,22 +37,19 @@ import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.model.*;
 
 /**
- * Simple PubSub resource that demonstrate many functionality supported by
- * Atmosphere Javascript and Atmosphere Jersey extension.
  *
  * @author Jeanfrancois Arcand
  * @author Liam McNamara (minor changes)
  */
-//@Path("/users/{user}/resources/{resourceId}")
 @Path("/{userId}/resources/{resourceId}/streams/{streamId}/ws")
-public class AtmosEndpoint {
+public class WSStream {
 
     private @PathParam("streamId") Broadcaster topic;
-		private final Logger logger = LoggerFactory.getLogger(AtmosEndpoint.class);
+		private final Logger logger = LoggerFactory.getLogger(WSStream.class);
 		private final StorageDAO storage;
 		public ParseData parseData;
 
-		public AtmosEndpoint() {
+		public WSStream () {
 			this.storage = DAOFactory.getInstance();
 			this.parseData = new ParseData();;
 		}
@@ -76,29 +73,16 @@ public class AtmosEndpoint {
 			Resource resource = Utils.findResourceByIdName(resourceName);
 			Stream stream =			Utils.findStreamByIdName(topic.getID());
 			Utils.checkHierarchy(user,resource,stream);
-			
+
 			//if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+			DataPoint datapoint = new DataPoint(data);
+			//logger.info("Publish: "+datapoint.toString());
+			datapoint.setStreamId(stream.getId()); // keep consistency
+			Utils.insertDataPoint(datapoint); // insert first to fail early
+			topic.broadcast(datapoint.toString());
+			stream.notifyDependents(); // notify all streams that depend on this
+			stream.testTriggers(datapoint); // see if any of the actions are triggered
 
-			logger.info(" Just received message: "+data);
-
-			// if parsers are undefined, create them!
-			List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
-			if (parsers==null || parsers.size()==0) { 
-				logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
-				try {
-					// staticness is a mess...
-					parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data); 
-				} catch (Exception e) {
-					//return Utils.resp(Status.BAD_REQUEST, "Error: JSON parsing for auto creation failed!", logger);
-					logger.error("Error: JSON parsing for auto creation failed!");
-					return null;
-				}
-			}
-			//run it through the parsers and update resource log
-			Utils.applyParsers(resource, data);
-
-			// update Resource last_posted
-			storage.postedResource(resource.getId(),System.currentTimeMillis());
-      return new Broadcastable(data, "", topic);
+      return new Broadcastable(datapoint.toJson(), "", topic);
     }
 }

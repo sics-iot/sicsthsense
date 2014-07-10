@@ -28,6 +28,13 @@
  * */
 package se.sics.sicsthsense.core;
 
+import org.codehaus.jackson.JsonProcessingException;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -42,6 +49,8 @@ public class DataPoint {
 	@JsonProperty
 	private double value;
 
+	private final Logger logger = LoggerFactory.getLogger(DataPoint.class);
+
 	public DataPoint() {
 		id=-1;
 		streamId=-1;
@@ -49,14 +58,17 @@ public class DataPoint {
 		value=-1;
 	}
 	public DataPoint(double value) {
+		super();
 		this.timestamp	= System.currentTimeMillis();
 		this.value			= value;
 	}
 	public DataPoint(long timestamp, double value) {
+		super();
 		this.timestamp	= timestamp;
 		this.value			= value;
 	}
 	public DataPoint(long streamId, long timestamp, double value) {
+		super();
 		this.streamId	= streamId;
 		this.timestamp	= timestamp;
 		this.value			= value;
@@ -67,9 +79,30 @@ public class DataPoint {
 		this.timestamp	= timestamp;
 		this.value			= value;
 	}
+	public DataPoint(String json) {
+		super();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode root = null;
+		try {
+			root = mapper.readTree(json);
+		} catch (JsonProcessingException e) {
+			logger.error("JSON processing failed: "+json+"\t"+ e.getMessage());
+		} catch (IOException e) {
+			logger.error("JSON IO Error: "+json);
+		}
+		try {
+			// we need a 'value' element
+			this.value = root.findValue("value").getValueAsDouble();
+			// optional 'timestamp'
+			try { this.timestamp = root.findValue("timestamp").getValueAsLong(); } catch (Exception e) {}
+		} catch (Exception e) { logger.error("Lacking 'value' JSON field! "+json); }
+	}
 
 	public String toString() {
-		return getValue()+" @ "+getTimestamp();
+		return getValue()+" @ "+getTimestamp() +" in Stream: "+getStreamId();
+	}
+	public String toJson() {
+		return "{'value':"+getValue()+", 'timestamp':"+getTimestamp()+"}";
 	}
 
 	public long getId()										{ return id; }
