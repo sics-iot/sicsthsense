@@ -46,10 +46,10 @@
 
 @streamParserGroupLabels(hidden: Boolean, className: String = "") = {
 <div class="@if(hidden){hidden} row-fluid @className controls controls-row streamParsersLabels">
-<span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (Regex/JSON) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("inputParser").id}">Parser (JSON/Regex) @helpMark("Regex for text input or JSON node path for JSON input","postingDataHelp")</span>
 <span class="span3" for="@{myForm("streamParserWrapers")("timeformat").id}">Date/Time format @helpMark("Required if extracting timestamp information along with data","parserHelp")</span>
 <span class="span2" for="@{myForm("streamParserWrapers")("inputType").id}">Content-type @helpMark("Internet media type for incoming data","parserHelp")</span>
-<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Stream File Path @helpMark("File path for generated stream","postingDataHelp")</span>
+<span class="span3" for="@{myForm("streamParserWrapers")("vfilePath").id}">Stream name @helpMark("Path for generated stream","postingDataHelp")</span>
 </div>
 <div class="@if(!hidden){hidden} streamParsersLabelsAddParserText">
 Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span></a> to add parsers.

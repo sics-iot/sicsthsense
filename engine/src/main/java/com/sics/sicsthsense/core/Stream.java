@@ -170,7 +170,11 @@ public class Stream {
 		// update dependents!
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
-			ds.update();
+			if (ds!=null) {
+				ds.update();
+			} else {
+				logger.warn("Dependent stream not found, id:"+dependent);
+			}
 		}
 	}
 
