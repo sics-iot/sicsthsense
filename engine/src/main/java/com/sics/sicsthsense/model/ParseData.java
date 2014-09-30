@@ -114,8 +114,7 @@ public class ParseData {
 					String value = node.asText();
 					// the following should exception and bubble up so we know this parser failed!
 					Double dValue = Double.parseDouble(value); 
-					logger.info("Posting value: " + dValue + " @ " + currentTime+" to stream "+parser.getStream_id());
-					//logger.info("Posting value: " + node.getDoubleValue() + " " + currentTime);
+					//logger.info("Posting value: " + dValue + " @ " + currentTime+" to stream "+parser.getStream_id());
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
 					storage.insertDataPoint(parser.getStream_id(), dValue, System.currentTimeMillis() );
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );

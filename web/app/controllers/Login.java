@@ -84,7 +84,7 @@ public class Login extends Controller {
 		// check database
 		User user = User.getByUserName(username);
 		if (user==null)     { return notFound("User doesnt exist!"); }
-		if (user.password==null or !user.password.equals(User.hash(password))) {
+		if (user.password==null || !user.password.equals(User.hash(password))) {
 			return notFound("Password incorrect: " +user.password+" != "+User.hash(password)+ " : "+password);
 		}
 		return doLogin(user, routes.Application.home());
