@@ -39,12 +39,18 @@ import java.text.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
 
 import se.sics.sicsthsense.model.openid.DiscoveryInformationMemento;
 import se.sics.sicsthsense.model.security.*;
@@ -67,6 +73,7 @@ import se.sics.sicsthsense.model.security.*;
   "openIDIdentifier",
   "authorities"
 })*/
+@JsonInclude(Include.NON_NULL)  
 public class User {
 
   /** * <p>Unique identifier for this entity</p> */
@@ -130,6 +137,8 @@ public class User {
 	}
 	public User(long id, 
 			String username,
+			String email,
+			String passwordDigest,
 			String firstName,
 			String lastName,
 			String description,
@@ -142,6 +151,11 @@ public class User {
 			this();
 			this.id							= id;
 			this.username				= username;
+			this.email          = email;
+
+			// when making a user, ensure the raw password is never stored
+			//if (password!=null) { this.passwordDigest	= new String(Hex.encodeHex(DigestUtils.md5(password))); }
+			this.passwordDigest	= passwordDigest;
 			this.firstName			= firstName;
 			this.lastName				= lastName;
 			this.description		= description;
@@ -178,9 +192,6 @@ public class User {
 	}
 
 	// pull all user details from the parameter user into this object
-	public void copyFrom(User user) {
-		this.id = user.id;
-	}
 	public void update(User user) {
 		this.firstName = user.firstName;
 		this.username  = user.username;
@@ -189,6 +200,8 @@ public class User {
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
 		this.token		 = user.token;
+		this.password  = user.password;
+		this.passwordDigest  = user.passwordDigest;
 	}
 
 	// XXX Need to hash and check password!
@@ -202,14 +215,11 @@ public class User {
 		return false;
 	}
 
-	public List<Resource> getResources() {
+	/*public List<Resource> getResources() {
 		List<Resource> resources = new ArrayList<Resource>();
-		resources.add(new Resource());	
-		resources.add(new Resource());	
-		resources.add(new Resource());	
-		//return storage.findResourcesByOwnerId(1);
+		return storage.findResourcesByOwnerId(getId());
 		return resources;
-	}
+	}*/
 
 	//
 	// Get set methods
@@ -224,6 +234,7 @@ public class User {
   public String getUsername()							{ return username; }
   /** * @return The digested password to provide authentication between the user and the client */
   public String getPasswordDigest()				{ return passwordDigest; }
+  public String getPassword()							{ return password; }
   /** * @return The OpenID identifier */
   public String getOpenIDIdentifier()			{ return openIDIdentifier; }
   /** * @return The session key */
@@ -245,6 +256,7 @@ public class User {
   /** * <h3>Note that it is expected that Jasypt or similar is used prior to storage</h3>
    * @param passwordDigest The password digest */
   public void setPasswordDigest(String passwordDigest)			{ this.passwordDigest = passwordDigest; }
+  public void setPassword(String password)			            { this.password = password; }
   public void setOpenIDDiscoveryInformationMemento(DiscoveryInformationMemento openIDDiscoveryInformationMemento) {
     this.openIDDiscoveryInformationMemento = openIDDiscoveryInformationMemento;
   }
@@ -254,12 +266,12 @@ public class User {
   public boolean hasAuthority(Authority authority) { return hasAllAuthorities(Sets.newHashSet(authority)); }
 	
 
-
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
       .add("username", username)
       .add("password", "**********")
+      .add("passwordDigest", getPasswordDigest())
       .add("email", email)
       .add("openIDIdentifier", openIDIdentifier)
   //    .add("sessionToken", sessionToken)

@@ -39,7 +39,7 @@
       <fieldset>
         <legend>Sign-in with OpenID</legend>
         <div id="openid_choice">
-          <p>Please click your account provider:</p>
+          <p>Please click your OpenID account provider:</p>
           <div id="openid_btns"></div>
         </div>
         <div id="openid_input_area">
@@ -56,8 +56,8 @@
 		@helper.form(action = routes.Login.authenticatePassword("","","")) {
       <input type="hidden" name="action" value="verify" />
       <fieldset>
-				<legend><b>Sign in with Email/Password</b></legend>
-				<dt>Email</dt>
+				<legend><b>Sign in with Password</b></legend>
+				<dt>Username</dt>
 				<dd><input type="text" name="username" value="" /></dd>
 
 				<dt>Password</dt>

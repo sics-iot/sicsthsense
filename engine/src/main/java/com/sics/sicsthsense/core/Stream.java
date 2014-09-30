@@ -37,10 +37,13 @@ import org.slf4j.LoggerFactory;
 import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 //import org.codehaus.jackson.map.annotate.JsonDeserialise;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.core.functions.*;
 
+@JsonInclude(Include.NON_NULL)
 public class Stream {
 	@JsonProperty
 	protected long id;

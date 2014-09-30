@@ -66,13 +66,14 @@ public interface StorageDAO {
   @SqlQuery("select username from users where id = :id limit 1")
   String findUsernameById(@Bind("id") long id);
 
-  @SqlUpdate("insert into users (username, email, first_name, last_name, creation_date, version, token) VALUES (:username, :email, :first_name, :last_name, NOW(), 1, :token)")
+  @SqlUpdate("insert into users (username, email, first_name, last_name, creation_date, version, token, password) VALUES (:username, :email, :first_name, :last_name, NOW(), 1, :token, :password)")
   void insertUser(
 		@Bind("username")   String username, 
 		@Bind("email")      String email,
 		@Bind("first_name") String first_name,
 		@Bind("last_name")  String last_name,
-		@Bind("token")      String token
+		@Bind("token")      String token,
+		@Bind("password")		String password
 	);
 	
   @SqlUpdate("update resources set username = :username, first_name=:first_name, last_name=:last_name, email where id = :id")
@@ -82,6 +83,7 @@ public interface StorageDAO {
 		@Bind("first_name") String first_name,
 		@Bind("last_name")  String last_name,
 		@Bind("email")      String email
+		//@Bind("password")		String password
 	);
 
 

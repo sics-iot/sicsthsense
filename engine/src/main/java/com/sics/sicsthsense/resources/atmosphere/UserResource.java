@@ -55,6 +55,8 @@ import com.google.common.base.Optional;
 import com.yammer.metrics.annotation.Timed;
 import com.yammer.dropwizard.jdbi.*;
 import com.yammer.dropwizard.db.*;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.core.*;
@@ -92,11 +94,10 @@ public class UserResource {
 		@POST
 		@Timed
 		public Response post(User user) throws Exception {
-			logger.info("making a new user: "+user.toString());
-
-			if (user.getEmail()==null || user.getEmail()=="") { return Utils.resp(Status.BAD_REQUEST, "Error: new User email not set!", logger); }
+			//logger.info("making a new user: "+user.toString());
+			if (user.getEmail()==null || user.getEmail()=="")	        { return Utils.resp(Status.BAD_REQUEST, "Error: new User email not set!", logger); }
 			if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate username: "+user.getUsername()+"!", logger); }
-			if (storage.findUserByEmail(user.getEmail())!=null) { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate email: "+user.getEmail()+"!", logger); }
+			if (storage.findUserByEmail(user.getEmail())!=null)	      { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate email: "+user.getEmail()+"!", logger); }
 			User newuser = new User();
 
 			newuser.update(user);
@@ -107,7 +108,8 @@ public class UserResource {
 				newuser.getEmail(),
 				newuser.getFirstName(),
 				newuser.getLastName(),
-				newuser.getToken()
+				newuser.getToken(),
+				new String(Hex.encodeHex(DigestUtils.md5(newuser.getPassword())))
 			);
 			return Utils.resp(Status.OK, storage.findUserByUsername(newuser.getUsername()), logger);
 		}
