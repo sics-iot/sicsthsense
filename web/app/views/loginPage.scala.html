@@ -4,10 +4,32 @@
 
 @layout("Log In", message, null) {
 
+<div class="row-fluid">
+	<div class="span1 bs-docs-sidebar">
+	</div>
+	  <div id="mainPane" class="span9">
+
 		<br />
        <legend>Welcome to SicsthSense!</legend>
-		SicsthSense is a new cloud platform that makes connecting sensors, actuators, smart phones and online services easier than ever. Through this new platform, users can gather their sensor data, share it in a secure way, look for other’s data, set triggers and interact with objects or services.
+		SicsthSense is a new cloud platform that makes connecting sensors, actuators, smart phones and online services easier than ever. Through this new platform, users can gather their sensor data, share it in a secure way, look for other’s data and interact with any Internet connected objects or services.
 		<br />
+		<br />
+		SicsthSense is an open cloud platform for the Internet of Things.
+		SicsthSense enables low power devices such as sensor nodes and smartphones
+		to easily store their generated data in the cloud. This allows streams of
+		data, and their history, to be made permanently and globally available to
+		users for visualisation, processing and sharing. Moving sensor data
+		computation and monitoring into the cloud enables centralisation of control
+		and redistribution of collected data.
+		<br />
+		<br />
+		This website represents our public instance of the service, you can however
+		download and run your own private instance. <a href="http://docs.sense.sics.se">Full details of how to interact
+		with our platform, how to run your own instance and even Contiki/Android code for
+		programming devices to store data in SicsthSense is available</a>.
+		<br />
+		<br />
+		To use this public instance, please sign in below:
 		<br />
 		<br />
 		@if(Application.canOpenIDLogin()) {
@@ -53,4 +75,10 @@
 			</fieldset>
 		}
 		}
+		<br />
+		<br />
+		<br />
+
+	</div>
+	</div>
 }
