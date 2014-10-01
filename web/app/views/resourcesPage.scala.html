@@ -74,7 +74,7 @@
 			} else {
 			<li><a>Previous</a></li>
 			}
-			@if(CtrlResource.listResourcesLength() < (page+1)*CtrlResource.pageSize) {
+			@if(CtrlResource.listResourcesLength() <= (page+1)*CtrlResource.pageSize) {
 				<li><a>Next</a></li>
 			} else {
 				<li><a href="/resources?p=@{page+1}">Next</a></li>

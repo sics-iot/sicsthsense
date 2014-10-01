@@ -31,7 +31,7 @@
 			} else {
 				<li><a>Previous</a></li>
 			}
-			@if(CtrlStream.listStreamsLength() < (page+1)*CtrlStream.pageSize) {
+			@if(CtrlStream.listStreamsLength() <= (page+1)*CtrlStream.pageSize) {
 				<li><a>Next</a></li>
 			} else {
 				<li><a href="/explore?p=@{page+1}">Next</a></li>
@@ -52,7 +52,7 @@
 			} else {
 				<li><a>Previous</a></li>
 			}
-			@if(CtrlStream.listStreamsLength() < (page+1)*CtrlStream.pageSize) {
+			@if(CtrlStream.listStreamsLength() <= (page+1)*CtrlStream.pageSize) {
 				<li><a>Next</a></li>
 			} else {
 				<li><a href="/explore?p=@{page+1}">Next</a></li>
