@@ -1,4 +1,5 @@
-@()
+@(resources : List[Resource])
+@if(resources.length > 0) {
 <h4>Resources</h4>
 <div class="nav nav-list bs-docs-sidenav">
 	<div id="resourcelist-sidenav">
@@ -6,3 +7,4 @@
 	</div>
 	<br />
 </div>
+}

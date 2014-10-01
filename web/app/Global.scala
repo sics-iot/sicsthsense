@@ -38,6 +38,7 @@ object Global extends GlobalSettings {
     akkaSystem.scheduler.schedule(0.seconds, 5.seconds, periodicMonitor, "tick")
     
     val coapServer = new CoapServer(app.configuration.getInt("coap.port").get)
+
     coapServer.start()
   }
 

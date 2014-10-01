@@ -56,6 +56,7 @@ import views.html.streamPage;
 public class CtrlStream extends Controller {
 
 	static private Form<Stream> streamForm = Form.form(Stream.class);
+	static public int pageSize = 5;
 
 	private static boolean canWrite(User user, Stream stream) {
 		return (stream != null && user != null && stream.owner.equals(user));
@@ -275,6 +276,13 @@ public class CtrlStream extends Controller {
 			return ok(Boolean.toString(stream.setPublicSearch(pub)));
 		}
 		return unauthorized();
+	}
+
+
+	@Security.Authenticated(Secured.class)
+	public static int listStreamsLength() {
+		final User user = Secured.getCurrentUser();
+		return user.streamList.size();
 	}
 	
 //@Security.Authenticated(Secured.class)

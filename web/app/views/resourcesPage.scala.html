@@ -23,7 +23,7 @@
 	<div class="row-fluid">
   	<div class="span2 bs-docs-sidebar" >
 			@** should pass theses parameters(resources, extStreams) **@
-			@manage.navigationMenu() 
+			@manage.navigationMenu(resources) 
     </div>
 
     <div id="mainPane" class="span9">
@@ -35,8 +35,8 @@
 	<fieldset>
 		<legend>Add a new resource</legend>
 		@tbField(myForm("id"), "", "", "hidden")
-		@* @tbField(myForm("label"), "", "span5", "text", false, "Enter resource label", true) *@
-		<input class="span5" type="text" id="label" name="label" value="" placeholder="Enter resource label" onkeypress="return alphanum(event)"  required  />
+		@* @tbField(myForm("label"), "", "span5", "text", false, "Resource label", true) *@
+		<input class="span5" type="text" id="label" name="label" value="" placeholder="Resource label" onkeypress="return alphanum(event)"  required  />
 		@tbField(myForm("pollingUrl"), "", "span5", "url", false, "Resource URI (optional)")
 		<input type="submit" class="span2 btn btn-primary addResourceQuick" value="Add">
 	 </fieldset>
@@ -68,13 +68,17 @@
 	</div>
 	<br />
 		<ul class="pager">
-			<lh><b>Page @{page}&nbsp;</b> </lh>
+			<lh><b>Page @{page}&nbsp;&nbsp;</b> </lh>
 			@if(page>0) {
 			<li><a href="/resources?p=@{page-1}">Previous</a></li>
 			} else {
 			<li><a>Previous</a></li>
 			}
+			@if(CtrlResource.listResourcesLength() < (page+1)*CtrlResource.pageSize) {
+				<li><a>Next</a></li>
+			} else {
 				<li><a href="/resources?p=@{page+1}">Next</a></li>
+			}
 		</ul>
 	<br />
 	}

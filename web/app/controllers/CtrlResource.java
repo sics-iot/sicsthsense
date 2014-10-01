@@ -66,7 +66,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class CtrlResource extends Controller {
 
-	static private int pageSize = 15;
+	static public int pageSize = 5;
 	static private Form<SkeletonResource> skeletonResourceForm = Form.form(SkeletonResource.class);
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
 
@@ -416,7 +416,7 @@ public class CtrlResource extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		Logger.info("page: "+p.toString());
 		List<Resource> rootResourcesList = Resource.find.select("id, owner, label, parent").where().eq("owner", currentUser)
-				.eq("parent", null).orderBy("label asc").findPagingList(pageSize).getPage(p.intValue()).getList();
+				.eq("parent", null).orderBy("id asc").findPagingList(pageSize).getPage(p.intValue()).getList();
 		return ok(resourcesPage.render(rootResourcesList, resourceForm, p, ""));
 	}
 
@@ -741,13 +741,9 @@ public class CtrlResource extends Controller {
 		return ok(result);
 	}
 
-	private static StringBuffer exploreResourceTree(User user, StringBuffer sb,
-			Resource parentResource) {
-		String parentResourceId = (parentResource == null) ? "null"
-				: parentResource.id.toString();
-		List<Resource> subResources = Resource.find
-				.select("id, owner, label, parent").where().eq("owner", user)
-				.eq("parent", parentResource).orderBy("label asc").findList();
+	private static StringBuffer exploreResourceTree(User user, StringBuffer sb, Resource parentResource) {
+		String parentResourceId = (parentResource == null) ? "null" : parentResource.id.toString();
+		List<Resource> subResources = Resource.find.select("id, owner, label, parent").where().eq("owner", user).eq("parent", parentResource).orderBy("id asc").findList();
 		if (subResources != null && subResources.size()>0) {
 			sb.append("\n<ul data-parentResourceId='" + parentResourceId + "' >");
 			for (Resource sr : subResources) {
@@ -761,12 +757,18 @@ public class CtrlResource extends Controller {
 		return sb;
 	}
 
+	// list all resources, for the navigation menu
 	@Security.Authenticated(Secured.class)
 	public static String listResources() {
 		User user = Secured.getCurrentUser();
 		StringBuffer sb = new StringBuffer();
 		sb = exploreResourceTree(user, sb, null);
 		return sb.toString();
+	}
+	@Security.Authenticated(Secured.class)
+	public static int listResourcesLength() {
+		User user = Secured.getCurrentUser();
+		return user.resourceList.size();
 	}
 
 	@Security.Authenticated(Secured.class)

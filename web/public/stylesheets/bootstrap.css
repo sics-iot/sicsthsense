@@ -4029,6 +4029,9 @@ input[type="submit"].btn.btn-mini {
   -moz-border-radius: 15px;
   border-radius: 15px;
 }
+.pager li > a:not([href]) {
+	color: #ddd;
+}
 .pager li > a:hover {
   text-decoration: none;
   background-color: #f5f5f5;
