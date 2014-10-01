@@ -66,7 +66,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class CtrlResource extends Controller {
 
-	static public int pageSize = 5;
+	static public int pageSize = 10;
 	static private Form<SkeletonResource> skeletonResourceForm = Form.form(SkeletonResource.class);
 	static private Form<Resource> resourceForm = Form.form(Resource.class);
 

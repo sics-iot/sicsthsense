@@ -48,6 +48,7 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.annotation.EnumValue;
 
 import controllers.Utils;
+import controllers.CtrlStream;
 
 @Entity
 @Table(name = "streams")
@@ -56,7 +57,6 @@ public class Stream extends Model implements Comparable<Stream> {
 	 * 
 	 */
     private static final long serialVersionUID = -8823372604684774587L;
-		static private int pageSize = 10;
 
     /* Type of data points this stream stores */
     public static enum StreamType {
@@ -523,9 +523,8 @@ public class Stream extends Model implements Comparable<Stream> {
     }
 
     public static List<Stream> availableStreams(User currentUser, Integer p) {
-        List<Stream> available =
-                find.where().or(Expr.eq("publicSearch", true), Expr.eq("owner", currentUser))
-                        .orderBy("owner").orderBy("last_updated desc").findPagingList(pageSize).getPage(p.intValue()).getList();
+        List<Stream> available = find.where().or(Expr.eq("publicSearch", true), Expr.eq("owner", currentUser))
+                        .orderBy("owner").orderBy("id asc").findPagingList(CtrlStream.pageSize).getPage(p.intValue()).getList();
         return available;
     }
 

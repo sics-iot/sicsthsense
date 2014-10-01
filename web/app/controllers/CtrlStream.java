@@ -56,7 +56,7 @@ import views.html.streamPage;
 public class CtrlStream extends Controller {
 
 	static private Form<Stream> streamForm = Form.form(Stream.class);
-	static public int pageSize = 5;
+	static public int pageSize = 8;
 
 	private static boolean canWrite(User user, Stream stream) {
 		return (stream != null && user != null && stream.owner.equals(user));
