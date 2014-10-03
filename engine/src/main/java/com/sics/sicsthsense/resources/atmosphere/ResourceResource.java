@@ -65,7 +65,7 @@ import se.sics.sicsthsense.auth.annotation.RestrictedTo;
 import se.sics.sicsthsense.model.security.Authority;
 
 // publicly reachable path of the resource
-@Path("/{userId}/resources")
+@Path("/{userId}/{resources: r[a-zA-Z]*}") // match anything begining with 'r'
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ResourceResource {
@@ -190,7 +190,7 @@ public class ResourceResource {
 	}
 
 	@GET
-	@Path("/{resourceId}/data")
+	@Path("/{resourceId}/{data: d[a-z]*}")
 	public Response getData() {
 		return Utils.resp(Status.FORBIDDEN, "Error: Only Streams can have data read", logger);
 	}
@@ -209,7 +209,7 @@ public class ResourceResource {
 	// Post data to the resource, and run data through its parsers
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
-	@Path("/{resourceId}/data")
+	@Path("/{resourceId}/{data: d[a-z]*}")
 	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, String data, @QueryParam("key") String key) {
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);

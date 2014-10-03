@@ -68,7 +68,7 @@ import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.auth.annotation.RestrictedTo;
 import se.sics.sicsthsense.model.security.Authority;
 
-@Path("/{userId}/resources/{resourceId}/streams")
+@Path("/{userId}/{resources: r[a-z]*}/{resourceId}/{streams: s[a-z]*}") // match r* and s* (for /resources/ and /streams/)
 @Produces(MediaType.APPLICATION_JSON)
 public class StreamResource {
 	private final StorageDAO storage;
@@ -193,7 +193,7 @@ public class StreamResource {
 	}
 
 	@GET
-	@Path("/{streamId}/data")
+	@Path("/{streamId}/{data: d[a-z]*}")
 	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
 	@Timed
 	public Response getData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("limit") @DefaultValue("-1") IntParam limit, @QueryParam("from") @DefaultValue("-1") LongParam from, @QueryParam("until") @DefaultValue("-1") LongParam until, @QueryParam("format") @DefaultValue("json") String format, @QueryParam("key") String key) {
@@ -245,7 +245,7 @@ public class StreamResource {
 
 	@POST
 	@Broadcast
-	@Path("/{streamId}/data")
+	@Path("/{streamId}/{data: d[a-z]*}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
 	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
