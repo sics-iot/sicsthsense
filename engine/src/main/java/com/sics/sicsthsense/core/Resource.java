@@ -133,35 +133,32 @@ public class Resource {
 
 
 
-	public long   getId()						{ return id; }
-public String getVersion()			{ return "1.0"; }
-//public int getVersion()					{ return version; }
-	public String getLabel()				{ return label; }
-	public long   getOwner_id()			{ return owner_id; } 
-	public Long   getParent_id()		{ return parent_id; }
-	public String getPolling_url()	{ return polling_url; }
+	public long   getId()            { return id; }
+	public String getVersion()       { return "1.0"; }
+	public String getLabel()         { return label; }
+	public long   getOwner_id()      { return owner_id; } 
+	public Long   getParent_id()	 { return parent_id; }
+	public String getPolling_url()	 { return polling_url; }
+	public long   getPolling_period(){ return polling_period; }
+	public String getSecret_key()    { return secret_key; }
+	public String getDescription()	 { return description; }
+	public long   getLast_polled()	 { return last_polled; }
+	public long   getLast_posted()	 { return last_posted; }
 	public String getPolling_authentication_key()	{ return polling_authentication_key; }
-	public long		getPolling_period(){return polling_period; }
-	public String getSecret_key()		{ return secret_key; }
-	public String getDescription()	{ return description; }
-	public long		getLast_polled()	{ return last_polled; }
-	public long		getLast_posted()	{ return last_posted; }
+	//public int getVersion(){ return version; }
 
-	public void setId(long id)											{ this.id = id; }
-	public void setLabel(String label)							{ this.label = label; }
-	public void setVersion(String version)					{ this.version = version; }
-	public void setOwner_id(long owner_id)					{ this.owner_id = owner_id; } 
-	public void setParent_id(Long parent_id)				{ this.parent_id = parent_id; }
-	public void setPolling_url(String polling_url)	{ this.polling_url = polling_url; }
-	public void setPolling_authentication_key(String polling_authentication_key) { this.polling_authentication_key = polling_authentication_key; }
+	public void setId(long id)                         { this.id = id; }
+	public void setLabel(String label)                 { this.label = label; }
+	public void setVersion(String version)             { this.version = version; }
+	public void setOwner_id(long owner_id)             { this.owner_id = owner_id; } 
+	public void setParent_id(Long parent_id)           { this.parent_id = parent_id; }
+	public void setPolling_url(String polling_url)     { this.polling_url = polling_url; }
 	public void setPolling_period(long polling_period) { this.polling_period = polling_period; }
-	public void setSecret_key(String secret_key)		{ this.secret_key = secret_key; }
-	public void setDescription(String description)	{ this.description = description;}
-	public void setLast_polled(long last_polled)	{ this.last_polled = last_polled; }
-	public void setLast_posted(long last_posted)		{ this.last_posted = last_posted; }
+	public void setSecret_key(String secret_key)       { this.secret_key = secret_key; }
+	public void setDescription(String description)	   { this.description = description;}
+	public void setLast_polled(long last_polled)	   { this.last_polled = last_polled; }
+	public void setLast_posted(long last_posted)       { this.last_posted = last_posted; }
+	public void setPolling_authentication_key(String polling_authentication_key) { this.polling_authentication_key = polling_authentication_key; }
 
-
-	public String toString() {
-		return "Resource: "+id+","+label+","+polling_url;
-	}
+	public String toString() { return "Resource: "+id+","+label+","+polling_url; }
 }

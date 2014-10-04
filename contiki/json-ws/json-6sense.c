@@ -32,16 +32,10 @@
  * \file
  *         JSON webservice util
  * \author
- *         Niclas Finne    <nfi@sics.se>
- *         Joakim Eriksson <joakime@sics.se>
- *         Joel Hoglund    <joel@sics.se>
  *         Liam McNamara   <ljjm@sics.se>
  */
 
 #include "contiki.h"
-#if PLATFORM_HAS_LEDS
-#include "dev/leds.h"
-#endif
 #include "httpd-ws.h"
 #include "json-ws.h"
 #include <stdio.h>
@@ -54,60 +48,96 @@
 #define PRINTF(...)
 #endif
 
-static const char HOST[] = "http://localhost:8080";
-static const char USERID[] = "2";
-static const char RESOURCEID[] = "3";
-static const char http_content_type_json[] = "application/json";
+/* 
+  The following block of variables should be customised to your setup! 
+*/
+static const char HOST[] = "localhost"; // hostname of server
+static const char IP[] = "[aaaa::1]"; // IPv6 address of server
+static const uint16_t PORT = 8080;
+static const char USERID[] = "1"; 
+static const char RESOURCEID[] = "1";
+static const char KEY[]="b2591047-defd-4076-96d5-cd411969badf";
 
-/* Maximum 40 chars in host name?: 5 x 8 */
-static int size = 10;
-static int port = 10;
-static char host[40] = "[aaaa::1]";
-static char path[80] = "/debug/";
+static const char http_content_type_json[] = "application/json";
+char json[255]; // storage for JSON document to be POST\d
+char url[255];  // storage for constructed URL containing USER + RESOURCE IDs
 
 /*---------------------------------------------------------------------------*/
 
-
-char* make_json() {
-	return "{ \"value\":999 }\n";
+// Populate the json variable with a JSON string to be POST'd
+// This should replaced with whatever sensor collection you do
+void make_json(void) {
+	strcpy(json,"{ \"value\":999 }\n");
 }
 
-char* make_url() {
-	// no bounds checking!
-	char rv[255];
-	strcpy(rv,HOST);
-	strcat(rv,"/users/"); 
-	strcat(rv,USERID); 
-	strcat(rv,"/resources/"); 
-	strcat(rv,RESOURCEID); 
-	strcat(rv,"/data"); 
-	return rv;
+// Build the URL that the JSON will be posted to, likely containing a key
+void make_url(void) {
+	strcpy(url,"/users/"); 
+	strcat(url,USERID); 
+	// this shortened form is allowed by SicsthSense, it helps with the restricted
+	// Contiki HTTP path length restriction
+	strcat(url,"/r/");  
+	strcat(url,RESOURCEID); 
+	strcat(url,"/d"); 
+	if (KEY!=NULL) {
+		strcat(url,"?key="); 
+		strcat(url,KEY); 
+	}
 }
 
-void post_json() {
-	char* data = make_json();
-	char* url = make_url();
+static PT_THREAD(send_json(struct httpd_ws_state *s)) {
 
-	PRINTF("JSON data: %s\n",data);
-	PRINTF("URL: %s\n",url);
-	
+  PSOCK_BEGIN(&s->sout);
+
+  memcpy(s->outbuf, json, strlen(json));
+  s->outbuf_pos = strlen(json);
+
+  while(s->outbuf_pos > 0) {
+    if(s->outbuf_pos >= UIP_TCP_MSS) {
+      //PRINTF("SENDING MSS STRING: ");
+      SEND_STRING(&s->sout, s->outbuf, UIP_TCP_MSS);
+      s->outbuf_pos -= UIP_TCP_MSS;
+    } else {
+      SEND_STRING(&s->sout, s->outbuf, s->outbuf_pos);
+      //PRINTF("SENDING SHORT STRING: %s\n",s->outbuf);
+      s->outbuf_pos = 0;
+    }
+  }
+  PSOCK_END(&s->sout);
+}
+
+void post_json(void) {
 	struct httpd_ws_state *s;
-	httpd_ws_script_t send_values = NULL;
-	s = httpd_ws_request(HTTPD_WS_PUT, host, HOST, port, path,
-		http_content_type_json, size, send_values);
+
+	make_json();
+
+	//PRINTF("JSON data: %s of size: %d\n",json,strlen(json));
+	//PRINTF("URL: %s\n",url);
+	
+	s = httpd_ws_request(HTTPD_WS_POST, IP, HOST, PORT, url, http_content_type_json, strlen(json), send_json);
+	if (s==NULL) { 
+		PRINTF("httpd_ws_request returned NULL\n"); 
+	} else {
+		PRINTF(s->outbuf);
+	}
 }
 
 static struct etimer timer;
 
-PROCESS(sense_process, "SICSense process");
-AUTOSTART_PROCESSES(&sense_process);
 
-PROCESS_THREAD(sense_process, ev, data) {
+  PROCESS(sense_process, "SicsthSense process");
+  AUTOSTART_PROCESSES(&sense_process);
+
+  PROCESS_THREAD(sense_process, ev, data) {
   PROCESS_BEGIN();
 
-  etimer_set(&timer, CLOCK_SECOND*5);
+  etimer_set(&timer, CLOCK_SECOND*20);
+  make_url();
+
   while (1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
+    
+    process_start(&httpd_ws_process, NULL);
 
     post_json();
     etimer_reset(&timer);
