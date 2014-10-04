@@ -190,26 +190,6 @@ public class ResourceLog {
 		return resourceLog;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public void appendMessage(String message) {
-		this.message += message;
-	}
-
-	public void setCreationTimestamp(long creationTimestamp) {
-		this.creationTimestamp = (creationTimestamp <= 0) ? System.currentTimeMillis() : creationTimestamp;
-	}
-
-	public void setResponseTimestamp(long responseTimestamp) {
-		this.responseTimestamp = (responseTimestamp <= 0) ? System.currentTimeMillis() : responseTimestamp;
-	}
-
-	public long getResponseTime() {
-		setResponseTimestamp(this.responseTimestamp);
-		return responseTime;
-	}
 
 	public void update(boolean success, boolean is_poll, String message, long responseTimestamp) {
 		this.parsedSuccessfully = parsedSuccessfully;
@@ -381,30 +361,43 @@ public class ResourceLog {
 	}
 */
 
-	public long getId()								{ return id; }
-	public long getResourceId()		{ return resourceId; }
-	public long getCreationTimestamp(){ return creationTimestamp; }
-	public long getResponseTimestamp(){ return responseTimestamp; }
+
+	public void appendMessage(String message) { this.message += message; }
+
+	public void setCreationTimestamp(long creationTimestamp) {
+		this.creationTimestamp = (creationTimestamp <= 0) ? System.currentTimeMillis() : creationTimestamp;
+	}
+
+	public void setResponseTimestamp(long responseTimestamp) {
+		this.responseTimestamp = (responseTimestamp <= 0) ? System.currentTimeMillis() : responseTimestamp;
+	}
+
+	public long getResponseTime() {
+		setResponseTimestamp(this.responseTimestamp);
+		return responseTime;
+	}
+	public long    getId()								{ return id; }
+	public long    getResourceId()		{ return resourceId; }
+	public long    getCreationTimestamp(){ return creationTimestamp; }
+	public long    getResponseTimestamp(){ return responseTimestamp; }
 	public boolean getParsedSuccessfully(){ return parsedSuccessfully; } 
 	public boolean getIsPoll()				{ return isPoll; } 
-	public String getBody()						{ return body; } 
-	public String getMethod()					{ return method; }
-	public String getHeaders()				{ return headers; }
-	public String getMessage()				{ return message; } 
-	public int getVersion()						{ return version; }
+	public String  getBody()						{ return body; } 
+	public String  getMethod()					{ return method; }
+	public String  getHeaders()				{ return headers; }
+	public String  getMessage()				{ return message; } 
+	public int     getVersion()						{ return version; }
 
 
-	public void setId(long id)										{ this.id = id; }
-	public void getResourceId(long resourceId)		{ this.resourceId = resourceId; }
-	public void getIsPoll(boolean isPoll)					{ this.isPoll = isPoll; } 
-	public void getBody(String body)							{ this.body = body; } 
-	public void getMethod(String method)					{ this.method = method; }
-	public void getHeaders(String headers)				{ this.headers = headers; }
-	public void getMessage(String message)				{ this.message = message; } 
-	public void getVersion(int version)						{ this.version = version; }
-	public void getResponseTime(String responseTIme)							{ this.responseTime = responseTime; } 
-	public void getCreationTimestamp(long creationTimestamp)			{ this.creationTimestamp = creationTimestamp; }
-	public void getResponseTimestamp(long responseTimestamp)			{ this.responseTimestamp = responseTimestamp; }
-	public void getParsedSuccessfully(boolean parsedSuccessfully) { this.parsedSuccessfully = parsedSuccessfully; } 
+	public void setId(long id)						{ this.id = id; }
+	public void setResourceId(long resourceId)		{ this.resourceId = resourceId; }
+	public void setIsPoll(boolean isPoll)			{ this.isPoll = isPoll; } 
+	public void setBody(String body)				{ this.body = body; } 
+	public void setMethod(String method)			{ this.method = method; }
+	public void setHeaders(String headers)			{ this.headers = headers; }
+	public void setMessage(String message)			{ this.message = message; } 
+	public void setVersion(int version)				{ this.version = version; }
+	public void setResponseTime(String responseTIme)							{ this.responseTime = responseTime; } 
+	public void setParsedSuccessfully(boolean parsedSuccessfully) { this.parsedSuccessfully = parsedSuccessfully; } 
 
 }

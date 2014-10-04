@@ -143,6 +143,7 @@ public class ResourceResource {
 		resource.setOwner_id(userId); // should know the owner
 		long resourceId = Utils.insertResource(resource);
 		ResourceLog rl = new ResourceLog(resource);
+        rl.setResourceId(resourceId); // for the foreign key constraint
 		Utils.insertResourceLog(rl);
 
 		if (resource.getPolling_period() > 0) {

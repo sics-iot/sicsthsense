@@ -101,6 +101,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
 
 		environment.addServlet(atmosphereServlet, "/users/*");
+		environment.addServlet(atmosphereServlet, "/u/*");
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
