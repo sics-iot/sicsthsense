@@ -136,21 +136,25 @@ public class ResourceResource {
 	public Response postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Adding user/resource:"+resource.getLabel());
 		Utils.checkHierarchy(userId);
+        long resourceId;
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 
 		resource.setOwner_id(userId); // should know the owner
-		long resourceId = Utils.insertResource(resource);
-		ResourceLog rl = new ResourceLog(resource);
-        rl.setResourceId(resourceId); // for the foreign key constraint
-		Utils.insertResourceLog(rl);
-
+        try {
+		  resourceId = Utils.insertResource(resource);
+		  ResourceLog rl = new ResourceLog(resource);
+          rl.setResourceId(resourceId); // for the foreign key constraint
+		  Utils.insertResourceLog(rl);
+        } catch (Exception e) {
+          return Utils.resp(Status.BAD_REQUEST , "Error: storing the new resource, are the attributes correct?", null);
+        }
 		if (resource.getPolling_period() > 0) {
 			// remake pollers with updated Resource attribtues
 			pollSystem.rebuildResourcePoller(resourceId);
 		}
-		return Utils.resp(Status.OK, resourceId, logger);
+		return Utils.resp(Status.OK, resourceId, null);
 	}
 
 	// put updated resource definition 
@@ -204,7 +208,7 @@ public class ResourceResource {
 			return Utils.resp(Status.NOT_FOUND, "Error: resource name does not exist: "+resourceName, logger);
 		}
 		pollSystem.rebuildResourcePoller(resource.getId());
-		return Utils.resp(Status.OK, "Rebuilt: "+resourceName, logger);
+		return Utils.resp(Status.OK, "Rebuilt: "+resourceName, null);
 	}
 
 	// Post data to the resource, and run data through its parsers
@@ -235,7 +239,7 @@ public class ResourceResource {
 		// update Resource last_posted
 		storage.postedResource(resource.getId(),System.currentTimeMillis());
 
-		return Utils.resp(Status.OK, "Success", logger);
+		return Utils.resp(Status.OK, "Success", null);
 	}
 
 
