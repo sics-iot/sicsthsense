@@ -28,8 +28,8 @@
 	    
 			<fieldset>
 			<legend>Location</legend>
- 			@forms.inputdouble(userForm!=null, "number", "latitude",  "Latitude",  user.latitude.toString())   
-	    @forms.inputdouble(userForm!=null, "number", "longitude", "Longitude", user.longitude.toString())
+            @forms.inputdouble(userForm!=null, "number", "latitude",  "Latitude",  if(user.latitude!=null) user.latitude.toString() else "0")   
+            @forms.inputdouble(userForm!=null, "number", "longitude", "Longitude", if(user.longitude!=null) user.longitude.toString() else "0")
 			<div id="map-canvas" style="float: center; border: 1px solid black;"></div>
 			<br />
 			<div class="row-fluid">
