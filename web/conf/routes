@@ -23,12 +23,11 @@ GET        /streams/view/                       controllers.Application.streams(
 GET        /attachFunction											controllers.Application.attachFunction()
 
 # deprecated
-GET        /API																	controllers.Public.about()
-
-GET        /docs                                controllers.Public.docs()
-GET        /docs/web                            controllers.Public.web()
-GET        /docs/api                            controllers.Public.api()
-GET        /docs/data                           controllers.Public.data()
+GET        /about																	controllers.Public.about()
+#GET        /docs                                controllers.Public.docs()
+#GET        /docs/web                            controllers.Public.web()
+#GET        /docs/api                            controllers.Public.api()
+#GET        /docs/data                           controllers.Public.data()
 GET        /files					                      controllers.Application.files()
 GET        /sitemap															controllers.Application.sitemap()
 

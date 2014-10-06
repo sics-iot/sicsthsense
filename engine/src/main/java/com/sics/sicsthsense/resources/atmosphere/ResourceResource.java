@@ -140,6 +140,9 @@ public class ResourceResource {
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+        
+        // no label duplication allowed
+        if (storage.findResourceByLabel(resource.getLabel())!=null) {Utils.resp(Status.BAD_REQUEST , "Error: that resource label already exists!", logger); }
 
 		resource.setOwner_id(userId); // should know the owner
         try {
