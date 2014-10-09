@@ -27,14 +27,14 @@
 		<ul class="pager">
 			<lh><b>Page @{page}&nbsp;&nbsp;</b> </lh>
 			@if(page>0) {
-				<li><a href="/explore?p=@{page-1}">Previous</a></li>
+				<li><a href="/streams?p=@{page-1}">Previous</a></li>
 			} else {
 				<li><a>Previous</a></li>
 			}
 			@if(CtrlStream.listStreamsLength() <= (page+1)*CtrlStream.pageSize) {
 				<li><a>Next</a></li>
 			} else {
-				<li><a href="/explore?p=@{page+1}">Next</a></li>
+				<li><a href="/streams?p=@{page+1}">Next</a></li>
 			}
 
 		</ul>
@@ -48,14 +48,14 @@
 		<ul class="pager">
 			<lh><b>Page @{page}&nbsp;&nbsp;</b> </lh>
 			@if(page>0) {
-				<li><a href="/explore?p=@{page-1}">Previous</a></li>
+				<li><a href="/streams?p=@{page-1}">Previous</a></li>
 			} else {
 				<li><a>Previous</a></li>
 			}
 			@if(CtrlStream.listStreamsLength() <= (page+1)*CtrlStream.pageSize) {
 				<li><a>Next</a></li>
 			} else {
-				<li><a href="/explore?p=@{page+1}">Next</a></li>
+				<li><a href="/streams?p=@{page+1}">Next</a></li>
 			}
 		</ul>
 
