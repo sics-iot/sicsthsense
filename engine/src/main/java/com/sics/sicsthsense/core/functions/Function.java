@@ -47,7 +47,8 @@ public class Function {
 		this.storage = DAOFactory.getInstance();
 	}
 
-	public List<DataPoint> apply(List<Long> streamIds) {
+    // This should be overidden by subclasses
+	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		return rv;
 	}

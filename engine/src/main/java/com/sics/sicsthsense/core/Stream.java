@@ -155,15 +155,18 @@ public class Stream {
 
 		List<Long> antecedents = storage.findAntecedents(getId());
 		if (antecedents==null) { logger.error("Antecedents are null! ID:"+getId()); return; }
-		List<DataPoint> newPoints = performFunction(antecedents);
-		// add to stream
-		for (DataPoint p: newPoints) {
-			storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
-			storage.updatedStream(getId(), p.getTimestamp());
-			testTriggers(p);
-		}
-
-		notifyDependents();
+        try {
+            List<DataPoint> newPoints = performFunction(antecedents);
+            // add to stream
+            for (DataPoint p: newPoints) {
+                storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
+                storage.updatedStream(getId(), p.getTimestamp());
+                testTriggers(p);
+            }
+            notifyDependents();
+        } catch (Exception e) {
+          logger.error("Error: function failed! Stream ID: "+getId());
+        }
 	}
 
 	public void notifyDependents() {
@@ -181,7 +184,7 @@ public class Stream {
 		}
 	}
 
-	public List<DataPoint> performFunction(List<Long> antecedents) {
+	public List<DataPoint> performFunction(List<Long> antecedents) throws Exception {
 		Function function = null;
 		//logger.info("Performing function of stream "+getId());
 		//if (antecedents==null) { logger.error("Antecedents are null!!"); return null;	}

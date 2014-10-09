@@ -98,21 +98,21 @@ public class Poller extends UntypedActor {
 		}
 
 		parsers = storage.findParsersByResourceId(resourceId);
-		logger.info("Applying all parsers to data: "+synopsis);
+		//logger.info("Applying all parsers to data: "+synopsis);
 		if (parsers.size()==0) {logger.error("No parsers exist!"); return;}
 
 		for (Parser parser: parsers) {
-			logger.info("Applying a parser "+parser.getInput_parser());
+			//logger.info("Applying a parser "+parser.getInput_parser());
 			try {
 				parsedata.apply(parser,data);
-				String msg = "Parser succeeded: "+parser+"\n";
+				//String msg = "Parser succeeded: "+parser+"\n";
 				allMsgs += msg;
 			} catch (Exception e) {
 				//logger.error("Parsing "+data+" failed!"+e);
 
-				String msg = "Parser failed: "+parser+" Error:"+e+"\n";
+				String msg = "Parser failed: "+parser+" Error:"+e;
 				allMsgs += msg;
-				logger.error(msg);
+				logger.warn(msg);
 				parsedSuccessfully=false;
 			}
 		}
@@ -138,7 +138,7 @@ public class Poller extends UntypedActor {
 		 
 				try {
 					int responseCode = con.getResponseCode();
-					logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
+					//logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
 			 
 					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 					StringBuffer response = new StringBuffer();
