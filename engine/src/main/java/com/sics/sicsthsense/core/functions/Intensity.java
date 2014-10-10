@@ -99,16 +99,20 @@ public class Intensity extends Function {
         List<DataPoint> gyro = null;
         if (streamCount>=6) { gyro  = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
 
-        List<DataPoint> heartrate = new ArrayList<DataPoint>();
-        if (streamCount>=7) { heartrate.add(new DataPoint(accel.get(0).getTimestamp(), streamIds.get(6))); }
+        List<DataPoint> heartrate = null;
+        if (streamCount>=7) { 
+            heartrate = new ArrayList<DataPoint>();
+            heartrate.add(new DataPoint(accel.get(0).getTimestamp(), streamIds.get(6)-40)); 
+        }
 
         // combine all the seprate readings
         for (int c=0; c<accel.size(); ++c) {
           double intensity=0.0;
 
-          intensity += accel.get(c).getValue()*10;
+          intensity += accel.get(c).getValue()*20;
 
-          if (gyro!=null) { intensity +=  gyro.get(c).getValue()*5; }
+          if (gyro!=null)      { intensity +=  gyro.get(c).getValue()*10; }
+          if (heartrate!=null) { intensity +=  heartrate.get(c).getValue()*10; }
 
           rv.add(new DataPoint(accel.get(0).getTimestamp(), intensity));
         }
