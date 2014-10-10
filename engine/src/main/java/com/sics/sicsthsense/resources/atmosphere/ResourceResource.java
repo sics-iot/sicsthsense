@@ -223,7 +223,9 @@ public class ResourceResource {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
-		//logger.info("Adding data to resource: "+resource.getLabel());
+        
+        long timestamp = java.lang.System.currentTimeMillis();
+		logger.info("Adding data to resource: "+resource.getLabel()+" @ "+timestamp);
 
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
@@ -237,10 +239,10 @@ public class ResourceResource {
 			}
 		}
 		//run it through the parsers and update resource log
-		Utils.applyParsers(resource, data);
+		Utils.applyParsers(resource, data, timestamp);
 
 		// update Resource last_posted
-		storage.postedResource(resource.getId(),System.currentTimeMillis());
+		storage.postedResource(resource.getId(),timestamp);
 
 		return Utils.resp(Status.OK, "Success", null);
 	}

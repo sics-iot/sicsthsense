@@ -260,8 +260,6 @@ public class StreamResource {
 		datapoint.setStreamId(stream.getId()); // keep consistency
 		Utils.insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
-		stream.notifyDependents(); // notify all streams that depend on this
-		stream.testTriggers(datapoint); // see if any of the actions are triggered
 
 		return Response.ok("Posted").build();
 	}

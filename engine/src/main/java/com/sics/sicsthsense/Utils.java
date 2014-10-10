@@ -237,6 +237,7 @@ public class Utils {
 	public static void insertDataPoint(DataPoint datapoint) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
+        Stream stream = storage.findStreamById(datapoint.getStreamId());
 		if (datapoint.getTimestamp()<=0) {
 			datapoint.setTimestamp(java.lang.System.currentTimeMillis());
 		}
@@ -245,6 +246,8 @@ public class Utils {
 			datapoint.getValue(),
 			datapoint.getTimestamp()
 		);
+        stream.notifyDependents();
+        stream.testTriggers(datapoint);
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
 	}
 
@@ -291,7 +294,7 @@ public class Utils {
 	}
 
 
-	public static void applyParsers(Resource resource, String data) {
+	public static void applyParsers(Resource resource, String data, long timestamp) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		ParseData parseData = new ParseData(); // should really be static somewhere
@@ -305,11 +308,11 @@ public class Utils {
 		for (Parser parser: parsers) {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
-				parseData.apply(parser,data);
+				parseData.apply(parser,data,timestamp);
 			} catch (Exception e) {
 				parsedSuccessfully=false;
 				logger.error("Parsing "+data+" failed!"+e);
-				parseError += "Parsing "+data+" failed!"+e;
+				parseError +="Parsing "+data+" failed!"+e;
 			}
 		}
 		// append interaction to resource log!

@@ -71,19 +71,18 @@ public class ParseData {
 	}
 
 	// Apply this parser to the supplied data
-	public void apply(Parser parser, String data) throws Exception {
+	public void apply(Parser parser, String data, long timestamp) throws Exception {
 		//logger.info("apply()");
 		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
-		Long currentTime = System.currentTimeMillis();
 		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
 			//logger.info("Applying JSON Parser to JSON data");
 			JsonNode rootNode = PollSystem.getInstance().mapper.readTree(data);
-			parseJsonResponse(parser, rootNode, currentTime);
+			parseJsonResponse(parser, rootNode, timestamp);
 		} else {
 			//logger.info("Applying Text Parser to text data");
-			parseTextResponse(parser, data, currentTime);
+			parseTextResponse(parser, data, timestamp);
 		}
 	}
 
@@ -116,8 +115,10 @@ public class ParseData {
 					Double dValue = Double.parseDouble(value); 
 					//logger.info("Posting value: " + dValue + " @ " + currentTime+" to stream "+parser.getStream_id());
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
-					storage.insertDataPoint(parser.getStream_id(), dValue, System.currentTimeMillis() );
-					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
+					//storage.insertDataPoint(parser.getStream_id(), dValue, System.currentTimeMillis() );
+                    DataPoint point = new DataPoint(parser.getStream_id(), currentTime, dValue);
+                    Utils.insertDataPoint(point);
+					storage.updatedStream(parser.getStream_id(), currentTime );
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
 					double value = node.get("value").getDoubleValue();
@@ -133,7 +134,7 @@ public class ParseData {
 					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(value, currentTime);
 					storage.insertDataPoint(parser.getStream_id(),value,currentTime); 
-					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
+					storage.updatedStream(parser.getStream_id(), currentTime );
 					stream.notifyDependents();
 					return true;
 			}

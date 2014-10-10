@@ -150,7 +150,7 @@ public class Stream {
 
 	// when an antecedent input stream has changed, update this stream's datapoints
 	public void update() {
-		//logger.info("Updating stream: "+getId());
+		logger.info("Updating stream: "+getId());
 		if (storage==null) {storage = DAOFactory.getInstance();}
 
 		List<Long> antecedents = storage.findAntecedents(getId());
@@ -165,12 +165,12 @@ public class Stream {
             }
             notifyDependents();
         } catch (Exception e) {
-          logger.error("Error: function failed! Stream ID: "+getId());
+          logger.error("Error: function failed! Stream ID: "+getId()+" "+e.toString());
         }
 	}
 
 	public void notifyDependents() {
-		//logger.info("Notify dependents of stream "+getId());
+		logger.info("Notify dependents of stream "+getId());
 		if (storage==null) {storage = DAOFactory.getInstance();}
 		List<Long> dependents = storage.findDependents(getId());
 		// update dependents!
@@ -186,8 +186,8 @@ public class Stream {
 
 	public List<DataPoint> performFunction(List<Long> antecedents) throws Exception {
 		Function function = null;
-		//logger.info("Performing function of stream "+getId());
-		//if (antecedents==null) { logger.error("Antecedents are null!!"); return null;	}
+		logger.info("Performing function of stream "+getId());
+		if (antecedents==null) { logger.error("Antecedents are null!!"); return null;	}
 
 		// do nothing if the function is not set
 		if (this.getFunction()==null || this.getFunction()=="") {return new ArrayList<DataPoint>();}
@@ -200,6 +200,8 @@ public class Stream {
 			function = new Max();
 		} else if ("median".equals(this.getFunction())) {
 			function = new Median();
+		} else if ("intensity".equals(this.getFunction())) {
+			function = new Intensity();
 		} else {
 			logger.error("Unknown function "+this.getFunction()+"! Stream ID: "+getId());
 			return new ArrayList<DataPoint>();
