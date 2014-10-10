@@ -223,13 +223,17 @@ public interface StorageDAO {
 	@Mapper(TriggerMapper.class)
 	List<Trigger> findTriggersByStreamId(@Bind("stream_id") long stream_id);
 
+  @SqlQuery("select id from triggers where stream_id = :stream_id")
+	@Mapper(TriggerMapper.class)
+	List<Long> findTriggerIdsByStreamId(@Bind("stream_id") long stream_id);
+
   @SqlUpdate("insert into triggers(stream_id, url, operator, operand, payload) values (:stream_id, :url, :operator, :operand, :payload)")
   void insertTrigger(
 		@Bind("stream_id")  long stream_id,
-		@Bind("url")				String url, 
-		@Bind("operator")		String operator,
-		@Bind("operand")		double operand,
-		@Bind("payload")		String payload 
+		@Bind("url")		String url, 
+		@Bind("operator")	String operator,
+		@Bind("operand")	double operand,
+		@Bind("payload")	String payload 
 	);
 	
   @SqlUpdate("delete from triggers where id = :id")
@@ -241,6 +245,9 @@ public interface StorageDAO {
 	// VFiles
   @SqlQuery("select path from vfiles where linked_stream_id = :stream_id limit 1")
 	String findPathByStreamId(@Bind("stream_id") long stream_id);
+
+  @SqlQuery("select id from vfiles where linked_stream_id = :stream_id")
+	List<Long> findPathIdsByStreamId(@Bind("stream_id") long stream_id);
 
   @SqlQuery("select linked_stream_id from vfiles where path = :path limit 1")
 	long findStreamIdByPath(@Bind("path") String path);
@@ -261,6 +268,7 @@ public interface StorageDAO {
 		@Bind("stream_id")	 long stream_id 
 	);
 
+
 	// Parsers
   @SqlQuery("select * from parsers where id = :id limit 1")
 	@Mapper(ParserMapper.class)
@@ -269,6 +277,10 @@ public interface StorageDAO {
   @SqlQuery("select * from parsers where resource_id = :resourceId")
 	@Mapper(ParserMapper.class)
   List<Parser> findParsersByResourceId(@Bind("resourceId") long resourceId);
+
+  @SqlQuery("select * from parsers where stream_id = :streamId")
+	@Mapper(ParserMapper.class)
+  List<Long> findParserIdsByStreamId(@Bind("streamId") long streamId);
 
   @SqlUpdate("insert into parsers( resource_id, stream_id, input_parser, input_type, timeformat, data_group, time_group, number_of_points) values ( :resource_id, :stream_id, :input_parser, :input_type, :timeformat, :data_group, :time_group, :number_of_points)")
   void insertParser(

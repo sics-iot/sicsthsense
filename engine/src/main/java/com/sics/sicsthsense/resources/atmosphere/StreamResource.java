@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -191,6 +192,33 @@ public class StreamResource {
 
 	void authoriseStreamKey(String key1, String key2) {
 	}
+
+	@DELETE
+	@Path("/{streamId}/{data: d[a-z]*}")
+	@Produces({MediaType.APPLICATION_JSON,MediaType.TEXT_PLAIN})
+	public Response deleteStream(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") String key) {
+		logger.info("Deleting stream!:"+streamName);
+		User user = storage.findUserById(userId);
+		Resource resource = Utils.findResourceByIdName(resourceName);
+		Stream stream =	    Utils.findStreamByIdName(streamName);
+		Utils.checkHierarchy(user,resource);
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
+			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to DELETE stream", logger);
+		}
+        // delete dependants,vfiles and parsers on the Stream
+        List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
+        for (Long id: vfiles) { storage.deleteVFile(id); }
+        List<Long> parsers = storage.findParserIdsByStreamId(stream.getId());
+        for (Long id: parsers) { storage.deleteParser(id); }
+        List<Long> dependents = storage.findDependents(stream.getId());
+        for (Long id: dependents) { storage.deleteDependent(id); }
+        List<Long> triggers = storage.findTriggerIdsByStreamId(stream.getId());
+        for (Long id: triggers) { storage.deleteTrigger(id); }
+
+        storage.deleteStream(stream.getId());
+
+		return Utils.resp(Status.OK, "Deleted", null);
+    }
 
 	@GET
 	@Path("/{streamId}/{data: d[a-z]*}")

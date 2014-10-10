@@ -159,7 +159,7 @@ create table IF NOT EXISTS vfiles (
   type                      varchar(1) not null,
   linked_stream_id          bigint,
   constraint ck_vfiles_type check (type in ('F','D')),
-  constraint uq_vfiles_1 unique (owner_id,path),
+  constraint uq_vfiles_1 unique (linked_stream_id,path),
   constraint pk_vfiles primary key (id))
 ;
 
