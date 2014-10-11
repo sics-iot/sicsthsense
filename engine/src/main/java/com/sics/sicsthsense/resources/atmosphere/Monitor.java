@@ -83,7 +83,7 @@ public class Monitor {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
-		if (!resource.isAuthorised(key) && !user.isAuthorised(key) && !stream.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+		if (!resource.isAuthorised(key) && !user.isAuthorised(key) && !stream.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
 
     URL url = Monitor.class.getResource("/views/pub.html");
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();

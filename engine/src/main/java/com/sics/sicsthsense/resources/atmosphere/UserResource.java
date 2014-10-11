@@ -78,7 +78,7 @@ public class UserResource {
 		@GET
 		@Timed
 		public Response listUsers() {
-			return Utils.resp(Status.FORBIDDEN, "Error: Can not list users", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Can not list users"), logger);
 		}
 
 		@GET
@@ -87,7 +87,7 @@ public class UserResource {
 		public Response getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
 			//System.out.println("getting User!! "+userId);
 			User user = storage.findUserById(userId);
-			if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
+			if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
 			return Utils.resp(Status.OK, user, logger);
 		}
 
@@ -95,9 +95,9 @@ public class UserResource {
 		@Timed
 		public Response post(User user) throws Exception {
 			//logger.info("making a new user: "+user.toString());
-			if (user.getEmail()==null || user.getEmail()=="")	        { return Utils.resp(Status.BAD_REQUEST, "Error: new User email not set!", logger); }
-			if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate username: "+user.getUsername()+"!", logger); }
-			if (storage.findUserByEmail(user.getEmail())!=null)	      { return Utils.resp(Status.BAD_REQUEST, "Error: Duplicate email: "+user.getEmail()+"!", logger); }
+			if (user.getEmail()==null || user.getEmail()=="")	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: new User email not set!"), logger); }
+			if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate username: "+user.getUsername()+"!"), logger); }
+			if (storage.findUserByEmail(user.getEmail())!=null)	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate email: "+user.getEmail()+"!"), logger); }
 			User newuser = new User();
 
 			newuser.update(user);

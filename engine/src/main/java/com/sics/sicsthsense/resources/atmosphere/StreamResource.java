@@ -97,7 +97,7 @@ public class StreamResource {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {
-			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to get streams", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to get streams"), logger);
 		}
 
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
@@ -119,7 +119,7 @@ public class StreamResource {
 		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
-			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to get stream", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to get stream"), logger);
 		}
 
 		// add back in the antecedents
@@ -161,7 +161,7 @@ public class StreamResource {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) {
-			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to POST to stream", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to POST to stream"), logger);
 		}
 		long streamId=-1;
 
@@ -187,7 +187,8 @@ public class StreamResource {
 			}
 		}
 
-		return Utils.resp(Status.OK, streamId, logger);
+        stream = storage.findStreamById(streamId); // need fresh DB version
+		return Utils.resp(Status.OK, stream, logger);
 	}
 
 	void authoriseStreamKey(String key1, String key2) {
@@ -203,7 +204,7 @@ public class StreamResource {
 		Stream stream =	    Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
-			return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to DELETE stream", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to DELETE stream"), logger);
 		}
         // delete dependants,vfiles and parsers on the Stream
         List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
@@ -217,7 +218,7 @@ public class StreamResource {
 
         storage.deleteStream(stream.getId());
 
-		return Utils.resp(Status.OK, "Deleted", null);
+		return Utils.resp(Status.OK, new JSONMessage("Stream deleted"), null);
     }
 
 	@GET
@@ -233,7 +234,7 @@ public class StreamResource {
 		if (!stream.getPublic_access()) { // need to authenticate
 			//logger.warn("Stream isnt public access!");
 			if (!user.isAuthorised(key) && !stream.isAuthorised(key) && !resource.isAuthorised(key)) {
-				return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to POST to stream", logger);
+				return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to POST to stream"), logger);
 			}
 		}
 		//logger.info("Getting stream: "+streamId);
@@ -267,7 +268,7 @@ public class StreamResource {
 				return Utils.resp(Status.OK, jsonmapper.writeValueAsString(rv), null);
 			}
 		} catch (Exception e) {
-				return Utils.resp(Status.BAD_REQUEST, "Error: Can't parse data!", logger);
+				return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Can't parse data!"), logger);
 		}
 	}
 
@@ -282,14 +283,14 @@ public class StreamResource {
 		Stream stream =			Utils.findStreamByIdName(streamName);
 		Utils.checkHierarchy(user,resource,stream);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
-			return Utils.resp(Status.FORBIDDEN, "User is not owner and has incorrect key on resource/stream!", logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("User is not owner and has incorrect key on resource/stream!"), logger);
 		}
 		logger.info("Inserting data into stream: "+streamName);
 		datapoint.setStreamId(stream.getId()); // keep consistency
 		Utils.insertDataPoint(datapoint); // insert first to fail early
 		topic.broadcast(datapoint.toString());
 
-		return Response.ok("Posted").build();
+		return Utils.resp(Status.OK, new JSONMessage("Data successfully posted"), null);
 	}
 
 

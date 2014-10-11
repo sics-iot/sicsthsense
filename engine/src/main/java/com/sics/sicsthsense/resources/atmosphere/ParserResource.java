@@ -117,11 +117,11 @@ public class ParserResource {
 		logger.info("Updating parserId:"+parserId);
 		checkHierarchy(userId,resourceId);
 		if (visitor.getId() != userId) { // only owners
-			return Utils.resp(Status.FORBIDDEN, "Not allowed to modify parser: "+parserId, logger);
+			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Not allowed to modify parser: "+parserId), logger);
 		}
 		parser.setResource_id(resourceId);
 		updateParser(parserId, parser);
-		return Utils.resp(Status.OK, "Updated Parser", logger);
+		return Utils.resp(Status.OK, new JSONMessage("Updated Parser"), logger);
 	}
 
 	@DELETE
@@ -132,10 +132,10 @@ public class ParserResource {
 		logger.warn("Deleting parserId:"+parserId);
 		checkHierarchy(userId,resourceId);
 		Parser parser = storage.findParserById(parserId);
-		if (parser==null) { return Utils.resp(Status.NOT_FOUND, "No parser to delete: "+parserId, logger); }
-		if (visitor.getId() != userId) { return Utils.resp(Status.FORBIDDEN, "Error: Not authorised to delete parser: "+parserId, logger); }
+		if (parser==null) { return Utils.resp(Status.NOT_FOUND, new JSONMessage("No parser to delete: "+parserId), logger); }
+		if (visitor.getId() != userId) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to delete parser: "+parserId), logger); }
 		storage.deleteParser(parserId);
-		return Utils.resp(Status.OK, "Deleted Parser", logger);
+		return Utils.resp(Status.OK, new JSONMessage("Deleted Parser"), logger);
 	}
 
 	public void checkHierarchy(long userId) {

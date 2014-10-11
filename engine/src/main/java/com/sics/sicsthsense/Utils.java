@@ -34,6 +34,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.MediaType;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import se.sics.sicsthsense.resources.*;
 import se.sics.sicsthsense.jdbi.*;
@@ -44,7 +46,31 @@ import se.sics.sicsthsense.auth.openid.*;
 import se.sics.sicsthsense.model.security.*;
 
 public class Utils {
+    final static ObjectMapper mapper = new ObjectMapper();
 
+    // more informed JSON responses when POSTing a new entity
+    /*
+	public static Response resp(Response.Status status, User user, Logger logger) {
+        String message;
+        try { message = mapper.writeValueAsString(user); } 
+          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		if (logger!=null) { logger.info(message); }
+		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
+    }
+	public static Response resp(Response.Status status, Resource resource, Logger logger) {
+        String message;
+        try { message = mapper.writeValueAsString(resource); } 
+          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		if (logger!=null) { logger.info(message); }
+		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
+    }
+	public static Response resp(Response.Status status, Stream stream, Logger logger) {
+        String message;
+        try { message = mapper.writeValueAsString(stream); } 
+          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		if (logger!=null) { logger.info(message); }
+		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
+    }*/
 	public static Response resp(Response.Status status, Object message, Logger logger) {
 		if (logger!=null && message instanceof String) { logger.info((String)message); }
 		return Response.status(status).entity(message).build();
