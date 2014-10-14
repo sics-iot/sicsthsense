@@ -1,5 +1,5 @@
 #This needs to be defined! 
-CONTIKI=/Users/ljjm/code/contiki
+CONTIKI=/.../code/contiki
 
 
 UIP_CONF_IPV6=1
@@ -15,10 +15,6 @@ CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
 ifeq ($(TARGET),)
  -include Makefile.target
-endif
-
-ifneq ($(TARGET),)
-all: websense-$(TARGET)
 endif
 
 ifndef CONTIKI
