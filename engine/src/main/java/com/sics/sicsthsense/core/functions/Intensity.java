@@ -109,16 +109,38 @@ public class Intensity extends Function {
         for (int c=0; c<accel.size(); ++c) {
           double intensity=0.0;
 
-          intensity += accel.get(c).getValue()*20;
+          double acc = accel.get(c).getValue();
+          if (acc > 1.0) {
+            intensity += 10 - (10.0/acc);
+          } else { intensity += 0; }
+          logger.info("intensity: "+intensity);
 
-          if (gyro!=null)      { intensity +=  gyro.get(c).getValue()*10; }
-          if (heartrate!=null) { intensity +=  heartrate.get(c).getValue()*10; }
+          if (gyro!=null) {
+             maxPossible += 10.0;
+             double gy = gyro.get(c).getValue();
+             if (gy > 1.0) { 
+              intensity +=  10.0 - (10.0/gy); 
+             } else { intensity += 0; }
+          }
+          logger.info("intensity: "+intensity);
 
-          rv.add(new DataPoint(accel.get(0).getTimestamp(), intensity));
+          if (heartrate!=null) { 
+            maxPossible += 10.0;
+            double hr = heartrate.get(c).getValue();
+            if (hr<40.0) {
+              //do nothing, bad reading
+            } else {
+              if (hr>140.0) {hr=140.0;} // danger! danger!
+              hr -= 40; // hr now 0-100
+              intensity += hr/10.0;
+            }
+          }
+          logger.info("intensity: "+intensity);
+          intensity = (intensity/maxPossible) * 100;
+          logger.info("corrected intensity: "+intensity);
+          rv.add(new DataPoint(accel.get(0).getTimestamp(), intensity)); // scale to 0-100
         }
 		logger.info("apply Intensity end()!!");
-
-
 		return rv;
 	}
 

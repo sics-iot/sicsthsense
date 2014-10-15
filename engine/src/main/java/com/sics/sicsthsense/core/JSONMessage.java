@@ -36,6 +36,6 @@ public class JSONMessage {
     }
 
     public String getMessage() {
-        return message;
+        return message+"\n";
     }
 }
