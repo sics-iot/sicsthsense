@@ -11,11 +11,11 @@
  *		 * Neither the name of The Swedish Institute of Computer Science nor the
  *			 names of its contributors may be used to endorse or promote products
  *			 derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -24,7 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 /* Description: Jersey Resource for SicsthSense Resources. Handles config of Resources
- * contains the Parsers and Streams of the associated Resource. 
+ * contains the Parsers and Streams of the associated Resource.
  * TODO:
  * */
 package se.sics.sicsthsense.resources.atmosphere;
@@ -129,7 +129,7 @@ public class ResourceResource {
 		return Utils.resp(Status.OK, resource, logger);
 	}
 
-	// post new resource definition 
+	// post new resource definition
 	@POST
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
@@ -140,10 +140,10 @@ public class ResourceResource {
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
 		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
-        
+
         // no label duplication allowed
         if (storage.findResourceByLabel(resource.getLabel())!=null) {
-            return Utils.resp(Status.BAD_REQUEST , new JSONMessage("Error: that resource label already exists!"), logger); 
+            return Utils.resp(Status.BAD_REQUEST , new JSONMessage("Error: that resource label already exists!"), logger);
         }
 
 		resource.setOwner_id(userId); // should know the owner
@@ -163,7 +163,7 @@ public class ResourceResource {
 		return Utils.resp(Status.OK, resource, logger);
 	}
 
-	// put updated resource definition 
+	// put updated resource definition
 	@PUT
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
@@ -181,13 +181,13 @@ public class ResourceResource {
 	@DELETE
 	@Timed
 	@Path("/{resourceId}")
-	public Response deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor, 
+	public Response deleteResource(//@RestrictedTo(Authority.ROLE_USER) User visitor,
 			@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.warn("Deleting resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,resource);
-		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
+		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key+" Only User key deletes a Resource"), logger); }
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
@@ -226,17 +226,17 @@ public class ResourceResource {
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Utils.checkHierarchy(user,resource);
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
-        
+
         long timestamp = java.lang.System.currentTimeMillis();
 		logger.info("Adding data to resource: "+resource.getLabel()+" @ "+timestamp);
 
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
-		if (parsers==null || parsers.size()==0) { 
+		if (parsers==null || parsers.size()==0) {
 			logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
 			try {
 				// staticness is a mess...
-				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data); 
+				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data);
 			} catch (Exception e) {
 				return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: JSON parsing for auto creation failed!"), logger);
 			}
@@ -251,5 +251,5 @@ public class ResourceResource {
 	}
 
 
- 
+
 }
