@@ -95,7 +95,7 @@ public class EngineService extends Service<EngineConfiguration> {
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
-	//	atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
+		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.authorization", "admin@example.com:password");
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.server", "http://localhost");
 		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
@@ -122,19 +122,19 @@ public class EngineService extends Service<EngineConfiguration> {
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
-    // Configure authenticator
+		// Configure authenticator
 		User publicUser = new User();
 		publicUser.setUsername("__publicUser");
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
-    OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
-    environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
+		OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
+		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 
 		environment.addResource(new PublicHomeResource());
-    // Attach Atmosphere servlet
+		// Attach Atmosphere servlet
 		addServlet(environment);
 
-    // Session handler to enable automatic session handling
-    environment.setSessionHandler(new SessionHandler());
+		// Session handler to enable automatic session handling
+		environment.setSessionHandler(new SessionHandler());
 	}
 
 }

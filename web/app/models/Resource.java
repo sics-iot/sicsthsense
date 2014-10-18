@@ -7,7 +7,7 @@
  * in the documentation and/or other materials provided with the distribution. * Neither the name of
  * The Swedish Institute of Computer Science nor the names of its contributors may be used to
  * endorse or promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
@@ -107,8 +107,7 @@ public class Resource extends Operator {
      */
     private static final long serialVersionUID = 7683451697925144957L;
 
-    public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(Long.class,
-            Resource.class);
+    public static Model.Finder<Long, Resource> find = new Model.Finder<Long, Resource>(Long.class, Resource.class);
 
     public Resource(Resource parent, User owner, String label, Long pollingPeriod,
             String pollingUrl, String pollingAuthenticationKey, String description) {
@@ -357,25 +356,25 @@ public class Resource extends Operator {
         Resource.index(this);
 				rebuildEngineResource(this.owner.getId(), this.id);
     }
-    
+
     public void verify() {
     	this.label=label.replaceAll("[\\/:\"*?<>|']+", "");
     }
-    
+
     @Override
     public void update() {
     	verify();
     	super.update();
 			rebuildEngineResource(this.owner.getId(), this.id);
     }
-    
+
     @Override
     public void save() {
     	verify();
     	super.save();
 			rebuildEngineResource(this.owner.getId(), this.id);
     }
-    
+
     @Override
     public void delete() {
         this.pollingPeriod = 0L;
@@ -408,8 +407,15 @@ public class Resource extends Operator {
 
     public static Resource get(Long id, String key) {
         Resource resource = find.byId(id);
-        if (resource != null && resource.checkKey(key)) return resource;
-        return null;
+        if (resource != null) {
+			Logger.error("Resource does not exist!");
+			return null;
+		}
+		if (!resource.checkKey(key)) {
+			Logger.error("User not owner or resource!");
+			return null;
+		}
+        return resource;
     }
 
     public static Resource get(Long id, User user) {
