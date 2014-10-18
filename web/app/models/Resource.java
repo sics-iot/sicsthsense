@@ -412,7 +412,7 @@ public class Resource extends Operator {
 			return null;
 		}
 		if (!resource.checkKey(key)) {
-			Logger.error("User not owner or resource!");
+			Logger.error("User not owner of resource!");
 			return null;
 		}
         return resource;
@@ -425,7 +425,7 @@ public class Resource extends Operator {
 			return null;
 		}
 		if (!resource.owner.equals(user)) {
-			Logger.error("User not owner or resource!");
+			Logger.error("User not owner of resource!");
 			return null;
 		}
         return resource;
