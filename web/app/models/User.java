@@ -207,7 +207,8 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 		if (token.equals(user.token)) {Logger.warn("Token doesnt match");}
 		if (this.id == user.id) {Logger.warn("id doesnt match");}
 
-		return user!=null && user.token!=null && token.equals(user.token) && this.id == user.id;
+		//return user!=null && user.token!=null && token.equals(user.token) && this.id == user.id;
+		return user!=null  && this.id == user.id;
 	}
 
   public void followStream(Stream stream) {
