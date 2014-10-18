@@ -407,7 +407,7 @@ public class Resource extends Operator {
 
     public static Resource get(Long id, String key) {
         Resource resource = find.byId(id);
-        if (resource != null) {
+        if (resource == null) {
 			Logger.error("Resource does not exist!");
 			return null;
 		}
@@ -420,8 +420,15 @@ public class Resource extends Operator {
 
     public static Resource get(Long id, User user) {
         Resource resource = find.byId(id);
-        if (resource != null && resource.owner.equals(user)) return resource;
-        return null;
+        if (resource == null) {
+			Logger.error("Resource does not exist!");
+			return null;
+		}
+		if (!resource.owner.equals(user)) {
+			Logger.error("User not owner or resource!");
+			return null;
+		}
+        return resource;
     }
 
     public static Resource getByKey(String key) {

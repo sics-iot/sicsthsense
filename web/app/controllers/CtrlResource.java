@@ -7,7 +7,7 @@
  * in the documentation and/or other materials provided with the distribution. * Neither the name of
  * The Swedish Institute of Computer Science nor the names of its contributors may be used to
  * endorse or promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF
@@ -465,7 +465,7 @@ public class CtrlResource extends Controller {
 			Logger.error("[CtrlResource]: Stream path already exists!");
 			streamPath = streamPath +" - " +Utils.dateFormatter(Utils.currentTime());
 	 	}
-		
+
 		if (resource==null) {
 			Logger.error("[CtrlResource]: Resource is null!!");
 			return notFound("No resource found");
@@ -537,8 +537,8 @@ public class CtrlResource extends Controller {
 			resourceLog = new ResourceLog(resource, request(), requestTime);
 			resourceLog = ResourceLog.createOrUpdate(resourceLog);
 
-			Logger.info("[Resources] post received from URI: " + request().uri() 
-					+ ", content type: " + request().getHeader("Content-Type") 
+			Logger.info("[Resources] post received from URI: " + request().uri()
+					+ ", content type: " + request().getHeader("Content-Type")
 					+ ", payload: " + requestBody);
 			// if first POST (and no poll's), auto make parsers
       if (resource.streamParsers.isEmpty() && resource.isUnused()) {
@@ -578,8 +578,8 @@ public class CtrlResource extends Controller {
       Logger.error("[CtrlResource] request() did not have a recognised Content-Type");
       body = "";
     }
-    Logger.info("[Resources] post received from URI: " + request().uri() 
-      + ", content type: " + request().getHeader("Content-Type") 
+    Logger.info("[Resources] post received from URI: " + request().uri()
+      + ", content type: " + request().getHeader("Content-Type")
       + ", payload: " + body);
     return body;
   }
@@ -651,7 +651,7 @@ public class CtrlResource extends Controller {
 		User currentUser = Secured.getCurrentUser();
 		Resource resource = Resource.get(id, currentUser);
 		if (resource == null) {
-			return badRequest("Resource does not exist: " + id);
+			return badRequest("Specified resource does not exist: " + id);
 		}
 		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
 		SkeletonResource skeleton = new SkeletonResource(resource);
@@ -783,18 +783,18 @@ public class CtrlResource extends Controller {
 		return ok(key);
 	}
 
-	
+
 	/*
 	 * poll the source data and fill the stream definition form // with default
 	 * sensible parameters for the user to confirm
-	 * 
+	 *
 	 * @Security.Authenticated(Secured.class) public static Result initialise() {
 	 * Form<Resource> theForm = resourceForm.bindFromRequest();
 	 * if(theForm.hasErrors()) { return badRequest("Bad request"); } else { User
 	 * currentUser = Secured.getCurrentUser(); Resource submitted = theForm.get();
 	 * StringBuffer returnBuffer = new StringBuffer(); BufferedReader
 	 * serverResponse;
-	 * 
+	 *
 	 * if(submitted.getPollingUrl() != null &&
 	 * !"".equalsIgnoreCase(submitted.getPollingUrl())) { //fudge URL, should
 	 * check HTTP if (!submitted.getPollingUrl().startsWith("http://") &&
