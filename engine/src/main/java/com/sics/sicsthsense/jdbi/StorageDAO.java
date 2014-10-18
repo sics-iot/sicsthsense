@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -68,14 +68,14 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into users (username, email, first_name, last_name, creation_date, version, token, password) VALUES (:username, :email, :first_name, :last_name, NOW(), 1, :token, :password)")
   void insertUser(
-		@Bind("username")   String username, 
+		@Bind("username")   String username,
 		@Bind("email")      String email,
 		@Bind("first_name") String first_name,
 		@Bind("last_name")  String last_name,
 		@Bind("token")      String token,
 		@Bind("password")		String password
 	);
-	
+
   @SqlUpdate("update resources set username = :username, first_name=:first_name, last_name=:last_name, email where id = :id")
   void updateUser(
 		@Bind("id")         long id,
@@ -115,7 +115,7 @@ public interface StorageDAO {
   void insertResource(
 		@Bind("label") String label,
 		@Bind("version") String version,
-		@Bind("owner_id")  long owner_id, 
+		@Bind("owner_id")  long owner_id,
 		@Bind("parent_id") long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
@@ -130,7 +130,7 @@ public interface StorageDAO {
 		@Bind("id") long id,
 		@Bind("label") String label,
 		@Bind("version") String version,
-		@Bind("owner_id")  long owner_id, 
+		@Bind("owner_id")  long owner_id,
 		@Bind("parent_id") long parent_id,
 		@Bind("polling_url") String polling_url,
 		@Bind("polling_authentication_key") String polling_authentication_key,
@@ -138,7 +138,7 @@ public interface StorageDAO {
 		@Bind("secret_key")  String secret_key,
 		@Bind("description") String description,
 		@Bind("last_polled") long last_polled,
-		@Bind("last_posted") long last_posted 
+		@Bind("last_posted") long last_posted
 	);
 
   @SqlUpdate("update resources set last_polled=:time where id = :id")
@@ -176,20 +176,20 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into streams( type, latitude, longitude, description, public_access, public_search, frozen, history_size, last_updated, secret_key, owner_id, resource_id, function, version) values (  :type, :latitude, :longitude, :description, :public_access, :public_search, :frozen, :history_size, :last_updated, :secret_key, :owner_id, :resource_id, :function, :version)")
   void insertStream(
-		@Bind("type")        String type, 
-		@Bind("latitude")    double latitude, 
+		@Bind("type")        String type,
+		@Bind("latitude")    double latitude,
 		@Bind("longitude")   double longitude,
-		@Bind("description") String description, 
+		@Bind("description") String description,
 		@Bind("public_access") boolean public_access,
-		@Bind("public_search") boolean public_search, 
+		@Bind("public_search") boolean public_search,
 		@Bind("frozen")       boolean frozen,
-		@Bind("history_size") int history_size, 
-		@Bind("last_updated") long last_updated, 
-		@Bind("secret_key")   String secret_key, 
-		@Bind("owner_id")     long owner_id, 
-		@Bind("resource_id")  long resource_id, 
-		@Bind("function")			String function, 
-		@Bind("version")      int version 
+		@Bind("history_size") int history_size,
+		@Bind("last_updated") long last_updated,
+		@Bind("secret_key")   String secret_key,
+		@Bind("owner_id")     long owner_id,
+		@Bind("resource_id")  long resource_id,
+		@Bind("function")			String function,
+		@Bind("version")      int version
 	);
 
   @SqlUpdate("update streams set last_updated=:time where id = :id")
@@ -209,12 +209,12 @@ public interface StorageDAO {
   @SqlUpdate("insert into dependents(stream_id, dependent_id) values (:stream_id, :dependent_id)")
   void insertDependent(
 		@Bind("stream_id")     long stream_id,
-		@Bind("dependent_id")	 long dependent_id 
+		@Bind("dependent_id")	 long dependent_id
 	);
-	
+
   @SqlUpdate("delete from dependents where dependent_id=:dependent_id")
   void deleteDependent(
-		@Bind("dependent_id")	 long dependent_id 
+		@Bind("dependent_id")	 long dependent_id
 	);
 
 
@@ -230,15 +230,15 @@ public interface StorageDAO {
   @SqlUpdate("insert into triggers(stream_id, url, operator, operand, payload) values (:stream_id, :url, :operator, :operand, :payload)")
   void insertTrigger(
 		@Bind("stream_id")  long stream_id,
-		@Bind("url")		String url, 
+		@Bind("url")		String url,
 		@Bind("operator")	String operator,
 		@Bind("operand")	double operand,
-		@Bind("payload")	String payload 
+		@Bind("payload")	String payload
 	);
-	
+
   @SqlUpdate("delete from triggers where id = :id")
   void deleteTrigger(
-		@Bind("id")	 long dependent_id 
+		@Bind("id")	 long dependent_id
 	);
 
 
@@ -254,18 +254,18 @@ public interface StorageDAO {
 
   @SqlUpdate("insert into vfiles(path, owner_id, type, linked_stream_id ) values (:path, :owner_id, :type, :linked_stream_id )")
   void insertVFile(
-		@Bind("path")       String path, 
-		@Bind("owner_id")		long owner_id, 
-		@Bind("type")       String type, 
+		@Bind("path")       String path,
+		@Bind("owner_id")		long owner_id,
+		@Bind("type")       String type,
 		@Bind("linked_stream_id")   long linked_stream_id
 	);
   @SqlUpdate("delete from vfiles where id = :id")
   void deleteVFile(
-		@Bind("id")	 long id 
+		@Bind("id")	 long id
 	);
   @SqlUpdate("delete from vfiles where stream_id = :stream_id")
   void deleteStreamsVFile(
-		@Bind("stream_id")	 long stream_id 
+		@Bind("stream_id")	 long stream_id
 	);
 
 
@@ -278,20 +278,19 @@ public interface StorageDAO {
 	@Mapper(ParserMapper.class)
   List<Parser> findParsersByResourceId(@Bind("resourceId") long resourceId);
 
-  @SqlQuery("select * from parsers where stream_id = :streamId")
-	@Mapper(ParserMapper.class)
+  @SqlQuery("select id from parsers where stream_id = :streamId")
   List<Long> findParserIdsByStreamId(@Bind("streamId") long streamId);
 
   @SqlUpdate("insert into parsers( resource_id, stream_id, input_parser, input_type, timeformat, data_group, time_group, number_of_points) values ( :resource_id, :stream_id, :input_parser, :input_type, :timeformat, :data_group, :time_group, :number_of_points)")
   void insertParser(
-		@Bind("resource_id") long resource_id, 
-		@Bind("stream_id")  long stream_id, 
+		@Bind("resource_id") long resource_id,
+		@Bind("stream_id")  long stream_id,
 		@Bind("input_parser") String input_parser,
 		@Bind("input_type") String input_type,
 		@Bind("timeformat") String timeformat,
 		@Bind("data_group")  int data_group,
 		@Bind("time_group")  int time_group,
-		@Bind("number_of_points")  int number_of_points 
+		@Bind("number_of_points")  int number_of_points
 	);
 
   @SqlQuery("select id from parsers where resource_id = :resource_id and stream_id = :stream_id limit 1")
@@ -305,7 +304,7 @@ public interface StorageDAO {
 		@Bind("timeformat")   String timeformat,
 		@Bind("data_group")   int data_group,
 		@Bind("time_group")   int time_group,
-		@Bind("number_of_points")  int number_of_points 
+		@Bind("number_of_points")  int number_of_points
 	);
 
   @SqlUpdate("delete from parsers where id = :id")
@@ -320,17 +319,17 @@ public interface StorageDAO {
   @SqlQuery("SELECT * FROM resource_log WHERE id = :id  LIMIT 1")
 	@Mapper(ResourceLogMapper.class)
   ResourceLog findResourceLogById(@Bind("id") long id);
-	
+
   @SqlUpdate("insert into resource_log (resource_id, creation_timestamp, response_timestamp, parsed_successfully, is_poll, body, method, headers, message, version) values (:resource_id, :creation_timestamp, :response_timestamp, :parsed_successfully, :is_poll, :body, :method, :headers, :message, :version)")
   void insertResourceLog(
 		@Bind("resource_id") long resource_id,
 		@Bind("creation_timestamp") long creation_timestamp,
 		@Bind("response_timestamp") long response_timestamp,
 		@Bind("parsed_successfully") boolean parsed_successfully,
-		@Bind("is_poll") boolean is_poll, 
+		@Bind("is_poll") boolean is_poll,
 		@Bind("body")   String body,
-		@Bind("method") String method ,   
-		@Bind("headers") String headers, 
+		@Bind("method") String method ,
+		@Bind("headers") String headers,
 		@Bind("message") String message,
 		@Bind("version") int version
 	);
@@ -341,16 +340,19 @@ public interface StorageDAO {
 		@Bind("creation_timestamp") long creation_timestamp,
 		@Bind("response_timestamp") long response_timestamp,
 		@Bind("parsed_successfully") boolean parsed_successfully,
-		@Bind("is_poll") boolean is_poll, 
+		@Bind("is_poll") boolean is_poll,
 		@Bind("body")   String body,
 		@Bind("method") String method,
-		@Bind("headers") String headers, 
+		@Bind("headers") String headers,
 		@Bind("message") String message,
 		@Bind("version") int version
 	);
 
   @SqlUpdate("delete from resource_log where id = :id")
   void deleteResourceLog(@Bind("id") long id);
+
+  @SqlUpdate("delete from resource_log where resource_id = :resource_id")
+  void deleteResourceLogByResourceId(@Bind("resource_id") long resource_id);
 
 
 	// DataPoints

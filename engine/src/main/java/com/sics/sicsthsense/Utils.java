@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -52,21 +52,21 @@ public class Utils {
     /*
 	public static Response resp(Response.Status status, User user, Logger logger) {
         String message;
-        try { message = mapper.writeValueAsString(user); } 
+        try { message = mapper.writeValueAsString(user); }
           catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 	public static Response resp(Response.Status status, Resource resource, Logger logger) {
         String message;
-        try { message = mapper.writeValueAsString(resource); } 
+        try { message = mapper.writeValueAsString(resource); }
           catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
 	public static Response resp(Response.Status status, Stream stream, Logger logger) {
         String message;
-        try { message = mapper.writeValueAsString(stream); } 
+        try { message = mapper.writeValueAsString(stream); }
           catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
@@ -114,16 +114,16 @@ public class Utils {
 		try { // see if we can turn the Name into an Id, and if that Id exists in the DB
 			resource = storage.findResourceById(Long.parseLong(resourceName));
 		} catch (NumberFormatException e) { resource=null; }
-		
+
 		if (resource==null) { // treat the Name as a resource label
 			try {
 				String label = new URI(resourceName).toString();
-				if (userId==-1) { resource = storage.findResourceByLabel(label); } 
+				if (userId==-1) { resource = storage.findResourceByLabel(label); }
 				else { resource = storage.findResourceByLabel(label, userId); }
 			} catch (java.net.URISyntaxException e) {
 				logger.error("Can't turn URL-encoded resource label into valid String: "+e);
 			}
-		}	
+		}
 		return resource;
 	}
 
@@ -139,42 +139,42 @@ public class Utils {
 
 		try { // see if we can turn the Name into an Id, and if that Id exists in the DB
 			stream = storage.findStreamById(Long.parseLong(streamName));
-		} catch (NumberFormatException e) { 
+		} catch (NumberFormatException e) {
 			//logger.error("could not long() stream: "+streamName);
-			stream=null; 
+			stream=null;
 		}
-		
+
 		if (stream==null) { // treat the Name as a stream label
 			String name;
-			try { name = new URI(streamName).toString(); } 
+			try { name = new URI(streamName).toString(); }
 			catch (java.net.URISyntaxException e) { logger.error("Can't turn URL-encoded stream label into valid String: "+e); return null;}
 			//logger.error("finding stream name: /"+name);
-			final long streamId = storage.findStreamIdByPath("/"+name); 
+			final long streamId = storage.findStreamIdByPath("/"+name);
 			if (streamId==0) {
 				logger.error("Stream Name lookup failed! /"+name);
 				return null;
 			} else {
 				stream = storage.findStreamById(streamId);
 			}
-		}	
+		}
 		return stream;
 	}
 
-	// add a resource 
+	// add a resource
 	public static long insertResource(Resource resource) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		// should check if label exists!
 
-		storage.insertResource( 
+		storage.insertResource(
 			resource.getLabel(),
-			resource.getVersion(), 
-			resource.getOwner_id(), 
+			resource.getVersion(),
+			resource.getOwner_id(),
 			-1,
-			resource.getPolling_url(), 
-			resource.getPolling_authentication_key(), 
-			resource.getPolling_period(), 
-			resource.getSecret_key(), 
-			resource.getDescription() 
+			resource.getPolling_url(),
+			resource.getPolling_authentication_key(),
+			resource.getPolling_period(),
+			resource.getSecret_key(),
+			resource.getDescription()
 		);
 		return storage.findResourceId(resource.getLabel());
 	}
@@ -182,7 +182,7 @@ public class Utils {
 		final StorageDAO storage = DAOFactory.getInstance();
 		// should check if label exists!
 
-		storage.insertResourceLog( 
+		storage.insertResourceLog(
 			rl.resourceId,
 			rl.creationTimestamp,
 			rl.responseTimestamp,
@@ -198,7 +198,7 @@ public class Utils {
 		return -1;
 	}
 
-	// add a resource 
+	// add a resource
 	public static void updateResource(long resourceId, Resource newresource) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -208,20 +208,20 @@ public class Utils {
 
 		Resource resource = storage.findResourceById(resourceId);
 		resource.update(newresource);
-	
-		storage.updateResource( 
+
+		storage.updateResource(
 			resourceId, // the resource ID from the PUT'd URL
 			resource.getLabel(),
-			resource.getVersion(), 
-			resource.getOwner_id(), 
+			resource.getVersion(),
+			resource.getOwner_id(),
 			-1,
-			resource.getPolling_url(), 
-			resource.getPolling_authentication_key(), 
-			resource.getPolling_period(), 
-			resource.getSecret_key(), 
-			resource.getDescription(), 
-			resource.getLast_polled(), 
-			resource.getLast_posted() 
+			resource.getPolling_url(),
+			resource.getPolling_authentication_key(),
+			resource.getPolling_period(),
+			resource.getSecret_key(),
+			resource.getDescription(),
+			resource.getLast_polled(),
+			resource.getLast_posted()
 		);
 		// remake pollers with updated Resource attribtues
 		pollSystem.rebuildResourcePoller(resourceId);
@@ -230,7 +230,7 @@ public class Utils {
 
 	public static void authoriseResourceKey(String key1, String key2) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
-		if (!key1.equals(key2)) { 
+		if (!key1.equals(key2)) {
 			logger.warn("User has incorrect key on resource!");
 			throw new WebApplicationException(Status.FORBIDDEN);
 		}
@@ -307,7 +307,7 @@ public class Utils {
 		final StorageDAO storage = DAOFactory.getInstance();
 		storage.insertDependent(stream,dependent);
 	}
-	
+
 	public static void insertTrigger(long stream_id, String url, String operator, double operand, String payload) {
 		final StorageDAO storage = DAOFactory.getInstance();
 		storage.insertTrigger(stream_id, url, operator, operand, payload);
@@ -318,6 +318,36 @@ public class Utils {
 		storage.insertVFile( path,owner_id,type,stream_id);
 		return -1;
 	}
+
+    public static void deleteStream(Stream stream) {
+		final StorageDAO storage = DAOFactory.getInstance();
+
+        // delete dependants,vfiles and parsers on the Stream
+        List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
+        for (Long id: vfiles) { storage.deleteVFile(id); }
+        List<Long> parsers = storage.findParserIdsByStreamId(stream.getId());
+        for (Long id: parsers) { storage.deleteParser(id); }
+        List<Long> dependents = storage.findDependents(stream.getId());
+        for (Long id: dependents) { storage.deleteDependent(id); }
+        List<Long> triggers = storage.findTriggerIdsByStreamId(stream.getId());
+        for (Long id: triggers) { storage.deleteTrigger(id); }
+
+        storage.deleteStream(stream.getId());
+    }
+
+    public static void deleteResource(Resource resource) {
+		final StorageDAO storage = DAOFactory.getInstance();
+	    final PollSystem pollSystem = PollSystem.getInstance();
+		// delete child streams and parsers
+		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
+		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
+		for (Stream s: streams) {Utils.deleteStream(s);}
+		for (Parser p: parsers) {storage.deleteParser(p.getId());}
+        storage.deleteResourceLogByResourceId(resource.getId());
+		storage.deleteResource(resource.getId());
+		// remake pollers with updated Resource attribtues
+		pollSystem.rebuildResourcePoller(resource.getId());
+    }
 
 
 	public static void applyParsers(Resource resource, String data, long timestamp) {

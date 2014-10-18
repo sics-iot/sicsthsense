@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -206,17 +206,7 @@ public class StreamResource {
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key) && !stream.isAuthorised(key)) {
 			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Not authorised to DELETE stream"), logger);
 		}
-        // delete dependants,vfiles and parsers on the Stream
-        List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
-        for (Long id: vfiles) { storage.deleteVFile(id); }
-        List<Long> parsers = storage.findParserIdsByStreamId(stream.getId());
-        for (Long id: parsers) { storage.deleteParser(id); }
-        List<Long> dependents = storage.findDependents(stream.getId());
-        for (Long id: dependents) { storage.deleteDependent(id); }
-        List<Long> triggers = storage.findTriggerIdsByStreamId(stream.getId());
-        for (Long id: triggers) { storage.deleteTrigger(id); }
-
-        storage.deleteStream(stream.getId());
+        Utils.deleteStream(stream);
 
 		return Utils.resp(Status.OK, new JSONMessage("Stream deleted"), null);
     }
@@ -241,10 +231,10 @@ public class StreamResource {
 		boolean limitSet=true;
 		int limitValue = limit.get();
 		if (limit.get()==-1) {
-			limitSet=false; 
+			limitSet=false;
 			limitValue=50; // give default value
-		} 
-		
+		}
+
 
 		if (from.get() != -1) { // from is set
 			if (until.get() != -1) { // until is set

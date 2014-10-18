@@ -188,15 +188,8 @@ public class ResourceResource {
 		Resource resource = Utils.findResourceByIdName(resourceName,userId);
 		Utils.checkHierarchy(user,resource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key+" Only User key deletes a Resource"), logger); }
-		// delete child streams and parsers
-		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
-		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
-		for (Parser p: parsers) {storage.deleteParser(p.getId());}
-		for (Stream s: streams) {storage.deleteStream(s.getId());}
-		storage.deleteResource(resource.getId());
-		// TODO: should delete resource log
-		// remake pollers with updated Resource attribtues
-		pollSystem.rebuildResourcePoller(resource.getId());
+        Utils.deleteResource(resource);
+
 		return Response.ok().build();
 	}
 
