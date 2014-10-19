@@ -111,7 +111,7 @@ public class Intensity extends Function {
 
 		  double acc = accel.get(c).getValue();
 		  double accFudge = 0.2;
-		  acc *= accFudge; // tune the value
+		  acc = acc*accFudge; // tune the value
 		  if (acc > 1.0) {
 			intensity += 10 - (10.0/acc);
 		  } else { intensity += 0.001; }
@@ -121,7 +121,7 @@ public class Intensity extends Function {
 			 maxPossible += 10.0;
 			 double gy = gyro.get(c).getValue();
 			 double gyFudge=1;
-			 gy * gyFudge;
+			 gy = gy * gyFudge;
 			 if (gy > 1.0) {
 			  intensity +=	10.0 - (10.0/gy);
 			 } else { intensity += 0; }
