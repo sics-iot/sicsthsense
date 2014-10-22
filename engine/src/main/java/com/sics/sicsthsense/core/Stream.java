@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -134,7 +134,7 @@ public class Stream {
 		if (public_access) {return true;}
 		if (token.equals(secret_key)) {return true;} // owners can read
 		if (storage==null) {storage = DAOFactory.getInstance();}
-		User owner = storage.findUserById(owner_id); 
+		User owner = storage.findUserById(owner_id);
 		if (token.equals(owner.getToken())) {return true;} // owners can read
 		return false;
 	}
@@ -201,7 +201,9 @@ public class Stream {
 		} else if ("median".equals(this.getFunction())) {
 			function = new Median();
 		} else if ("intensity".equals(this.getFunction())) {
-			function = new Intensity();
+			function = new Intensity(getId());
+		} else if ("smooth".equals(this.getFunction())) {
+			function = new Smooth();
 		} else {
 			logger.error("Unknown function "+this.getFunction()+"! Stream ID: "+getId());
 			return new ArrayList<DataPoint>();
@@ -218,7 +220,7 @@ public class Stream {
 				//logger.warn("Testing trigger: "+t.toString());
 				t.test(dp);
 			}
-		} 
+		}
 	}
 	public boolean isAuthorised(String key) {
 		if (this.secret_key.equals(key)) {

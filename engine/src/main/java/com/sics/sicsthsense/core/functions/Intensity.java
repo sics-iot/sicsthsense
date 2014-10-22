@@ -40,10 +40,12 @@ public class Intensity extends Function {
 	private final Logger logger = LoggerFactory.getLogger(Intensity.class);
 	public int AccHistorySize  = 1;
 	public int GyroHistorySize = 1;
+	public long streamId;
 
-	public Intensity() {
+	public Intensity(long streamId) {
 		super("intensity");
 		this.type = "intensity";
+		this.streamId = streamId;
 	}
 
 	public double magnitude3D(double x, double y, double z) {
@@ -83,6 +85,7 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
+		double decayFactor=0.2;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
@@ -142,7 +145,13 @@ public class Intensity extends Function {
 		  logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
 		  intensity = (intensity/maxPossible) * 100;
 		  logger.info("corrected intensity: "+intensity);
-		  rv.add(new DataPoint(accel.get(0).getTimestamp(), intensity)); // scale to 0-100
+
+		// do some smoothing
+		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,1);
+		double prevValue = dps.get(0).getValue();
+		double smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
+
+		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
 		logger.info("apply Intensity end()!!");
 		return rv;

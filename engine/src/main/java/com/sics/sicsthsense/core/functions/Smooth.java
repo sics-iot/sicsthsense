@@ -30,34 +30,52 @@ package se.sics.sicsthsense.core.functions;
 
 import java.util.List;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class Smooth extends Function {
+	private final Logger logger = LoggerFactory.getLogger(Smooth.class);
 
-public class Function {
-	protected String type;
-	protected Logger logger;
-	protected StorageDAO storage;
-
-	public Function(String type) {
-		this.type = type;
-		this.storage = DAOFactory.getInstance();
+	public Smooth() {
+		super("smooth");
+		this.type = "smooth";
 	}
 
-    // This should be overidden by subclasses
-	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
+	public List<DataPoint> apply(List<Long> streamIds) {
+		int historySize=10;
+		double decay=0.3;
+
+		long latest=-1;
 		List<DataPoint> rv = new ArrayList<DataPoint>();
+
+		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
+		if (streamIds.size()!=1) { logger.error("Stream antecedants size 1!= "+streamIds.size()); return rv; }
+
+		List<DataPoint> dps = storage.findPointsByStreamId(streamIds.get(0),historySize);
+		int count=dps.size(); // we may have less than
+		double acc = dps.get(0).getValue();
+		logger.info("Acc: "+acc);
+		for (int c=dps.size()-1; c>=0; --c) {
+			DataPoint dp = dps.get(c);
+			logger.info("dp: "+dp.toString());
+			logger.info("Value: "+dp.getValue());
+			acc = acc*decay + dp.getValue()*(1.0-decay);
+			logger.info("Acc: "+acc);
+			if (dp.getTimestamp() > latest) {latest = dp.getTimestamp();}
+		}
+		if (count>0) { //check we have some data points
+			rv.add(new DataPoint(latest, acc));
+		} else {
+			logger.warn("No points to smooth!");
+		}
 		return rv;
 	}
 
 	public String toString() {
 		return type;
 	}
-
-	public String getType()				{ return type; }
-	public void setType(String type)	{ this.type = type; }
 
 }

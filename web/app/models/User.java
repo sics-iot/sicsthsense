@@ -154,11 +154,13 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 
 	public void updateUser(User user) {
 		this.username  = user.username.toLowerCase();
+		this.id        = user.id;
 		this.firstName = user.firstName;
 		this.lastName  = user.lastName;
 		this.password  = user.password;
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
+		this.token     = user.token;
 		this.description = user.description;
 		update();
 	}
@@ -202,13 +204,12 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	}
 
 	public boolean equals(User user) {
-		if (user==null) {Logger.warn("User is null");}
-		if (user.token!=null) {Logger.warn("Token is null");}
-		if (token.equals(user.token)) {Logger.warn("Token doesnt match");}
-		if (this.id.equals(user.id)) {Logger.warn("id doesnt match: "+this.id+" ");}
+		//if (user==null) {Logger.warn("User is null");}
+		//if (user.token!=null) {Logger.warn("Token is null");}
+		//if (token.equals(user.token)) {Logger.warn("Token doesnt match");}
+		//if (this.id.equals(user.id)) {Logger.warn("id doesnt match: "+this.id+" ");}
 
-		//return user!=null && user.token!=null && token.equals(user.token) && this.id == user.id;
-		return user!=null  && this.id.equals(user.id);
+		return user!=null && user.token!=null && token.equals(user.token) && this.id == user.id;
 	}
 
   public void followStream(Stream stream) {
