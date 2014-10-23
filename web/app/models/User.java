@@ -205,11 +205,13 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 
 	public boolean equals(User user) {
 		if (user==null) {Logger.warn("User is null");return false;}
-		if (user.token!=null) {Logger.warn("Token is null");return false;}
-		if (!token.equals(user.token)) {Logger.warn("Token doesnt match");return false;}
+		Logger.warn(user.toString());
+		if (user.token==null) {Logger.warn("Token is null");}
+		if (!token.equals(user.token)) {Logger.warn("Token doesnt match");}
 		if (!this.id.equals(user.id))  {Logger.warn("id doesnt match: "+this.id+" ");return false;}
-
-		return user!=null && user.token!=null && token.equals(user.token) && this.id.equals(user.id);
+		Logger.warn(user.toString());
+		//return user!=null && user.token!=null && token.equals(user.token) && this.id.equals(user.id);
+		return user!=null && this.id.equals(user.id);
 	}
 
   public void followStream(Stream stream) {
@@ -285,4 +287,6 @@ public class User extends Model implements Comparable<User> { //PathBindable<Use
 	public static void delete(Long id) {
 		find.ref(id).delete();
 	}
+
+	public String toString() {return "User: "+id+" "+email+" "+token;}
 }
