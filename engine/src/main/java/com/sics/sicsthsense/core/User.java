@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -73,7 +73,7 @@ import se.sics.sicsthsense.model.security.*;
   "openIDIdentifier",
   "authorities"
 })*/
-@JsonInclude(Include.NON_NULL)  
+@JsonInclude(Include.NON_NULL)
 public class User {
 
   /** * <p>Unique identifier for this entity</p> */
@@ -135,7 +135,7 @@ public class User {
 		this.token = UUID.randomUUID().toString();
 		getAuthorities().add(Authority.ROLE_PUBLIC);
 	}
-	public User(long id, 
+	public User(long id,
 			String username,
 			String email,
 			String passwordDigest,
@@ -167,7 +167,7 @@ public class User {
 	}
 
 	/*
-	public User( long id, 
+	public User( long id,
 			String username, String first_name, String last_name, String description, Double latitude, Double longitude, String creation_date_string, String last_login_string, String token) {
 			this(id, username, first_name, last_name, description,
 				latitude,
@@ -199,7 +199,7 @@ public class User {
 		this.email     = user.email;
 		this.latitude  = user.latitude;
 		this.longitude = user.longitude;
-		this.token		 = user.token;
+		this.token     = user.token;
 		this.password  = user.password;
 		this.passwordDigest  = user.passwordDigest;
 	}
@@ -264,7 +264,7 @@ public class User {
 	public boolean hasSessionToken() { return sessionToken!=null; }
   public boolean hasAllAuthorities(Set<Authority> requiredAuthorities) { return authorities.containsAll(requiredAuthorities); }
   public boolean hasAuthority(Authority authority) { return hasAllAuthorities(Sets.newHashSet(authority)); }
-	
+
 
   @Override
   public String toString() {

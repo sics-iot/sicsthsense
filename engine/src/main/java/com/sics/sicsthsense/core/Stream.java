@@ -136,12 +136,12 @@ public class Stream {
 		if (token.equals(secret_key)) {return true;} // owners can read
 		if (storage==null) {storage = DAOFactory.getInstance();}
 		User owner = storage.findUserById(owner_id);
-		if (token.equals(owner.getToken())) {return true;} // owners can read
+		if (owner!=null && token.equals(owner.getToken())) {return true;} // owners can read
 		return false;
 	}
 	public boolean isReadable(User user) {
-		if (user.getId() == owner_id) {return true;} // owners can read
 		if (public_access) {return true;}
+		if (user.getId() == owner_id) {return true;} // owners can read
 		return false;
 	}
 	public boolean isWritableable(User user) {
