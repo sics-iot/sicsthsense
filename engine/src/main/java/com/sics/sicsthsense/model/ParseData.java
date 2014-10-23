@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -74,7 +74,7 @@ public class ParseData {
 	public void apply(Parser parser, String data, long timestamp) throws Exception {
 		//logger.info("apply()");
 		if (storage==null) { logger.error("StorageDAO has not been set!"); return; }
-		if ("application/json".equalsIgnoreCase(parser.getInput_type()) 
+		if ("application/json".equalsIgnoreCase(parser.getInput_type())
 			//|| "application/json".equalsIgnoreCase(request.getHeader("Content-Type"))
 		) {
 			//logger.info("Applying JSON Parser to JSON data");
@@ -90,7 +90,7 @@ public class ParseData {
 	 * parses requests as JSON inputParser is used as the path to the nested json node i.e.
 	 * inputParser could be: room1/sensors/temp/value
 	 */
-	private boolean parseJsonResponse(Parser parser, JsonNode root, Long currentTime) {
+	private boolean parseJsonResponse(Parser parser, JsonNode root, Long currentTime) throws Exception {
 			// TODO check concat path against inputParser, get the goal and stop
 			// TODO (linear time) form a list of nested path elements from the gui, and
 			if (root == null) { logger.error("JSON Root is null"); return false; }
@@ -102,9 +102,9 @@ public class ParseData {
 			for (int i = 1; i < levels.length; i++) {
 					//Logger.info(levels[i]);
 					node = node.get(levels[i]);
-					if (node == null) { 
-						//logger.error("Root is NULL!"); 
-						return false; 
+					if (node == null) {
+						//logger.error("Root is NULL!");
+						return false;
 					}
 			}
 
@@ -112,7 +112,7 @@ public class ParseData {
 			if (node.isValueNode()) { // it is a simple primitive
 					String value = node.asText();
 					// the following should exception and bubble up so we know this parser failed!
-					Double dValue = Double.parseDouble(value); 
+					Double dValue = Double.parseDouble(value);
 					//logger.info("Posting value: " + dValue + " @ " + currentTime+" to stream "+parser.getStream_id());
 					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
 					//storage.insertDataPoint(parser.getStream_id(), dValue, System.currentTimeMillis() );
@@ -133,7 +133,7 @@ public class ParseData {
 					}
 					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
 					//return stream.post(value, currentTime);
-					storage.insertDataPoint(parser.getStream_id(),value,currentTime); 
+					storage.insertDataPoint(parser.getStream_id(),value,currentTime);
 					storage.updatedStream(parser.getStream_id(), currentTime );
 					stream.notifyDependents();
 					return true;
@@ -143,7 +143,7 @@ public class ParseData {
 	}
 	/**
 	 * Parses the request using inputParser as regex and posts the first match
-	 * 
+	 *
 	 * @param textBody
 	 * @return true if could post
 	 */
@@ -159,7 +159,7 @@ public class ParseData {
 			if (parser.getInput_parser() == null || parser.getInput_parser().equalsIgnoreCase("")) {
 				// no parser to speak of just try and eat a number
 				number = Double.parseDouble(textBody);
-				storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+				storage.insertDataPoint(parser.getStream_id(),number,currentTime);
 				storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 				stream.notifyDependents();
 				return true;
@@ -171,11 +171,11 @@ public class ParseData {
 			if (!matcher.find()) { logger.info("Did not manage to match the regex for parser: "+parser.getId()); return false; }
 
 			for (int i = 0; i < parser.getNumber_of_points(); i++) {
-					try { value = matcher.group(parser.getData_group()); } 
+					try { value = matcher.group(parser.getData_group()); }
 					catch (IndexOutOfBoundsException iob) { continue; }
 					number = Double.parseDouble(value);
 
-					try { time = matcher.group(parser.getTime_group()); } 
+					try { time = matcher.group(parser.getTime_group()); }
 					catch (IndexOutOfBoundsException iob) { time = null; }
 
 					// if there is a match for time, parse it; otherwise, use the system time (provided in the param  currentTime)
@@ -190,7 +190,7 @@ public class ParseData {
 							}
 					}
 					logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
-					storage.insertDataPoint(parser.getStream_id(),number,currentTime); 
+					storage.insertDataPoint(parser.getStream_id(),number,currentTime);
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
 					stream.notifyDependents();
 				}

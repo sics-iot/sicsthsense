@@ -68,7 +68,7 @@ public class WSStream {
     @Broadcast
     @Produces("text/html;charset=ISO-8859-1")
     //public Broadcastable publish(@FormParam("message") String data) {
-    public Broadcastable publish(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key, @FormParam("message") String data) {
+    public Broadcastable publish(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key, @FormParam("message") String data) throws Exception {
 			User user = storage.findUserById(userId);
 			Resource resource = Utils.findResourceByIdName(resourceName);
 			Stream stream =			Utils.findStreamByIdName(topic.getID());

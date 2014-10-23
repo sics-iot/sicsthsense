@@ -267,7 +267,7 @@ public class StreamResource {
 	@Path("/{streamId}/{data: d[a-z]*}")
 	@Consumes({MediaType.APPLICATION_JSON})
 	@Timed
-	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) {
+	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, DataPoint datapoint, @QueryParam("key") String key) throws Exception {
 		User user =					storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(resourceName);
 		Stream stream =			Utils.findStreamByIdName(streamName);

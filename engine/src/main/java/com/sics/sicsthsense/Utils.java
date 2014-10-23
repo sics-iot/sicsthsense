@@ -260,7 +260,7 @@ public class Utils {
 		}
 	}
 
-	public static void insertDataPoint(DataPoint datapoint) {
+	public static void insertDataPoint(DataPoint datapoint) throws Exception {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
         Stream stream = storage.findStreamById(datapoint.getStreamId());
@@ -367,6 +367,7 @@ public class Utils {
 				parseData.apply(parser,data,timestamp);
 			} catch (Exception e) {
 				parsedSuccessfully=false;
+                e.printStackTrace();
 				logger.error("Parsing "+data+" failed!"+e);
 				parseError +="Parsing "+data+" failed!"+e;
 			}

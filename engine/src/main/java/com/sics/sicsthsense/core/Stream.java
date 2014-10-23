@@ -31,6 +31,7 @@ package se.sics.sicsthsense.core;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +150,7 @@ public class Stream {
 	}
 
 	// when an antecedent input stream has changed, update this stream's datapoints
-	public void update() {
+	public void update() throws Exception {
 		logger.info("Updating stream: "+getId());
 		if (storage==null) {storage = DAOFactory.getInstance();}
 
@@ -164,12 +165,12 @@ public class Stream {
                 testTriggers(p);
             }
             notifyDependents();
-        } catch (Exception e) {
+        } catch (IOException e) {
           logger.error("Error: function failed! Stream ID: "+getId()+" "+e.toString());
         }
 	}
 
-	public void notifyDependents() {
+	public void notifyDependents() throws Exception {
 		logger.info("Notify dependents of stream "+getId());
 		if (storage==null) {storage = DAOFactory.getInstance();}
 		List<Long> dependents = storage.findDependents(getId());

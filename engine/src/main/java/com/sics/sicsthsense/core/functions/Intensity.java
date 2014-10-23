@@ -91,7 +91,7 @@ public class Intensity extends Function {
 		int streamCount = streamIds.size();
 
 		if (streamCount!=3 && streamCount!=6  && streamCount!=7) {
-		  throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!");
+			throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!");
 		}
 		//logger.info("Intensity stream count correct!!");
 
@@ -100,7 +100,7 @@ public class Intensity extends Function {
 
 		// Do we have gyro data?
 		List<DataPoint> gyro = null;
-		if (streamCount>=6) { gyro	= getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
+		if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
 
 		List<DataPoint> heartrate = null;
 		if (streamCount>=7) {
@@ -147,9 +147,15 @@ public class Intensity extends Function {
 		  logger.info("corrected intensity: "+intensity);
 
 		// do some smoothing
+		double prevValue;
+		double smoothIntensity=0;
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,1);
-		double prevValue = dps.get(0).getValue();
-		double smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
+		if (dps.size()>0) {//use a proportion of the prev value
+			prevValue = dps.get(0).getValue();
+			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
+		} else {
+			smoothIntensity = intensity; // just use the first value
+		}
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
