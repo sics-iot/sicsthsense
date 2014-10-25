@@ -113,7 +113,7 @@ public class Intensity extends Function {
 		  double intensity=0.0;
 
 		  double acc = accel.get(c).getValue();
-		  double accFudge = 0.2;
+		  double accFudge = 0.5;
 		  acc = 1+(acc*accFudge); // tune the value
 		  intensity += 10 - (10.0/acc  );
 		  logger.info("intensity with acc: "+intensity);
