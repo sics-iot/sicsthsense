@@ -63,7 +63,9 @@ public class Intensity extends Function {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
 		double gravity = 3;//9.8;
 		logger.info("magnitude: "+magnitude);
-		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude - gravity));
+		magnitude -= gravity;
+		logger.info("magnitude - gravity: "+magnitude);
+		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 	  return rv;
 	}
@@ -100,7 +102,7 @@ public class Intensity extends Function {
 
 		// Do we have gyro data?
 		List<DataPoint> gyro = null;
-		if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
+		//if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
 
 		List<DataPoint> heartrate = null;
 		if (streamCount>=7) {
@@ -108,12 +110,13 @@ public class Intensity extends Function {
 			heartrate.add(new DataPoint(accel.get(0).getTimestamp(), streamIds.get(6)-40));
 		}
 
-		// combine all the seprate readings
+		// combine all the separate readings
 		for (int c=0; c<accel.size(); ++c) {
 		  double intensity=0.0;
 
 		  double acc = accel.get(c).getValue();
-		  double accFudge = 0.5;
+		  logger.info("acc raw: "+acc);
+		  double accFudge = 0.9;
 		  acc = 1+(acc*accFudge); // tune the value
 		  intensity += 10 - (10.0/acc  );
 		  logger.info("intensity with acc: "+intensity);
