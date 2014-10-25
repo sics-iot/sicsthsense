@@ -85,7 +85,7 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
-		double decayFactor=0.2;
+		double decayFactor=0.08;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
