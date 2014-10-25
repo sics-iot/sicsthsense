@@ -114,10 +114,8 @@ public class Intensity extends Function {
 
 		  double acc = accel.get(c).getValue();
 		  double accFudge = 0.2;
-		  acc = acc*accFudge; // tune the value
-		  if (acc > 1.0) {
-			intensity += 10 - (10.0/acc);
-		  } else { intensity += 0.001; }
+		  acc = 1+(acc*accFudge); // tune the value
+		  intensity += 10 - (10.0/acc  );
 		  logger.info("intensity with acc: "+intensity);
 
 		  if (gyro!=null) {
