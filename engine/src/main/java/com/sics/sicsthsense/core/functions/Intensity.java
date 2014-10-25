@@ -87,7 +87,7 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
-		double decayFactor=0.08;
+		double decayFactor=0.05;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
@@ -149,14 +149,17 @@ public class Intensity extends Function {
 
 		// do some smoothing
 		double prevValue;
-		double smoothIntensity=0;
+		double smoothIntensity=0.0;
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,1);
 		if (dps.size()>0) {//use a proportion of the prev value
 			prevValue = dps.get(0).getValue();
+			logger.info("prev Intensity "+prevValue);
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
 		} else {
 			smoothIntensity = intensity; // just use the first value
 		}
+		if (smoothIntensity<0.0)   {smoothIntenity=0.0;}
+		if (smoothIntensity>100.0) {smoothIntenity=100.0;}
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
