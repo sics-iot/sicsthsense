@@ -49,7 +49,7 @@ public class Intensity extends Function {
 	}
 
 	public double magnitude3D(double x, double y, double z) {
-	  logger.error("X Y Z: "+X+" "+Y+" "+Z);
+	  logger.error("X Y Z: "+x+" "+y+" "+z);
 	  return Math.sqrt(x*x + y*y + z*z);
 	}
 
@@ -159,8 +159,8 @@ public class Intensity extends Function {
 		} else {
 			smoothIntensity = intensity; // just use the first value
 		}
-		if (smoothIntensity<0.0)   {smoothIntenity=0.0;}
-		if (smoothIntensity>100.0) {smoothIntenity=100.0;}
+		if (smoothIntensity<0.0)   {smoothIntensity=0.0;}
+		if (smoothIntensity>100.0) {smoothIntensity=100.0;}
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
