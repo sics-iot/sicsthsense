@@ -88,7 +88,7 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
-		double decayFactor=0.30;
+		double decayFactor=0.10;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
@@ -117,7 +117,7 @@ public class Intensity extends Function {
 
 		  double acc = accel.get(c).getValue();
 		  logger.info("acc raw: "+acc);
-		  double accFudge = 0.6;
+		  double accFudge = 0.5;
 		  acc = 1+(acc*accFudge); // tune the value
 		  intensity += 10 - (10.0/acc  );
 		  logger.info("intensity with acc: "+intensity);
