@@ -214,19 +214,23 @@ $.ajax({
 		},
 		rangeSelector: {
 			buttons: [{
-				count: 1,
-				type: 'hour',
-				text: '1H'
+				type: 'all',
+				text: 'All'
 			}, {
 				count: 1,
 				type: 'day',
 				text: '1D'
 			}, {
-				type: 'all',
-				text: 'All'
+				count: 1,
+				type: 'hour',
+				text: '1H'
+			}, {
+				count: 5,
+				type: 'minute',
+				text: '5M'
 			}],
 			inputEnabled: false,
-			selected: 3
+			selected: 1
 		}
 	};
 

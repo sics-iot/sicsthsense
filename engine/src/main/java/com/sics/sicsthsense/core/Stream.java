@@ -192,7 +192,7 @@ public class Stream {
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
 			if (ds!=null) {
-				ds.update();
+				//ds.update();
 			} else {
 			}
 		}
