@@ -160,7 +160,7 @@ public class ParseData {
 				number = Double.parseDouble(textBody);
 				storage.insertDataPoint(parser.getStream_id(),number,currentTime);
 				storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
-				stream.notifyDependents();
+				//stream.notifyDependents();
 				return true;
 			}
 
@@ -191,7 +191,7 @@ public class ParseData {
 					logger.error("Insert Data point "+parser.getStream_id()+": "+number+" "+currentTime);
 					storage.insertDataPoint(parser.getStream_id(),number,currentTime);
 					storage.updatedStream(parser.getStream_id(), System.currentTimeMillis() );
-					stream.notifyDependents();
+					//stream.notifyDependents();
 				}
 			return success;
 	}

@@ -178,7 +178,8 @@ public class Stream {
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
 			if (ds!=null) {
-				ds.update();
+				// disabled to stop recursion
+				//ds.update();
 			} else {
 				logger.warn("Dependent stream not found, id:"+dependent);
 			}

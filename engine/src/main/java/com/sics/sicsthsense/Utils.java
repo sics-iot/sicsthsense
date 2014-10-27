@@ -375,6 +375,7 @@ public class Utils {
 				parseError +="Parsing "+data+" failed!"+e;
 			}
 		}
+        logger.warn("now notify dependents!");
         // bunch all notifications here!
 		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(stream_id.longValue());}
 		} catch (Exception e) { logger.error("Children not accepting notification!");}
