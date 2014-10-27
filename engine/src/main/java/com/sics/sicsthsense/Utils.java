@@ -379,7 +379,10 @@ public class Utils {
             logger.warn(" dependents:"+stream_id);
             Stream.notifyDependents(stream_id.longValue());
         }
-		} catch (Exception e) { logger.error("Children not accepting notification! "+e);}
+		} catch (Exception e) {
+            logger.error("Children not accepting notification! "+e);
+            e.printStackTrace();
+        }
 
 		// append interaction to resource log!
 	//	logger.info("Updating log!");

@@ -177,12 +177,8 @@ public class Stream {
 		// update dependents!
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
-			if (ds!=null) {
-				// disabled to stop recursion
-				ds.update();
-			} else {
-				logger.warn("Dependent stream not found, id:"+dependent);
-			}
+			if (ds!=null) { ds.update();
+			} else { logger.warn("Dependent stream not found, id:"+dependent); }
 		}
 	}
 	public static void notifyDependents(long stream_id) throws Exception {
@@ -191,10 +187,8 @@ public class Stream {
 		// update dependents!
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
-			if (ds!=null) {
-				ds.update();
-			} else {
-			}
+			if (ds!=null) { ds.update();
+			} else { logger.warn("Dependent stream not found, id:"+dependent); }
 		}
 	}
 
