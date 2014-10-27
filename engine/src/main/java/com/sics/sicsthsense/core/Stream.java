@@ -226,6 +226,8 @@ public class Stream {
 
 	public void testTriggers(DataPoint dp) {
 		//logger.info("testing triggers on point :"+dp.toString());
+		if (this==null) {return;}
+		if (storage==null) {storage = DAOFactory.getInstance();}
 
 		this.triggers =  storage.findTriggersByStreamId(this.getId());
 		if (triggers!=null) {
