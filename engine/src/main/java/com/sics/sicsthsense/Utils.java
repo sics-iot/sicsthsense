@@ -275,7 +275,7 @@ public class Utils {
 			datapoint.getTimestamp()
 		);
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
-        stream.notifyDependents();
+        //stream.notifyDependents(); // taken care of during parsing
         stream.testTriggers(datapoint);
 	}
 

@@ -135,7 +135,6 @@ public class ParseData {
 					//return stream.post(value, currentTime);
 					storage.insertDataPoint(parser.getStream_id(),value,currentTime);
 					storage.updatedStream(parser.getStream_id(), currentTime );
-					stream.notifyDependents();
 					return true;
 			}
 			logger.info("Didn't find node of interest");
