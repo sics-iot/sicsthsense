@@ -156,14 +156,17 @@ public class Intensity extends Function {
 
 		// get latest point that is not of the same time
 		double prevValue;
-		if (dps.get(0).getTimestamp() == accel.get(0).getTimestamp()) {
+		if (dps.get(0).getTimestamp() == (accel.get(0).getTimestamp())) {
 			prevValue = dps.get(1).getValue();
 			logger.warn("using 1");
-		} else { prevValue = dps.get(0).getValue(); }
+		} else {
+			logger.warn("using 0");
+			prevValue = dps.get(0).getValue();
+		}
 
 		double smoothIntensity=0.0;
 		if (dps.size()>0) {//use a proportion of the prev value
-			logger.info("prev Intensity "+prevValue);
+			logger.info("prev Intensity "+prevValue+" current "+intensity);
 			logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
 		} else {
