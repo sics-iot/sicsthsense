@@ -41,6 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.core.functions.*;
 
@@ -160,11 +161,10 @@ public class Stream {
             List<DataPoint> newPoints = performFunction(antecedents);
             // add to stream
             for (DataPoint p: newPoints) {
-                storage.insertDataPoint(getId(),p.getValue(),p.getTimestamp());
-                storage.updatedStream(getId(), p.getTimestamp());
-                testTriggers(p);
+				p.setId(getId());
+				Utils.insertDataPoint(p);
             }
-            notifyDependents();
+            //notifyDependents();
         } catch (IOException e) {
           logger.error("Error: function failed! Stream ID: "+getId()+" "+e.toString());
         }
@@ -179,7 +179,7 @@ public class Stream {
 			Stream ds = storage.findStreamById(dependent);
 			if (ds!=null) {
 				// disabled to stop recursion
-				//ds.update();
+				ds.update();
 			} else {
 				logger.warn("Dependent stream not found, id:"+dependent);
 			}
@@ -192,7 +192,7 @@ public class Stream {
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
 			if (ds!=null) {
-				//ds.update();
+				ds.update();
 			} else {
 			}
 		}

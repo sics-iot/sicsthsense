@@ -102,10 +102,7 @@ public class ParseData {
 			for (int i = 1; i < levels.length; i++) {
 					//Logger.info(levels[i]);
 					node = node.get(levels[i]);
-					if (node == null) {
-						//logger.error("Root is NULL!");
-						return false;
-					}
+					if (node == null) { return false; }
 			}
 
 			//logger.info("Will negotiate");
@@ -113,12 +110,8 @@ public class ParseData {
 					String value = node.asText();
 					// the following should exception and bubble up so we know this parser failed!
 					Double dValue = Double.parseDouble(value);
-					//logger.info("Posting value: " + dValue + " @ " + currentTime+" to stream "+parser.getStream_id());
-					//return stream.post(node.getDoubleValue(), System.currentTimeMillis());
-					//storage.insertDataPoint(parser.getStream_id(), dValue, System.currentTimeMillis() );
                     DataPoint point = new DataPoint(parser.getStream_id(), currentTime, dValue);
                     Utils.insertDataPoint(point);
-					storage.updatedStream(parser.getStream_id(), currentTime );
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
 					double value = node.get("value").getDoubleValue();
@@ -127,14 +120,10 @@ public class ParseData {
 							if (parser.getTimeformat() != null && !"".equalsIgnoreCase(parser.getTimeformat().trim())
 											&& !"unix".equalsIgnoreCase(parser.getTimeformat().trim())) {
 									currentTime = parseDateTime(node.get("time").getTextValue(),parser.getTimeformat());
-							} else {
-									currentTime = node.get("time").getLongValue();
-							}
+							} else { currentTime = node.get("time").getLongValue(); }
 					}
-					logger.info("posting: " + node.getDoubleValue() + " " + currentTime);
-					//return stream.post(value, currentTime);
-					storage.insertDataPoint(parser.getStream_id(),value,currentTime);
-					storage.updatedStream(parser.getStream_id(), currentTime );
+                    DataPoint point = new DataPoint(parser.getStream_id(), currentTime, node.getDoubleValue());
+                    Utils.insertDataPoint(point);
 					return true;
 			}
 			logger.info("Didn't find node of interest");

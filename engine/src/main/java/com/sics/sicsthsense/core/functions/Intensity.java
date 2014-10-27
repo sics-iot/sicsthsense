@@ -149,11 +149,16 @@ public class Intensity extends Function {
 		  logger.info("corrected intensity: "+intensity);
 
 		// do some smoothing
+		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
+
+		// get latest point that is not of the same time
 		double prevValue;
+		if (dps.get(0).getTimestamp() == accel.get(0).getTimestamp()) {
+			prevValue = dps.get(1).getValue();
+		} else { prevValue = dps.get(0).getValue(); }
+
 		double smoothIntensity=0.0;
-		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,1);
 		if (dps.size()>0) {//use a proportion of the prev value
-			prevValue = dps.get(0).getValue();
 			logger.info("prev Intensity "+prevValue);
 			logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;

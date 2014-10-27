@@ -266,9 +266,7 @@ public class Utils {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
         Stream stream = storage.findStreamById(datapoint.getStreamId());
-		if (datapoint.getTimestamp()<=0) {
-			datapoint.setTimestamp(java.lang.System.currentTimeMillis());
-		}
+		if (datapoint.getTimestamp()<=0) { datapoint.setTimestamp(java.lang.System.currentTimeMillis()); }
 		storage.insertDataPoint(
 			datapoint.getStreamId(),
 			datapoint.getValue(),
@@ -377,7 +375,10 @@ public class Utils {
 		}
         logger.warn("now notify dependents!");
         // bunch all notifications here!
-		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(stream_id.longValue());}
+		try { for (Long stream_id: toUpdate) {
+            logger.warn(" dependents:"+stream_id);
+            Stream.notifyDependents(stream_id.longValue());
+        }
 		} catch (Exception e) { logger.error("Children not accepting notification!");}
 
 		// append interaction to resource log!
