@@ -265,16 +265,17 @@ public class Utils {
 	public static void insertDataPoint(DataPoint datapoint) throws Exception {
 		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
-        Stream stream = storage.findStreamById(datapoint.getStreamId());
+        	Stream stream = storage.findStreamById(datapoint.getStreamId());
 		if (datapoint.getTimestamp()<=0) { datapoint.setTimestamp(java.lang.System.currentTimeMillis()); }
 		storage.insertDataPoint(
 			datapoint.getStreamId(),
 			datapoint.getValue(),
 			datapoint.getTimestamp()
 		);
+		logger.info("inserted datapoint @ "+datapoint.toString());
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
         //stream.notifyDependents(); // taken care of during parsing
-        stream.testTriggers(datapoint);
+        //stream.testTriggers(datapoint);
 	}
 
 	public static long insertStream(Stream stream) {
@@ -373,10 +374,9 @@ public class Utils {
 				parseError +="Parsing "+data+" failed!"+e;
 			}
 		}
-        logger.warn("now notify dependents!");
         // bunch all notifications here!
 		try { for (Long stream_id: toUpdate) {
-            logger.warn(" dependents:"+stream_id);
+            //logger.warn(" dependents:"+stream_id);
             Stream.notifyDependents(stream_id.longValue());
         }
 		} catch (Exception e) {

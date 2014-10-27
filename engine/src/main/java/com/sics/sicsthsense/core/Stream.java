@@ -152,7 +152,8 @@ public class Stream {
 
 	// when an antecedent input stream has changed, update this stream's datapoints
 	public void update() throws Exception {
-		logger.info("Updating stream: "+getId());
+		long sid =getId();
+		logger.info("Updating stream: "+sid);
 		if (storage==null) {storage = DAOFactory.getInstance();}
 
 		List<Long> antecedents = storage.findAntecedents(getId());
@@ -161,8 +162,9 @@ public class Stream {
             List<DataPoint> newPoints = performFunction(antecedents);
             // add to stream
             for (DataPoint p: newPoints) {
-				p.setId(getId());
-				Utils.insertDataPoint(p);
+			logger.error("put in stream id: "+sid);
+			p.setStreamId(sid);
+			Utils.insertDataPoint(p);
             }
             //notifyDependents();
         } catch (IOException e) {
@@ -188,7 +190,7 @@ public class Stream {
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
 			if (ds!=null) { ds.update();
-			} else { logger.warn("Dependent stream not found, id:"+dependent); }
+			} else { System.out.println("Dependent stream not found, id:"+dependent); }
 		}
 	}
 

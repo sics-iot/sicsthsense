@@ -63,9 +63,9 @@ public class Intensity extends Function {
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
 		double gravity = 10.0;//9.8;
-		logger.info("magnitude: "+magnitude);
+		//logger.info("magnitude: "+magnitude);
 		magnitude -= gravity;
-		logger.info("magnitude - gravity: "+magnitude);
+		//logger.info("magnitude - gravity: "+magnitude);
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 	  return rv;
@@ -116,11 +116,11 @@ public class Intensity extends Function {
 		  double intensity=0.0;
 
 		  double acc = accel.get(c).getValue();
-		  logger.info("acc raw: "+acc);
+		  //logger.info("acc raw: "+acc);
 		  double accFudge = 0.3;
 		  acc = 1+(acc*accFudge); // tune the value
 		  intensity += 10 - (10.0/acc  );
-		  logger.info("intensity with acc: "+intensity);
+		  //logger.info("intensity with acc: "+intensity);
 
 		  if (gyro!=null) {
 			 maxPossible += 10.0;
@@ -131,7 +131,7 @@ public class Intensity extends Function {
 			  intensity +=	10.0 - (10.0/gy);
 			 } else { intensity += 0; }
 		  }
-		  logger.info("intensity with gyro: "+intensity);
+		  //logger.info("intensity with gyro: "+intensity);
 
 		  if (heartrate!=null) {
 			maxPossible += 10.0;
@@ -144,30 +144,27 @@ public class Intensity extends Function {
 			  intensity += hr/10.0;
 			}
 		  }
-		  logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
+		  //logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
 		  intensity = (intensity/maxPossible) * 100;
-		  logger.info("corrected intensity: "+intensity);
+		  //logger.info("corrected intensity: "+intensity);
 
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
-		logger.warn("DP0 "+dps.get(0));
-		logger.warn("DP1 "+dps.get(1));
-		logger.warn("compare "+dps.get(0).getTimestamp()+" acc"+accel.get(0).getTimestamp());
 
 		// get latest point that is not of the same time
 		double prevValue;
 		if (dps.get(0).getTimestamp() == (accel.get(0).getTimestamp())) {
+			//logger.warn("using 1");
 			prevValue = dps.get(1).getValue();
-			logger.warn("using 1");
 		} else {
-			logger.warn("using 0");
+			//logger.warn("using 0");
 			prevValue = dps.get(0).getValue();
 		}
 
 		double smoothIntensity=0.0;
 		if (dps.size()>0) {//use a proportion of the prev value
-			logger.info("prev Intensity "+prevValue+" current "+intensity);
-			logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
+			//logger.info("prev Intensity "+prevValue+" current "+intensity);
+			//logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
 		} else {
 			smoothIntensity = intensity; // just use the first value
@@ -177,7 +174,6 @@ public class Intensity extends Function {
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
-		logger.info("apply Intensity end()!!");
 		return rv;
 	}
 
