@@ -88,7 +88,7 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
-		double decayFactor=0.05;
+		double decayFactor=0.20;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
@@ -150,11 +150,15 @@ public class Intensity extends Function {
 
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
+		logger.warn("DP0 "+dps.get(0));
+		logger.warn("DP1 "+dps.get(1));
+		logger.warn("compare "+dps.get(0).getTimestamp()+" acc"+accel.get(0).getTimestamp());
 
 		// get latest point that is not of the same time
 		double prevValue;
 		if (dps.get(0).getTimestamp() == accel.get(0).getTimestamp()) {
 			prevValue = dps.get(1).getValue();
+			logger.warn("using 1");
 		} else { prevValue = dps.get(0).getValue(); }
 
 		double smoothIntensity=0.0;
