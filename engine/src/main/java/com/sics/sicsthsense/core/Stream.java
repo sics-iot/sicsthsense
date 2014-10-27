@@ -184,6 +184,18 @@ public class Stream {
 			}
 		}
 	}
+	public static void notifyDependents(long stream_id) throws Exception {
+		StorageDAO storage = DAOFactory.getInstance();
+		List<Long> dependents = storage.findDependents(stream_id);
+		// update dependents!
+		for (Long dependent: dependents) {
+			Stream ds = storage.findStreamById(dependent);
+			if (ds!=null) {
+				ds.update();
+			} else {
+			}
+		}
+	}
 
 	public List<DataPoint> performFunction(List<Long> antecedents) throws Exception {
 		Function function = null;

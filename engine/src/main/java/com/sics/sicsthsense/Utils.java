@@ -26,6 +26,8 @@ package se.sics.sicsthsense;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
 import java.net.URI;
 
 import org.slf4j.Logger;
@@ -272,9 +274,9 @@ public class Utils {
 			datapoint.getValue(),
 			datapoint.getTimestamp()
 		);
+		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
         stream.notifyDependents();
         stream.testTriggers(datapoint);
-		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
 	}
 
 	public static long insertStream(Stream stream) {
@@ -356,8 +358,8 @@ public class Utils {
 		ParseData parseData = new ParseData(); // should really be static somewhere
 		boolean parsedSuccessfully=true;
 
-		//#long resourceId
 		String parseError = "";
+        Set<Long> toUpdate = new HashSet<Long>(); // give these stream notifcation after update
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
 		//logger.info("Applying all parsers to data: "+data);
 		if (parsers==null) { parsers = storage.findParsersByResourceId(resource.getId()); }
@@ -365,6 +367,7 @@ public class Utils {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
 				parseData.apply(parser,data,timestamp);
+                toUpdate.add(parser.getStream_id());
 			} catch (Exception e) {
 				parsedSuccessfully=false;
                 e.printStackTrace();
@@ -372,6 +375,10 @@ public class Utils {
 				parseError +="Parsing "+data+" failed!"+e;
 			}
 		}
+        // bunch all notifications here!
+		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(stream_id.longValue());}
+		} catch (Exception e) { logger.error("Children not accepting notification!");}
+
 		// append interaction to resource log!
 	//	logger.info("Updating log!");
 		ResourceLog rl = ResourceLog.createOrUpdate(resource.getId());

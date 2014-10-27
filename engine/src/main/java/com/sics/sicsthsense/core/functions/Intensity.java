@@ -155,6 +155,7 @@ public class Intensity extends Function {
 		if (dps.size()>0) {//use a proportion of the prev value
 			prevValue = dps.get(0).getValue();
 			logger.info("prev Intensity "+prevValue);
+			logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
 		} else {
 			smoothIntensity = intensity; // just use the first value

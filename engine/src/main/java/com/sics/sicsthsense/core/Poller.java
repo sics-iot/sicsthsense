@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -29,6 +29,8 @@
 package se.sics.sicsthsense.core;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -47,7 +49,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import se.sics.sicsthsense.core.Parser;
 import se.sics.sicsthsense.model.ParseData;
 import se.sics.sicsthsense.jdbi.StorageDAO;
- 
+
 public class Poller extends UntypedActor {
 	private final Logger logger = LoggerFactory.getLogger(Poller.class);
 	public long resourceId;
@@ -98,6 +100,7 @@ public class Poller extends UntypedActor {
 		}
 
         long timestamp = java.lang.System.currentTimeMillis();
+        Set<Long> toUpdate = new HashSet<Long>(); // give these stream notifcation after update
 		parsers = storage.findParsersByResourceId(resourceId);
 		//logger.info("Applying all parsers to data: "+synopsis);
 		if (parsers.size()==0) {logger.error("No parsers exist!"); return;}
@@ -117,11 +120,15 @@ public class Poller extends UntypedActor {
 				parsedSuccessfully=false;
 			}
 		}
+        // should bunch all notifications here!
+		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(stream_id.longValue());}
+		} catch (Exception e) { logger.error("Children not accepting notification!");}
+
 		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
 		rl.update(parsedSuccessfully, true, allMsgs+"\nReceived data:"+synopsis+"...", System.currentTimeMillis());
 		rl.save();
 	}
- 
+
 	@Override
   public void onReceive(Object message) throws Exception {
 		//logger.info("Received String message: to probe: {}");
@@ -136,16 +143,16 @@ public class Poller extends UntypedActor {
 				con.setRequestMethod("GET"); // optional default is GET
 				con.setInstanceFollowRedirects(true);
 				con.setRequestProperty("User-Agent", "SICSthSense"); //add request header
-		 
+
 				try {
 					int responseCode = con.getResponseCode();
 					//logger.info("Sending 'GET' request to URL : " + url+" Response Code : " + responseCode);
-			 
+
 					BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 					StringBuffer response = new StringBuffer();
 					while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 					in.close();
-			 
+
 					storage.polledResource(resourceId,System.currentTimeMillis());
 					//System.out.println(response.toString());
 					applyParsers(resourceId,response.toString());
