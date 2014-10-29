@@ -17,19 +17,19 @@ GET        /streams                             controllers.Application.explore(
 GET        /resources													 	controllers.CtrlResource.resources(p:java.lang.Integer ?= 0)
 #GET        /resources/													controllers.CtrlResource.resources()
 GET        /ownstreams                             controllers.Application.streams()
-GET        /ownstreams/                            controllers.Application.streams()
+#GET        /ownstreams/                            controllers.Application.streams()
 GET        /streams/view                        controllers.Application.streams()
 GET        /streams/view/                       controllers.Application.streams()
 GET        /attachFunction											controllers.Application.attachFunction()
 
 # deprecated
-GET        /about																	controllers.Public.about()
-#GET        /docs                                controllers.Public.docs()
-#GET        /docs/web                            controllers.Public.web()
-#GET        /docs/api                            controllers.Public.api()
-#GET        /docs/data                           controllers.Public.data()
-GET        /files					                      controllers.Application.files()
-GET        /sitemap															controllers.Application.sitemap()
+GET        /about								controllers.Public.about()
+GET        /docs                                controllers.Application.docs()
+GET        /docs/web                            controllers.Application.docs()
+GET        /docs/api                            controllers.Application.docs()
+GET        /docs/data                           controllers.Application.docs()
+GET        /files                               controllers.Application.files()
+GET        /sitemap                             controllers.Application.sitemap()
 
 # Files
 #GET        /files/lsdir/$path<.*>                	controllers.CtrlFile.lsDir(path: String, full: Boolean ?= false)
@@ -101,7 +101,7 @@ POST			/api/resources/create							controllers.CtrlResource.createPost()
 POST			/api/streams/create								controllers.CtrlStream.createPost()
 
 #deprecated
-GET			/resources/addLegacy												controllers.CtrlResource.add()
+#GET			/resources/addLegacy												controllers.CtrlResource.add()
 #GET			/resources/initialise									controllers.CtrlResource.initialise()
 GET     /resources/regenerateKey/:id			 		controllers.CtrlResource.regenerateKey(id: Long)
 POST		/resources/modify/:id									controllers.CtrlResource.modify(id: Long)
@@ -152,7 +152,7 @@ GET    /assets/javascripts/routes      			controllers.Application.javascriptRout
 
 # Map static reresources from the /public folder to the /assets URL path
 GET        /assets/*file                		controllers.Assets.at(path="/public", file)
-GET        /*file														controllers.Assets.at(path="/public", file)
+#GET        /*file														controllers.Assets.at(path="/public", file)
 
 GET					/deprecated											controllers.Application.deprecated()
 
