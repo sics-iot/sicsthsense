@@ -78,12 +78,10 @@ public class EngineService extends Service<EngineConfiguration> {
 	@Override
 	public void initialize(Bootstrap<EngineConfiguration> bootstrap) {
 		bootstrap.setName("SicsthSense-Engine");
-		// Bundles
 		bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
 		bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
 		bootstrap.addBundle(new AssetsBundle("/assets/atmos", "/atmos"));
 		bootstrap.addBundle(new AssetsBundle("/assets/", "/"));
-
 		bootstrap.addBundle(new ViewBundle());
 		bootstrap.addBundle(new DBIExceptionsBundle());
 	}
@@ -95,11 +93,11 @@ public class EngineService extends Service<EngineConfiguration> {
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
+
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.authorization", "admin@example.com:password");
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.server", "http://localhost");
 		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
-
 		environment.addServlet(atmosphereServlet, "/users/*");
 		environment.addServlet(atmosphereServlet, "/u/*");
 	}
@@ -128,7 +126,6 @@ public class EngineService extends Service<EngineConfiguration> {
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
 		OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
 		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
-
 		environment.addResource(new PublicHomeResource());
 		// Attach Atmosphere servlet
 		addServlet(environment);
