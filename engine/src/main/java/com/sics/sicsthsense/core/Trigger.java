@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -63,8 +63,8 @@ public class Trigger {
 	private final Logger logger = LoggerFactory.getLogger(Trigger.class);
 	private StorageDAO storage = null;
 
-  public Trigger() {
-		StorageDAO storage = DAOFactory.getInstance();
+  public Trigger(StorageDAO storage) {
+		this.storage = storage;
 	}
   public Trigger(Long id, Long stream_id, String url, String operator, double operand, String payload) {
 		super();
@@ -100,7 +100,7 @@ public class Trigger {
 	}
 
 	public void performGet() {
-		String inputLine; 
+		String inputLine;
 		HttpURLConnection con = null;
 		logger.info("Performing Trigger: "+toString());
 		try {
@@ -113,7 +113,7 @@ public class Trigger {
 		try {
 			int responseCode = con.getResponseCode();
 			logger.info("Sending 'GET' request to URL : " + url+" Response: " + responseCode);
-	 
+
 			BufferedReader in = new BufferedReader( new InputStreamReader(con.getInputStream()));
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
@@ -121,7 +121,7 @@ public class Trigger {
 		} catch (Exception e) { logger.error("Network problem: "+e); }
 	}
 	public void performPost() {
-		String inputLine; 
+		String inputLine;
 		HttpURLConnection con = null;
 		logger.info("Performing Trigger: "+toString());
 		try {
@@ -137,12 +137,12 @@ public class Trigger {
 			wr.writeBytes(this.payload);
 			wr.flush();
 			wr.close();
-	 
+
 			int responseCode = con.getResponseCode();
 			System.out.println("\nSending 'POST' request to URL : "+url+" Payload: "+payload+" response: "+responseCode);
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			StringBuffer response = new StringBuffer();
-	 
+
 			while ((inputLine = in.readLine()) != null) { response.append(inputLine); }
 			in.close();
 		} catch (Exception e) { logger.error("Network problem: "+e); }

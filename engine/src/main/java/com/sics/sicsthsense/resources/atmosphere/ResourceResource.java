@@ -51,8 +51,8 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
-import com.yammer.dropwizard.auth.Auth;
+import com.codahale.metrics.annotation.Timed;
+import io.dropwizard.auth.Auth;
 import org.atmosphere.annotation.Broadcast;
 import org.atmosphere.annotation.Suspend;
 
@@ -81,7 +81,7 @@ public class ResourceResource {
 		this.storage = DAOFactory.getInstance();
 		this.pollSystem = PollSystem.getInstance();
 		this.counter = new AtomicLong();
-		this.parseData = new ParseData();;
+		this.parseData = new ParseData(storage);
 	}
 
 
@@ -89,7 +89,7 @@ public class ResourceResource {
 	@Timed
 	public Response getResources(@PathParam("userId") long userId, @QueryParam("key") String key) {
 		//logger.info("Getting all user "+userId+" resources for visitor "+visitor.toString());
-		Utils.checkHierarchy(userId);
+		Utils.checkHierarchy(storage,userId);
 		User user = storage.findUserById(userId);
 		if (user==null) {
 			return Utils.resp(Status.NOT_FOUND, new JSONMessage("Error: No userId match."), logger);
@@ -114,8 +114,8 @@ public class ResourceResource {
 	@Timed
 	public Response getResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.info("Getting user/resource: "+userId+"/"+resourceName);
-		Utils.checkHierarchy(userId);
-		Resource resource = Utils.findResourceByIdName(resourceName,userId);
+		Utils.checkHierarchy(storage,userId);
+		Resource resource = Utils.findResourceByIdName(storage,resourceName,userId);
 		if (resource == null) { return Utils.resp(Status.NOT_FOUND, new JSONMessage("Resource "+resourceName+" does not exist!"), logger); }
 		if (resource.getOwner_id() != userId) { return Utils.resp(Status.NOT_FOUND, new JSONMessage("User "+userId+" does not own resource "+resourceName), logger); }
 		User user = storage.findUserById(userId);
@@ -135,7 +135,7 @@ public class ResourceResource {
 	@Timed
 	public Response postResource( @PathParam("userId") long userId, Resource resource, @QueryParam("key") String key) {
 		logger.info("Adding user/resource:"+resource.getLabel());
-		Utils.checkHierarchy(userId);
+		Utils.checkHierarchy(storage,userId);
         long resourceId;
 		User user = storage.findUserById(userId);
 		if (user==null) {throw new WebApplicationException(Status.NOT_FOUND);}
@@ -148,10 +148,10 @@ public class ResourceResource {
 
 		resource.setOwner_id(userId); // should know the owner
         try {
-		  resourceId = Utils.insertResource(resource);
+		  resourceId = Utils.insertResource(storage,resource);
 		  ResourceLog rl = new ResourceLog(resource);
           rl.setResourceId(resourceId); // for the foreign key constraint
-		  Utils.insertResourceLog(rl);
+		  Utils.insertResourceLog(storage,rl);
         } catch (Exception e) {
           return Utils.resp(Status.BAD_REQUEST , new JSONMessage("Error: storing the new resource, are the attributes correct?"), null);
         }
@@ -171,10 +171,10 @@ public class ResourceResource {
 	public Response updateResource(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, Resource resource, @QueryParam("key") String key) {
 		logger.info("Updating resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
-		Resource oldresource = Utils.findResourceByIdName(resourceName,userId);
-		Utils.checkHierarchy(user,oldresource);
+		Resource oldresource = Utils.findResourceByIdName(storage,resourceName,userId);
+		Utils.checkHierarchy(storage,user,oldresource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
-		Utils.updateResource(oldresource.getId(), resource);
+		Utils.updateResource(storage,oldresource.getId(), resource);
 		return Response.ok().build();
 	}
 
@@ -185,10 +185,10 @@ public class ResourceResource {
 			@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key) {
 		logger.warn("Deleting resourceName:"+resourceName);
 		User user = storage.findUserById(userId);
-		Resource resource = Utils.findResourceByIdName(resourceName,userId);
-		Utils.checkHierarchy(user,resource);
+		Resource resource = Utils.findResourceByIdName(storage, resourceName,userId);
+		Utils.checkHierarchy(storage,user,resource);
 		if (!user.isAuthorised(key) && !resource.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key+" Only User key deletes a Resource"), logger); }
-        Utils.deleteResource(resource);
+        Utils.deleteResource(storage,resource);
 
 		return Response.ok().build();
 	}
@@ -202,7 +202,7 @@ public class ResourceResource {
 	@Consumes({MediaType.WILDCARD})
 	@Path("/{resourceId}/rebuild")
 	public Response rebuild(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName) {
-		Resource resource = Utils.findResourceByIdName(resourceName,userId);
+		Resource resource = Utils.findResourceByIdName(storage,resourceName,userId);
 		if (resource==null) {
 			return Utils.resp(Status.NOT_FOUND, new JSONMessage("Error: resource name does not exist: "+resourceName), logger);
 		}
@@ -216,8 +216,8 @@ public class ResourceResource {
 	@Path("/{resourceId}/{data: d[a-z]*}")
 	public Response postData(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, String data, @QueryParam("key") String key) {
 		User user = storage.findUserById(userId);
-		Resource resource = Utils.findResourceByIdName(resourceName);
-		Utils.checkHierarchy(user,resource);
+		Resource resource = Utils.findResourceByIdName(storage,resourceName);
+		Utils.checkHierarchy(storage, user,resource);
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
 
         long timestamp = java.lang.System.currentTimeMillis();
@@ -229,13 +229,13 @@ public class ResourceResource {
 			logger.info("No parsers defined! Trying to auto create for: "+resource.getLabel());
 			try {
 				// staticness is a mess...
-				parseData.autoCreateJsonParsers(PollSystem.getInstance().mapper, resource, data);
+				parseData.autoCreateJsonParsers(storage,PollSystem.getInstance().mapper, resource, data);
 			} catch (Exception e) {
 				return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: JSON parsing for auto creation failed!"), logger);
 			}
 		}
 		//run it through the parsers and update resource log
-		Utils.applyParsers(resource, data, timestamp);
+		Utils.applyParsers(storage, resource, data, timestamp);
 
 		// update Resource last_posted
 		storage.postedResource(resource.getId(),timestamp);

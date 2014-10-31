@@ -90,16 +90,17 @@ public class Stream {
 	private final Logger logger = LoggerFactory.getLogger(Stream.class);
 	private StorageDAO storage = null;
 
-    public Stream() {
-			this.type = "D";
-			this.secret_key = UUID.randomUUID().toString();
-			StorageDAO storage = DAOFactory.getInstance();
+    public Stream(StorageDAO storage) {
+		this.storage = storage;
+		this.type = "D";
+		this.secret_key = UUID.randomUUID().toString();
 		}
-    public Stream(long id) {
-			this();
-      this.id			= id;
+    public Stream(StorageDAO storage, long id) {
+		this(storage);
+		this.id = id;
     }
-    public Stream(long id,
+    public Stream(
+			long id,
 			String type,
 			double latitude,
 			double longitude,
@@ -115,7 +116,7 @@ public class Stream {
 			String function,
 			int version
 		) {
-			this(id);
+			this(null,id);
 			this.type					= type;
 			this.latitude			= latitude;
 			this.longitude		= longitude;
@@ -132,10 +133,9 @@ public class Stream {
 			this.version			= version;
 		}
 
-	public boolean isReadable(String token) {
+	public boolean isReadable(StorageDAO storage, String token) {
 		if (public_access) {return true;}
 		if (token.equals(secret_key)) {return true;} // owners can read
-		if (storage==null) {storage = DAOFactory.getInstance();}
 		User owner = storage.findUserById(owner_id);
 		if (owner!=null && token.equals(owner.getToken())) {return true;} // owners can read
 		return false;
@@ -151,10 +151,9 @@ public class Stream {
 	}
 
 	// when an antecedent input stream has changed, update this stream's datapoints
-	public void update() throws Exception {
+	public void update(StorageDAO storage) throws Exception {
 		long sid =getId();
 		logger.info("Updating stream: "+sid);
-		if (storage==null) {storage = DAOFactory.getInstance();}
 
 		List<Long> antecedents = storage.findAntecedents(getId());
 		if (antecedents==null) { logger.error("Antecedents are null! ID:"+getId()); return; }
@@ -164,7 +163,7 @@ public class Stream {
             for (DataPoint p: newPoints) {
 			logger.error("put in stream id: "+sid);
 			p.setStreamId(sid);
-			Utils.insertDataPoint(p);
+			Utils.insertDataPoint(storage,p);
             }
             //notifyDependents();
         } catch (IOException e) {
@@ -172,24 +171,22 @@ public class Stream {
         }
 	}
 
-	public void notifyDependents() throws Exception {
+	public void notifyDependents(StorageDAO storage) throws Exception {
 		logger.info("Notify dependents of stream "+getId());
-		if (storage==null) {storage = DAOFactory.getInstance();}
 		List<Long> dependents = storage.findDependents(getId());
 		// update dependents!
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
-			if (ds!=null) { ds.update();
+			if (ds!=null) { ds.update(storage);
 			} else { logger.warn("Dependent stream not found, id:"+dependent); }
 		}
 	}
-	public static void notifyDependents(long stream_id) throws Exception {
-		StorageDAO storage = DAOFactory.getInstance();
+	public static void notifyDependents(StorageDAO storage, long stream_id) throws Exception {
 		List<Long> dependents = storage.findDependents(stream_id);
 		// update dependents!
 		for (Long dependent: dependents) {
 			Stream ds = storage.findStreamById(dependent);
-			if (ds!=null) { ds.update();
+			if (ds!=null) { ds.update(storage);
 			} else { System.out.println("Dependent stream not found, id:"+dependent); }
 		}
 	}
@@ -203,17 +200,17 @@ public class Stream {
 		if (this.getFunction()==null || this.getFunction()=="") {return new ArrayList<DataPoint>();}
 
 		if ("mean".equals(this.getFunction())) {
-			function = new Mean();
+			function = new Mean(storage);
 		} else if ("min".equals(this.getFunction())) {
-			function = new Min();
+			function = new Min(storage);
 		} else if ("max".equals(this.getFunction())) {
-			function = new Max();
+			function = new Max(storage);
 		} else if ("median".equals(this.getFunction())) {
-			function = new Median();
+			function = new Median(storage);
 		} else if ("intensity".equals(this.getFunction())) {
-			function = new Intensity(getId());
+			function = new Intensity(storage,getId());
 		} else if ("smooth".equals(this.getFunction())) {
-			function = new Smooth();
+			function = new Smooth(storage);
 		} else {
 			logger.error("Unknown function "+this.getFunction()+"! Stream ID: "+getId());
 			return new ArrayList<DataPoint>();
@@ -221,10 +218,9 @@ public class Stream {
 		return function.apply(antecedents);
 	}
 
-	public void testTriggers(DataPoint dp) {
+	public void testTriggers(StorageDAO storage, DataPoint dp) {
 		//logger.info("testing triggers on point :"+dp.toString());
 		if (this==null) {return;}
-		if (storage==null) {storage = DAOFactory.getInstance();}
 
 		this.triggers =  storage.findTriggersByStreamId(this.getId());
 		if (triggers!=null) {

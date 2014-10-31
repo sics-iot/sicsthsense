@@ -4,7 +4,7 @@
  * */
 package se.sics.sicsthsense.views;
 
-import com.yammer.dropwizard.views.View;
+import io.dropwizard.views.View;
 
 import se.sics.sicsthsense.model.BaseModel;
 import se.sics.sicsthsense.core.User;

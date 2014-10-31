@@ -58,11 +58,11 @@ public class ParseData {
 	StorageDAO storage;
   Pattern regexPattern;
 
-	public ParseData() {
-		storage = DAOFactory.getInstance();
+	public ParseData(StorageDAO storage) {
+		this.storage = storage;
 	}
-	public ParseData(ObjectMapper mapper) {
-		this();
+	public ParseData(StorageDAO storage, ObjectMapper mapper) {
+		this(storage);
 		this.mapper=mapper;
 	}
 
@@ -111,7 +111,7 @@ public class ParseData {
 					// the following should exception and bubble up so we know this parser failed!
 					Double dValue = Double.parseDouble(value);
                     DataPoint point = new DataPoint(parser.getStream_id(), currentTime, dValue);
-                    Utils.insertDataPoint(point);
+                    Utils.insertDataPoint(storage,point);
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
 					double value = node.get("value").getDoubleValue();
@@ -123,7 +123,7 @@ public class ParseData {
 							} else { currentTime = node.get("time").getLongValue(); }
 					}
                     DataPoint point = new DataPoint(parser.getStream_id(), currentTime, node.getDoubleValue());
-                    Utils.insertDataPoint(point);
+                    Utils.insertDataPoint(storage,point);
 					return true;
 			}
 			logger.info("Didn't find node of interest");
@@ -185,24 +185,24 @@ public class ParseData {
 			return success;
 	}
 
-	public static void makeStreamAndParser(Resource resource, String nodePath) {
+	public static void makeStreamAndParser(StorageDAO storage, Resource resource, String nodePath) {
 			//Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ resource.label+nodePath);
-			Stream stream = new Stream();
+			Stream stream = new Stream(storage);
 			stream.setResource_id(resource.getId());
 			stream.setOwner_id(resource.getOwner_id());
-			long streamId = Utils.insertStream(stream);
-			long vfileId =  Utils.insertVFile(nodePath,resource.getOwner_id(),"D",streamId);
+			long streamId = Utils.insertStream(storage,stream);
+			long vfileId =  Utils.insertVFile(storage,nodePath,resource.getOwner_id(),"D",streamId);
 
 			Parser parser = new Parser();
 			parser.setResource_id(resource.getId());
 			parser.setStream_id(streamId);
 			parser.setInput_parser(nodePath);
-			ParserResource.insertParser(parser);
+			ParserResource.insertParser(storage,parser);
 	}
 
 	// Auto parsing
   // Walk Json tree creating resource parsers
-  public static void parseJsonNode(Resource resource, JsonNode node, String parents) {
+  public static void parseJsonNode(StorageDAO storage, Resource resource, JsonNode node, String parents) {
     // descend to all nodes to find all primitive element paths...
     //logger.info("parsing Nodes below "+parents);
     System.out.println("parsing Nodes below "+parents);
@@ -214,23 +214,23 @@ public class ParseData {
         System.out.println("value node: " + parents + "/" + field);
         // TODO: try to guess time format instead of defaulting to "unix"!
         String nodePath = parents+"/"+field;
-				makeStreamAndParser(resource, nodePath);
+			makeStreamAndParser(storage, resource, nodePath);
       } else {
         String fullNodeName = parents + "/" + field;
         //Logger.info("Node: " + fullNodeName);
-        parseJsonNode(resource, n, fullNodeName);
+        parseJsonNode(storage, resource, n, fullNodeName);
       }
     }
   }
 
   // Parse Json into resource parsers
   //@Security.Authenticated(Secured.class)
-  public static boolean autoCreateJsonParsers(ObjectMapper mapper, Resource resource, String data) throws Exception {
+  public static boolean autoCreateJsonParsers(StorageDAO storage, ObjectMapper mapper, Resource resource, String data) throws Exception {
     //Logger.info("createJsonParsers() Trying to parse Json to then auto fill in StreamParsers!");
     try {
       // recusively parse JSON and add() all fields
-			JsonNode root = mapper.readTree(data);
-      parseJsonNode(resource, root, "");
+		JsonNode root = mapper.readTree(data);
+      parseJsonNode(storage, resource, root, "");
     } catch (Exception e) { // nevermind, move on...
       System.out.println("createJsonParsers() had problems parsing JSON: "+  data);
       System.out.println("Error: "+e.toString());

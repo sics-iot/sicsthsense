@@ -34,8 +34,8 @@ import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.*;
 
-import com.yammer.dropwizard.jdbi.*;
-import com.yammer.dropwizard.db.*;
+import io.dropwizard.jdbi.*;
+import io.dropwizard.db.*;
 
 import se.sics.sicsthsense.core.*;
 

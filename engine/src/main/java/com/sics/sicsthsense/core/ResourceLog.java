@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -62,8 +62,8 @@ public class ResourceLog {
 	private final Logger logger = LoggerFactory.getLogger(ResourceLog.class);
 	private StorageDAO storage = null;
 
-	public ResourceLog() {
-		StorageDAO storage = DAOFactory.getInstance();
+	public ResourceLog(StorageDAO storage) {
+		this.storage = storage;
 		this.creationTimestamp = 0;
 		this.responseTimestamp = 0;
 		this.parsedSuccessfully = true;
@@ -73,9 +73,9 @@ public class ResourceLog {
 		this.headers = "";
 		this.message = "";
 	}
-	public ResourceLog(long id, long resourceId, 
+	public ResourceLog(long id, long resourceId,
 			long creationTimestamp, long responseTimestamp,
-			boolean parsedSuccessfully, boolean isPoll, 
+			boolean parsedSuccessfully, boolean isPoll,
 			String body, String method, String headers, String message) {
 		super();
 		this.resourceId = resourceId;
@@ -117,7 +117,7 @@ public class ResourceLog {
 					HeaderNames.CONTENT_TYPE + " "
 					+ request.getHeader(HeaderNames.CONTENT_TYPE) + "\n"
 					+ HeaderNames.CONTENT_ENCODING + " "
-					+ request.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"				
+					+ request.getHeader(HeaderNames.CONTENT_ENCODING)	+ "\n"
 					+ HeaderNames.CONTENT_LENGTH + " "
 					+ request.getHeader(HeaderNames.CONTENT_LENGTH) + "\n";
 					*/
@@ -155,7 +155,7 @@ public class ResourceLog {
 						+ HeaderNames.CONTENT_TYPE + " "
 						+ response.contentType() + "\n"
 						+ HeaderNames.CONTENT_ENCODING + " "
-						+ response.contentEncoding()	+ "\n"				
+						+ response.contentEncoding()	+ "\n"
 						+ HeaderNames.CONTENT_LENGTH + " "
 						+ response.contentLength() + "\n";
 						*/
@@ -174,9 +174,8 @@ public class ResourceLog {
 		}
 	}
 
-	public static ResourceLog createOrUpdate(long resourceId) {
+	public static ResourceLog createOrUpdate(StorageDAO storage, long resourceId) {
 		//if (resource==null) {logger.error("Resource is null"); return;}
-		final StorageDAO storage = DAOFactory.getInstance();
 		final Logger logger = LoggerFactory.getLogger(ResourceLog.class);
 		ResourceLog resourceLog = storage.findResourceLogByResourceId(resourceId);
 		if (resourceLog==null) { // make a new one
@@ -199,36 +198,34 @@ public class ResourceLog {
 	}
 
   public void create() {
-		StorageDAO storage = DAOFactory.getInstance();
 		// should check already exists
 		storage.insertResourceLog(
 			this.resourceId,
 			System.currentTimeMillis(),
 			-1,
 			this.parsedSuccessfully,
-			this.isPoll, 
+			this.isPoll,
 			this.body,
-			this.method,   
-			this.headers, 
+			this.method,
+			this.headers,
 			this.message,
-			1	
+			1
 		);
 		logger.info("Just created resource log:"+this.resourceId);
 	}
 
   public void save() {
-		StorageDAO storage = DAOFactory.getInstance();
 		storage.updateResourceLog(
 			this.resourceId,
 			this.creationTimestamp,
 			this.responseTimestamp,
 			this.parsedSuccessfully,
-			this.isPoll, 
+			this.isPoll,
 			this.body,
-			this.method,   
-			this.headers, 
+			this.method,
+			this.headers,
 			this.message,
-			1	
+			1
 		);
 		//logger.info("Just updated resource log:"+this.resourceId);
 	}
@@ -277,8 +274,8 @@ public class ResourceLog {
       logger.error("[CtrlResource] request() did not have a recognised Content-Type");
       body = "";
     }
-    logger.info("[Resources] post received from URI: " + request.uri() 
-      + ", content type: " + conn.getHeaderField("Content-Type") 
+    logger.info("[Resources] post received from URI: " + request.uri()
+      + ", content type: " + conn.getHeaderField("Content-Type")
       + ", payload: " + body);
 			*/
     return body;
@@ -380,24 +377,24 @@ public class ResourceLog {
 	public long    getResourceId()		{ return resourceId; }
 	public long    getCreationTimestamp(){ return creationTimestamp; }
 	public long    getResponseTimestamp(){ return responseTimestamp; }
-	public boolean getParsedSuccessfully(){ return parsedSuccessfully; } 
-	public boolean getIsPoll()				{ return isPoll; } 
-	public String  getBody()						{ return body; } 
+	public boolean getParsedSuccessfully(){ return parsedSuccessfully; }
+	public boolean getIsPoll()				{ return isPoll; }
+	public String  getBody()						{ return body; }
 	public String  getMethod()					{ return method; }
 	public String  getHeaders()				{ return headers; }
-	public String  getMessage()				{ return message; } 
+	public String  getMessage()				{ return message; }
 	public int     getVersion()						{ return version; }
 
 
 	public void setId(long id)						{ this.id = id; }
 	public void setResourceId(long resourceId)		{ this.resourceId = resourceId; }
-	public void setIsPoll(boolean isPoll)			{ this.isPoll = isPoll; } 
-	public void setBody(String body)				{ this.body = body; } 
+	public void setIsPoll(boolean isPoll)			{ this.isPoll = isPoll; }
+	public void setBody(String body)				{ this.body = body; }
 	public void setMethod(String method)			{ this.method = method; }
 	public void setHeaders(String headers)			{ this.headers = headers; }
-	public void setMessage(String message)			{ this.message = message; } 
+	public void setMessage(String message)			{ this.message = message; }
 	public void setVersion(int version)				{ this.version = version; }
-	public void setResponseTime(String responseTIme)							{ this.responseTime = responseTime; } 
-	public void setParsedSuccessfully(boolean parsedSuccessfully) { this.parsedSuccessfully = parsedSuccessfully; } 
+	public void setResponseTime(String responseTIme)							{ this.responseTime = responseTime; }
+	public void setParsedSuccessfully(boolean parsedSuccessfully) { this.parsedSuccessfully = parsedSuccessfully; }
 
 }

@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -34,9 +34,9 @@ import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.sqlobject.customizers.*;
 
-import com.yammer.dropwizard.config.Environment;
-import com.yammer.dropwizard.jdbi.*;
-import com.yammer.dropwizard.db.*;
+import io.dropwizard.setup.Environment;
+import io.dropwizard.jdbi.*;
+import io.dropwizard.db.*;
 
 import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.core.*;
@@ -47,7 +47,7 @@ public class DAOFactory {
 
 		public static void build(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
 			DBIFactory factory = new DBIFactory();
-			DBI jdbi = factory.build(environment, configuration.getDatabaseConfiguration(), "com.mysql.jdbc.Driver");
+			DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
 			singleton = jdbi.onDemand(StorageDAO.class);
 		}
 

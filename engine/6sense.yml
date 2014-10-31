@@ -1,44 +1,56 @@
 template: Hello, %s!
 
+defaultName: Stranger
+
 database:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
-
   # the username
   user: sicsthsense
-
   # the password
   password: 6S3NLd2un76CrE3RJXs
-
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/sicsth2
+server:
+#  softNofileLimit: 1000
+#  hardNofileLimit: 1000
+  applicationConnectors:
+    - type: http
+      port: 8080
+    - type: https
+      port: 8443
+      keyStorePath: keystore
+      keyStorePassword: password
+      validateCerts: false
+# this requires the npn-boot library on the JVM's boot classpath
+#    - type: spdy3
+#      port: 8445
+#      keyStorePath: example.keystore
+#      keyStorePassword: example
+#      validateCerts: false
+  adminConnectors:
+    - type: http
+      port: 8081
+    - type: https
+      port: 8444
+      keyStorePath: keystore
+      keyStorePassword: password
+      validateCerts: false
 
-  # any properties specific to your JDBC driver:
-  properties:
-    charSet: UTF-8
+# Logging settings.
+logging:
 
-  # the maximum amount of time to wait on an empty pool before throwing an exception
-  maxWaitForConnection: 1s
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
 
-  # the SQL query to run when validating a connection's liveness
-  validationQuery: "/* MyService Health Check */ SELECT 1"
+  # Logger-specific levels.
+  loggers:
 
-  # the minimum number of connections to keep open
-  minSize: 8
+    # Sets the level for 'com.example.app' to DEBUG.
+    com.example.app: DEBUG
 
-  # the maximum number of connections to keep open
-  maxSize: 32
+    org.hibernate.SQL: ALL
 
-  # whether or not idle connections should be validated
-  checkConnectionWhileIdle: false
-
-  # how long a connection must be held before it can be validated
-  checkConnectionHealthWhenIdleFor: 10s
-
-  # the maximum lifetime of an idle connection
-  closeConnectionIfIdleFor: 1 minute
-
-http:
-  rootPath: /*  # Default is /*
-  connectorType: nonblocking
+  appenders:
+    - type: console
 

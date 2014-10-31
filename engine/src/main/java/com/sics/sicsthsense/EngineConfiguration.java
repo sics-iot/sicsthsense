@@ -11,11 +11,11 @@
  *		 * Neither the name of The Swedish Institute of Computer Science nor the
  *			 names of its contributors may be used to endorse or promote products
  *			 derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -28,12 +28,13 @@
  * */
 package se.sics.sicsthsense;
 
-import com.yammer.dropwizard.config.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
-import com.yammer.dropwizard.jdbi.*;
-import com.yammer.dropwizard.db.*;
+import io.dropwizard.Configuration;
+import io.dropwizard.db.*;
 
 public class EngineConfiguration extends Configuration {
 	@NotEmpty
@@ -41,23 +42,33 @@ public class EngineConfiguration extends Configuration {
 	private String template;
 
 	@NotEmpty
-	@JsonProperty
 	private String defaultName = "Stranger";
 
 	public static final String SESSION_TOKEN_NAME ="SICSSense-Session";
 
-	@JsonProperty
-	private DatabaseConfiguration database = new DatabaseConfiguration();
+	@Valid
+	@NotNull
+	private DataSourceFactory database = new DataSourceFactory();
 
 	public String getTemplate() {
 		return template;
 	}
 
-	public String getDefaultName() {
-		return defaultName;
-	}
+    @JsonProperty
+    public String getDefaultName() {
+        return defaultName;
+    }
+    @JsonProperty
+    public void setDefaultName(String defaultName) {
+        this.defaultName = defaultName;
+    }
 
-	public DatabaseConfiguration getDatabaseConfiguration() {
+    @JsonProperty("database")
+	public DataSourceFactory getDataSourceFactory () {
 		return database;
+	}
+    @JsonProperty("database")
+	public void setDataSourceFactory (DataSourceFactory dataSourceFactory) {
+		this.database = dataSourceFactory;
 	}
 }

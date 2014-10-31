@@ -8,13 +8,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
-import com.yammer.dropwizard.auth.AuthenticationException;
-import com.yammer.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.sics.sicsthsense.model.security.Authority;
-import se.sics.sicsthsense.model.security.Authority;
-import se.sics.sicsthsense.EngineConfiguration;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Cookie;
@@ -24,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import se.sics.sicsthsense.model.security.Authority;
+import se.sics.sicsthsense.EngineConfiguration;
 // bad behaviour!
 import se.sics.sicsthsense.core.User;
 

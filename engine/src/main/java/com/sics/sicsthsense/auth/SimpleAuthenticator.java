@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -30,9 +30,9 @@ package se.sics.sicsthsense.auth;
 
 import com.google.common.base.Optional;
 
-import com.yammer.dropwizard.auth.Authenticator;
-import com.yammer.dropwizard.auth.AuthenticationException;
-import com.yammer.dropwizard.auth.basic.BasicCredentials;
+import io.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.basic.BasicCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class SimpleAuthenticator implements Authenticator<BasicCredentials, User
 
 		public SimpleAuthenticator(StorageDAO storage) {
 			this.storage = storage;
-		}	
+		}
 
     @Override
     public Optional<User> authenticate(BasicCredentials credentials) throws AuthenticationException {

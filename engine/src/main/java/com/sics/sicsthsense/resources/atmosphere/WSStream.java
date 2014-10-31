@@ -45,18 +45,18 @@ import se.sics.sicsthsense.model.*;
 public class WSStream {
 
     private @PathParam("streamId") Broadcaster topic;
-		private final Logger logger = LoggerFactory.getLogger(WSStream.class);
-		private final StorageDAO storage;
-		public ParseData parseData;
+	private final Logger logger = LoggerFactory.getLogger(WSStream.class);
+	private final StorageDAO storage;
+	public ParseData parseData;
 
-		public WSStream () {
-			this.storage = DAOFactory.getInstance();
-			this.parseData = new ParseData();;
-		}
+	public WSStream () {
+		this.storage = DAOFactory.getInstance();
+		this.parseData = new ParseData(storage);;
+	}
 
     @GET
     public SuspendResponse<String> subscribe() {
-			logger.info("Just received subscription");
+		logger.info("Just received subscription");
       return new SuspendResponse.SuspendResponseBuilder<String>()
         .broadcaster(topic)
         .outputComments(true)
@@ -70,18 +70,18 @@ public class WSStream {
     //public Broadcastable publish(@FormParam("message") String data) {
     public Broadcastable publish(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @QueryParam("key") String key, @FormParam("message") String data) throws Exception {
 			User user = storage.findUserById(userId);
-			Resource resource = Utils.findResourceByIdName(resourceName);
-			Stream stream =			Utils.findStreamByIdName(topic.getID());
-			Utils.checkHierarchy(user,resource,stream);
+			Resource resource = Utils.findResourceByIdName(storage, resourceName);
+			Stream stream     = Utils.findStreamByIdName(storage, topic.getID());
+			Utils.checkHierarchy(storage,user,resource,stream);
 
 			//if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, "Error: Key does not match! "+key, logger); }
 			DataPoint datapoint = new DataPoint(data);
 			//logger.info("Publish: "+datapoint.toString());
 			datapoint.setStreamId(stream.getId()); // keep consistency
-			Utils.insertDataPoint(datapoint); // insert first to fail early
+			Utils.insertDataPoint(storage,datapoint); // insert first to fail early
 			topic.broadcast(datapoint.toString());
-			stream.notifyDependents(); // notify all streams that depend on this
-			stream.testTriggers(datapoint); // see if any of the actions are triggered
+			stream.notifyDependents(storage); // notify all streams that depend on this
+			stream.testTriggers(storage,datapoint); // see if any of the actions are triggered
 
       return new Broadcastable(datapoint.toJson(), "", topic);
     }

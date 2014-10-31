@@ -42,9 +42,9 @@ public class Function {
 	protected Logger logger;
 	protected StorageDAO storage;
 
-	public Function(String type) {
+	public Function(StorageDAO storage, String type) {
 		this.type = type;
-		this.storage = DAOFactory.getInstance();
+		this.storage = storage;
 	}
 
     // This should be overidden by subclasses

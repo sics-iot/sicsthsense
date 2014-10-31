@@ -25,4 +25,11 @@ The github Wiki "https://github.com/sics-iot/sicsthsense/wiki" also contains a b
 There should now be an HTTP server running on port 8080. Visiting this with a web browser should confirm it. From here you may authenticate using OpenID or a username/password combination.
 
 
+SSL 
+===
+
+The keysotre server.key is merely a placeholder (everyone should not use the
+same keystore). It protected with the pass phrase “password”. You should create
+a new keystore before production deployment, probably with a command such as:
+openssl genrsa -des3 -out server.key 1024
 

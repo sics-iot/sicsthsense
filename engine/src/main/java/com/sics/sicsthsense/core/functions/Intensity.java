@@ -42,8 +42,8 @@ public class Intensity extends Function {
 	public int GyroHistorySize = 1;
 	public long streamId;
 
-	public Intensity(long streamId) {
-		super("intensity");
+	public Intensity(StorageDAO storage, long streamId) {
+		super(storage, "intensity");
 		this.type = "intensity";
 		this.streamId = streamId;
 	}

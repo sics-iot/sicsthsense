@@ -11,11 +11,11 @@
  *		 * Neither the name of The Swedish Institute of Computer Science nor the
  *			 names of its contributors may be used to endorse or promote products
  *			 derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
 import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
-import com.yammer.dropwizard.jdbi.*;
-import com.yammer.dropwizard.db.*;
+import com.codahale.metrics.annotation.Timed;
+import io.dropwizard.jdbi.*;
+import io.dropwizard.db.*;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -66,72 +66,73 @@ import se.sics.sicsthsense.jdbi.*;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
-		private StorageDAO storage;
-		private final AtomicLong counter;
-		private final Logger logger = LoggerFactory.getLogger(UserResource.class);
+	private StorageDAO storage;
+	private final AtomicLong counter;
+	private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
-		public UserResource() {
-			this.counter = new AtomicLong();
-			storage = DAOFactory.getInstance();
-		}
+	public UserResource() {
+		this.storage = DAOFactory.getInstance();
+		this.counter = new AtomicLong();
+		this.storage = storage;
+	}
 
-		@GET
-		@Timed
-		public Response listUsers() {
-			return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Can not list users"), logger);
-		}
+	@GET
+	@Timed
+	public Response listUsers() {
+		logger.warn("Cant list users!");
+		return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Can not list users"), logger);
+	}
 
-		@GET
-		@Timed
-		@Path("/{userId}")
-		public Response getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
-			//System.out.println("getting User!! "+userId);
-			User user = storage.findUserById(userId);
-			if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
-			return Utils.resp(Status.OK, user, logger);
-		}
+	@GET
+	@Timed
+	@Path("/{userId}")
+	public Response getUser(@PathParam("userId") long userId, @QueryParam("key") String key) {
+		//System.out.println("getting User!! "+userId);
+		User user = storage.findUserById(userId);
+		if (!user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
+		return Utils.resp(Status.OK, user, logger);
+	}
 
-		@POST
-		@Timed
-		public Response post(User user) throws Exception {
-			//logger.info("making a new user: "+user.toString());
-			if (user.getEmail()==null || user.getEmail()=="")	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: new User email not set!"), logger); }
-			if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate username: "+user.getUsername()+"!"), logger); }
-			if (storage.findUserByEmail(user.getEmail())!=null)	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate email: "+user.getEmail()+"!"), logger); }
-			User newuser = new User();
+	@POST
+	@Timed
+	public Response post(User user) throws Exception {
+		//logger.info("making a new user: "+user.toString());
+		if (user.getEmail()==null || user.getEmail()=="")	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: new User email not set!"), logger); }
+		if (storage.findUserByUsername(user.getUsername())!=null) { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate username: "+user.getUsername()+"!"), logger); }
+		if (storage.findUserByEmail(user.getEmail())!=null)	      { return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Duplicate email: "+user.getEmail()+"!"), logger); }
+		User newuser = new User();
 
-			newuser.update(user);
-			logger.info("Adding new user: "+newuser.toString());
+		newuser.update(user);
+		logger.info("Adding new user: "+newuser.toString());
 
-			storage.insertUser(
-				newuser.getUsername(),
-				newuser.getEmail(),
-				newuser.getFirstName(),
-				newuser.getLastName(),
-				newuser.getToken(),
-				new String(Hex.encodeHex(DigestUtils.md5(newuser.getPassword())))
-			);
-			return Utils.resp(Status.OK, storage.findUserByUsername(newuser.getUsername()), logger);
-		}
+		storage.insertUser(
+			newuser.getUsername(),
+			newuser.getEmail(),
+			newuser.getFirstName(),
+			newuser.getLastName(),
+			newuser.getToken(),
+			new String(Hex.encodeHex(DigestUtils.md5(newuser.getPassword())))
+		);
+		return Utils.resp(Status.OK, storage.findUserByUsername(newuser.getUsername()), logger);
+	}
 
-		@PUT
-		@Timed
-		@Path("/{userId}")
-		public Response put(@PathParam("userId") long userId, User newuser, @QueryParam("key") String key) throws Exception {
-			// should check permissions...
-			User user = storage.findUserById(userId);
-			if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
+	@PUT
+	@Timed
+	@Path("/{userId}")
+	public Response put(@PathParam("userId") long userId, User newuser, @QueryParam("key") String key) throws Exception {
+		// should check permissions...
+		User user = storage.findUserById(userId);
+		if (!user.getToken().equals(key)) {throw new WebApplicationException(Status.FORBIDDEN);}
 
-			newuser.setId(userId); // ensure we dont change other others!
-			user.update(newuser);
-			storage.updateUser(
-				user.getId(),
-				user.getUsername(),
-				user.getFirstName(),
-				user.getLastName(),
-				user.getEmail()
-			);
-			return Utils.resp(Status.OK, user, logger);
-		}
-
+		newuser.setId(userId); // ensure we dont change other others!
+		user.update(newuser);
+		storage.updateUser(
+			user.getId(),
+			user.getUsername(),
+			user.getFirstName(),
+			user.getLastName(),
+			user.getEmail()
+		);
+		return Utils.resp(Status.OK, user, logger);
+	}
 }

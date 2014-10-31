@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -47,8 +47,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Optional;
-import com.yammer.metrics.annotation.Timed;
-import com.yammer.dropwizard.auth.Auth;
+import com.codahale.metrics.annotation.Timed;
+import io.dropwizard.auth.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class ParserResource {
 
 	@GET
 	@Timed
-	public Response getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor, 
+	public Response getParsers(//@RestrictedTo(Authority.ROLE_PUBLIC) User visitor,
 		@PathParam("userId") long userId, @PathParam("resourceId") long resourceId, @QueryParam("key") @DefaultValue("") String key) {
 			//return new Message(counter.incrementAndGet(), userId+" "+resourceId+" "+visitor.getUsername());
 			checkHierarchy(userId);
@@ -103,11 +103,11 @@ public class ParserResource {
 			//throw new WebApplicationException(Status.FORBIDDEN);
 		}
 		parser.setResource_id(resourceId);
-		long parserId = insertParser(parser);
+		long parserId = insertParser(storage, parser);
 		return Utils.resp(Status.OK, parserId, logger);
 	}
 
-	// put updated resource definition 
+	// put updated resource definition
 	@PUT
 	@Path("/{parserId}")
 	@Consumes({MediaType.APPLICATION_JSON})
@@ -148,10 +148,9 @@ public class ParserResource {
 		if (resource==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
 
-	// add a resource 
+	// add a resource
 	// static to allow external ParseData to insertParser() as well
-	public static long insertParser(Parser parser) {
-		StorageDAO storage = DAOFactory.getInstance();
+	public static long insertParser(StorageDAO storage, Parser parser) {
 		storage.insertParser(
 			parser.getResource_id(),
 			parser.getStream_id(),
@@ -166,7 +165,7 @@ public class ParserResource {
 		return storage.findParserId(parser.getResource_id(), parser.getStream_id()); // return the new parser ID
 	}
 
-	// update a resource 
+	// update a resource
 	void updateParser(long parserId, Parser parser) {
 		logger.info("Updating parserID "+parserId+" to: "+parser);
 		Parser oldParser = storage.findParserById(parserId);

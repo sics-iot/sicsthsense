@@ -25,27 +25,28 @@
 package se.sics.sicsthsense;
 
 import java.util.UUID;
-
+import javax.servlet.ServletRegistration;
 import org.skife.jdbi.v2.*; // For DBI
 import org.skife.jdbi.v2.exceptions.*; // For lack of connection Exception
 import org.eclipse.jetty.server.session.SessionHandler;
 
-import com.yammer.dropwizard.Service;
-import com.yammer.dropwizard.assets.AssetsBundle;
-import com.yammer.dropwizard.config.Bootstrap;
-import com.yammer.dropwizard.config.Environment;
-import com.yammer.dropwizard.jdbi.*;
-import com.yammer.dropwizard.db.*;
+import com.google.common.collect.ImmutableMap;
+import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+import io.dropwizard.jdbi.*;
+import io.dropwizard.db.*;
 
-import com.yammer.dropwizard.auth.*;
-import com.yammer.dropwizard.auth.Authenticator;
-import com.yammer.dropwizard.auth.AuthenticationException;
-import com.yammer.dropwizard.auth.basic.BasicCredentials;
-import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
-import com.yammer.dropwizard.auth.oauth.*;
-import com.yammer.dropwizard.views.ViewBundle;
-import com.yammer.dropwizard.views.ViewMessageBodyWriter;
-import com.yammer.dropwizard.jdbi.bundles.DBIExceptionsBundle;
+import io.dropwizard.auth.*;
+import io.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.basic.BasicCredentials;
+import io.dropwizard.auth.basic.BasicAuthProvider;
+import io.dropwizard.auth.oauth.*;
+import io.dropwizard.views.ViewBundle;
+import io.dropwizard.views.ViewMessageBodyWriter;
+import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 
 import org.atmosphere.cpr.AtmosphereServlet;
 
@@ -67,17 +68,20 @@ import se.sics.sicsthsense.auth.*;
 import se.sics.sicsthsense.auth.openid.*;
 import se.sics.sicsthsense.model.security.*;
 
-public class EngineService extends Service<EngineConfiguration> {
-	private final Logger logger = LoggerFactory.getLogger(EngineService.class);
+public class EngineApplication extends Application<EngineConfiguration> {
+	private final Logger logger = LoggerFactory.getLogger(EngineApplication.class);
 	private PollSystem pollSystem;
 
 	public static void main(String[] args) throws Exception {
-		new EngineService().run(args);
+		new EngineApplication().run(args);
 	}
 
 	@Override
+	public String getName() {
+		return "SicsthSense-Engine";
+	}
+	@Override
 	public void initialize(Bootstrap<EngineConfiguration> bootstrap) {
-		bootstrap.setName("SicsthSense-Engine");
 		bootstrap.addBundle(new AssetsBundle("/assets/images", "/images"));
 		bootstrap.addBundle(new AssetsBundle("/assets/jquery", "/jquery"));
 		bootstrap.addBundle(new AssetsBundle("/assets/atmos", "/atmos"));
@@ -87,6 +91,7 @@ public class EngineService extends Service<EngineConfiguration> {
 	}
 
 	public void addServlet(Environment environment) {
+/*
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "se.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
@@ -98,17 +103,33 @@ public class EngineService extends Service<EngineConfiguration> {
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.authorization", "admin@example.com:password");
 		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.server", "http://localhost");
 		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
-		environment.addServlet(atmosphereServlet, "/users/*");
-		environment.addServlet(atmosphereServlet, "/u/*");
+		environment.getApplicationContext().addServlet("se.sics.sicsthsense.resources.atmosphere", "/users/*");
+		//environment.getApplicationContext().addServlet(atmosphereServlet, "/u/*");
+*/
+        AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
+		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "se.sics.sicsthsense.resources.atmosphere");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
+		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
+        final ServletRegistration.Dynamic websocket = environment.servlets().addServlet("atmosphere", atmosphereServlet);
+        websocket.setAsyncSupported(true);
+        websocket.addMapping("/users/*");
+
+        //@formatter:off
+        websocket.setInitParameters(ImmutableMap.<String, String> of( "com.sun.jersey.config.property.packages","se.sics.sicsthsense.resources.atmosphere"));
+        websocket.setInitParameters(ImmutableMap.<String, String> of( "org.atmosphere.websocket.messageContentType", "application/json"));
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
-		// register each resource type accessible through the API
+//		final DBIFactory factory = new DBIFactory();
+//		final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
+//		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 		DAOFactory.build(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
-		//if (storage==null) {System.out.println("No Storage engine!");}
+	// register each resource type accessible through the API
 		pollSystem = PollSystem.build(storage);
 		try {
 			pollSystem.createPollers();
@@ -116,7 +137,7 @@ public class EngineService extends Service<EngineConfiguration> {
 			System.out.println("Error: Unable to obtain connection to SQL Server!\nExiting...");
 			System.exit(1);
 		}
-		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
+//		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
 		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
 		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
@@ -125,13 +146,15 @@ public class EngineService extends Service<EngineConfiguration> {
 		publicUser.setUsername("__publicUser");
 		publicUser.getAuthorities().add(Authority.ROLE_PUBLIC);
 		OpenIDAuthenticator authenticator = new OpenIDAuthenticator(publicUser);
-		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
-		environment.addResource(new PublicHomeResource());
+
+		environment.jersey().register(new PublicHomeResource());
+
+//		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 		// Attach Atmosphere servlet
 		addServlet(environment);
 
 		// Session handler to enable automatic session handling
-		environment.setSessionHandler(new SessionHandler());
-	}
+//		environment.setSessionHandler(new SessionHandler());
 
+	}
 }

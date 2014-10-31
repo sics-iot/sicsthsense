@@ -10,8 +10,8 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yammer.dropwizard.auth.AuthenticationException;
-import com.yammer.dropwizard.auth.Authenticator;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
 
 import se.sics.sicsthsense.core.InMemoryUserCache;
 import se.sics.sicsthsense.core.User;

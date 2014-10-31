@@ -78,23 +78,20 @@ public class Utils {
 		return Response.status(status).entity(message).build();
 	}
 
-	public static void checkHierarchy(long userId) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void checkHierarchy(StorageDAO storage, long userId) {
 		User user = storage.findUserById(userId);
 		checkHierarchy(user);
 	}
 	public static void checkHierarchy(User user) {
 		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
-	public static void checkHierarchy(long userId, long resourceId) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void checkHierarchy(StorageDAO storage, long userId, long resourceId) {
 		//final Logger logger = LoggerFactory.getLogger(Utils.class);
-		User user = storage.findUserById(userId);
+		User user         = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		checkHierarchy(user,resource);
+		checkHierarchy(storage,user,resource);
 	}
-	public static void checkHierarchy(User user, Resource resource) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void checkHierarchy(StorageDAO storage, User user, Resource resource) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 		if (resource==null) { throw new WebApplicationException(Status.NOT_FOUND); }
@@ -104,12 +101,11 @@ public class Utils {
 		}
 	}
 
-	public static Resource findResourceByIdName(String resourceName) {
-		return findResourceByIdName(resourceName, -1);
+	public static Resource findResourceByIdName(StorageDAO storage, String resourceName) {
+		return findResourceByIdName(storage, resourceName, -1);
 	}
 	// return a resource after searching for its ID or URL-encoded name
-	public static Resource findResourceByIdName(String resourceName, long userId) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static Resource findResourceByIdName(StorageDAO storage, String resourceName, long userId) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		Resource resource = null;
 
@@ -129,12 +125,11 @@ public class Utils {
 		return resource;
 	}
 
-	public static Stream findStreamByIdName(String streamName) {
-		return findStreamByIdName(streamName, -1);
+	public static Stream findStreamByIdName(StorageDAO storage, String streamName) {
+		return findStreamByIdName(storage, streamName, -1);
 	}
 	// return a resource after searching for its ID or URL-encoded name
-	public static Stream findStreamByIdName(String streamName, long userId) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static Stream findStreamByIdName(StorageDAO storage, String streamName, long userId) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		Stream stream = null;
 		//logger.error("Finding stream: "+streamName);
@@ -163,8 +158,7 @@ public class Utils {
 	}
 
 	// add a resource
-	public static long insertResource(Resource resource) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static long insertResource(StorageDAO storage, Resource resource) {
 		// should check if label exists!
 
 		storage.insertResource(
@@ -180,8 +174,7 @@ public class Utils {
 		);
 		return storage.findResourceId(resource.getLabel());
 	}
-	public static long insertResourceLog(ResourceLog rl) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static long insertResourceLog(StorageDAO storage, ResourceLog rl) {
 		// should check if label exists!
 
 		storage.insertResourceLog(
@@ -201,8 +194,7 @@ public class Utils {
 	}
 
 	// add a resource
-	public static void updateResource(long resourceId, Resource newresource) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void updateResource(StorageDAO storage, long resourceId, Resource newresource) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		final PollSystem pollSystem = PollSystem.getInstance();
 
@@ -241,17 +233,15 @@ public class Utils {
 
 // Streams
 
-	public static void checkHierarchy(long userId, long resourceId, long streamId) {
-		final StorageDAO storage = DAOFactory.getInstance();
-		User user = storage.findUserById(userId);
+	public static void checkHierarchy(StorageDAO storage, long userId, long resourceId, long streamId) {
+		User user         = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		Stream stream = storage.findStreamById(streamId);
-		checkHierarchy(user,resource,stream);
+		Stream stream     = storage.findStreamById(streamId);
+		checkHierarchy(storage, user,resource,stream);
 	}
-	public static void checkHierarchy(User user, Resource resource, Stream stream) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void checkHierarchy(StorageDAO storage, User user, Resource resource, Stream stream) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
-		checkHierarchy(user, resource);
+		checkHierarchy(storage, user, resource);
 		if (stream==null) {
 			logger.error("Stream could not be found!");
 			throw new WebApplicationException(Status.NOT_FOUND);
@@ -262,8 +252,7 @@ public class Utils {
 		}
 	}
 
-	public static void insertDataPoint(DataPoint datapoint) throws Exception {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void insertDataPoint(StorageDAO storage, DataPoint datapoint) throws Exception {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
         	Stream stream = storage.findStreamById(datapoint.getStreamId());
 		if (datapoint.getTimestamp()<=0) { datapoint.setTimestamp(java.lang.System.currentTimeMillis()); }
@@ -278,8 +267,7 @@ public class Utils {
         //stream.testTriggers(datapoint);
 	}
 
-	public static long insertStream(Stream stream) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static long insertStream(StorageDAO storage, Stream stream) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		storage.insertStream(
 			stream.getType(),
@@ -304,24 +292,20 @@ public class Utils {
 	}
 
 	// create the dependency relationship between streams
-	public static void insertDependent(long stream, long dependent) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void insertDependent(StorageDAO storage, long stream, long dependent) {
 		storage.insertDependent(stream,dependent);
 	}
 
-	public static void insertTrigger(long stream_id, String url, String operator, double operand, String payload) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void insertTrigger(StorageDAO storage, long stream_id, String url, String operator, double operand, String payload) {
 		storage.insertTrigger(stream_id, url, operator, operand, payload);
 	}
 
-	public static long insertVFile(String path, long owner_id, String type, long stream_id) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static long insertVFile(StorageDAO storage, String path, long owner_id, String type, long stream_id) {
 		storage.insertVFile( path,owner_id,type,stream_id);
 		return -1;
 	}
 
-    public static void deleteStream(Stream stream) {
-		final StorageDAO storage = DAOFactory.getInstance();
+    public static void deleteStream(StorageDAO storage, Stream stream) {
 
         // delete dependants,vfiles and parsers on the Stream
         List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
@@ -336,13 +320,12 @@ public class Utils {
         storage.deleteStream(stream.getId());
     }
 
-    public static void deleteResource(Resource resource) {
-		final StorageDAO storage = DAOFactory.getInstance();
+    public static void deleteResource(StorageDAO storage, Resource resource) {
 	    final PollSystem pollSystem = PollSystem.getInstance();
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
-		for (Stream s: streams) {Utils.deleteStream(s);}
+		for (Stream s: streams) {Utils.deleteStream(storage,s);}
 		for (Parser p: parsers) {storage.deleteParser(p.getId());}
         storage.deleteResourceLogByResourceId(resource.getId());
 		storage.deleteResource(resource.getId());
@@ -351,10 +334,9 @@ public class Utils {
     }
 
 
-	public static void applyParsers(Resource resource, String data, long timestamp) {
-		final StorageDAO storage = DAOFactory.getInstance();
+	public static void applyParsers(StorageDAO storage, Resource resource, String data, long timestamp) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
-		ParseData parseData = new ParseData(); // should really be static somewhere
+		ParseData parseData = new ParseData(storage); // should really be static somewhere
 		boolean parsedSuccessfully=true;
 
 		String parseError = "";
@@ -377,7 +359,7 @@ public class Utils {
         // bunch all notifications here!
 		try { for (Long stream_id: toUpdate) {
             //logger.warn(" dependents:"+stream_id);
-            Stream.notifyDependents(stream_id.longValue());
+            Stream.notifyDependents(storage,stream_id.longValue());
         }
 		} catch (Exception e) {
             logger.error("Children not accepting notification! "+e);
@@ -386,7 +368,7 @@ public class Utils {
 
 		// append interaction to resource log!
 	//	logger.info("Updating log!");
-		ResourceLog rl = ResourceLog.createOrUpdate(resource.getId());
+		ResourceLog rl = ResourceLog.createOrUpdate(storage,resource.getId());
 		//TODO: update the actual log message!
 		rl.update(parsedSuccessfully, false, "received POST", System.currentTimeMillis());
 		rl.save();

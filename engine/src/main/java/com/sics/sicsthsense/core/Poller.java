@@ -66,7 +66,7 @@ public class Poller extends UntypedActor {
 		this.storage = storage;
 		this.url = url;
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		parsedata = new ParseData(mapper);
+		parsedata = new ParseData(storage,mapper);
 		rebuild();
 	}
 
@@ -121,10 +121,10 @@ public class Poller extends UntypedActor {
 			}
 		}
         // should bunch all notifications here!
-		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(stream_id.longValue());}
+		try { for (Long stream_id: toUpdate) {Stream.notifyDependents(storage, stream_id.longValue());}
 		} catch (Exception e) { logger.error("Children not accepting notification!");}
 
-		ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
+		ResourceLog rl = ResourceLog.createOrUpdate(storage, resourceId);
 		rl.update(parsedSuccessfully, true, allMsgs+"\nReceived data:"+synopsis+"...", System.currentTimeMillis());
 		rl.save();
 	}
@@ -157,7 +157,7 @@ public class Poller extends UntypedActor {
 					//System.out.println(response.toString());
 					applyParsers(resourceId,response.toString());
 				} catch (Exception e) {
-					ResourceLog rl = ResourceLog.createOrUpdate(resourceId);
+					ResourceLog rl = ResourceLog.createOrUpdate(storage, resourceId);
 					String msg = "Network problem: "+e+" URL: "+url;
 					logger.error(msg);
 					//e.printStackTrace();

@@ -39,8 +39,8 @@ import se.sics.sicsthsense.jdbi.*;
 public class Smooth extends Function {
 	private final Logger logger = LoggerFactory.getLogger(Smooth.class);
 
-	public Smooth() {
-		super("smooth");
+	public Smooth(StorageDAO storage) {
+		super(storage,"smooth");
 		this.type = "smooth";
 	}
 

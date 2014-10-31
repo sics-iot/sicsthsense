@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -35,20 +35,20 @@ import org.skife.jdbi.v2.*;
 import org.skife.jdbi.v2.sqlobject.*;
 import org.skife.jdbi.v2.tweak.*;
 
-import com.yammer.dropwizard.jdbi.*;
+import io.dropwizard.jdbi.*;
 
 import se.sics.sicsthsense.core.*;
 
 public class StreamMapper implements ResultSetMapper<Stream> {
 	public Stream map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 		return new Stream(
-				r.getLong("id"), 
+				r.getLong("id"),
 				r.getString("type"),
-				r.getDouble("latitude"), 
-				r.getDouble("longitude"), 
+				r.getDouble("latitude"),
+				r.getDouble("longitude"),
 				r.getString("description"),
-				r.getBoolean("public_access"), 
-				r.getBoolean("public_search"), 
+				r.getBoolean("public_access"),
+				r.getBoolean("public_search"),
 				r.getBoolean("frozen"),
 				r.getInt("history_size"),
 				r.getLong("last_updated"),
