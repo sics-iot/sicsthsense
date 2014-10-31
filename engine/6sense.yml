@@ -11,6 +11,7 @@ database:
   password: 6S3NLd2un76CrE3RJXs
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/sicsth2
+
 server:
 #  softNofileLimit: 1000
 #  hardNofileLimit: 1000
@@ -19,7 +20,7 @@ server:
       port: 8080
     - type: https
       port: 8443
-      keyStorePath: keystore
+      keyStorePath: sicsthsense.keystore
       keyStorePassword: password
       validateCerts: false
 # this requires the npn-boot library on the JVM's boot classpath
@@ -33,7 +34,7 @@ server:
       port: 8081
     - type: https
       port: 8444
-      keyStorePath: keystore
+      keyStorePath: sicsthsense.keystore
       keyStorePassword: password
       validateCerts: false
 
