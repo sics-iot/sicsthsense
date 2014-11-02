@@ -153,11 +153,12 @@ public class Intensity extends Function {
 		if (dps==null)     { logger.error("Stream no valid!"); return rv;}
 
 		double smoothIntensity=0.0;
+		double prevValue;
 		if (dps.size()>0) {//use a proportion of the prev value
 			// get latest point that is not of the same time
-			double prevValue;
 			if (dps.get(0).getTimestamp() == (accel.get(0).getTimestamp())) {
-				prevValue = dps.get(1).getValue();
+				if (dps.size()>1) { prevValue = dps.get(1).getValue();
+				} else {prevValue = intensity;} // no prev values
 			} else { prevValue = dps.get(0).getValue(); }
 			//logger.info("prev Intensity "+prevValue+" current "+intensity);
 			//logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
