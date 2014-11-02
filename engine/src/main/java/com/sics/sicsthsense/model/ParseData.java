@@ -187,7 +187,7 @@ public class ParseData {
 
 	public static void makeStreamAndParser(StorageDAO storage, Resource resource, String nodePath) {
 			//Logger.info("addParser() "+resource.id+" "+nodePath+" "+"application/json"+" "+ resource.label+nodePath);
-			Stream stream = new Stream(storage);
+			Stream stream = new Stream();
 			stream.setResource_id(resource.getId());
 			stream.setOwner_id(resource.getOwner_id());
 			long streamId = Utils.insertStream(storage,stream);

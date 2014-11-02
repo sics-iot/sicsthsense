@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -79,7 +79,7 @@ public class Resource {
 		this.id			= id;
 		this.label	= label;
 	}
-	public Resource(long id, 
+	public Resource(long id,
 									String label,
 									String version,
 									long owner_id,
@@ -118,11 +118,11 @@ public class Resource {
 	}
 
 	public void update(Resource newresource) {
-		if (newresource.getLabel()!="nolabel") {setLabel(newresource.getLabel());}		
-		if (newresource.getDescription()!="") {setDescription(newresource.getDescription());}		
+		if (newresource.getLabel()!="nolabel") {setLabel(newresource.getLabel());}
+		if (newresource.getDescription()!="") {setDescription(newresource.getDescription());}
 		setPolling_period(newresource.getPolling_period());
-		if (newresource.getPolling_url()!="") {setPolling_url(newresource.getPolling_url());}		
-		if (newresource.getPolling_authentication_key()!="") {setPolling_authentication_key(newresource.getPolling_authentication_key());}		
+		if (newresource.getPolling_url()!="") {setPolling_url(newresource.getPolling_url());}
+		if (newresource.getPolling_authentication_key()!="") {setPolling_authentication_key(newresource.getPolling_authentication_key());}
 	}
 	public boolean isAuthorised(String key) {
 		if (this.secret_key.equals(key)) {
@@ -136,7 +136,7 @@ public class Resource {
 	public long   getId()            { return id; }
 	public String getVersion()       { return "1.0"; }
 	public String getLabel()         { return label; }
-	public long   getOwner_id()      { return owner_id; } 
+	public long   getOwner_id()      { return owner_id; }
 	public Long   getParent_id()	 { return parent_id; }
 	public String getPolling_url()	 { return polling_url; }
 	public long   getPolling_period(){ return polling_period; }
@@ -150,7 +150,7 @@ public class Resource {
 	public void setId(long id)                         { this.id = id; }
 	public void setLabel(String label)                 { this.label = label; }
 	public void setVersion(String version)             { this.version = version; }
-	public void setOwner_id(long owner_id)             { this.owner_id = owner_id; } 
+	public void setOwner_id(long owner_id)             { this.owner_id = owner_id; }
 	public void setParent_id(Long parent_id)           { this.parent_id = parent_id; }
 	public void setPolling_url(String polling_url)     { this.polling_url = polling_url; }
 	public void setPolling_period(long polling_period) { this.polling_period = polling_period; }

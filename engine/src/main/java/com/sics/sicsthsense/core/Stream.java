@@ -90,13 +90,13 @@ public class Stream {
 	private final Logger logger = LoggerFactory.getLogger(Stream.class);
 	private StorageDAO storage = null;
 
-    public Stream(StorageDAO storage) {
-		this.storage = storage;
+    public Stream() {
+		this.storage = DAOFactory.getInstance();
 		this.type = "D";
 		this.secret_key = UUID.randomUUID().toString();
 		}
     public Stream(StorageDAO storage, long id) {
-		this(storage);
+		this();
 		this.id = id;
     }
     public Stream(
