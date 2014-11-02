@@ -150,6 +150,7 @@ public class Intensity extends Function {
 
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
+		if (dps.size()==0) { logger.error("No points in input streams!"); return rv;}
 
 		// get latest point that is not of the same time
 		double prevValue;
