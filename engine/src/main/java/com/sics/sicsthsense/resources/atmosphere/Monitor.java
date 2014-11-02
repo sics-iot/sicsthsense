@@ -76,11 +76,10 @@ public class Monitor {
   /**
 	 *
    */
-  @GET
-  @Timed
-  //public PublicFreemarkerView monitor() {
-  public Response monitor(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName,
-					@PathParam("streamId") String streamName, @QueryParam("key") String key) throws IOException {
+	@GET
+	@Timed
+	//public PublicFreemarkerView monitor() {
+	public Response monitor(@PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") String key) throws IOException {
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(storage, resourceName);
 		Stream stream     = Utils.findStreamByIdName(storage, streamName);
@@ -88,11 +87,13 @@ public class Monitor {
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key) && !stream.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
 
     URL url = Monitor.class.getResource("/views/pub.html");
+	logger.info("Monitor URL: "+url);
+	if (url==null) {return Utils.resp(Status.NOT_FOUND,"Missing internal resource web page",null);}
     String markdown = Resources.toString(url, Charsets.UTF_8).trim();
-		markdown = markdown.replace("%userId%",    String.valueOf(userId));
-		markdown = markdown.replace("%resourceId%",String.valueOf(resource.getId()));
-		markdown = markdown.replace("%streamId%",  String.valueOf(streamName));
-		return Utils.resp(Status.OK, markdown, null);
+	markdown = markdown.replace("%userId%",    String.valueOf(userId));
+	markdown = markdown.replace("%resourceId%",String.valueOf(resource.getId()));
+	markdown = markdown.replace("%streamId%",  String.valueOf(streamName));
+	return Utils.resp(Status.OK, markdown, null);
   }
 
 }

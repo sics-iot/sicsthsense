@@ -199,6 +199,7 @@ public class ResourceLog {
 
   public void create() {
 		// should check already exists
+		StorageDAO storage = DAOFactory.getInstance();
 		storage.insertResourceLog(
 			this.resourceId,
 			System.currentTimeMillis(),
@@ -215,6 +216,7 @@ public class ResourceLog {
 	}
 
   public void save() {
+		StorageDAO storage = DAOFactory.getInstance();
 		storage.updateResourceLog(
 			this.resourceId,
 			this.creationTimestamp,

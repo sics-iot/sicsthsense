@@ -114,9 +114,6 @@ public class StreamResource {
 	@Timed
 	public Response getStream( @PathParam("userId") long userId, @PathParam("resourceId") String resourceName, @PathParam("streamId") String streamName, @QueryParam("key") @DefaultValue("") String key) {
 		logger.info("Getting user/resource/stream: "+userId+"/"+resourceName+"/"+streamName);
-		storage = DAOFactory.getInstance();
-		logger.error("Storage: "+storage);
-
 		User user = storage.findUserById(userId);
 		Resource resource = Utils.findResourceByIdName(storage,resourceName);
 		Stream stream     = Utils.findStreamByIdName(storage,streamName);
