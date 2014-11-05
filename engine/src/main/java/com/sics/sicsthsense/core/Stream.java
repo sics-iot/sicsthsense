@@ -218,10 +218,10 @@ public class Stream {
 		return function.apply(antecedents);
 	}
 
-	public void testTriggers(StorageDAO storage, DataPoint dp) {
+	public void testTriggers(DataPoint dp) {
 		//logger.info("testing triggers on point :"+dp.toString());
 		if (this==null) {return;}
-
+		storage = DAOFactory.getInstance();
 		this.triggers =  storage.findTriggersByStreamId(this.getId());
 		if (triggers!=null) {
 			for (Trigger t: triggers) {

@@ -16,10 +16,9 @@ import se.sics.sensorservices.SensorBase;
 import se.sics.sensorservices.SensorBase.SensorStatus;
 import se.sics.sensorservices.SensorsManager.RecordDataEvents;
 import se.sics.sensorservices.SensorsManager.SensorScanEvents;
-
+import android.app.Activity;
 //import android.R;
 import android.os.Bundle;
-import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;

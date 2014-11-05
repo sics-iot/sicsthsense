@@ -81,7 +81,7 @@ public class WSStream {
 			Utils.insertDataPoint(storage,datapoint); // insert first to fail early
 			topic.broadcast(datapoint.toString());
 			stream.notifyDependents(storage); // notify all streams that depend on this
-			stream.testTriggers(storage,datapoint); // see if any of the actions are triggered
+			stream.testTriggers(datapoint); // see if any of the actions are triggered
 
       return new Broadcastable(datapoint.toJson(), "", topic);
     }

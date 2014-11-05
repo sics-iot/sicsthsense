@@ -264,7 +264,7 @@ public class Utils {
 		logger.info("inserted datapoint @ "+datapoint.toString());
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
         //stream.notifyDependents(); // taken care of during parsing
-        //stream.testTriggers(datapoint);
+        stream.testTriggers(datapoint);
 	}
 
 	public static long insertStream(StorageDAO storage, Stream stream) {
