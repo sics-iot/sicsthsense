@@ -205,12 +205,6 @@
 			<version>2.2.3</version>
 		</dependency>
 
-<dependency>
-		<groupId>org.ow2.chameleon.fuchsia.base.philips-hue</groupId>
-			<artifactId>org.ow2.chameleon.fuchsia.base.philips-hue.huedsk-bundle</artifactId>
-	<version>0.0.3</version>
-</dependency>
-
 		<!--
 		<dependency>
 			<groupId>org.atmosphere</groupId>

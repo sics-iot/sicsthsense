@@ -62,10 +62,12 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No acceleration data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
+		logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
 		double gravity = 10.0;//9.8;
-		//logger.info("magnitude: "+magnitude);
+		logger.info("magnitude: "+magnitude);
 		magnitude -= gravity;
-		//logger.info("magnitude - gravity: "+magnitude);
+		logger.info("magnitude - gravity: "+magnitude);
+		if (magnitude<0) {magnitude=0.0;}
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 	  return rv;
@@ -88,23 +90,19 @@ public class Intensity extends Function {
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
 		int maxPossible=10;
-		double decayFactor=0.20;
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
 		int streamCount = streamIds.size();
 
-		if (streamCount!=3 && streamCount!=6  && streamCount!=7) {
-			throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!");
-		}
+		if (streamCount!=3 && streamCount!=6  && streamCount!=7) { throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!"); }
 		//logger.info("Intensity stream count correct!!");
 
+		logger.info("Stream ids: "+streamIds.get(0)+" "+ streamIds.get(1)+" "+streamIds.get(2));
 		// We need acceleration data
 		List<DataPoint> accel = getAccel(streamIds.get(0), streamIds.get(1), streamIds.get(2));
-
 		// Do we have gyro data?
 		List<DataPoint> gyro = null;
 		//if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
-
 		List<DataPoint> heartrate = null;
 		if (streamCount>=7) {
 			heartrate = new ArrayList<DataPoint>();
@@ -116,12 +114,14 @@ public class Intensity extends Function {
 		  double intensity=0.0;
 
 		  double acc = accel.get(c).getValue();
-		  //logger.info("acc raw: "+acc);
-		  double accFudge = 0.3;
+		  
+		  logger.info("acc raw: "+acc);
+		  double accFudge = 0.1;
 		  acc = 1+(acc*accFudge); // tune the value
-		  intensity += 10 - (10.0/acc  );
+		  logger.info("fudge multiply: "+acc);
+		  intensity += 10 - (10.0/acc);
 		  //logger.info("intensity with acc: "+intensity);
-
+/*
 		  if (gyro!=null) {
 			 maxPossible += 10.0;
 			 double gy = gyro.get(c).getValue();
@@ -144,16 +144,22 @@ public class Intensity extends Function {
 			  intensity += hr/10.0;
 			}
 		  }
+*/
 		  //logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
 		  intensity = (intensity/maxPossible) * 100;
 		  //logger.info("corrected intensity: "+intensity);
 
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
-		if (dps==null)     { logger.error("Stream no valid!"); return rv;}
+		if (dps==null)     { logger.error("Stream not valid!"); return rv;}
+		
 
+		double decayFactor=0.50;
 		double smoothIntensity=0.0;
 		double prevValue;
+
+		smoothIntensity = intensity; // just use the current value
+
 		if (dps.size()>0) {//use a proportion of the prev value
 			// get latest point that is not of the same time
 			if (dps.get(0).getTimestamp() == (accel.get(0).getTimestamp())) {
@@ -164,10 +170,10 @@ public class Intensity extends Function {
 			//logger.info("decay Intensity "+ (prevValue*(1-decayFactor)) +" % "+ (intensity*decayFactor));
 			smoothIntensity = prevValue*(1-decayFactor) + intensity*decayFactor;
 		} else {
-			smoothIntensity = intensity; // just use the first value
+			smoothIntensity = intensity; // just use the current value
 		}
-		if (smoothIntensity<0.0)   {smoothIntensity=0.0;}
-		if (smoothIntensity>100.0) {smoothIntensity=100.0;}
+		//if (smoothIntensity<0.0)   {smoothIntensity=0.0;}
+		//if (smoothIntensity>100.0) {smoothIntensity=100.0;}
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 		}
