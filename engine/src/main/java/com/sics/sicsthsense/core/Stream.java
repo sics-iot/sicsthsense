@@ -117,9 +117,9 @@ public class Stream {
 			int version
 		) {
 			this(null,id);
-			this.type					= type;
-			this.latitude			= latitude;
-			this.longitude		= longitude;
+			this.type	= type;
+			this.latitude	= latitude;
+			this.longitude	= longitude;
 			this.description	= description;
 			this.public_access = public_access;
 			this.public_search = public_search;

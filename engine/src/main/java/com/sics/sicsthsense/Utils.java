@@ -286,8 +286,11 @@ public class Utils {
 			stream.getVersion()
 		);
 		long streamID = storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
-		//already performed by other code
-		//storage.insertVFile("/stream/"+String.valueOf(streamID),stream.getOwner_id(),"D",streamID);
+		if (stream.getLabel()!=null && stream.getLabel()!="") {
+		storage.insertVFile(stream.getLabel(),stream.getOwner_id(),"D",streamID);
+		} else {
+			storage.insertVFile("Stream"+String.valueOf(streamID),stream.getOwner_id(),"D",streamID);
+		}
 		return streamID;
 	}
 

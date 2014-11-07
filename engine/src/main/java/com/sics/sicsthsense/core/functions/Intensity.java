@@ -124,12 +124,12 @@ public class Intensity extends Function {
 		  //logger.info("intensity with acc: "+intensity);
 /*
 		  if (gyro!=null) {
-			 maxPossible += 10.0;
+			 maxPossible += 5.0;
 			 double gy = gyro.get(c).getValue();
 			 double gyFudge=1;
 			 gy = gy * gyFudge;
 			 if (gy > 1.0) {
-			  intensity +=	10.0 - (10.0/gy);
+			  intensity +=	5.0 - (5.0/gy);
 			 } else { intensity += 0; }
 		  }
 		  //logger.info("intensity with gyro: "+intensity);
