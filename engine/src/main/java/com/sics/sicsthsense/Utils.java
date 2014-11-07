@@ -261,7 +261,7 @@ public class Utils {
 			datapoint.getValue(),
 			datapoint.getTimestamp()
 		);
-		logger.info("inserted datapoint @ "+datapoint.toString());
+		//logger.info("inserted datapoint @ "+datapoint.toString());
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
         //stream.notifyDependents(); // taken care of during parsing
         stream.testTriggers(datapoint);

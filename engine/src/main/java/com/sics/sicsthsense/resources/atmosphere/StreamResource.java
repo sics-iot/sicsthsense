@@ -177,6 +177,7 @@ public class StreamResource {
 				logger.info("Antecedent: "+antId);
 				// check ability to access antecedent!
 				// XXX
+				if (antId==null) {return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Antecedent Stream ID is not valid!"), logger);}
 				Utils.insertDependent(storage,antId.longValue(),streamId);
 			}
 		}
