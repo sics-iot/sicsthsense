@@ -1,4 +1,4 @@
-@(stream: Stream, displayHeader: Boolean =true, displayOverview: Boolean =true, displayPlot: Boolean =true, displayToolbar: Boolean =true)
+@(stream: Stream, displayHeader: Boolean =true, displayOverview: Boolean =true, displayPlot: Boolean =true, displayToolbar: Boolean =true, liveUpdate: Boolean=false)
 
 @WIN_5M() = {5*60*1000}
 @WIN_30M() = {30*60*1000}
@@ -192,7 +192,7 @@ $.ajax({
 		chart: { 
 			renderTo: 'container',
 				events: {
-					/*
+				@if(liveUpdate) {
 				load : function() {
 					// set up the updating of the chart each second
 					var series = this.series[0];
@@ -207,9 +207,9 @@ $.ajax({
 									if (item.timestamp>chartLastGet["@{stream.id}"]) {chartLastGet["@{stream.id}"]=item.timestamp;}
 								});
 							}
-						}) } , 30000);
+						}) } , 4000);
 				}
-				*/
+				}
 			}
 		},
 		rangeSelector: {

@@ -15,7 +15,7 @@
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+# DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
 # FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -67,7 +67,7 @@ class Engine:
 	def createResource(self, resourceJSON):
 		url = "http://"+self.hostname+"/users/"+str(self.userId)+"/resources/"
 		return self.postToURL(url, resourceJSON)
-	
+
 	def updateResource(self, resourceId, resourceJSON):
 		url = "http://"+self.genResourceURL(resourceId)
 		return self.putToURL(url, resourceJSON)
@@ -82,11 +82,11 @@ class Engine:
 	def createStream(self, resourceId, streamJSON):
 		url = "http://"+self.genResourceURL(resourceId)+"/streams"
 		return self.postToURL(url, streamJSON)
-		
+
 	def updateStream(self, resourceId, streamId, streamJSON):
 		url = "http://"+self.genStreamURL(resourceId, streamId)
 		return self.putToURL(url, streamJSON)
-	
+
 	def deleteStream(self, resourceId, streamId):
 		url = "http://"+self.genStreamURL(resourceId, streamId)
 		return self.deleteURL(url)
@@ -132,8 +132,9 @@ class Engine:
 	# GET data from a Stream
 	def getStreamData(self, resourceId, streamId, query=None):
 		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
-                if query!=None:
-                    url += dictToQueryStr(query)
+		url = url+"?key="+self.user_key
+		if query!=None:
+			url += dictToQueryStr(query)
 		return self.getFromURL(url)
 
 
@@ -142,11 +143,11 @@ class Engine:
 	# Utility methods
 	###########
 
-        # Turn a dict into a HTTP query string ?key=val
-        def dictToQueryStr(dictionary):
-            str="?"
-            for key in dictionary:
-                str+=key+"="+dictionary[key]+"&"
+    # Turn a dict into a HTTP query string ?key=val
+	def dictToQueryStr(dictionary):
+		str="?"
+		for key in dictionary:
+			str+=key+"="+dictionary[key]+"&"
 
 	# Ensure hostname and userId are set
 	def valid(self):
@@ -161,7 +162,7 @@ class Engine:
 	def getFromURL(self,url):
 		if not self.valid():
 			return "Engine configuration not valid!"
-		print "url: "+url
+		#print "url: "+url
 		try:
 			req = urllib2.Request(url)
 			response = urllib2.urlopen(req)
@@ -209,7 +210,7 @@ class Engine:
 			return None
 		# check response was 20X
 		return response.read()
-	
+
 	# PUT data
 	def putToURL(self, url, data):
 		if not self.valid():
@@ -224,7 +225,7 @@ class Engine:
 			return None
 		# check response was 20X
 		return response.read()
-	
+
 	# Create URL that correspond to appropriate HTTP Resources
 	# Build the URL to the given resource, using the hostname and userId
 	def genResourceURL(self, resourceId):

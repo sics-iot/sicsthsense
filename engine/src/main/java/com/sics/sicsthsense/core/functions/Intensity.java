@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.Utils;
 import se.sics.sicsthsense.jdbi.*;
 
 public class Intensity extends Function {
@@ -114,7 +115,7 @@ public class Intensity extends Function {
 		  double intensity=0.0;
 
 		  double acc = accel.get(c).getValue();
-		  
+
 		  logger.info("acc raw: "+acc);
 		  double accFudge = 0.1;
 		  acc = 1+(acc*accFudge); // tune the value
@@ -152,12 +153,20 @@ public class Intensity extends Function {
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
 		if (dps==null)     { logger.error("Stream not valid!"); return rv;}
-		
+
+		// group statistics
+		if (false) {
+			// include stats from the group Stream
+			List<DataPoint> groupdps = storage.findPointsByStreamId(this.streamId,1);
+			if (groupdps!=null && groupdps.size()==1) {
+				maxPossible += 5;
+				intensity += dps.get(0).getValue() / 20; // reduce from %
+			}
+		}
 
 		double decayFactor=0.50;
 		double smoothIntensity=0.0;
 		double prevValue;
-
 		smoothIntensity = intensity; // just use the current value
 
 		if (dps.size()>0) {//use a proportion of the prev value
@@ -176,6 +185,11 @@ public class Intensity extends Function {
 		//if (smoothIntensity>100.0) {smoothIntensity=100.0;}
 
 		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
+
+		// add this point for others
+		DataPoint groupdp = new DataPoint(accel.get(0).getTimestamp(), smoothIntensity); // scale to 0-100
+		groupdp.setStreamId(9999);
+		Utils.insertDataPoint(storage,groupdp);
 		}
 		return rv;
 	}

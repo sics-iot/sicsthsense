@@ -211,6 +211,8 @@ public class Stream {
 			function = new Intensity(storage,getId());
 		} else if ("smooth".equals(this.getFunction())) {
 			function = new Smooth(storage);
+		} else if ("meansmooth".equals(this.getFunction())) {
+			function = new MeanSmooth(storage);
 		} else {
 			logger.error("Unknown function "+this.getFunction()+"! Stream ID: "+getId());
 			return new ArrayList<DataPoint>();
