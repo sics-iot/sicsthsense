@@ -116,37 +116,37 @@ public class Intensity extends Function {
 
 		  double acc = accel.get(c).getValue();
 
-		  logger.info("acc raw: "+acc);
+			//logger.info("acc raw: "+acc);
 		  double accFudge = 0.1;
 		  acc = 1+(acc*accFudge); // tune the value
-		  logger.info("fudge multiply: "+acc);
+		  //logger.info("fudge multiply: "+acc);
 		  intensity += 10 - (10.0/acc);
-		  //logger.info("intensity with acc: "+intensity);
-/*
-		  if (gyro!=null) {
-			 maxPossible += 5.0;
-			 double gy = gyro.get(c).getValue();
-			 double gyFudge=1;
-			 gy = gy * gyFudge;
-			 if (gy > 1.0) {
-			  intensity +=	5.0 - (5.0/gy);
-			 } else { intensity += 0; }
-		  }
-		  //logger.info("intensity with gyro: "+intensity);
+		  logger.info("intensity with acc: "+intensity);
 
-		  if (heartrate!=null) {
-			maxPossible += 10.0;
+		if (gyro!=null) {
+			maxPossible += 5.0;
+			double gy = gyro.get(c).getValue();
+			double gyFudge=1;
+			gy = gy * gyFudge;
+			if (gy > 1.0) {
+			intensity += 5.0 - (5.0/gy);
+			 } else { intensity += 0; }
+		}
+		//logger.info("intensity with gyro: "+intensity);
+
+		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
 			if (hr<40.0) {
 			  //do nothing, bad reading
 			} else {
-			  if (hr>140.0) {hr=140.0;} // danger! danger!
-			  hr -= 40; // hr now 0-100
+			  maxPossible += 8.0;
+			  if (hr>120.0) {hr=120.0;} // danger! danger!
+			  hr -= 40; // hr now 0-80
 			  intensity += hr/10.0;
 			}
 		  }
-*/
-		  //logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
+
+		  logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
 		  intensity = (intensity/maxPossible) * 100;
 		  //logger.info("corrected intensity: "+intensity);
 

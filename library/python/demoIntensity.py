@@ -58,6 +58,9 @@ data = {
     "acc_x": str(random.randint(0,9)),
     "acc_y": str(random.randint(0,9)),
     "acc_z": str(random.randint(0,9))
+    "gyro_x": str(random.randint(0,9)),
+    "gyro_y": str(random.randint(0,9)),
+    "gyro_z": str(random.randint(0,9))
 }
 result = e.postResourceData(resourceId,json.dumps(data))
 #print str(data)+" -> "+str(result)
@@ -96,11 +99,6 @@ for i in range(5):
     result = e.getStreamData(resourceId,intensityId)
     print "Intensity: "+result
     time.sleep(1)
-
-# GET data
-if False:
-    result = e.getStreamData(resourceId,streamId)
-    print json.dumps(json.loads(result), sort_keys = False, indent = 4)
 
 # delete resource and everything (streams and parsers) under it
 wipeData=False

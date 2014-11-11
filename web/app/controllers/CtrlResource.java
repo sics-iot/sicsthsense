@@ -414,7 +414,6 @@ public class CtrlResource extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static Result resources(Integer p) {
 		User currentUser = Secured.getCurrentUser();
-		Logger.info("page: "+p.toString());
 		List<Resource> rootResourcesList = Resource.find.select("id, owner, label, parent").where().eq("owner", currentUser)
 				.eq("parent", null).orderBy("id asc").findPagingList(pageSize).getPage(p.intValue()).getList();
 		return ok(resourcesPage.render(rootResourcesList, resourceForm, p, ""));
@@ -654,9 +653,6 @@ public class CtrlResource extends Controller {
 			return badRequest("Specified resource does not exist: " + id);
 		}
 		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
-		for (Stream s: streams) {
-			Logger.warn(s.toString());
-		}
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
 		return ok(resourcePage.render(currentUser.resourceList, myForm, streams, false, ""));
