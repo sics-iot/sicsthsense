@@ -7,11 +7,11 @@ from engine import *
 print "Testing SicsthSense python module with manual creation of Streams and Parsers"
 
 # Create the ENgine module giving the running instance's hostname and port
-e = Engine("localhost:8080")
-#e = Engine("presense.sics.se:8080")
+#e = Engine("localhost:8080")
+e = Engine("presense.sics.se:8080")
 print "Hostname: "+e.hostname
 
-registerNewUser=False
+registerNewUser=True
 if registerNewUser:
     # generate a random username
     username = "newuser"+str(random.randint(0,99))
@@ -57,7 +57,7 @@ print "\nPosting initial data..."
 data = {
     "acc_x": str(random.randint(0,9)),
     "acc_y": str(random.randint(0,9)),
-    "acc_z": str(random.randint(0,9))
+    "acc_z": str(random.randint(0,9)),
     "gyro_x": str(random.randint(0,9)),
     "gyro_y": str(random.randint(0,9)),
     "gyro_z": str(random.randint(0,9))
@@ -92,7 +92,10 @@ for i in range(5):
     data = {
         "acc_x": str(random.randint(10,19)),
         "acc_y": str(random.randint(0,9)),
-        "acc_z": str(random.randint(0,9))
+        "acc_z": str(random.randint(0,9)),
+        "gyro_x": str(random.randint(0,9)),
+        "gyro_y": str(random.randint(0,9)),
+        "gyro_z": str(random.randint(0,9))
     }
     result = e.postResourceData(resourceId,json.dumps(data))
     print "Datapoint: "+json.dumps(data)

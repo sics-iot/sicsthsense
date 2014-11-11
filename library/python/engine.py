@@ -190,10 +190,14 @@ class Engine:
 		try:
 			req = urllib2.Request(url, data, headers)
 			response = urllib2.urlopen(req)
+		except urllib2.HTTPError as e:
+			error_message = e.read()
+			print "HTTP Error: "+error_message
+			exit(1)
 		except Exception as e:
 			print "Error: Connection to "+url+" failed!\n",e
-                        print "Is the SicsthSense server running?\n"
-                        raise e
+			print "Is the SicsthSense server running?\n"
+			raise e
 		# check response code
 		if response.getcode() > 400:
 			print "Error: HTTP return code "+response.getcode()
