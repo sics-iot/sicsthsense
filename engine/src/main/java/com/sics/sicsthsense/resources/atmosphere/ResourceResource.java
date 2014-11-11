@@ -221,7 +221,7 @@ public class ResourceResource {
 		if (!resource.isAuthorised(key) && !user.isAuthorised(key)) { return Utils.resp(Status.FORBIDDEN, new JSONMessage("Error: Key does not match! "+key), logger); }
 
         long timestamp = java.lang.System.currentTimeMillis();
-		logger.info("Adding data to resource: "+resource.getLabel()+" @ "+timestamp);
+		//logger.info("Adding data to resource: "+resource.getLabel()+" @ "+timestamp);
 
 		// if parsers are undefined, create them!
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());

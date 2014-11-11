@@ -159,7 +159,7 @@ public class Poller extends UntypedActor {
 				} catch (Exception e) {
 					ResourceLog rl = ResourceLog.createOrUpdate(storage, resourceId);
 					String msg = "Network problem: "+e+" URL: "+url;
-					logger.error(msg);
+					//logger.error(msg);
 					//e.printStackTrace();
 					rl.update(false, true, msg, System.currentTimeMillis());
 					rl.save();
