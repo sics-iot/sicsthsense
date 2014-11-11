@@ -654,6 +654,9 @@ public class CtrlResource extends Controller {
 			return badRequest("Specified resource does not exist: " + id);
 		}
 		List<Stream> streams = Ebean.find(Stream.class).where().eq("resource_id",resource.id).findList();
+		for (Stream s: streams) {
+			Logger.warn(s.toString());
+		}
 		SkeletonResource skeleton = new SkeletonResource(resource);
 		Form<SkeletonResource> myForm = skeletonResourceForm.fill(skeleton);
 		return ok(resourcePage.render(currentUser.resourceList, myForm, streams, false, ""));

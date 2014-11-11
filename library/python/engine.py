@@ -23,7 +23,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urllib, urllib2
+import urllib2
 import simplejson as json
 #from websocket import create_connection
 
@@ -60,8 +60,8 @@ class Engine:
 		# should work in future
 		pass
 
-        def setKey(self, key):
-            self.user_key = key
+	def setKey(self, key):
+		self.user_key = key
 
 	# Resource CRUD
 	def createResource(self, resourceJSON):
@@ -72,10 +72,13 @@ class Engine:
 		url = "http://"+self.genResourceURL(resourceId)
 		return self.putToURL(url, resourceJSON)
 
-
 	def deleteResource(self, resourceId):
 		url = "http://"+self.genResourceURL(resourceId)
 		return self.deleteURL(url)
+
+	def getResourceStreams(self, resourceId):
+		url = "http://"+self.genResourceURL(resourceId)+"/streams"
+		return self.getFromURL(url)
 
 
 	# Stream CRUD
@@ -132,7 +135,6 @@ class Engine:
 	# GET data from a Stream
 	def getStreamData(self, resourceId, streamId, query=None):
 		url = "http://"+self.genStreamURL(resourceId, streamId)+"/data"
-		url = url+"?key="+self.user_key
 		if query!=None:
 			url += dictToQueryStr(query)
 		return self.getFromURL(url)
@@ -162,6 +164,8 @@ class Engine:
 	def getFromURL(self,url):
 		if not self.valid():
 			return "Engine configuration not valid!"
+		if self.user_key!=None:
+			url += "?key="+self.user_key
 		#print "url: "+url
 		try:
 			req = urllib2.Request(url)
@@ -179,9 +183,8 @@ class Engine:
 		if not self.validJSON(data):
 			print "JSON not valid!:\n"+data
 			return False
-                url += "?" # for Query string
-                if self.user_key!=None:
-                    url += "key="+self.user_key
+		if self.user_key!=None:
+			url += "?key="+self.user_key
 		print "url: "+url
 		headers = {'Content-Type':'application/json'}
 		try:

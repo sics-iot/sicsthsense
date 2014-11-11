@@ -214,7 +214,7 @@ Click <a class="addParser btn-link "><span class="icon-plus icon-white"></span><
 	<!-- Stream listing and visualizing -->
 	@if(streams.length > 0) {
 		<h3>Resource Streams</h3>
-		@for(stream <- streams) {					
+		@for(stream <- streams) {
 			<br />
 			@vstream.includeStream(stream)
 			<br />

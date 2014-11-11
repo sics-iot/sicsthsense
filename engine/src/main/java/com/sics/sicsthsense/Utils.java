@@ -254,7 +254,7 @@ public class Utils {
 
 	public static void insertDataPoint(StorageDAO storage, DataPoint datapoint) throws Exception {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
-        	Stream stream = storage.findStreamById(datapoint.getStreamId());
+		Stream stream = storage.findStreamById(datapoint.getStreamId());
 		if (datapoint.getTimestamp()<=0) { datapoint.setTimestamp(java.lang.System.currentTimeMillis()); }
 		storage.insertDataPoint(
 			datapoint.getStreamId(),
@@ -264,7 +264,7 @@ public class Utils {
 		//logger.info("inserted datapoint @ "+datapoint.toString());
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
         //stream.notifyDependents(); // taken care of during parsing
-        stream.testTriggers(datapoint);
+        //stream.testTriggers(datapoint);
 	}
 
 	public static long insertStream(StorageDAO storage, Stream stream) {
@@ -286,11 +286,12 @@ public class Utils {
 			stream.getVersion()
 		);
 		long streamID = storage.findStreamId(stream.getResource_id(), stream.getSecret_key());
+		/*
 		if (stream.getLabel()!=null && stream.getLabel()!="") {
 		storage.insertVFile(stream.getLabel(),stream.getOwner_id(),"D",streamID);
 		} else {
 			storage.insertVFile("Stream"+String.valueOf(streamID),stream.getOwner_id(),"D",streamID);
-		}
+		}*/
 		return streamID;
 	}
 
