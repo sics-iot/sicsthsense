@@ -132,10 +132,11 @@ public class Intensity extends Function {
 			intensity += 5.0 - (5.0/gy);
 			 } else { intensity += 0; }
 		}
-		//logger.info("intensity with gyro: "+intensity);
+		logger.info("intensity with gyro: "+intensity);
 
 		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
+			logger.warn("heartrate: "+hr)
 			if (hr<40.0) {
 			  //do nothing, bad reading
 			} else {

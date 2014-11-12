@@ -14,7 +14,7 @@ print "Hostname: "+e.hostname
 registerNewUser=True
 if registerNewUser:
     # generate a random username
-    username = "newuser"+str(random.randint(0,99))
+    username = "newuser"+str(random.randint(0,999))
 
     # register with SicsthSense
     newUserJSONStr = e.registerUser('{"username": "'+username+'", "email":"'+username+'@anon.com", "password":"password"}')
@@ -39,7 +39,7 @@ print "UserID:",newUserId," key: ",key+"\n"
 
 ## Create a resource
 # Generate random label name
-resourceLabel = "demo"+str(random.randint(0,99))
+resourceLabel = "demo"+str(random.randint(0,999))
 # Create the new Resource's minimal JSON representation
 newresource = {"label": resourceLabel}
 jsonstr = json.dumps(newresource)
