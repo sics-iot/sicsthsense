@@ -117,7 +117,7 @@ public class Intensity extends Function {
 			acc = 1+(acc*accFudge); // tune the value
 			//logger.info("fudge multiply: "+acc);
 			intensity += 10 - (10.0/acc);
-			logger.info("intensity with acc: "+intensity);
+			logger.info("intensity with acc: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
 
 		if (gyro!=null) {
 			double gy = gyro.get(c).getValue();
@@ -128,7 +128,7 @@ public class Intensity extends Function {
 			intensity += 5.0 - (5.0/gy);
 			 } else { intensity += 0; }
 		}
-		logger.info("intensity with gyro: "+intensity);
+		logger.info("intensity with gyro: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
 
 		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
@@ -143,7 +143,7 @@ public class Intensity extends Function {
 			}
 		  }
 
-		  logger.info("intensity with all components: "+intensity+" out of "+maxPossible);
+		  logger.info("intensity with all components: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
 		  intensity = (intensity/maxPossible) * 100;
 		  //logger.info("corrected intensity: "+intensity);
 
