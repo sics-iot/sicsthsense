@@ -63,7 +63,7 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No acceleration data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
-		//logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
+		logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
 		double gravity = 10.0;//9.8;
 		logger.info("magnitude: "+magnitude);
 		magnitude -= gravity;
