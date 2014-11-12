@@ -74,6 +74,7 @@ public class Intensity extends Function {
 	  return rv;
 	}
 
+	// calculate the gyro scope history
 	public List<DataPoint> getGyro(long Xstream, long Ystream, long Zstream) throws Exception {
 	  List<DataPoint> rv = new ArrayList<DataPoint>();
 	  List<DataPoint> X = storage.findPointsByStreamId(Xstream,AccHistorySize);
@@ -91,13 +92,12 @@ public class Intensity extends Function {
 
 	public List<DataPoint> apply(List<Long> streamIds) throws Exception {
 		List<DataPoint> rv = new ArrayList<DataPoint>();
-		int maxPossible=10;
+		int maxPossible=10; // max possible intensity score
 
 		if (streamIds==null) { logger.error("Stream IDs are null!!"); return rv; }
-		int streamCount = streamIds.size();
+		int streamCount = streamIds.size(); // how many input streams?
 
 		if (streamCount!=3 && streamCount!=6  && streamCount!=7) { throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!"); }
-		//logger.info("Intensity stream count correct!!");
 
 		//logger.info("Stream ids: "+streamIds.get(0)+" "+ streamIds.get(1)+" "+streamIds.get(2));
 		// We need acceleration data
@@ -105,6 +105,7 @@ public class Intensity extends Function {
 		// Do we have gyro data?
 		List<DataPoint> gyro = null;
 		if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
+		// Do we have heartrate?
 		List<DataPoint> heartrate = null;
 		if (streamCount>=7) { heartrate = storage.findPointsByStreamId(streamIds.get(6),1); }
 
@@ -113,7 +114,7 @@ public class Intensity extends Function {
 			double intensity=0.0;
 			double acc = accel.get(c).getValue();
 			//logger.info("acc raw: "+acc);
-			double accFudge = 0.1;
+			double accFudge = 0.15;
 			acc = 1+(acc*accFudge); // tune the value
 			//logger.info("fudge multiply: "+acc);
 			intensity += 10 - (10.0/acc);
