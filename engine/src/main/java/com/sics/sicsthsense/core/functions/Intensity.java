@@ -106,8 +106,7 @@ public class Intensity extends Function {
 		//if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
 		List<DataPoint> heartrate = null;
 		if (streamCount>=7) {
-			heartrate = new ArrayList<DataPoint>();
-			heartrate.add(new DataPoint(accel.get(0).getTimestamp(), streamIds.get(6)-40));
+			heartrate = storage.findPointsByStreamId(streamIds.get(6),1);
 		}
 
 		// combine all the separate readings
