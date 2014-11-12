@@ -7,11 +7,11 @@ from engine import *
 print "Testing SicsthSense python module with manual creation of Streams and Parsers"
 
 # Create the ENgine module giving the running instance's hostname and port
-#e = Engine("localhost:8080")
-e = Engine("presense.sics.se:8080")
+e = Engine("localhost:8080")
+#e = Engine("presense.sics.se:8080")
 print "Hostname: "+e.hostname
 
-registerNewUser=True
+registerNewUser=False
 if registerNewUser:
     # generate a random username
     username = "newuser"+str(random.randint(0,999))
@@ -30,7 +30,7 @@ if registerNewUser:
 else:
     # User existing user details
     newUserId = 1
-    key ="63660edf-a699-413c-9363-325ba66bbe2f"
+    key = "63660edf-a699-413c-9363-325ba66bbe2f"
 
 # Configure our user ID and user Key
 e.setUserId(newUserId)
@@ -60,7 +60,8 @@ data = {
     "acc_z": str(random.randint(0,9)),
     "gyro_x": str(random.randint(0,9)),
     "gyro_y": str(random.randint(0,9)),
-    "gyro_z": str(random.randint(0,9))
+    "gyro_z": str(random.randint(0,9)),
+    "heartrate": str(random.randint(70,90))
 }
 result = e.postResourceData(resourceId,json.dumps(data))
 #print str(data)+" -> "+str(result)
@@ -95,7 +96,8 @@ for i in range(5):
         "acc_z": str(random.randint(0,9)),
         "gyro_x": str(random.randint(0,9)),
         "gyro_y": str(random.randint(0,9)),
-        "gyro_z": str(random.randint(0,9))
+        "gyro_z": str(random.randint(0,9)),
+        "heartrate": str(random.randint(70,90))
     }
     result = e.postResourceData(resourceId,json.dumps(data))
     print "Datapoint: "+json.dumps(data)
