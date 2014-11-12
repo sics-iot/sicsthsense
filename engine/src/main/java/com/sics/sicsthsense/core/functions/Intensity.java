@@ -123,10 +123,10 @@ public class Intensity extends Function {
 			double gy = gyro.get(c).getValue();
 			double gyFudge=1;
 			gy = gy * gyFudge;
-			if (gy > 1.0) {
-			maxPossible += 5.0;
-			intensity += 5.0 - (5.0/gy);
-			 } else { intensity += 0; }
+			if (gy > 0.5) {
+				maxPossible += 5.0;
+				intensity += 5.0 - (5.0/gy);
+			 }
 		}
 		logger.info("intensity with gyro: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
 
@@ -136,10 +136,10 @@ public class Intensity extends Function {
 			if (hr<40.0) {
 			  //do nothing, bad reading
 			} else {
-			  maxPossible += 8.0;
+			  maxPossible += 4.0;
 			  if (hr>120.0) {hr=120.0;} // danger! danger!
 			  hr -= 40; // hr now 0-80
-			  intensity += hr/10.0;
+			  intensity += hr/20.0;
 			}
 		  }
 
