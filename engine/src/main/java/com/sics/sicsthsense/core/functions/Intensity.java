@@ -133,12 +133,12 @@ public class Intensity extends Function {
 		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
 			logger.warn("heartrate: "+hr);
-			if (hr<40.0) {
+			if (hr<60.0) {
 			  //do nothing, bad reading
 			} else {
-			  maxPossible += 4.0;
+			  maxPossible += 3.0;
 			  if (hr>120.0) {hr=120.0;} // danger! danger!
-			  hr -= 40; // hr now 0-80
+			  hr -= 60; // hr now 0-60
 			  intensity += hr/20.0;
 			}
 		  }
