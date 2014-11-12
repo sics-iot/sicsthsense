@@ -50,7 +50,7 @@ public class Intensity extends Function {
 	}
 
 	public double magnitude3D(double x, double y, double z) {
-	  logger.error("X Y Z: "+x+" "+y+" "+z);
+	  //logger.error("X Y Z: "+x+" "+y+" "+z);
 	  return Math.sqrt(x*x + y*y + z*z);
 	}
 
@@ -63,7 +63,7 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No acceleration data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
-		logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
+		//logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
 		double gravity = 10.0;//9.8;
 		logger.info("magnitude: "+magnitude);
 		magnitude -= gravity;
@@ -79,9 +79,9 @@ public class Intensity extends Function {
 	  List<DataPoint> X = storage.findPointsByStreamId(Xstream,AccHistorySize);
 	  List<DataPoint> Y = storage.findPointsByStreamId(Ystream,AccHistorySize);
 	  List<DataPoint> Z = storage.findPointsByStreamId(Zstream,AccHistorySize);
-	  if (X==null || Y==null || Z==null) {throw new Exception("No acceleration data");}
+	  if (X==null || Y==null || Z==null) {throw new Exception("No gyro data");}
 	  for (int c=0; c<X.size(); ++c) {
-		double magnitude = X.get(c).getValue() + Y.get(c).getValue() + Z.get(c).getValue();
+		double magnitude = Math.abs(X.get(c).getValue()) + Math.abs(Y.get(c).getValue()) + Math.abs(Z.get(c).getValue());
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 
@@ -98,7 +98,7 @@ public class Intensity extends Function {
 		if (streamCount!=3 && streamCount!=6  && streamCount!=7) { throw new Exception("Error: Stream count wrong (should be 3, 6 or 7)!"); }
 		//logger.info("Intensity stream count correct!!");
 
-		logger.info("Stream ids: "+streamIds.get(0)+" "+ streamIds.get(1)+" "+streamIds.get(2));
+		//logger.info("Stream ids: "+streamIds.get(0)+" "+ streamIds.get(1)+" "+streamIds.get(2));
 		// We need acceleration data
 		List<DataPoint> accel = getAccel(streamIds.get(0), streamIds.get(1), streamIds.get(2));
 		// Do we have gyro data?
@@ -184,12 +184,12 @@ public class Intensity extends Function {
 		//if (smoothIntensity<0.0)   {smoothIntensity=0.0;}
 		//if (smoothIntensity>100.0) {smoothIntensity=100.0;}
 
-		  rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
+		rv.add(new DataPoint(accel.get(0).getTimestamp(), smoothIntensity)); // scale to 0-100
 
 		// add this point for others
-		DataPoint groupdp = new DataPoint(accel.get(0).getTimestamp(), smoothIntensity); // scale to 0-100
-		groupdp.setStreamId(9999);
-		Utils.insertDataPoint(storage,groupdp);
+		//DataPoint groupdp = new DataPoint(accel.get(0).getTimestamp(), smoothIntensity); // scale to 0-100
+		//groupdp.setStreamId(9999);
+		//Utils.insertDataPoint(storage,groupdp);
 		}
 		return rv;
 	}

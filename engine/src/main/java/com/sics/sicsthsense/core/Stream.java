@@ -153,7 +153,7 @@ public class Stream {
 	// when an antecedent input stream has changed, update this stream's datapoints
 	public void update(StorageDAO storage) throws Exception {
 		long sid =getId();
-		logger.info("Updating stream: "+sid);
+		//logger.info("Updating stream: "+sid);
 
 		List<Long> antecedents = storage.findAntecedents(getId());
 		if (antecedents==null) { logger.error("Antecedents are null! ID:"+getId()); return; }
@@ -161,7 +161,6 @@ public class Stream {
             List<DataPoint> newPoints = performFunction(antecedents);
             // add to stream
             for (DataPoint p: newPoints) {
-			logger.error("put in stream id: "+sid);
 			p.setStreamId(sid);
 			Utils.insertDataPoint(storage,p);
             }
@@ -172,7 +171,7 @@ public class Stream {
 	}
 
 	public void notifyDependents(StorageDAO storage) throws Exception {
-		logger.info("Notify dependents of stream "+getId());
+		//logger.info("Notify dependents of stream "+getId());
 		List<Long> dependents = storage.findDependents(getId());
 		// update dependents!
 		for (Long dependent: dependents) {
@@ -193,7 +192,7 @@ public class Stream {
 
 	public List<DataPoint> performFunction(List<Long> antecedents) throws Exception {
 		Function function = null;
-		logger.info("Performing function of stream "+getId());
+		//logger.info("Performing function of stream "+getId());
 		if (antecedents==null) { logger.error("Antecedents are null!!"); return null;	}
 
 		// do nothing if the function is not set
