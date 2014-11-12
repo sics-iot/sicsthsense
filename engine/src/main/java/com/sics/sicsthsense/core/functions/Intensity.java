@@ -136,7 +136,7 @@ public class Intensity extends Function {
 
 		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
-			logger.warn("heartrate: "+hr)
+			logger.warn("heartrate: "+hr);
 			if (hr<40.0) {
 			  //do nothing, bad reading
 			} else {
