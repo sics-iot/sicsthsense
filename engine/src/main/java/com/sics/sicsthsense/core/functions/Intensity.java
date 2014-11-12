@@ -121,7 +121,7 @@ public class Intensity extends Function {
 
 		if (gyro!=null) {
 			double gy = gyro.get(c).getValue();
-			double gyFudge=1;
+			double gyFudge=2;
 			gy = gy * gyFudge;
 			if (gy > 0.5) {
 				maxPossible += 5.0;
