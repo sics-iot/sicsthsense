@@ -104,11 +104,9 @@ public class Intensity extends Function {
 		List<DataPoint> accel = getAccel(streamIds.get(0), streamIds.get(1), streamIds.get(2));
 		// Do we have gyro data?
 		List<DataPoint> gyro = null;
-		//if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
+		if (streamCount>=6) { gyro = getGyro(streamIds.get(3), streamIds.get(4), streamIds.get(5)); }
 		List<DataPoint> heartrate = null;
-		if (streamCount>=7) {
-			heartrate = storage.findPointsByStreamId(streamIds.get(6),1);
-		}
+		if (streamCount>=7) { heartrate = storage.findPointsByStreamId(streamIds.get(6),1); }
 
 		// combine all the separate readings
 		for (int c=0; c<accel.size(); ++c) {
