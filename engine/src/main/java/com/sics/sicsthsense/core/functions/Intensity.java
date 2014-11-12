@@ -82,6 +82,7 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No gyro data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = Math.abs(X.get(c).getValue()) + Math.abs(Y.get(c).getValue()) + Math.abs(Z.get(c).getValue());
+		logger.error("Gyro: "+Math.abs(X.get(c).getValue()) +" "+ Math.abs(Y.get(c).getValue()) +" "+ Math.abs(Z.get(c).getValue())+" "+magnitude);
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 
@@ -111,23 +112,21 @@ public class Intensity extends Function {
 
 		// combine all the separate readings
 		for (int c=0; c<accel.size(); ++c) {
-		  double intensity=0.0;
-
-		  double acc = accel.get(c).getValue();
-
+			double intensity=0.0;
+			double acc = accel.get(c).getValue();
 			//logger.info("acc raw: "+acc);
-		  double accFudge = 0.1;
-		  acc = 1+(acc*accFudge); // tune the value
-		  //logger.info("fudge multiply: "+acc);
-		  intensity += 10 - (10.0/acc);
-		  logger.info("intensity with acc: "+intensity);
+			double accFudge = 0.1;
+			acc = 1+(acc*accFudge); // tune the value
+			//logger.info("fudge multiply: "+acc);
+			intensity += 10 - (10.0/acc);
+			logger.info("intensity with acc: "+intensity);
 
 		if (gyro!=null) {
-			maxPossible += 5.0;
 			double gy = gyro.get(c).getValue();
 			double gyFudge=1;
 			gy = gy * gyFudge;
 			if (gy > 1.0) {
+			maxPossible += 5.0;
 			intensity += 5.0 - (5.0/gy);
 			 } else { intensity += 0; }
 		}
