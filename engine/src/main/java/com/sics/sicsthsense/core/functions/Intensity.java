@@ -162,7 +162,7 @@ public class Intensity extends Function {
 			}
 		}
 
-		double decayFactor=0.30;// how much of the *current* value to use?
+		double decayFactor=0.50;// how much of the *current* value to use?
 		double smoothIntensity=0.0;
 		double prevValue;
 		smoothIntensity = intensity; // just use the current value
