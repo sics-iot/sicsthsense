@@ -42,6 +42,7 @@ public class Intensity extends Function {
 	public int AccHistorySize  = 1;
 	public int GyroHistorySize = 1;
 	public long streamId;
+	private boolean DEBUG = false;
 
 	public Intensity(StorageDAO storage, long streamId) {
 		super(storage, "intensity");
@@ -63,11 +64,11 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No acceleration data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = magnitude3D(X.get(c).getValue(), Y.get(c).getValue(), Z.get(c).getValue());
-		logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());
+		if (DEBUG) {logger.warn("Accel: "+X.get(c).getValue()+" "+ Y.get(c).getValue()+" "+ Z.get(c).getValue());}
 		double gravity = 10.0;//9.8;
-		logger.info("magnitude: "+magnitude);
+		if (DEBUG) {logger.info("magnitude: "+magnitude);}
 		magnitude -= gravity;
-		logger.info("magnitude - gravity: "+magnitude);
+		if (DEBUG) {logger.info("magnitude - gravity: "+magnitude);}
 		if (magnitude<0) {magnitude=0.0;}
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
@@ -83,7 +84,7 @@ public class Intensity extends Function {
 	  if (X==null || Y==null || Z==null) {throw new Exception("No gyro data");}
 	  for (int c=0; c<X.size(); ++c) {
 		double magnitude = Math.abs(X.get(c).getValue()) + Math.abs(Y.get(c).getValue()) + Math.abs(Z.get(c).getValue());
-		logger.error("Gyro: "+Math.abs(X.get(c).getValue()) +" "+ Math.abs(Y.get(c).getValue()) +" "+ Math.abs(Z.get(c).getValue())+" "+magnitude);
+		if (DEBUG) {logger.error("Gyro: "+Math.abs(X.get(c).getValue()) +" "+ Math.abs(Y.get(c).getValue()) +" "+ Math.abs(Z.get(c).getValue())+" "+magnitude);}
 		rv.add(new DataPoint(X.get(c).getTimestamp(), magnitude));
 	  }
 
@@ -118,7 +119,7 @@ public class Intensity extends Function {
 			acc = 1+(acc*accFudge); // tune the value
 			//logger.info("fudge multiply: "+acc);
 			intensity += 10 - (10.0/acc);
-			logger.info("intensity with acc: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
+			if (DEBUG) {logger.info("intensity with acc: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));}
 
 		if (gyro!=null) {
 			double gy = gyro.get(c).getValue();
@@ -129,11 +130,11 @@ public class Intensity extends Function {
 				intensity += 5.0 - (5.0/gy);
 			 }
 		}
-		logger.info("intensity with gyro: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
+		if (DEBUG) {logger.info("intensity with gyro: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));}
 
 		if (heartrate!=null) {
 			double hr = heartrate.get(c).getValue();
-			logger.warn("heartrate: "+hr);
+			if (DEBUG) {logger.warn("heartrate: "+hr);}
 			if (hr<60.0) {
 			  //do nothing, bad reading
 			} else {
@@ -144,9 +145,9 @@ public class Intensity extends Function {
 			}
 		  }
 
-		  logger.info("intensity with all components: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));
+		  if (DEBUG) {logger.info("intensity with all components: "+intensity+" / "+maxPossible+" = "+(intensity/maxPossible));}
 		  intensity = (intensity/maxPossible) * 100;
-		  //logger.info("corrected intensity: "+intensity);
+		  if (intensity<0.0) {intensity=0.0;}
 
 		// do some smoothing
 		List<DataPoint> dps = storage.findPointsByStreamId(this.streamId,2);
