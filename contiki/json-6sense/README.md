@@ -1,3 +1,17 @@
+To build this code you must point the CONTIKI variable in the Makefile to
+your Contiki source directory.
+
+To configure the code in order that it posts to the correct SicsthSense
+Resource you must set the following variables in the json-6sense.c file:
+-SicsthSense IP (optional)
+-USERID (your User ID on the relevant SicsthSense instance)
+-RESOURCEID (the resource the POST should be sent to)
+-KEY (your user/resource secret UUID key)
+
+The code will periodically HTTP POST a static JSON document to the SicsthSense server.
+
+------------------------------------
+
 Short description on how to set-up a sensor network for global IPv6 addresses.
 NOTE: this assumes that you do not have a native IPv6 connection.
 

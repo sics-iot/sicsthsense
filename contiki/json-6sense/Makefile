@@ -1,17 +1,8 @@
-#This needs to be defined! 
+
+# The following needs to be set to your Contiki source directory
 CONTIKI=/.../code/contiki
 
-
-UIP_CONF_IPV6=1
-SMALL=1
-
 PROJECT_SOURCEFILES += json-6sense.c
-
-
-APPS += httpd-ws json
-
-CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
-
 
 ifeq ($(TARGET),)
  -include Makefile.target
