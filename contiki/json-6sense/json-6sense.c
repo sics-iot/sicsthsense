@@ -58,7 +58,7 @@ static const uint16_t PORT = 8080;
 static const char USERID[] = "1"; // ID of SicsthSense account
 static const char RESOURCEID[] = "1"; // Destination resource ID
 static const char KEY[]="b2591047-defd-4076-96d5-cd411969badf"; // User or Resource key
-static const int  PERIOD 10; // number of seconds between POSTs
+static const int  PERIOD=10; // number of seconds between POSTs
 
 static const char http_content_type_json[] = "application/json";
 char json[255]; // storage for JSON document to be POST\d
@@ -123,6 +123,10 @@ void post_json(void) {
 		PRINTF(s->outbuf);
 	}
 }
+
+// Horrid hack to avoid linking error
+httpd_ws_script_t httpd_ws_get_script(struct httpd_ws_state *s) {return NULL;}
+
 
 static struct etimer timer;
 
