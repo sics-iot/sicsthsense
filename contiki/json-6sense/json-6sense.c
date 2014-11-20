@@ -30,14 +30,15 @@
 
 /**
  * \file
- *         JSON webservice util
+ *         JSON POSTing Contiki code.
+ *         Periodically HTTP POST a JSON document to the specified SicsthSense
+ *         host and resource using the supplied authorisation key.
  * \author
  *         Liam McNamara   <ljjm@sics.se>
  */
 
 #include "contiki.h"
 #include "httpd-ws.h"
-#include "json-ws.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -48,15 +49,16 @@
 #define PRINTF(...)
 #endif
 
-/* 
-  The following block of variables should be customised to your setup! 
+/*
+  The following block of variables should be customised to your setup!
 */
 static const char HOST[] = "localhost"; // hostname of server
 static const char IP[] = "[aaaa::1]"; // IPv6 address of server
 static const uint16_t PORT = 8080;
-static const char USERID[] = "1"; 
-static const char RESOURCEID[] = "1";
-static const char KEY[]="b2591047-defd-4076-96d5-cd411969badf";
+static const char USERID[] = "1"; // ID of SicsthSense account
+static const char RESOURCEID[] = "1"; // Destination resource ID
+static const char KEY[]="b2591047-defd-4076-96d5-cd411969badf"; // User or Resource key
+static const int  PERIOD 10; // number of seconds between POSTs
 
 static const char http_content_type_json[] = "application/json";
 char json[255]; // storage for JSON document to be POST\d
@@ -72,16 +74,16 @@ void make_json(void) {
 
 // Build the URL that the JSON will be posted to, likely containing a key
 void make_url(void) {
-	strcpy(url,"/users/"); 
-	strcat(url,USERID); 
+	strcpy(url,"/users/");
+	strcat(url,USERID);
 	// this shortened form is allowed by SicsthSense, it helps with the restricted
 	// Contiki HTTP path length restriction
-	strcat(url,"/r/");  
-	strcat(url,RESOURCEID); 
-	strcat(url,"/d"); 
+	strcat(url,"/r/");
+	strcat(url,RESOURCEID);
+	strcat(url,"/d");
 	if (KEY!=NULL) {
-		strcat(url,"?key="); 
-		strcat(url,KEY); 
+		strcat(url,"?key=");
+		strcat(url,KEY);
 	}
 }
 
@@ -113,10 +115,10 @@ void post_json(void) {
 
 	//PRINTF("JSON data: %s of size: %d\n",json,strlen(json));
 	//PRINTF("URL: %s\n",url);
-	
+
 	s = httpd_ws_request(HTTPD_WS_POST, IP, HOST, PORT, url, http_content_type_json, strlen(json), send_json);
-	if (s==NULL) { 
-		PRINTF("httpd_ws_request returned NULL\n"); 
+	if (s==NULL) {
+		PRINTF("httpd_ws_request returned NULL\n");
 	} else {
 		PRINTF(s->outbuf);
 	}
@@ -136,13 +138,13 @@ static struct etimer timer;
 
   while (1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-    
+
     process_start(&httpd_ws_process, NULL);
 
     post_json();
     etimer_reset(&timer);
   }
-  
+
   PROCESS_END();
 }
 

@@ -1,12 +1,12 @@
-To build this code you must point the CONTIKI variable in the Makefile to
+To build this code you must point the __CONTIKI__ variable in the Makefile to
 your Contiki source directory.
 
 To configure the code in order that it posts to the correct SicsthSense
 Resource you must set the following variables in the json-6sense.c file:
--SicsthSense IP (optional)
--USERID (your User ID on the relevant SicsthSense instance)
--RESOURCEID (the resource the POST should be sent to)
--KEY (your user/resource secret UUID key)
+* SicsthSense IP (optional)
+* USERID (your User ID on the relevant SicsthSense instance)
+* RESOURCEID (the resource the POST should be sent to)
+* KEY (your user/resource secret UUID key)
 
 The code will periodically HTTP POST a static JSON document to the SicsthSense server.
 
