@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2013, Swedish Institute of Computer Science
+ * Copyright (c) 2015, Swedish Institute of Computer Science
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of The Swedish Institute of Computer Science nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *	   * Redistributions of source code must retain the above copyright
+ *		 notice, this list of conditions and the following disclaimer.
+ *	   * Redistributions in binary form must reproduce the above copyright
+ *		 notice, this list of conditions and the following disclaimer in the
+ *		 documentation and/or other materials provided with the distribution.
+ *	   * Neither the name of The Swedish Institute of Computer Science nor the
+ *		 names of its contributors may be used to endorse or promote products
+ *		 derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -51,34 +51,34 @@ import se.sics.sicsthsense.auth.openid.*;
 import se.sics.sicsthsense.model.security.*;
 
 public class Utils {
-    final static ObjectMapper mapper = new ObjectMapper();
+	final static ObjectMapper mapper = new ObjectMapper();
 	static {
 		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 	}
 
-    // more informed JSON responses when POSTing a new entity
-    /*
+	// more informed JSON responses when POSTing a new entity
+	/*
 	public static Response resp(Response.Status status, User user, Logger logger) {
-        String message;
-        try { message = mapper.writeValueAsString(user); }
-          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		String message;
+		try { message = mapper.writeValueAsString(user); }
+		  catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+	}
 	public static Response resp(Response.Status status, Resource resource, Logger logger) {
-        String message;
-        try { message = mapper.writeValueAsString(resource); }
-          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		String message;
+		try { message = mapper.writeValueAsString(resource); }
+		  catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }
+	}
 	public static Response resp(Response.Status status, Stream stream, Logger logger) {
-        String message;
-        try { message = mapper.writeValueAsString(stream); }
-          catch (Exception e) { message = "Internal Error: "+e.toString(); }
+		String message;
+		try { message = mapper.writeValueAsString(stream); }
+		  catch (Exception e) { message = "Internal Error: "+e.toString(); }
 		if (logger!=null) { logger.info(message); }
 		return Response.status(status).entity(message).type(MediaType.APPLICATION_JSON).build();
-    }*/
+	}*/
 	public static Response resp(Response.Status status, Object message, Logger logger) {
 		if (logger!=null && message instanceof String) { logger.info((String)message); }
 		return Response.status(status).entity(message).build();
@@ -92,8 +92,7 @@ public class Utils {
 		if (user==null) { throw new WebApplicationException(Status.NOT_FOUND); }
 	}
 	public static void checkHierarchy(StorageDAO storage, long userId, long resourceId) {
-		//final Logger logger = LoggerFactory.getLogger(Utils.class);
-		User user         = storage.findUserById(userId);
+		User user		  = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
 		checkHierarchy(storage,user,resource);
 	}
@@ -240,9 +239,9 @@ public class Utils {
 // Streams
 
 	public static void checkHierarchy(StorageDAO storage, long userId, long resourceId, long streamId) {
-		User user         = storage.findUserById(userId);
+		User user		  = storage.findUserById(userId);
 		Resource resource = storage.findResourceById(resourceId);
-		Stream stream     = storage.findStreamById(streamId);
+		Stream stream	  = storage.findStreamById(streamId);
 		checkHierarchy(storage, user,resource,stream);
 	}
 	public static void checkHierarchy(StorageDAO storage, User user, Resource resource, Stream stream) {
@@ -269,8 +268,8 @@ public class Utils {
 		);
 		//logger.info("inserted datapoint @ "+datapoint.toString());
 		storage.updatedStream(datapoint.getStreamId(),java.lang.System.currentTimeMillis());
-        //stream.notifyDependents(); // taken care of during parsing
-        //stream.testTriggers(datapoint);
+		//stream.notifyDependents(); // taken care of during parsing
+		//stream.testTriggers(datapoint);
 	}
 
 	public static long insertStream(StorageDAO storage, Stream stream) {
@@ -315,33 +314,33 @@ public class Utils {
 		return -1;
 	}
 
-    public static void deleteStream(StorageDAO storage, Stream stream) {
+	public static void deleteStream(StorageDAO storage, Stream stream) {
 
-        // delete dependants,vfiles and parsers on the Stream
-        List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
-        for (Long id: vfiles) { storage.deleteVFile(id); }
-        List<Long> parsers = storage.findParserIdsByStreamId(stream.getId());
-        for (Long id: parsers) { storage.deleteParser(id); }
-        List<Long> dependents = storage.findDependents(stream.getId());
-        for (Long id: dependents) { storage.deleteDependent(id); }
-        List<Long> triggers = storage.findTriggerIdsByStreamId(stream.getId());
-        for (Long id: triggers) { storage.deleteTrigger(id); }
+		// delete dependants,vfiles and parsers on the Stream
+		List<Long> vfiles = storage.findPathIdsByStreamId(stream.getId());
+		for (Long id: vfiles) { storage.deleteVFile(id); }
+		List<Long> parsers = storage.findParserIdsByStreamId(stream.getId());
+		for (Long id: parsers) { storage.deleteParser(id); }
+		List<Long> dependents = storage.findDependents(stream.getId());
+		for (Long id: dependents) { storage.deleteDependent(id); }
+		List<Long> triggers = storage.findTriggerIdsByStreamId(stream.getId());
+		for (Long id: triggers) { storage.deleteTrigger(id); }
 
-        storage.deleteStream(stream.getId());
-    }
+		storage.deleteStream(stream.getId());
+	}
 
-    public static void deleteResource(StorageDAO storage, Resource resource) {
-	    final PollSystem pollSystem = PollSystem.getInstance();
+	public static void deleteResource(StorageDAO storage, Resource resource) {
+		final PollSystem pollSystem = PollSystem.getInstance();
 		// delete child streams and parsers
 		List<Stream> streams = storage.findStreamsByResourceId(resource.getId());
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
 		for (Stream s: streams) {Utils.deleteStream(storage,s);}
 		for (Parser p: parsers) {storage.deleteParser(p.getId());}
-        storage.deleteResourceLogByResourceId(resource.getId());
+		storage.deleteResourceLogByResourceId(resource.getId());
 		storage.deleteResource(resource.getId());
 		// remake pollers with updated Resource attribtues
 		pollSystem.rebuildResourcePoller(resource.getId());
-    }
+	}
 
 
 	public static void applyParsers(StorageDAO storage, Resource resource, String data, long timestamp) {
@@ -350,7 +349,7 @@ public class Utils {
 		boolean parsedSuccessfully=true;
 
 		String parseError = "";
-        Set<Long> toUpdate = new HashSet<Long>(); // give these stream notifcation after update
+		Set<Long> toUpdate = new HashSet<Long>(); // give these stream notifcation after update
 		List<Parser> parsers = storage.findParsersByResourceId(resource.getId());
 		//logger.info("Applying all parsers to data: "+data);
 		if (parsers==null) { parsers = storage.findParsersByResourceId(resource.getId()); }
@@ -358,23 +357,23 @@ public class Utils {
 			//logger.info("applying a parser "+parser.getInput_parser());
 			try {
 				parseData.apply(parser,data,timestamp);
-                toUpdate.add(parser.getStream_id());
+				toUpdate.add(parser.getStream_id());
 			} catch (Exception e) {
 				parsedSuccessfully=false;
-                e.printStackTrace();
+				e.printStackTrace();
 				logger.error("Parsing "+data+" failed!"+e);
 				parseError +="Parsing "+data+" failed!"+e;
 			}
 		}
-        // bunch all notifications here!
+		// bunch all notifications here!
 		try { for (Long stream_id: toUpdate) {
-            //logger.warn(" dependents:"+stream_id);
-            Stream.notifyDependents(storage,stream_id.longValue());
-        }
+			//logger.warn(" dependents:"+stream_id);
+			Stream.notifyDependents(storage,stream_id.longValue());
+		}
 		} catch (Exception e) {
-            logger.error("Children not accepting notification! "+e);
-            e.printStackTrace();
-        }
+			logger.error("Children not accepting notification! "+e);
+			e.printStackTrace();
+		}
 
 		// append interaction to resource log!
 	//	logger.info("Updating log!");

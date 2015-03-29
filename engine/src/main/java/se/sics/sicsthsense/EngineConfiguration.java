@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Swedish Institute of Computer Science
+ * Copyright (c) 2015, Swedish Institute of Computer Science
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-/* Description:
+/* Description: Config class for the DropWizard App
  * TODO:
  * */
 package se.sics.sicsthsense;
@@ -44,7 +44,7 @@ public class EngineConfiguration extends Configuration {
 	@NotEmpty
 	private String defaultName = "Stranger";
 
-	public static final String SESSION_TOKEN_NAME ="SICSSense-Session";
+	public static final String SESSION_TOKEN_NAME ="SicsthSense-Session";
 
 	@Valid
 	@NotNull
@@ -54,20 +54,20 @@ public class EngineConfiguration extends Configuration {
 		return template;
 	}
 
-    @JsonProperty
-    public String getDefaultName() {
-        return defaultName;
-    }
-    @JsonProperty
-    public void setDefaultName(String defaultName) {
-        this.defaultName = defaultName;
-    }
+	@JsonProperty
+	public String getDefaultName() {
+		return defaultName;
+	}
+	@JsonProperty
+	public void setDefaultName(String defaultName) {
+		this.defaultName = defaultName;
+	}
 
-    @JsonProperty("database")
+	@JsonProperty("database")
 	public DataSourceFactory getDataSourceFactory () {
 		return database;
 	}
-    @JsonProperty("database")
+	@JsonProperty("database")
 	public void setDataSourceFactory (DataSourceFactory dataSourceFactory) {
 		this.database = dataSourceFactory;
 	}

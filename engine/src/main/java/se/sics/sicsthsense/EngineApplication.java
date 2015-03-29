@@ -26,18 +26,20 @@ package se.sics.sicsthsense;
 
 import java.util.UUID;
 import javax.servlet.ServletRegistration;
+
 import org.skife.jdbi.v2.*; // For DBI
 import org.skife.jdbi.v2.exceptions.*; // For lack of connection Exception
 import org.eclipse.jetty.server.session.SessionHandler;
-
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.jdbi.*;
 import io.dropwizard.db.*;
-
 import io.dropwizard.auth.*;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.AuthenticationException;
@@ -49,9 +51,6 @@ import io.dropwizard.views.ViewMessageBodyWriter;
 import io.dropwizard.jdbi.bundles.DBIExceptionsBundle;
 
 import org.atmosphere.cpr.AtmosphereServlet;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import akka.actor.Props;
 import scala.concurrent.duration.Duration;
@@ -109,9 +108,6 @@ public class EngineApplication extends Application<EngineConfiguration> {
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
-//		final DBIFactory factory = new DBIFactory();
-//		final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
-//		final StorageDAO storage = jdbi.onDemand(StorageDAO.class);
 		DAOFactory.build(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
 	// register each resource type accessible through the API
@@ -122,9 +118,6 @@ public class EngineApplication extends Application<EngineConfiguration> {
 			System.out.println("Error: Unable to obtain connection to SQL Server!\nExiting...");
 			System.exit(1);
 		}
-//		environment.addProvider(new BasicAuthProvider<User>(new SimpleAuthenticator(storage), "Username/Password Authentication"));
-		//environment.addProvider(new OAuthProvider<User>(new SimpleAuthenticator(), "SUPER SECRET STUFF"));
-		//environment.addProvider(new BasicAuthProvider<User>(new OAuthAuthenticator(), "SUPER SECRET STUFF"));
 
 		// Configure authenticator
 		User publicUser = new User();
@@ -134,12 +127,7 @@ public class EngineApplication extends Application<EngineConfiguration> {
 
 		environment.jersey().register(new PublicHomeResource());
 
-//		environment.addProvider(new OpenIDRestrictedToProvider<User>(authenticator, "OpenID"));
 		// Attach Atmosphere servlet
 		addServlet(environment);
-
-		// Session handler to enable automatic session handling
-//		environment.setSessionHandler(new SessionHandler());
-
 	}
 }
