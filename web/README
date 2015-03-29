@@ -1,5 +1,4 @@
-This is your new Play 2.0 application
-=====================================
+
 
 To install Play go to: http://www.playframework.com/
 
@@ -9,3 +8,7 @@ Your application can be compiled and packaged using `play dist`, it can then be 
 
 If you would like to simply run the web interface in a live testing mode then just `play run` will work. This mode will be slower than dist/start.
 
+Play has now been consumed by the more general "activator":
+https://groups.google.com/forum/#!msg/play-framework/bTvJbeR_zvU/J3reqk6Xo4AJ
+
+Hence `activator dist` will also work.
