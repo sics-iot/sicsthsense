@@ -3,14 +3,14 @@
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of The Swedish Institute of Computer Science nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *	   * Redistributions of source code must retain the above copyright
+ *		 notice, this list of conditions and the following disclaimer.
+ *	   * Redistributions in binary form must reproduce the above copyright
+ *		 notice, this list of conditions and the following disclaimer in the
+ *		 documentation and/or other materials provided with the distribution.
+ *	   * Neither the name of The Swedish Institute of Computer Science nor the
+ *		 names of its contributors may be used to endorse or promote products
+ *		 derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -91,34 +91,19 @@ public class EngineApplication extends Application<EngineConfiguration> {
 	}
 
 	public void addServlet(Environment environment) {
-/*
 		AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "se.sics.sicsthsense.resources.atmosphere");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
 		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
+		final ServletRegistration.Dynamic websocket = environment.servlets().addServlet("atmosphere", atmosphereServlet);
+		websocket.setAsyncSupported(true);
+		websocket.addMapping("/users/*");
 
-		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "true");
-		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.authorization", "admin@example.com:password");
-		//atmosphereServlet.framework().addInitParameter( "org.atmosphere.plugin.xmpp.XMPPBroadcaster.server", "http://localhost");
-		//atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.feature.Trace", "true");
-		environment.getApplicationContext().addServlet("se.sics.sicsthsense.resources.atmosphere", "/users/*");
-		//environment.getApplicationContext().addServlet(atmosphereServlet, "/u/*");
-*/
-        AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
-		atmosphereServlet.framework().addInitParameter( "com.sun.jersey.config.property.packages", "se.sics.sicsthsense.resources.atmosphere");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcasterCacheClass", "org.atmosphere.cache.UUIDBroadcasterCache");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.cpr.broadcastFilterClasses", "org.atmosphere.client.TrackMessageSizeFilter");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.client.TrackMessageSizeFilter", "org.atmosphere.container.Tomcat7Servlet30SupportWithWebSocket");
-		atmosphereServlet.framework().addInitParameter( "org.atmosphere.websocket.messageContentType", "application/json");
-        final ServletRegistration.Dynamic websocket = environment.servlets().addServlet("atmosphere", atmosphereServlet);
-        websocket.setAsyncSupported(true);
-        websocket.addMapping("/users/*");
-
-        //@formatter:off
-        websocket.setInitParameters(ImmutableMap.<String, String> of( "com.sun.jersey.config.property.packages","se.sics.sicsthsense.resources.atmosphere"));
-        websocket.setInitParameters(ImmutableMap.<String, String> of( "org.atmosphere.websocket.messageContentType", "application/json"));
+		//@formatter:off
+		websocket.setInitParameters(ImmutableMap.<String, String> of( "com.sun.jersey.config.property.packages","se.sics.sicsthsense.resources.atmosphere"));
+		websocket.setInitParameters(ImmutableMap.<String, String> of( "org.atmosphere.websocket.messageContentType", "application/json"));
 	}
 
 	// ClassNotFoundException thrown when missing DBI driver
