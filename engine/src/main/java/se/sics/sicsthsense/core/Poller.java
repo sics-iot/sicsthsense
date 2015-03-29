@@ -44,8 +44,11 @@ import org.slf4j.LoggerFactory;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.DeserializationConfig;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import se.sics.sicsthsense.core.Parser;
 import se.sics.sicsthsense.model.ParseData;
 import se.sics.sicsthsense.jdbi.StorageDAO;
@@ -65,7 +68,7 @@ public class Poller extends UntypedActor {
 		this.resourceId=resourceId;
 		this.storage = storage;
 		this.url = url;
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 		parsedata = new ParseData(storage,mapper);
 		rebuild();
 	}

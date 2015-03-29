@@ -59,9 +59,8 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.jersey.params.IntParam;
 import io.dropwizard.jersey.params.LongParam;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.*;
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.sics.sicsthsense.Utils;
 import se.sics.sicsthsense.core.*;
@@ -76,16 +75,16 @@ public class StreamResource {
 	private final AtomicLong counter;
 	private final Logger logger = LoggerFactory.getLogger(StreamResource.class);
 	private ObjectMapper jsonmapper;
-	private CsvMapper csvmapper;
-	private CsvSchema schema;
+//	private CsvMapper csvmapper;
+//	private CsvSchema schema;
   private @PathParam("resourceId") Broadcaster topic;
 
 	public StreamResource() {
 		this.storage = DAOFactory.getInstance();
 		this.counter = new AtomicLong();
 		jsonmapper = new ObjectMapper();
-		csvmapper = new CsvMapper();
-		schema = csvmapper.schemaFor(DataPoint.class).withHeader();; // schema from Pojo definition
+//		csvmapper = new CsvMapper();
+//		schema = csvmapper.schemaFor(DataPoint.class).withHeader();; // schema from Pojo definition
 	}
 
 	@GET
@@ -254,7 +253,8 @@ public class StreamResource {
 
 		try {
 			if ("csv".equals(format)) {
-				return Utils.resp(Status.OK, csvmapper.writer(schema).writeValueAsString(rv), null);
+				//return Utils.resp(Status.OK, csvmapper.writer(schema).writeValueAsString(rv), null);
+				return Utils.resp(Status.BAD_REQUEST, new JSONMessage("Error: Can't parse data!"), logger);
 			} else { // default dump to JSON
 				return Utils.resp(Status.OK, jsonmapper.writeValueAsString(rv), null);
 			}

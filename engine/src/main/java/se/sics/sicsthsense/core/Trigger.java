@@ -41,8 +41,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.codehaus.jackson.JsonNode;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import se.sics.sicsthsense.jdbi.*;
 import se.sics.sicsthsense.core.functions.*;

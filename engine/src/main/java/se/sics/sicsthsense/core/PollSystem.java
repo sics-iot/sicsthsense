@@ -11,11 +11,11 @@
  *     * Neither the name of The Swedish Institute of Computer Science nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE 
+ * DISCLAIMED. IN NO EVENT SHALL THE SWEDISH INSTITUTE OF COMPUTER SCIENCE BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -44,11 +44,11 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Cancellable;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.StorageDAO;
- 
+
 public class PollSystem {
 	private static PollSystem singleton;
 	private final Logger logger = LoggerFactory.getLogger(PollSystem.class);
@@ -71,7 +71,7 @@ public class PollSystem {
 		this.storage = storage;
 		this.mapper = new ObjectMapper();
 	}
- 
+
 	public void createPollers() {
 		logger.info("Starting polling...");
 		system = ActorSystem.create("SicsthAkkaSystem");
@@ -97,7 +97,7 @@ public class PollSystem {
 		logger.info("Making poller: "+name+" on: "+url);
 
 		ActorRef actorRef = actors.get(resourceId);
-		if (actorRef==null) { 
+		if (actorRef==null) {
 			actorRef = system.actorOf( Props.create(Poller.class,storage,mapper,resourceId,url), String.valueOf(resourceId));
 			actors.put(resourceId, actorRef);
 		}
@@ -114,7 +114,7 @@ public class PollSystem {
 	public void rebuildResourcePoller(long resourceId) {
 		Resource resource = storage.findResourceById(resourceId);
 		if (resource==null) { // it may have been deleted
-			logger.error("No resource with ID: "+resourceId); 
+			logger.error("No resource with ID: "+resourceId);
 			killSwitches.remove(resourceId);
 			return;
 		}
@@ -124,7 +124,7 @@ public class PollSystem {
 		//ActorRef actorRef = actors.get(resourceId);
 		//if (actorRef==null) {logger.info("Could not find Actor for ResourceID: "+resourceId); return;}
 		logger.info("Rebuilding poller: "+resourceId);
-		
+
 		createPoller(resource);
 	}
 

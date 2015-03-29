@@ -42,10 +42,8 @@ import java.util.regex.PatternSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.sics.sicsthsense.Utils;
 import se.sics.sicsthsense.jdbi.*;
@@ -114,15 +112,15 @@ public class ParseData {
                     Utils.insertDataPoint(storage,point);
 					return true;
 			} else if (node.get("value") != null) { // it may be value:X
-					double value = node.get("value").getDoubleValue();
+					double value = node.get("value").asDouble();
 					// should be resource timestamp
 					if (node.get("time") != null) { // it may have time:Y
 							if (parser.getTimeformat() != null && !"".equalsIgnoreCase(parser.getTimeformat().trim())
 											&& !"unix".equalsIgnoreCase(parser.getTimeformat().trim())) {
-									currentTime = parseDateTime(node.get("time").getTextValue(),parser.getTimeformat());
-							} else { currentTime = node.get("time").getLongValue(); }
+									currentTime = parseDateTime(node.get("time").asText(),parser.getTimeformat());
+							} else { currentTime = node.get("time").asLong(); }
 					}
-                    DataPoint point = new DataPoint(parser.getStream_id(), currentTime, node.getDoubleValue());
+                    DataPoint point = new DataPoint(parser.getStream_id(), currentTime, node.asDouble());
                     Utils.insertDataPoint(storage,point);
 					return true;
 			}
@@ -206,7 +204,7 @@ public class ParseData {
     // descend to all nodes to find all primitive element paths...
     //logger.info("parsing Nodes below "+parents);
     System.out.println("parsing Nodes below "+parents);
-    Iterator<String> nodeIt = node.getFieldNames();
+    Iterator<String> nodeIt = node.fieldNames();
     while (nodeIt.hasNext()) {
       String field = nodeIt.next();
       JsonNode n = node.get(field);

@@ -37,8 +37,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.MediaType;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.sics.sicsthsense.resources.*;
 import se.sics.sicsthsense.jdbi.*;
@@ -51,7 +53,7 @@ import se.sics.sicsthsense.model.security.*;
 public class Utils {
     final static ObjectMapper mapper = new ObjectMapper();
 	static {
-		mapper.configure(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY, true);
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 	}
 
     // more informed JSON responses when POSTing a new entity
