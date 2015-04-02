@@ -108,14 +108,14 @@ public class EngineApplication extends Application<EngineConfiguration> {
 	// ClassNotFoundException thrown when missing DBI driver
 	@Override
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
-		DAOFactory.build(configuration, environment);
+		DAOFactory.buildSQL(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
 	// register each resource type accessible through the API
 		pollSystem = PollSystem.build(storage);
 		try {
 			pollSystem.createPollers();
 		} catch (UnableToObtainConnectionException e) {
-			System.out.println("Error: Unable to obtain connection to SQL Server!\nExiting...");
+			System.out.println("Error: Unable to obtain connection to SQL Server! "+e.getMessage()+"\nExiting...");
 			System.exit(1);
 		}
 

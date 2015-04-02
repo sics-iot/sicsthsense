@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-/* Description:
+/* Description: class to make a DAO singlton object
  * TODO:
  * */
 package se.sics.sicsthsense.jdbi;
@@ -43,20 +43,34 @@ import se.sics.sicsthsense.core.*;
 
 public class DAOFactory {
 
-		private static StorageDAO singleton;
+	private static StorageDAO singleton=null;
 
-		public static void build(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
-			DBIFactory factory = new DBIFactory();
-			DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
-			singleton = jdbi.onDemand(StorageDAO.class);
-		}
+	public static void buildSQL(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
+		DBIFactory factory = new DBIFactory();
+		DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
+		singleton = jdbi.onDemand(StorageDAO.class);
+	}
 
-		public static StorageDAO getInstance() {
-			//if (singleton==null) {
-					//throw new Exception("DAO not built yet");
+	public static void buildSpark(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
+		// currently unused
+	}
 
-	//		}
-			return singleton;
-		}
+	// Change user DB details to root user, in order to make new database
+	public static EngineConfiguration makeRootConfig(EngineConfiguration configuration) {
+
+	}
+
+	public static void makeSicsthsenseTable(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
+		DBIFactory factory = new DBIFactory();
+		// set root account details
+		System.out.println("user: "+configuration.getUser());
+		configuration.setUser("root");
+		configuration.setPassword("secret");
+		DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
+	}
+
+	public static StorageDAO getInstance() {
+		return singleton;
+	}
 
 }

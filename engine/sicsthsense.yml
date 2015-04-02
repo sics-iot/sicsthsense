@@ -10,7 +10,7 @@ database:
   # the password
   password: 6S3NLd2un76CrE3RJXs
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/sicsth2
+  url: jdbc:mysql://localhost:3306/sicsthsense
 
 server:
 #  softNofileLimit: 1000
