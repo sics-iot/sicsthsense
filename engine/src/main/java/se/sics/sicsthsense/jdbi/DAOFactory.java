@@ -57,9 +57,10 @@ public class DAOFactory {
 
 	// Change user DB details to root user, in order to make new database
 	public static EngineConfiguration makeRootConfig(EngineConfiguration configuration) {
-
+		return null;
 	}
 
+	/*
 	public static void makeSicsthsenseTable(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
 		DBIFactory factory = new DBIFactory();
 		// set root account details
@@ -68,7 +69,7 @@ public class DAOFactory {
 		configuration.setPassword("secret");
 		DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "com.mysql.jdbc.Driver");
 	}
-
+*/
 	public static StorageDAO getInstance() {
 		return singleton;
 	}
