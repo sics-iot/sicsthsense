@@ -70,6 +70,7 @@ import se.sics.sicsthsense.model.security.*;
 public class EngineApplication extends Application<EngineConfiguration> {
 	private final Logger logger = LoggerFactory.getLogger(EngineApplication.class);
 	private PollSystem pollSystem;
+	private MQTT mqtt;
 
 	public static void main(String[] args) throws Exception {
 		new EngineApplication().run(args);
@@ -110,7 +111,7 @@ public class EngineApplication extends Application<EngineConfiguration> {
 	public void run(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {
 		DAOFactory.buildSQL(configuration, environment);
 		StorageDAO storage = DAOFactory.getInstance();
-	// register each resource type accessible through the API
+		// register each resource type accessible through the API
 		pollSystem = PollSystem.build(storage);
 		try {
 			pollSystem.createPollers();
@@ -118,6 +119,7 @@ public class EngineApplication extends Application<EngineConfiguration> {
 			System.out.println("Error: Unable to obtain connection to SQL Server! "+e.getMessage()+"\nExiting...");
 			System.exit(1);
 		}
+		mqtt = MQTT.getInstance(storage);
 
 		// Configure authenticator
 		User publicUser = new User();

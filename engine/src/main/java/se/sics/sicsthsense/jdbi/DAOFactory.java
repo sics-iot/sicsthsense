@@ -42,7 +42,6 @@ import se.sics.sicsthsense.*;
 import se.sics.sicsthsense.core.*;
 
 public class DAOFactory {
-
 	private static StorageDAO singleton=null;
 
 	public static void buildSQL(EngineConfiguration configuration, Environment environment) throws ClassNotFoundException {

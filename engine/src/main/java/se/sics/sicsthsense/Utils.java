@@ -204,7 +204,6 @@ public class Utils {
 		final PollSystem pollSystem = PollSystem.getInstance();
 
 		logger.info("Updating resourceID "+resourceId+" to: "+newresource);
-
 		Resource resource = storage.findResourceById(resourceId);
 		resource.update(newresource);
 
