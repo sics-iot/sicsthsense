@@ -1,7 +1,7 @@
 
-CREATE DATABASE IF NOT EXISTS sicsth2;
-GRANT ALL PRIVILEGES ON sicsth2.* TO 'sicsthsense'@'localhost' IDENTIFIED BY 'sicsdev';
-USE sicsth2;
+CREATE DATABASE IF NOT EXISTS sicsthsense;
+GRANT ALL PRIVILEGES ON sicsthsense.* TO 'sicsthsense'@'localhost' IDENTIFIED BY 'sicsdev';
+USE sicsthsense;
 
 create table IF NOT EXISTS actuators (
   id                        bigint auto_increment not null,
@@ -32,6 +32,15 @@ create table IF NOT EXISTS functions (
   id                        bigint auto_increment not null,
   owner_id                  bigint,
   constraint pk_functions primary key (id))
+;
+
+create table IF NOT EXISTS subscriptions (
+  id                        bigint auto_increment not null,
+  topic                     varchar(255),
+  owner_id                  bigint,
+  resource_id               bigint,
+  stream_id                 bigint,
+  constraint pk_subscriptions primary key (id))
 ;
 
 create table IF NOT EXISTS operators (
@@ -86,7 +95,7 @@ create table IF NOT EXISTS streams (
   id                        bigint auto_increment not null,
   type                      varchar(1),
   latitude                  double,
-  longitude                double,
+  longitude                 double,
   description               varchar(255),
   public_access             tinyint(1) default 0,
   public_search             tinyint(1) default 0,
@@ -96,7 +105,7 @@ create table IF NOT EXISTS streams (
   secret_key                varchar(255),
   owner_id                  bigint,
   resource_id               bigint,
-	function									varchar(255),
+  function                  varchar(255),
   version                   integer not null,
   constraint ck_streams_type check (type in ('U','D','S')),
   constraint pk_streams primary key (id))
@@ -145,10 +154,10 @@ create table IF NOT EXISTS dependents (
 create table IF NOT EXISTS triggers (
   id                      bigint auto_increment not null,
   stream_id               bigint not null,
-  url											varchar(255) not null,
-  operator								varchar(5) not null,
-  operand									double not null,
-  payload									varchar(255),
+  url                     varchar(255) not null,
+  operator                varchar(5) not null,
+  operand                 double not null,
+  payload                 varchar(255),
   constraint pk_triggers primary key (id))
 ;
 
@@ -165,14 +174,14 @@ create table IF NOT EXISTS vfiles (
 
 
 create table IF NOT EXISTS functions_streams (
-  functions_id                   bigint not null,
-  streams_id                     bigint not null,
+  functions_id             bigint not null,
+  streams_id               bigint not null,
   constraint pk_functions_streams primary key (functions_id, streams_id))
 ;
 
 create table IF NOT EXISTS users_streams (
-  users_id                       bigint not null,
-  streams_id                     bigint not null,
+  users_id                 bigint not null,
+  streams_id               bigint not null,
   constraint pk_users_streams primary key (users_id, streams_id))
 ;
 alter table actuators add constraint fk_actuators_owner_1 foreign key (owner_id) references users (id) on delete restrict on update restrict;

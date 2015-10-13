@@ -8,7 +8,7 @@ database:
   # the username
   user: sicsthsense
   # the password
-  password: 6S3NLd2un76CrE3RJXs
+  password: sicsdev
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/sicsthsense
 

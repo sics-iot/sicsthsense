@@ -29,6 +29,8 @@
 package se.sics.sicsthsense.core;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import org.slf4j.Logger;
@@ -40,21 +42,24 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import se.sics.sicsthsense.core.*;
 import se.sics.sicsthsense.jdbi.StorageDAO;
 
-public class MQTT {
+public class MQTT implements MqttCallback {
 	private static MQTT singleton=null;
 
 	private final Logger logger = LoggerFactory.getLogger(MQTT.class);
 	private StorageDAO storage;
 	int qos             = 2;
-	String broker       = "tcp://iot.eclipse.org:1883";
+	//String broker       = "tcp://iot.eclipse.org:1883";
+	String broker       = "tcp://localhost:1883";
 	String clientId     = "SicsthSenseEngine";
 	MemoryPersistence persistence = new MemoryPersistence();
-	MqttClient sampleClient = null;
+	MqttClient client = null;
 
 	public static MQTT getInstance(StorageDAO storage) {
 		if (singleton==null) {
@@ -70,12 +75,15 @@ public class MQTT {
 
 	public boolean connect() {
 		try {
-			sampleClient = new MqttClient(broker, clientId, persistence);
+			client = new MqttClient(broker, clientId, persistence);
 			MqttConnectOptions connOpts = new MqttConnectOptions();
 			connOpts.setCleanSession(true);
+			client.setCallback(this); // set self as callback handler
 			System.out.println("Connecting to broker: "+broker);
-			sampleClient.connect(connOpts);
+			client.connect(connOpts);
 			System.out.println("Connected");
+			// probably should not do this here, may take some time...
+			subscribeAll();
 			return true;
 		} catch(MqttException me) {
 			return false;
@@ -83,7 +91,7 @@ public class MQTT {
 	}
 	public void disconnect() {
 		try {
-			sampleClient.disconnect();
+			client.disconnect();
 			System.out.println("Disconnected");
 		} catch(MqttException me) {
 			System.out.println("Problem disconnecting!");
@@ -92,11 +100,37 @@ public class MQTT {
 
 	public void subscribeAll() {
 		//String[] topics;
-		List<String> topics = storage.findSubscriptions();
-		//TODO: register subscriptions
+
+		System.out.println("Subscribing!!");
+		//List<String> topics = storage.findSubscriptions();
+		List<String> topics= new ArrayList<String>();
+		topics.add("test");
+		try {
+			String[] tmp = topics.toArray(new String[topics.size()]);
+			System.out.println(Arrays.toString(tmp));
+			client.subscribe(tmp);
+		} catch(MqttException me) {
+			System.out.println("Problem subscribing!");
+		}
 	}
 
 	public void publish(String topic, String json) {
 	}
+
+
+	//MqttCallback interface methods connectionList() deliveryComplete() messageArrived()
+	public void messageArrived(String topic, MqttMessage message) {
+		System.out.println("Message Arrived!");
+		 System.out.println(message);
+	}
+
+	public void connectionLost(Throwable cause) {
+		System.out.println("Connection Lost!");
+	}
+
+	public void deliveryComplete(IMqttDeliveryToken token) {
+		System.out.println("Delivery complete!");
+	}
+
 
 }

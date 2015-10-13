@@ -310,10 +310,12 @@ public interface StorageDAO {
 	@SqlUpdate("delete from parsers where id = :id")
 	void deleteParser(@Bind("id") long id);
 
+
 	// MQTT subscribtions/publishing
 	@SqlQuery("select topics from subscriptions")
 	@Mapper(SubscriptionMapper.class)
 	List<String> findSubscriptions();
+
 
 	//ResourceLog
 	@SqlQuery("SELECT * FROM resource_log WHERE resource_id = :resource_id  LIMIT 1")
