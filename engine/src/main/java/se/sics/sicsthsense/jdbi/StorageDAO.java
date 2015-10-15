@@ -307,14 +307,19 @@ public interface StorageDAO {
 		@Bind("number_of_points")  int number_of_points
 	);
 
-	@SqlUpdate("delete from parsers where id = :id")
+	@SqlUpdate("DELETE FROM parsers WHERE id = :id")
 	void deleteParser(@Bind("id") long id);
 
 
+
 	// MQTT subscribtions/publishing
-	@SqlQuery("select topics from subscriptions")
+	@SqlQuery("SELECT topics FROM subscriptions")
 	@Mapper(SubscriptionMapper.class)
-	List<String> findSubscriptions();
+	List<String> findSubscriptionTopics();
+
+	@SqlQuery("SELECT * FROM subscriptions WHERE topic = :topic")
+	@Mapper(SubscriptionMapper.class)
+	List<Subscription> findSubscriptions(String topic);
 
 
 	//ResourceLog

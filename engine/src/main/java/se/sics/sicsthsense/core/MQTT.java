@@ -29,6 +29,7 @@
 package se.sics.sicsthsense.core;
 
 import java.util.List;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import se.sics.sicsthsense.core.*;
+import se.sics.sicsthsense.Utils;
 import se.sics.sicsthsense.jdbi.StorageDAO;
 
 public class MQTT implements MqttCallback {
@@ -102,12 +104,12 @@ public class MQTT implements MqttCallback {
 		//String[] topics;
 
 		System.out.println("Subscribing!!");
-		//List<String> topics = storage.findSubscriptions();
+		//List<String> topics = storage.findSubscriptionTopics();
 		List<String> topics= new ArrayList<String>();
 		topics.add("test");
+		String[] tmp = topics.toArray(new String[topics.size()]);
+		System.out.println(Arrays.toString(tmp));
 		try {
-			String[] tmp = topics.toArray(new String[topics.size()]);
-			System.out.println(Arrays.toString(tmp));
 			client.subscribe(tmp);
 		} catch(MqttException me) {
 			System.out.println("Problem subscribing!");
@@ -117,11 +119,30 @@ public class MQTT implements MqttCallback {
 	public void publish(String topic, String json) {
 	}
 
+	// add datapoint(s) to a resource/stream
+	public void consumeMessage(String topic, Subscription subscription, MqttMessage message) {
+
+		if (subscription.getStreamId()==-1) { // if its for a resource
+			Resource resource = storage.findResourceById(subscription.getResourceId());
+			Utils.applyParsers(storage, resource, message.toString());
+		} else { // else its for a stream
+			DataPoint datapoint;
+			try {
+				Utils.insertDataPoint(storage, datapoint);
+			} catch (Exception e) {}
+		}
+	}
+
 
 	//MqttCallback interface methods connectionList() deliveryComplete() messageArrived()
+
+	// Callback upon recipt of an MQTT message
 	public void messageArrived(String topic, MqttMessage message) {
-		System.out.println("Message Arrived!");
-		 System.out.println(message);
+		System.out.println(topic+" Message Arrived!"+message);
+		List<Subscription> subs = storage.findSubscriptions(topic);
+		for (Iterator<Subscription> i=subs.iterator(); i.hasNext(); ) {
+			consumeMessage(topic, i.next(), message);
+		}
 	}
 
 	public void connectionLost(Throwable cause) {

@@ -54,7 +54,7 @@ public class ParseData {
 	private final Logger logger = LoggerFactory.getLogger(ParseData.class);
 	ObjectMapper mapper;
 	StorageDAO storage;
-  Pattern regexPattern;
+	Pattern regexPattern;
 
 	public ParseData(StorageDAO storage) {
 		this.storage = storage;

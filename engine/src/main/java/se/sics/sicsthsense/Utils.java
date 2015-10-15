@@ -342,6 +342,10 @@ public class Utils {
 	}
 
 
+	public static void applyParsers(StorageDAO storage, Resource resource, String data) {
+		long now = System.currentTimeMillis();
+		applyParsers(storage,resource,data,now);
+	}
 	public static void applyParsers(StorageDAO storage, Resource resource, String data, long timestamp) {
 		final Logger logger = LoggerFactory.getLogger(Utils.class);
 		ParseData parseData = new ParseData(storage); // should really be static somewhere

@@ -70,10 +70,16 @@ public class Subscription {
 		return "Subscription: "+topic+" id: "+id;
 	}
 
-	public long getId()       { return id; }
-	public long getStreamId() { return stream_id; }
+	public long   getId()          { return id; }
+	public String getTopic()       { return topic; }
+	public long   getUserId()      { return user_id; }
+	public long   getResourceId()  { return resource_id; }
+	public long   getStreamId()    { return stream_id; }
 
-	public void setId(long id)              { this.id = id; }
-	public void setStreamId(long stream_id) { this.stream_id = stream_id; }
+	public void setId(long id)                  { this.id = id; }
+	public void setTopic(String topic)          { this.topic = topic; }
+	public void setUserId(long user_id)         { this.user_id = user_id; }
+	public void setResourceId(long resource_id) { this.resource_id = resource_id; }
+	public void setStreamId(long stream_id)     { this.stream_id = stream_id; }
 
 }
