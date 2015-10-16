@@ -102,11 +102,13 @@ public class MQTT implements MqttCallback {
 
 	public void subscribeAll() {
 		//String[] topics;
+		String topic="/test/engine";
+		List<Subscription> subs = storage.findSubscriptions(topic);
 
 		System.out.println("Subscribing!!");
-		//List<String> topics = storage.findSubscriptionTopics();
-		List<String> topics= new ArrayList<String>();
-		topics.add("test");
+		List<String> topics = storage.findSubscriptionTopics();
+		//List<String> topics= new ArrayList<String>();
+		//topics.add("test");
 		String[] tmp = topics.toArray(new String[topics.size()]);
 		System.out.println(Arrays.toString(tmp));
 		try {
@@ -121,15 +123,19 @@ public class MQTT implements MqttCallback {
 
 	// add datapoint(s) to a resource/stream
 	public void consumeMessage(String topic, Subscription subscription, MqttMessage message) {
+		System.out.println("comsumeMessage! "+message.toString());
 
 		if (subscription.getStreamId()==-1) { // if its for a resource
 			Resource resource = storage.findResourceById(subscription.getResourceId());
 			Utils.applyParsers(storage, resource, message.toString());
 		} else { // else its for a stream
+			System.out.println("Error: Stream subscriptions not yet implemented!");
+			/*
 			DataPoint datapoint;
 			try {
 				Utils.insertDataPoint(storage, datapoint);
 			} catch (Exception e) {}
+			*/
 		}
 	}
 
@@ -138,15 +144,17 @@ public class MQTT implements MqttCallback {
 
 	// Callback upon recipt of an MQTT message
 	public void messageArrived(String topic, MqttMessage message) {
-		System.out.println(topic+" Message Arrived!"+message);
+		System.out.println(topic+" Message Arrived:"+message);
 		List<Subscription> subs = storage.findSubscriptions(topic);
+		System.out.println("Number of subscriptions: "+subs.size());
+
 		for (Iterator<Subscription> i=subs.iterator(); i.hasNext(); ) {
 			consumeMessage(topic, i.next(), message);
 		}
 	}
 
 	public void connectionLost(Throwable cause) {
-		System.out.println("Connection Lost!");
+		System.out.println("Connection Lost! "+cause.getMessage()+" "+cause.toString());
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) {

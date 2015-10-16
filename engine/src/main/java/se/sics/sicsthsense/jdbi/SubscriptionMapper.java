@@ -44,7 +44,7 @@ public class SubscriptionMapper implements ResultSetMapper<Subscription> {
 		return new Subscription(
 				r.getLong("id"),
 				r.getString("topic"),
-				r.getLong("user_id"),
+				r.getLong("owner_id"),
 				r.getLong("resource_id"),
 				r.getLong("stream_id")
 				);

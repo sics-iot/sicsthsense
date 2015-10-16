@@ -313,11 +313,13 @@ public interface StorageDAO {
 
 
 	// MQTT subscribtions/publishing
-	@SqlQuery("SELECT topics FROM subscriptions")
-	@Mapper(SubscriptionMapper.class)
+	@SqlQuery("SELECT topic FROM subscriptions")
 	List<String> findSubscriptionTopics();
 
-	@SqlQuery("SELECT * FROM subscriptions WHERE topic = :topic")
+	//@SqlQuery("SELECT * FROM subscriptions WHERE topic = ':topic'")
+	//@Mapper(SubscriptionMapper.class)
+	//List<Subscription> findSubscriptions(@Bind("topic") String topic);
+	@SqlQuery("SELECT * FROM subscriptions")
 	@Mapper(SubscriptionMapper.class)
 	List<Subscription> findSubscriptions(String topic);
 
